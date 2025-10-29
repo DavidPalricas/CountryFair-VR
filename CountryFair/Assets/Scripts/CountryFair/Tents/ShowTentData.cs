@@ -24,9 +24,6 @@ public class ShowTentData : MonoBehaviour
     // Ignore spelling warning for "gameName", becuase if its changed to readonly, it will not be editable in the inspector
     private  string gameName = string.Empty;
 
-    /// <summary>Rect transform of the screen crosshair for raycast origin.</summary>
-    private RectTransform crosshair;
-
     /// <summary>Instantiated mini-game object in the scene.</summary>
     private GameObject miniGameObject;
 
@@ -36,8 +33,6 @@ public class ShowTentData : MonoBehaviour
     private void Awake()
     {
         textBox.SetActive(false);
-
-        crosshair = GameObject.FindGameObjectWithTag("CrossHair").GetComponent<RectTransform>();
 
         textBox.GetComponentInChildren<TextMeshProUGUI>().text = gameName;
 
@@ -56,7 +51,7 @@ public class ShowTentData : MonoBehaviour
     /// </summary>
     private void LateUpdate()
     {
-        Ray ray = Utils.CastRayFromUI(crosshair);
+        Ray ray = Utils.CastRayMetaQuest();
 
         if (Physics.Raycast(ray, out RaycastHit hitInfo))
         {

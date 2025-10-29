@@ -453,9 +453,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BalloonsSpawner
   balloonPrefab: {fileID: 2094258310749884362, guid: e291e8f3e988f3747b5b04cb338fcc25, type: 3}
-  maxBalloons: 50
+  maxBalloons: 500
   balloonsInitialHeight: 2
-  minSpawnInterval: 1
+  minSpawnInterval: 0.5
   maxSpawnInterval: 2
 --- !u!1 &333833808
 GameObject:

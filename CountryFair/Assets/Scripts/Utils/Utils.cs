@@ -1,49 +1,26 @@
 using UnityEngine;
 using System;
 
+
 public static class Utils
-{   
+{
     /// <summary>  
-    /// The CastRayFromUI method is responsible for casting a ray from the UI to the game world.  
-    /// This method is almost used to cast a ray from the player's crosshair to the game world.  
-    /// For Meta Quest 3, this casts a ray from the center eye camera.
+    /// The CastRayFromMeta method is responsible for casting a ray from the users's eyes in the Meta Quest 3 headset to the game world.
     /// </summary>  
-    /// <param name="uiElement">The uiElement where the ray will be casted.</param>  
-    /// <returns>A Ray object representing the ray cast from the UI element to the game world.</returns>  
-    public static Ray CastRayFromUI(RectTransform uiElement)
+    /// <returns> A Ray object representing the ray cast from the user's eyes to the game world.</returns>  
+    public static Ray CastRayMetaQuest()
     {
-        // Get the OVRCameraRig tagged with "MainCamera"
-        GameObject mainCameraObject = GameObject.FindWithTag("MainCamera");
-        Camera mainCamera = null;
+        GameObject ovrCameraRig = GameObject.FindGameObjectWithTag("MainCamera");
 
-        if (mainCameraObject != null)
+        if (ovrCameraRig == null)
         {
-            // Try to get Camera component directly from the object
-            mainCamera = mainCameraObject.GetComponent<Camera>();
-            
-            // If not found, search for Camera in children (OVRCameraRig structure)
-            if (mainCamera == null)
-            {
-                mainCamera = mainCameraObject.GetComponentInChildren<Camera>();
-            }
-        }
-        else
-        {
-            mainCamera = Camera.main;
-        }
-
-        if (mainCamera == null)
-        {
-            Debug.LogError("Main camera not found! Ensure OVRCameraRig is tagged with 'MainCamera' or a camera exists in the scene.");
+            Debug.LogError("OVRCameraRig not found in the scene. Make sure you have an OVRCameraRig in your scene to use CastRayMetaQuest.");
             return new Ray();
         }
 
-        Vector2 uiElementScreenPos = RectTransformUtility.WorldToScreenPoint(
-            mainCamera,
-            uiElement.position
-        );
+        Transform centerEyeTransform = ovrCameraRig.GetComponent<OVRCameraRig>().centerEyeAnchor;
 
-        return mainCamera.ScreenPointToRay(uiElementScreenPos);
+        return new Ray(centerEyeTransform.position, centerEyeTransform.forward);
     }
 
     /// <summary>
