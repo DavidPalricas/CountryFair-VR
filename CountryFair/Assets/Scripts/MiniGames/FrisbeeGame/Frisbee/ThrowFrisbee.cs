@@ -22,7 +22,7 @@ public class ThrowFrisbee : MonoBehaviour
     
     /// <summary>Initial vertical velocity component in meters per second.</summary>
     [SerializeField]
-    private float upwardBias = 0f;
+    private float upwardBias = 3f;
     
     /// <summary>Angular velocity of the frisbee spin in radians per second.</summary>
     [SerializeField]

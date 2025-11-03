@@ -1,11 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Handles the visualization of the frisbee's trailing trajectory during flight.
 /// 
-/// This component displays a visual line that shows the recent flight path of the frisbee.
-/// It creates a trailing effect by continuously updating a LineRenderer with the frisbee's
-/// current position, shifting previous positions backward to maintain a history of movement.
+/// This component displays a dynamic line that shows the complete flight path of the frisbee.
+/// It creates a trailing effect by recording the frisbee's position at distance-based intervals,
+/// maintaining a history of all movement during flight.
 /// 
 /// The trajectory line is rendered as a separate GameObject and can be enabled/disabled
 /// independently from the frisbee physics simulation.
@@ -17,10 +18,7 @@ public class FrisbeeTrajectory : MonoBehaviour
 {
     /// <summary>Trajectory Visualization - Settings for the trajectory line renderer</summary>
     [Header("Trajectory Visualization")]
-    /// <summary>Number of points to calculate for the trajectory preview.</summary>
-    [SerializeField]
-    private int trajectoryPoints = 100;
-
+   
     /// <summary>Color of the trajectory line with alpha transparency.</summary>
     [SerializeField]
     private Color trajectoryColor = new(0f, 1f, 0f, 0.8f);
@@ -32,6 +30,12 @@ public class FrisbeeTrajectory : MonoBehaviour
     /// <summary>Line renderer component that displays the frisbee trajectory.</summary>
     private LineRenderer _line;
 
+    /// <summary>Last position where a trajectory point was recorded.</summary>
+    private Vector3 _lastRecordedPosition;
+
+    /// <summary>List of recorded trajectory points.</summary>
+    private List<Vector3> _trajectoryPoints;
+
     /// <summary>
     /// Initializes the trajectory visualization system on startup.
     /// Creates the LineRenderer and disables this component by default.
@@ -39,6 +43,8 @@ public class FrisbeeTrajectory : MonoBehaviour
     private void Awake()
     {
         SetupTrajectoryLine();
+        _lastRecordedPosition = transform.position;
+        _trajectoryPoints = new List<Vector3>();
 
         enabled = false;
     }
@@ -71,40 +77,34 @@ public class FrisbeeTrajectory : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the trajectory visualization line each frame by shifting previous positions backward
-    /// and adding the current frisbee position at the front of the line.
+    /// Updates the trajectory visualization line by recording the frisbee's position at distance-based intervals.
     /// 
-    /// This creates a trailing effect that shows the frisbee's recent flight path. The line starts
-    /// from behind the frisbee and extends backward, displaying where the disc has been.
+    /// Uses distance-based recording with a fixed threshold (0.1 units) to add a new point only when the frisbee 
+    /// has moved a minimum distance. This provides consistent spacing along the trajectory regardless of frame rate.
     /// 
-    /// On the first call, initializes all trajectory points to the current position.
-    /// On subsequent calls, shifts all existing points back by one index and updates the front point.
+    /// The trajectory maintains all recorded points in a dynamic list, displaying the complete flight path
+    /// from the moment of throw until the frisbee stops.
     /// </summary>
     private void DrawTrajectory()
     {
-        for (int i = trajectoryPoints - 1; i > 0; i--)
+        const float DISTANCE_THRESHOLD = 0.1f;
+        
+        // Only record a new point if the frisbee has moved far enough
+        if (Vector3.Distance(transform.position, _lastRecordedPosition) < DISTANCE_THRESHOLD)
         {
-            if (_line.positionCount > i)
-            {
-                _line.SetPosition(i, _line.GetPosition(i - 1));
-            }
-        }
-
-        // Add current position at the front (index 0)
-        if (_line.positionCount == 0)
-        {
-            _line.positionCount = trajectoryPoints;
-
-            // Initialize all points to current position
-            for (int i = 0; i < trajectoryPoints; i++)
-            {
-                _line.SetPosition(i, transform.position);
-            }
-
             return;
         }
 
-        _line.SetPosition(0, transform.position);
+        // Add new point at the beginning of the list
+        _trajectoryPoints.Insert(0, transform.position);
+        _lastRecordedPosition = transform.position;
+
+        // Update the line renderer with all points
+        _line.positionCount = _trajectoryPoints.Count;
+        for (int i = 0; i < _trajectoryPoints.Count; i++)
+        {
+            _line.SetPosition(i, _trajectoryPoints[i]);
+        }
     }
    
     /// <summary>
@@ -113,6 +113,7 @@ public class FrisbeeTrajectory : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        _line.positionCount = 0; 
+        _line.positionCount = 0;
+        _trajectoryPoints.Clear();
     }
 }

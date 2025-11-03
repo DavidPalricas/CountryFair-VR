@@ -166,7 +166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6672901579281679469, guid: 376c468406c412148b0cadf0c6ab358d, type: 3}
       propertyPath: upwardBias
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6672901579281679469, guid: 376c468406c412148b0cadf0c6ab358d, type: 3}
       propertyPath: trajectoryPoints
