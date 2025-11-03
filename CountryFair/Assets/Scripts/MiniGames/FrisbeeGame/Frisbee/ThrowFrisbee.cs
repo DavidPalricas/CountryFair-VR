@@ -81,10 +81,6 @@ public class ThrowFrisbee : MonoBehaviour
     [SerializeField]
     private int trajectoryPoints = 100;
     
-    /// <summary>Time step (in seconds) for each trajectory simulation step (0.05s = 50ms intervals).</summary>
-    [SerializeField]
-    private float trajectoryTimeStep = 0.05f;
-
     /// <summary>Whether the frisbee has been thrown and is currently in motion.</summary>
     private bool _wasThrown = false;
     
@@ -302,73 +298,39 @@ public class ThrowFrisbee : MonoBehaviour
     }
 
     /// <summary>
-    /// Simulates and visualizes the future trajectory of the frisbee using Euler's method for numerical integration.
-    /// Updates the trajectory line renderer with predicted flight path points.
+    /// Updates the trajectory visualization line each frame by shifting previous positions backward
+    /// and adding the current frisbee position at the front of the line.
+    /// 
+    /// This creates a trailing effect that shows the frisbee's recent flight path. The line starts
+    /// from behind the frisbee and extends backward, displaying where the disc has been.
+    /// 
+    /// On the first call, initializes all trajectory points to the current position.
+    /// On subsequent calls, shifts all existing points back by one index and updates the front point.
     /// </summary>
     private void DrawTrajectory()
     {
-        Vector3[] points = new Vector3[trajectoryPoints];
-        Vector3 pos = transform.position;
-        Vector3 vel = _rigidbody.linearVelocity;
-        float alpha = _currentAlpha;
-
-        points[0] = pos;
-
-        // Simulate future trajectory using Euler's method
-        for (int i = 1; i < trajectoryPoints; i++)
+        for (int i = trajectoryPoints - 1; i > 0; i--)
         {
-            float dt = trajectoryTimeStep;
-
-            float vMagnitude = vel.magnitude;
-
-            const float VELOCITY_MAGNITUDE_THRESHOLD = 0.1f;
-
-            if (vMagnitude < VELOCITY_MAGNITUDE_THRESHOLD){
-                break;
-            } 
-
-            // Calculate coefficients
-            float cl = cl0 + cLa * alpha;
-            float alphaDiff = alpha - (alpha0 * Mathf.Deg2Rad);
-            float cd = cd0 + cDa * alphaDiff * alphaDiff;
-
-            // Calculate force magnitudes using 
-            // Based Equation for Lift Force: F = 0.5 * ρ * v² * A * C
-            float liftMag = 0.5f * airDensity * vMagnitude * vMagnitude * area * cl / mass;
-
-            // Based Equation for Drag Force: F = 0.5 * ρ * v² * A * C
-            float dragMag = 0.5f * airDensity * vMagnitude * vMagnitude * area * cd / mass;
-
-            // Lift perpendicular to velocity (upward component)
-            Vector3 liftDir = Vector3.Cross(vel.normalized, Vector3.right).normalized;
-            Vector3 liftAccel = liftDir * liftMag;
-
-            // Drag opposite to velocity
-            Vector3 dragAccel = -vel.normalized * dragMag;
-
-            // Gravity to push the frisbee down
-            Vector3 gravityAccel = new (0, Physics.gravity.y, 0);
-
-            // Update velocity
-            vel += (liftAccel + dragAccel + gravityAccel) * dt;
-
-            // Update position
-            pos += vel * dt;
-            points[i] = pos;
-
-            const float GROUND_THRESHOLD = 0f;
-
-            // Stop if below ground
-            if (pos.y < GROUND_THRESHOLD)
+            if (_trajectoryLine.positionCount > i)
             {
-                _trajectoryLine.positionCount = i;
-                _trajectoryLine.SetPositions(points);
-                return;
+                _trajectoryLine.SetPosition(i, _trajectoryLine.GetPosition(i - 1));
             }
         }
+        
+        // Add current position at the front (index 0)
+        if (_trajectoryLine.positionCount == 0)
+        {
+            _trajectoryLine.positionCount = trajectoryPoints;
+            // Initialize all points to current position
+            for (int i = 0; i < trajectoryPoints; i++)
+            {
+                _trajectoryLine.SetPosition(i, transform.position);
+            }
 
-        _trajectoryLine.positionCount = trajectoryPoints;
-        _trajectoryLine.SetPositions(points);
+            return;
+        }
+       
+        _trajectoryLine.SetPosition(0, transform.position);
     }
     
     /// <summary>
