@@ -36,12 +36,15 @@ public class OnPlayerHand : FrisbeeState
     private Quaternion  _initialRotation;
 
     /// <summary>
-    /// Initializes the state by storing the original parent transform for reset functionality.
+    /// Initializes the state by storing the original parent transform , rotation and position for reset functionality.
     /// </summary>
     protected override void Awake()
     {  
         base.Awake();
         _originalParent = transform.parent;
+
+        _initialPosition = transform.position;
+        _initialRotation = transform.rotation;
     }
 
     /// <summary>

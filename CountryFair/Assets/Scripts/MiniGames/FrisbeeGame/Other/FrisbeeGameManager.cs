@@ -7,8 +7,7 @@ public class FrisbeeGameManager : MonoBehaviour
 
 
    [HideInInspector]
-    public Transform currentTargetTransform = null;
-
+    public Vector3 currentTargetPos = Vector3.zero;
 
     private void Start()
     {
@@ -25,12 +24,12 @@ public class FrisbeeGameManager : MonoBehaviour
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject dog = GameObject.FindGameObjectWithTag("Dog");
 
-        if (player != null && dog != null)
+        if (player == null || dog == null)
         {
-            return Vector3.Distance(player.transform.position, dog.transform.position);
+            Debug.LogError("Player or Dog GameObject not found in the scene.");
+            return 0f;  
         }
-        
-        Debug.LogError("Player or Dog GameObject not found in the scene.");
-        return 0f;    
+
+        return Vector3.Distance(player.transform.position, dog.transform.position);
     } 
 }

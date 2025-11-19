@@ -67,20 +67,15 @@ public class FSM : MonoBehaviour
     /// </remarks>
     /// <param name="transitionName">Name of the transition to execute.</param>
     public void ChangeState (string transitionName)
-    {   
-        Debug.Log("ChangeState chamado com transitionName: " + transitionName);
-        
+    {      
         foreach (Transition transition in transitions)
         {   
             // Removes whitespaces and converts to lowercase to avoid case sensitivity and whitespaces issues
             if (transition.name.Replace(" ", "").ToLower() == transitionName.Replace(" ", "").ToLower() && (transition.from == null || CurrentState == transition.from))
             {   
-                Debug.Log("ENTROU NO IF - Antes do Exit()");
                 CurrentState.Exit();
-                Debug.Log("Depois do Exit()");
                 CurrentState = transition.to;
                 CurrentState.Enter();
-                Debug.Log("Depois do Enter() - VAI FAZER RETURN");
 
                 return;
             }

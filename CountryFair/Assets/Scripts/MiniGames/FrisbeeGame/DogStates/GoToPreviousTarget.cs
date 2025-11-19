@@ -17,9 +17,10 @@ public class GoToPreviousTarget : DogState{
     public override void Enter()
    {
         base.Enter();
+       
+        _previousTargetTransform =  new GameObject("PreviousTarget").transform;
+        _previousTargetTransform.position = _gameManager.currentTargetPos;
 
-        _previousTargetTransform =  _gameManager.currentTargetTransform;
-      
         _agent.SetDestination(_previousTargetTransform.position);
    }
 
@@ -40,6 +41,8 @@ public class GoToPreviousTarget : DogState{
     {  
         base.Exit();
 
-        RotateDogTowardsTarget(_playerTransform);
+       // Then destroy the temporary target object becuase it is only needed for the dog rotating towards it
+        Destroy(_previousTargetTransform.gameObject);
+
     }
 }

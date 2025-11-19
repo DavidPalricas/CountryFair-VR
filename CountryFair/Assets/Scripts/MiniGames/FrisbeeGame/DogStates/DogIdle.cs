@@ -36,14 +36,13 @@ public class DogIdle : DogState
     {
         base.Enter();
 
-
         if (_gameManager == null)
         {
             Debug.LogError("GameManager reference is null in DogIdle state.");
             return;
         }
 
-        _gameManager.currentTargetTransform = transform;
+        _gameManager.currentTargetPos = transform.position;
 
         scoreArea.SetActive(true);
     }
@@ -54,6 +53,8 @@ public class DogIdle : DogState
     public override void Execute()
     {
         base.Execute();
+
+        RotateDogTowardsTarget(_playerTransform);
     }
 
     public void FrisbeeLanded()

@@ -57,7 +57,6 @@ public class OnMovement : FrisbeeState
     /// <summary>Event invoked when the player successfully scores by landing the frisbee in the score area.</summary>
     public UnityEvent playerScored;
 
-   
     /// <summary>
     /// Initializes the state by setting up physics component references.
     /// </summary>

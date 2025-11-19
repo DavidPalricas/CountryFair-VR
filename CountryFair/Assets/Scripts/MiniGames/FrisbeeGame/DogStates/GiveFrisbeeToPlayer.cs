@@ -6,10 +6,6 @@ public class GiveFrisbeeToPlayer : DogState
    [SerializeField]
     private GameObject frisbeeInDogMouth;
 
-    private Vector3 _deliverPosition;
-
-    private Transform _deliverFrisbeeTransform;
-
     private bool _playerScored = false;
 
     public UnityEvent frisbeeGivenToPlayer;
@@ -29,14 +25,8 @@ public class GiveFrisbeeToPlayer : DogState
     }
 
     public override void LateStart()
-    {    // It does not need to call base.Start() becuase we don't need the _playerTransform here
-
-        _deliverFrisbeeTransform = GameObject.FindGameObjectWithTag("DeliverFrisbee").transform;
-
-        if (_deliverFrisbeeTransform == null)
-        {
-            Debug.LogError("DeliverFrisbee GameObject not found in the scene.");
-        }
+    {    
+        base.LateStart();
     }
 
     public override void Enter()
@@ -45,16 +35,14 @@ public class GiveFrisbeeToPlayer : DogState
 
         frisbeeInDogMouth.SetActive(true);
 
-        _deliverPosition = _deliverFrisbeeTransform.position;
-
-        _agent.SetDestination(_deliverPosition);
+        _agent.SetDestination(_playerTransform.position);
    }
 
     public override void Execute()
     {
          base.Execute();
 
-         RotateDogTowardsTarget(_deliverFrisbeeTransform);
+         RotateDogTowardsTarget(_playerTransform);
 
          if (DogStoped())
          {  

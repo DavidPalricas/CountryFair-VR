@@ -9,7 +9,6 @@ TagManager:
   - Ground
   - Frisbee
   - Dog
-  - DeliverFrisbee
   - ScoreArea
   - GameManager
   layers:

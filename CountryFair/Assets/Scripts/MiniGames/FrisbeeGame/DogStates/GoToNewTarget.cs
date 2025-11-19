@@ -17,20 +17,30 @@ public class GoToNewTarget : DogState{
     private Vector3 ChooseNewTargetPos()
     {
         float dogDistance = _gameManager.AdaptiveParameters["DogDistance"];
+        
+        const float MIN_ANGLE = -90f * Mathf.Deg2Rad;
+        const float MAX_ANGLE = 90f * Mathf.Deg2Rad;
 
-        Vector3 targetPosition = _playerTransform.position + _playerTransform.forward * dogDistance;
+        float randomAngle = Utils.RandomValueInRange(MIN_ANGLE, MAX_ANGLE);
+      
+       Quaternion rotation = Quaternion.Euler(0, randomAngle * Mathf.Rad2Deg, 0);
+
+       Vector3 randomDirection = rotation * _playerTransform.forward;
+    
+       Vector3 targetPosition = _playerTransform.position + randomDirection * dogDistance;
 
         const  float NAVMESH_SAMPLE_RADIUS = 200f;
 
         if (NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, NAVMESH_SAMPLE_RADIUS, NavMesh.AllAreas))
         {   
-
+            
+            Debug.Log("New target position chosen at: " + hit.position);
             return hit.position;
         }
 
-        Debug.LogError("Could not find a new position for the dog.");
+        Debug.LogWarning("Failed to find a new target position retrying.");
 
-        return _agent.transform.position;
+        return ChooseNewTargetPos();
     }
 
     public override void Enter()
@@ -61,8 +71,6 @@ public class GoToNewTarget : DogState{
     public override void Exit()
     {  
         base.Exit();
-
-        RotateDogTowardsTarget(_playerTransform);
 
         Destroy(_newTargetTransform.gameObject);
     }
