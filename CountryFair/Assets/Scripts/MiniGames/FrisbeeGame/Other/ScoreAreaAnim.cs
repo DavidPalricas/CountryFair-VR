@@ -2,8 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Defines a trigger area that detects when a frisbee has landed and plays floating animations.
-/// Requires a Collider component to function as a trigger zone.
+/// Handles the animation of the score area including floating, rotating, and pulsing effects.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class ScoreAreaAnim : MonoBehaviour

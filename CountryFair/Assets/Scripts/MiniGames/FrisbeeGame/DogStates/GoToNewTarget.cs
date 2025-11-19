@@ -1,19 +1,64 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// State where the dog navigates to a randomly selected new target position.
+/// The target position is generated within a semicircular area in front of the player at an adaptive distance.
+/// </summary>
+/// <remarks>
+/// This state uses adaptive parameters from the game manager to determine the dog's distance from the player.
+/// The target position is randomly chosen within a 180-degree arc in front of the player and validated on the NavMesh.
+/// A temporary GameObject is created to represent the target position for rotation purposes.
+/// </remarks>
 public class GoToNewTarget : DogState{
+    /// <summary>
+    /// Reference to a temporary GameObject's transform representing the new target position.
+    /// Created in <see cref="Enter"/> and destroyed in <see cref="Exit"/>.
+    /// </summary>
     private Transform _newTargetTransform;
 
+    /// <summary>
+    /// Initializes the GoToNewTarget state by calling the base DogState initialization.
+    /// </summary>
+    /// <remarks>
+    /// Calls <see cref="DogState.Awake"/> to set up state properties and NavMeshAgent configuration.
+    /// </remarks>
     protected override void Awake()
     {   
         base.Awake();
     }
 
+    /// <summary>
+    /// Initializes references to the player and game manager.
+    /// </summary>
+    /// <remarks>
+    /// Calls <see cref="DogState.LateStart"/> to set up player and game manager references
+    /// needed for position calculation and adaptive parameters.
+    /// </remarks>
     public override void LateStart()
     {
        base.LateStart();
     }
 
+    /// <summary>
+    /// Calculates a new random target position for the dog within a semicircular area in front of the player.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The algorithm:
+    /// <list type="number">
+    /// <item><description>Retrieves the adaptive "DogDistance" parameter from the game manager</description></item>
+    /// <item><description>Generates a random angle between -90° and +90° relative to the player's forward direction</description></item>
+    /// <item><description>Calculates a position at the specified distance in the random direction</description></item>
+    /// <item><description>Validates the position is on the NavMesh using NavMesh.SamplePosition</description></item>
+    /// <item><description>If invalid, recursively calls itself until a valid position is found</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// This ensures the dog always positions itself in a walkable area in front of the player.
+    /// </para>
+    /// </remarks>
+    /// <returns>A valid Vector3 position on the NavMesh within the semicircular area.</returns>
     private Vector3 ChooseNewTargetPos()
     {
         float dogDistance = _gameManager.AdaptiveParameters["DogDistance"];
@@ -43,6 +88,20 @@ public class GoToNewTarget : DogState{
         return ChooseNewTargetPos();
     }
 
+    /// <summary>
+    /// Called when entering the GoToNewTarget state.
+    /// Generates a new target position and sets up navigation to that position.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Creates a new target position using <see cref="ChooseNewTargetPos"/> and instantiates a temporary
+    /// GameObject to represent that position for rotation purposes.
+    /// </para>
+    /// <para>
+    /// The temporary GameObject is necessary for the <see cref="DogState.RotateDogTowardsTarget"/> method
+    /// to have a transform reference to calculate rotation direction.
+    /// </para>
+    /// </remarks>
     public override void Enter()
    {
         base.Enter();
@@ -56,6 +115,14 @@ public class GoToNewTarget : DogState{
         _agent.SetDestination(newTargetPos);
    }
 
+    /// <summary>
+    /// Called every frame while in the GoToNewTarget state.
+    /// Rotates the dog toward the new target position and checks if the dog has reached it.
+    /// </summary>
+    /// <remarks>
+    /// Continuously rotates the dog to face the target while moving.
+    /// When the dog reaches the target position, triggers a state transition to "PositionReached".
+    /// </remarks>
     public override void Execute()
     {
         base.Execute();
@@ -68,6 +135,14 @@ public class GoToNewTarget : DogState{
          }
     }
 
+    /// <summary>
+    /// Called when exiting the GoToNewTarget state.
+    /// Destroys the temporary target GameObject to clean up the scene.
+    /// </summary>
+    /// <remarks>
+    /// The temporary target GameObject created in <see cref="Enter"/> is no longer needed
+    /// once the state is exited, so it's destroyed to prevent clutter.
+    /// </remarks>
     public override void Exit()
     {  
         base.Exit();
