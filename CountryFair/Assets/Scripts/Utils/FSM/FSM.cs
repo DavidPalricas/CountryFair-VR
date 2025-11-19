@@ -28,8 +28,21 @@ public class FSM : MonoBehaviour
     /// Unity callback called before the first frame update.
     /// </summary>
     private void Start()
-    {
+    {   
+        if (states.Count == 0)
+        {
+            Debug.LogError("FSM has no states defined.");
+
+            return;
+        }
+
+        foreach (State state in states)
+        {
+            state.LateStart();
+        }
+
         CurrentState = states[0];
+
         CurrentState.Enter();
     }
 
@@ -55,19 +68,24 @@ public class FSM : MonoBehaviour
     /// <param name="transitionName">Name of the transition to execute.</param>
     public void ChangeState (string transitionName)
     {   
-        foreach (var transition in transitions)
-        {
+        Debug.Log("ChangeState chamado com transitionName: " + transitionName);
+        
+        foreach (Transition transition in transitions)
+        {   
             // Removes whitespaces and converts to lowercase to avoid case sensitivity and whitespaces issues
             if (transition.name.Replace(" ", "").ToLower() == transitionName.Replace(" ", "").ToLower() && (transition.from == null || CurrentState == transition.from))
-            {
+            {   
+                Debug.Log("ENTROU NO IF - Antes do Exit()");
                 CurrentState.Exit();
+                Debug.Log("Depois do Exit()");
                 CurrentState = transition.to;
                 CurrentState.Enter();
+                Debug.Log("Depois do Enter() - VAI FAZER RETURN");
 
                 return;
             }
         }
 
-        Debug.LogWarning($"Transition {transitionName} not found for customer {gameObject.name}, from {CurrentState.StateName}");
+        Debug.LogError($"Transition {transitionName} not found for game object {gameObject.name} in {CurrentState.StateName}.");
     }
 }

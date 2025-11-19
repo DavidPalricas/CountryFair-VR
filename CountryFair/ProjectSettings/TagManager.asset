@@ -7,11 +7,16 @@ TagManager:
   - CrossHair
   - Arrow
   - Ground
+  - Frisbee
+  - Dog
+  - DeliverFrisbee
+  - ScoreArea
+  - GameManager
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - DogArea
   - Water
   - UI
   - 

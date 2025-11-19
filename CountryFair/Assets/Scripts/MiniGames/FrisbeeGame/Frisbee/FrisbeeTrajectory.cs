@@ -11,7 +11,7 @@ using System.Collections.Generic;
 /// The trajectory line is rendered as a separate GameObject and can be enabled/disabled
 /// independently from the frisbee physics simulation.
 /// 
-/// The <see cref="ThrowFrisbee"/> class controls when this script is active by toggling its enabled state,
+/// The <see cref="OnMovement"/> and <see cref="Landed"/>  classes (states of Frisbee) control when this script is active by toggling its enabled state,
 /// enabling trajectory visualization only when the frisbee is in flight.
 /// </summary>
 public class FrisbeeTrajectory : MonoBehaviour

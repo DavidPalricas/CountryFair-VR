@@ -6,7 +6,7 @@ using DG.Tweening;
 /// Requires a Collider component to function as a trigger zone.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class AreaToCatchFrisbee : MonoBehaviour
+public class ScoreAreaAnim : MonoBehaviour
 {
     /// <summary>
     /// Height offset for the floating animation.
@@ -38,12 +38,6 @@ public class AreaToCatchFrisbee : MonoBehaviour
     /// </summary>
     [SerializeField]
      private float pulseScale = 1.2f;
-
-    /// <summary>
-    /// Indicates whether the frisbee has landed in this area and stopped moving.
-    /// </summary>
-    [HideInInspector]
-    public bool frisbeeLanded = false;
 
     /// <summary>
     /// Cached starting position used as baseline for floating animation.
@@ -107,29 +101,5 @@ public class AreaToCatchFrisbee : MonoBehaviour
     {
         transform.DOKill();
         _animSequence?.Kill();
-    }
-
-    /// <summary>
-    /// Detects when a frisbee has landed in the catch area by checking if its velocity is below the threshold.
-    /// Unity callback called once per frame for every Collider touching the trigger.
-    /// </summary>
-    /// <param name="other">The Collider that is touching the trigger.</param>
-    private void OnTriggerStay(Collider other)
-    {   
-        if (other.CompareTag("Frisbee"))
-        {   
-            const float FRISBEE_STOP_THRESHOLD = 0.1f;
-            
-            if (!other.TryGetComponent<Rigidbody>(out var frisbeeRb))
-            {   
-                Debug.LogWarning("The frisbee object does not have a Rigidbody component.");
-                return;
-            }
-
-            if (frisbeeRb.linearVelocity.magnitude <= FRISBEE_STOP_THRESHOLD)
-            {
-                frisbeeLanded = true;
-            }
-        }
     }
 }

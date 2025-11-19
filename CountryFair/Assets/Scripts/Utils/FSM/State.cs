@@ -1,9 +1,11 @@
+using Oculus.Platform.Models;
 using UnityEngine;
 
 /// <summary>
 /// Abstract base class representing a state in the FSM.
 /// Serializable to allow configuration in the Unity Inspector.
 /// </summary>
+[RequireComponent(typeof(FSM))]
 [System.Serializable]
 public abstract class State : MonoBehaviour
 {
@@ -16,13 +18,22 @@ public abstract class State : MonoBehaviour
     /// Gets or sets the name of this state.
     /// </summary>
     public string StateName {get; protected set; }
+    
+    protected void SetStateProprieties()
+    {
+        fSM = GetComponent<FSM>();
 
+        StateName = GetType().Name;
+    }
+
+    public virtual void LateStart(){}
+    
     /// <summary>
     /// Called when entering this state to perform initialization actions.
     /// Override in derived classes to implement state-specific entry behavior.
     /// </summary>
     public virtual void Enter() {
-       // Debug.Log($"Entering {StateName} State");
+       Debug.Log($"Entering {StateName} State");
     }
 
     /// <summary>
@@ -30,7 +41,7 @@ public abstract class State : MonoBehaviour
     /// Override in derived classes to implement state-specific execution behavior.
     /// </summary>
     public virtual void Execute() { 
-     // Debug.Log($"Executing {StateName} State");
+     Debug.Log($"Executing {StateName} State");
     }
 
     /// <summary>
@@ -38,6 +49,6 @@ public abstract class State : MonoBehaviour
     /// Override in derived classes to implement state-specific exit behavior.
     /// </summary>
     public virtual void Exit() { 
-       // Debug.Log($"Exiting {StateName} State");
+       Debug.Log($"Exiting {StateName} State");
     }
 }

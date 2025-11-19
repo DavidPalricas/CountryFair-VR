@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Simulates realistic frisbee physics including aerodynamic forces, spin dynamics, and trajectory visualization.
@@ -11,7 +12,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(FrisbeeTrajectory))]
-public class ThrowFrisbee : MonoBehaviour
+public class FrisbeePhysics : MonoBehaviour
 {
     /// <summary>Throw Settings - Controls initial velocity and spin properties</summary>
     
@@ -71,7 +72,7 @@ public class ThrowFrisbee : MonoBehaviour
     private float alpha0 = -4f;
 
     /// <summary>Whether the frisbee has been thrown and is currently in motion.</summary>
-    private bool _wasThrown = false;
+    private bool _hasFrisbee = false;
     
     /// <summary>Reference to the rigidbody component for physics calculations.</summary>
     private Rigidbody _rigidbody;
@@ -93,6 +94,17 @@ public class ThrowFrisbee : MonoBehaviour
     
     /// <summary>Reference to the collider component for enabling/disabling collisions.</summary>
     private Collider _collider;
+
+    private bool _isOnGround = false;
+
+    private bool _isOnScoreArea = false;
+
+
+    private bool _landed = false;
+
+    public UnityEvent frisbeeLanded;
+
+    public UnityEvent playerScored;
 
     /// <summary>
     /// Initializes the frisbee by setting up the rigidbody, initial position, and trajectory line renderer.
@@ -119,7 +131,7 @@ public class ThrowFrisbee : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (!_wasThrown && OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
+        if (!_landed && _hasFrisbee && OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
         {
             Throw();
         }
@@ -131,7 +143,7 @@ public class ThrowFrisbee : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-        if (_wasThrown)
+        if (!_hasFrisbee)
         {
             ApplyAerodynamicForces();
         }
@@ -143,7 +155,7 @@ public class ThrowFrisbee : MonoBehaviour
     /// </summary>
     private void Throw()
     {
-        _wasThrown = true;
+        _hasFrisbee = false;
 
         // Detach the frisbee from its hand placeholder to allow it not move when the hand moves
         transform.parent = null;
@@ -177,7 +189,7 @@ public class ThrowFrisbee : MonoBehaviour
     /// Called every physics frame to update the frisbee's velocity.
     /// </summary>
     private void ApplyAerodynamicForces()
-    {
+    {   
         Vector3 velocity = _rigidbody.linearVelocity;
         float vMagnitude = velocity.magnitude;
 
@@ -185,8 +197,16 @@ public class ThrowFrisbee : MonoBehaviour
 
         if (vMagnitude < STOP_THRESHOLD)
         {   
-            FrisbeeStopped();
-    
+            if (_isOnGround)
+            {   
+                if (_isOnScoreArea)
+                {
+                    playerScored.Invoke();
+                }
+
+                FrisbeeLanded();
+            }
+
             return;
         }
 
@@ -252,7 +272,15 @@ public class ThrowFrisbee : MonoBehaviour
     /// Clears the trajectory visualization.
     /// </summary>
     private void PlayerHoldingFrisbee()
-    {
+    {    
+        ResetTransform();
+        
+        // In the dog state to catch the frisbee, the frisbee visibility is turned off, so we need to enable it here
+        gameObject.SetActive(true);
+
+        _isOnGround = false;
+        _hasFrisbee = true;
+             
         _rigidbody.isKinematic = true;
         _rigidbody.useGravity = false;
         _rigidbody.linearVelocity = Vector3.zero;
@@ -262,18 +290,17 @@ public class ThrowFrisbee : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles the logic when the frisbee has stopped moving after being thrown.
+    /// Handles the logic when the frisbee landed.
     /// Resets the frisbee's transform and sets it to the held state.
     /// </summary>
-    private void FrisbeeStopped()
-    {
-        _wasThrown = false;
-
-        ResetTransform();
-
+    private void FrisbeeLanded()
+    {   
+        frisbeeLanded.Invoke();
+   
         _trajectoryLine.enabled = false;
 
-        PlayerHoldingFrisbee();
+        _landed = true;
+
     }
 
     /// <summary>
@@ -283,5 +310,43 @@ public class ThrowFrisbee : MonoBehaviour
     {
         transform.parent = _originalParent;
         transform.SetPositionAndRotation(_initialPosition, _initialRotation);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Ground")) 
+        {
+           _isOnGround = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision other)
+    {
+         if (other.gameObject.CompareTag("Ground")) 
+        {
+           _isOnGround = false;
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("ScoreArea")) 
+        {
+            _isOnScoreArea = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("ScoreArea")) 
+        {
+           _isOnScoreArea = false;
+        }
+    }
+
+    public void FrisbeeGivenByDog()
+    {   
+        PlayerHoldingFrisbee();
     }
 }

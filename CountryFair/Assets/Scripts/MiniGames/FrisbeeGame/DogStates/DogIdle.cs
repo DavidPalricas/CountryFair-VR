@@ -4,31 +4,48 @@ using UnityEngine;
 /// Represents the idle state of the dog in the Frisbee game.
 /// Activates the catch area and transitions to catch state when the frisbee lands.
 /// </summary>
-public class DogIdle : State
+
+public class DogIdle : DogState
 {   
     /// <summary>
     /// Reference to the area where the frisbee can be caught.
     /// </summary>
     [SerializeField]
-    private AreaToCatchFrisbee areaToCatchFrisbee;
+    private GameObject scoreArea;
 
     /// <summary>
     /// Initializes the state by deactivating the catch area and setting the state name.
     /// Unity callback called when the script instance is being loaded.
     /// </summary>
-    private void Awake()
-    {
-        areaToCatchFrisbee.gameObject.SetActive(false);
-        StateName = "DogIdle";
+    protected override void Awake()
+    {   
+        base.Awake();
+        
+        scoreArea.SetActive(false);
     }
 
+    public override void LateStart()
+    {
+        base.LateStart();
+    }
+    
     /// <summary>
     /// Activates the frisbee catch area when entering the idle state.
     /// </summary>
     public override void Enter()
     {
         base.Enter();
-        areaToCatchFrisbee.gameObject.SetActive(true);
+
+
+        if (_gameManager == null)
+        {
+            Debug.LogError("GameManager reference is null in DogIdle state.");
+            return;
+        }
+
+        _gameManager.currentTargetTransform = transform;
+
+        scoreArea.SetActive(true);
     }
 
     /// <summary>
@@ -37,12 +54,11 @@ public class DogIdle : State
     public override void Execute()
     {
         base.Execute();
+    }
 
-        if (areaToCatchFrisbee.frisbeeLanded)
-        {   
-            areaToCatchFrisbee.frisbeeLanded = false;
-            fSM.ChangeState("CatchFrisbee");
-        }
+    public void FrisbeeLanded()
+    {
+        fSM.ChangeState("FrisbeeLanded");
     }
 
     /// <summary>
@@ -51,6 +67,6 @@ public class DogIdle : State
     public override void Exit()
     {
         base.Exit();
-        areaToCatchFrisbee.gameObject.SetActive(false);
+        scoreArea.SetActive(false);
     }
 }
