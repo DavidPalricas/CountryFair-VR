@@ -100,8 +100,6 @@ public class OnMovement : FrisbeeState
 
         const float STOP_THRESHOLD = 0.1f;
 
-        Debug.Log("Frisbee Velocity Magnitude: " + vMagnitude);
-
         if (vMagnitude < STOP_THRESHOLD)
         {   
             if (_touchedGround)

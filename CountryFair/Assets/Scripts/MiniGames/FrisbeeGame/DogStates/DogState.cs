@@ -124,8 +124,6 @@ using UnityEngine.AI;
             Quaternion targetRotation = Quaternion.LookRotation(-directionToTarget);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-
-            Debug.Log("Rotating dog towards target at position: " + targetTransform.position);
         }
     }
 }
