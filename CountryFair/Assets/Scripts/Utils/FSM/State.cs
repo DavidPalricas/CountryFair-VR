@@ -72,7 +72,7 @@ public abstract class State : MonoBehaviour
     /// The base implementation logs the state entry to the console.
     /// </remarks>
     public virtual void Enter() {
-      // Debug.Log($"Entering {StateName} State");
+      Debug.Log($"Entering {StateName} State");
     }
 
     /// <summary>

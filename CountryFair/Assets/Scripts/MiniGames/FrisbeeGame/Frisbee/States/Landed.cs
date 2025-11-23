@@ -4,7 +4,7 @@ using UnityEngine.Events;
 /// <summary>
 /// State representing the frisbee after it has landed and stopped on the ground.
 /// Handles the landing event invocation and disabling of trajectory visualization.
-/// Waits for the dog to retrieve the frisbee before transitioning to the <see cref="OnPlayerHand"/> state.
+/// Waits for the dog to retrieve the frisbee before transitioning to the <see cref="OnPlayerFront"/> state.
 /// </summary>
 [RequireComponent(typeof(MeshRenderer))]
 public class Landed: FrisbeeState
@@ -77,7 +77,7 @@ public class Landed: FrisbeeState
 
     /// <summary>
     /// Called by the event <see cref="GiveFrisbeeToPlayer.frisbeeGivenToPlayer"/> when the dog gives the frisbee back to the player.
-    /// Triggers the transition "RetrievedByDog" to the <see cref="OnPlayerHand"/> state.
+    /// Triggers the transition "RetrievedByDog" to the <see cref="OnPlayerFront"/> state.
     /// </summary>
     public void FrisbeeGivenByDog()
     {   

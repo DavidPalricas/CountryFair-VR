@@ -22,7 +22,7 @@ using UnityEngine;
 /// </para>
 /// </remarks>
 [RequireComponent(typeof(Renderer))]
-public class OnPlayerHand : FrisbeeState
+public class OnPlayerFront : FrisbeeState
 {   
     /// <summary>
     /// Initial horizontal throw velocity in meters per second.
@@ -82,10 +82,11 @@ public class OnPlayerHand : FrisbeeState
     private Quaternion  _initialRotation;
 
     /// <summary>
-    /// Flag indicating whether the player is allowed to throw the frisbee.
+    /// Flag indicating whether the dog has reached its target position.
     /// Set to true when the dog reaches its target position via <see cref="DogReachedTarget"/>.
+    /// Its set to true becuase the dog starts in the target position at game start.
     /// </summary>
-    private bool _canThrow = false;
+    private bool _dogInTarget = true;
 
     /// <summary>
     /// Array of materials from the frisbee's Renderer component.
@@ -135,8 +136,9 @@ public class OnPlayerHand : FrisbeeState
     /// </para>
     /// </remarks>
     private void ThrowFrisbee()
-    {
-        _canThrow = false;
+    {   
+        // Because the dog will go catch the frisbee.
+        _dogInTarget = false;
    
         // Detach the frisbee from its hand placeholder to allow it not move when the hand moves
         transform.parent = null;
@@ -202,7 +204,7 @@ public class OnPlayerHand : FrisbeeState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When <see cref="_canThrow"/> is true:
+    /// When <see cref="_dogInTarget"/> is true:
     /// <list type="bullet">
     /// <item><description>Alpha is set to 1.0 (fully opaque)</description></item>
     /// <item><description>Render queue is set to 2000 (opaque rendering)</description></item>
@@ -210,7 +212,7 @@ public class OnPlayerHand : FrisbeeState
     /// </list>
     /// </para>
     /// <para>
-    /// When <see cref="_canThrow"/> is false:
+    /// When <see cref="_dogInTarget"/> is false:
     /// <list type="bullet">
     /// <item><description>Alpha is set to <see cref="cannotThrowAlpha"/> (semi-transparent)</description></item>
     /// <item><description>Render queue is set to 3000 (transparent rendering)</description></item>
@@ -226,7 +228,7 @@ public class OnPlayerHand : FrisbeeState
         float alphaToChange;
 
         int renderQueue, zWriteValue;
-        if (_canThrow)
+        if (_dogInTarget)
         {   
             const float MAX_ALPHA = 1f;
 
@@ -311,7 +313,7 @@ public class OnPlayerHand : FrisbeeState
     /// Resets the frisbee to its held position and configures it for being held.
     /// </summary>
     /// <remarks>
-    /// Updates the material opacity based on <see cref="_canThrow"/> status and calls
+    /// Updates the material opacity based on <see cref="_dogInTarget"/> status and calls
     /// <see cref="PlayerHoldingFrisbee"/> to reset physics and transform.
     /// This state is entered when the dog returns the frisbee to the player or at game start.
     /// </remarks>
@@ -331,7 +333,7 @@ public class OnPlayerHand : FrisbeeState
     /// <remarks>
     /// <para>
     /// Detects when the player presses the PrimaryIndexTrigger (VR controller trigger).
-    /// If <see cref="_canThrow"/> is true, initiates the throw by:
+    /// If <see cref="_dogInTarget"/> is true, initiates the throw by:
     /// <list type="number">
     /// <item><description>Calling <see cref="ThrowFrisbee"/> to apply physics</description></item>
     /// <item><description>Triggering the "FrisbeeThrown" transition to the <see cref="OnMovement"/> state</description></item>
@@ -344,12 +346,6 @@ public class OnPlayerHand : FrisbeeState
     public override void Execute()
     {
          base.Execute();
-
-         if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) && _canThrow)
-        {
-            ThrowFrisbee();
-            fSM.ChangeState("FrisbeeThrown");
-        }
     }
 
     /// <summary>
@@ -369,12 +365,21 @@ public class OnPlayerHand : FrisbeeState
     /// </summary>
     /// <remarks>
     /// This method should be called by the dog's idle state (via UnityEvent) to signal that
-    /// the game is ready for the next throw. Sets <see cref="_canThrow"/> to true and updates
+    /// the game is ready for the next throw. Sets <see cref="_dogInTarget"/> to true and updates
     /// material opacity to full visibility, indicating to the player that throwing is now allowed.
     /// </remarks>
     public void DogReachedTarget()
     {
-        _canThrow = true;
+        _dogInTarget = true;
         ChangeMaterialsOpacity();
+    }
+
+    public void ThrowGestureTriggered()
+    {
+        if (_dogInTarget)
+        {
+            ThrowFrisbee();
+            fSM.ChangeState("FrisbeeThrown");
+        }
     }
 }
