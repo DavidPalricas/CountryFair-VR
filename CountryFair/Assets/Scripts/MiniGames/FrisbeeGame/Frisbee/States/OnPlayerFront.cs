@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -22,7 +23,6 @@ using UnityEngine;
 /// </para>
 /// </remarks>
 [RequireComponent(typeof(Renderer))]
-[RequireComponent(typeof(TrackFrisbeeThrow))]
 public class OnPlayerFront : FrisbeeState
 {   
     /// <summary>
@@ -95,8 +95,6 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     private Material[] materials;
 
-    private TrackFrisbeeThrow _trackFrisbeeThrow;
-
     /// <summary>
     /// Initializes the OnPlayerHand state by storing initial transform values and configuring material transparency.
     /// </summary>
@@ -113,13 +111,15 @@ public class OnPlayerFront : FrisbeeState
         _initialPosition = transform.position;
         _initialRotation = transform.rotation;
 
-        _trackFrisbeeThrow = GetComponent<TrackFrisbeeThrow>();
         SetUpMaterialsTransparency();
     }
 
+
+/*
 /// <summary>
 /// Initiates the frisbee throw by configuring physics and applying initial forces.
 /// Uses the tracked hand movement vector from TrackFrisbeeThrow component.
+/// // Physics Reference: https://web.mit.edu/womens-ult/www/smite/frisbee_physics.pdf
 /// </summary>
 /// <remarks>
 /// <para>
@@ -156,38 +156,20 @@ private void ThrowFrisbee()
 
     // Get throw direction from tracking component based on which hand threw
     // The tracking component calculates this from hand velocity and rotation
-    Vector3 throwDirection;
-    float throwSpeed;
+
+    Tuple<Vector3, float> throwData = _trackFrisbeeThrow.GetThrowProprieties();
+    Vector3 throwDirection = throwData.Item1.normalized;
+    float throwSpeed = throwData.Item2;
     
-    if (_trackFrisbeeThrow.RightThrowSpeed > _trackFrisbeeThrow.LeftThrowSpeed)
-    {
-        // Right hand throw
-        throwDirection = _trackFrisbeeThrow.RightThrowVector;
-        throwSpeed = _trackFrisbeeThrow.RightThrowSpeed;
-    }
-    else
-    {
-        // Left hand throw
-        throwDirection = _trackFrisbeeThrow.LeftThrowVector;
-        throwSpeed = _trackFrisbeeThrow.LeftThrowSpeed;
-    }
+    _rigidbody.linearVelocity = throwDirection * throwSpeed + Vector3.up * upwardBias;
 
-    // Ensure the throw direction is normalized
-    throwDirection = throwDirection.normalized;
-
-    // Apply throw force using the tracked direction and speed
-    // Use the tracked speed as a multiplier for more realistic throws
-    float finalThrowForce = throwForce * Mathf.Clamp(throwSpeed / 3f, 0.5f, 2f); // Scale based on hand speed
-    _rigidbody.linearVelocity = throwDirection * finalThrowForce + Vector3.up * upwardBias;
-
-
-    Debug.Log($"Throw Direction: {throwDirection}, Throw Speed: {finalThrowForce} m/s");
-
+    Debug.Log($"Throw Direction: {throwDirection}, Throw Speed: {throwSpeed} m/s");
     // Apply spin around the world up axis (vertical spin)
     _rigidbody.angularVelocity = Vector3.up * spinSpeed;
 
     _trajectoryLine.enabled = true; 
 }
+*/
 
     
     /// <summary>
@@ -213,12 +195,12 @@ private void ThrowFrisbee()
         // In the dog state to catch the frisbee, the frisbee visibility is turned off, so we need to enable it here
         gameObject.SetActive(true);
 
-        _rigidbody.isKinematic = true;
-        _rigidbody.useGravity = false;
+        _rigidbody.isKinematic = false;
+        _rigidbody.useGravity = true;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
 
-        _collider.isTrigger = true;
+        _collider.isTrigger = false;
     }
 
     /// <summary>
@@ -343,8 +325,6 @@ private void ThrowFrisbee()
    {
         base.Enter();
 
-        _trackFrisbeeThrow.StartTracking();
-
         ChangeMaterialsOpacity();
 
         PlayerHoldingFrisbee();
@@ -397,19 +377,17 @@ private void ThrowFrisbee()
         _dogInTarget = true;
         ChangeMaterialsOpacity();
     }
-
+   
+   /*
     public void ThrowGestureTriggered()
     {   
-        if (fSM.CurrentState == this)
+        if (fSM.CurrentState == this && _dogInTarget)
         {   
-            _trackFrisbeeThrow.CalculateLeftThrow();
-            _trackFrisbeeThrow.CalculateRightThrow();
-            
             ThrowFrisbee();  
-            _trackFrisbeeThrow.StopTracking();
             fSM.ChangeState("FrisbeeThrown");
 
             return;
         }
     }
+    */
 }

@@ -1,18 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
-/// <summary>
-/// Tracks hand movement to calculate frisbee throw vector
-/// Uses rotation and velocity with the last 20-30 position samples
-/// </summary>
 public class TrackFrisbeeThrow : MonoBehaviour
 {
     [Header("Hand Tracking")]
     [SerializeField]
-    private Transform leftHandTransform;
+    private OVRHand leftHand;
     
     [SerializeField]
-    private Transform rightHandTransform;
+    private OVRHand rightHand;
 
     [Header("Tracking Settings")]
     [Tooltip("Number of position samples to store (20-30 recommended)")]
@@ -21,279 +19,205 @@ public class TrackFrisbeeThrow : MonoBehaviour
 
     [Tooltip("Minimum speed to consider a valid throw (m/s)")]
     [SerializeField]
-    private float minimumThrowSpeed = 1.5f;
+    private float minimumThrowSpeed = 0.8f;
 
-    [Tooltip("Weight of rotation vs velocity in final direction (0=only velocity, 1=only rotation)")]
+    [Header("Direction Calculation")]
+    
+    [Tooltip("Blend between finger forward and velocity direction (0=velocity, 1=finger)")]
     [SerializeField]
     [Range(0f, 1f)]
-    private float rotationWeight = 0.3f;
+    private float fingerDirectionWeight = 0.8f; // 🎯 80% finger, 20% velocity
+
+    [Header("Velocity Mapping")]
+    [SerializeField]
+    private AnimationCurve velocityToThrowSpeedCurve = AnimationCurve.EaseInOut(0f, 5f, 5f, 22f);
+
+    [SerializeField]
+    private float standardThrowVelocity = 14f;
+
+    [SerializeField]
+    private float maxThrowVelocity = 25f;
 
     [Header("Debug")]
     [SerializeField]
-    private bool showDebugInfo = true;
+    private bool showDebugGizmos = true;
 
-    // Public properties
-    public Vector3 LeftThrowVector { get; private set; }
-    public Vector3 RightThrowVector { get; private set; }
-    public float LeftThrowSpeed { get; private set; }
-    public float RightThrowSpeed { get; private set; }
+    [SerializeField]
+    private bool showDebugLogs = true;
 
-
-    // Sample queues for position history
-    private readonly Queue<Vector3> leftHandSamples = new();
-    private readonly Queue<Vector3> rightHandSamples = new();
-    
-    // Sample queues for rotation history
-    private readonly Queue<Quaternion> leftHandRotations = new();
-    private readonly Queue<Quaternion> rightHandRotations = new();
-
-    private bool _isTracking  = false;
+    private readonly Queue<Vector3> _handSamples = new();
+    private Transform _activeHandTransform = null;
+    private OVRHand _activeHand = null;
+    private OVRSkeleton _activeSkeleton = null;
 
     private void Update()
     {
-        if (_isTracking)
+        if (_activeHand != null)
+        {    
+            if (!_activeHand.IsTracked)
+            {
+                SwitchActiveHand();
+            }
+
+            TrackHand();  
+        }
+    }
+
+    private void SwitchActiveHand()
+    {
+        _activeHand = _activeHand == leftHand ? rightHand : leftHand;
+        UpdateActiveHandTransform();
+    }
+
+    private void UpdateActiveHandTransform()
+    {
+        _activeSkeleton = _activeHand.GetComponent<OVRSkeleton>();
+        
+        OVRBone handEndBone = _activeSkeleton.Bones.ToList().Find(bone => 
+            bone.Id == OVRSkeleton.BoneId.Hand_End);
+         
+        _activeHandTransform = handEndBone.Transform;
+        
+        if (showDebugLogs)
         {
-            TrackHand(leftHandTransform, leftHandSamples, leftHandRotations);
-            TrackHand(rightHandTransform, rightHandSamples, rightHandRotations);
+            Debug.Log($"✅ Tracking {(_activeHand == leftHand ? "LEFT" : "RIGHT")} index tip bone");
+        }
+    }
+
+    private void TrackHand()
+    {
+        Vector3 currentPosition = _activeHandTransform.position;
+        
+        if (showDebugLogs && _handSamples.Count > 0)
+        {
+            float distance = Vector3.Distance(currentPosition, _handSamples.ToArray()[_handSamples.Count - 1]);
+            if (distance > 0.001f)
+            {
+                Debug.Log($"📍 Hand moving: {distance * 1000:F1}mm per frame");
+            }
+        }
+
+        _handSamples.Enqueue(currentPosition);
+
+        while (_handSamples.Count > maxSamples)
+        {
+            _handSamples.Dequeue();
         }
     }
 
     /// <summary>
-    /// Adds current hand position and rotation to the sample queue
+    /// Calculates throw properties using finger direction and hand velocity
+    /// Direction: Primarily from finger forward (where it points at release)
+    /// Speed: From hand movement velocity mapped to realistic throw speeds
     /// </summary>
-    private void TrackHand(Transform handTransform, Queue<Vector3> positionSamples, Queue<Quaternion> rotationSamples)
+    public Tuple<Vector3, float> GetThrowProprieties()
     {
-        // Add current position
-        positionSamples.Enqueue(handTransform.position);
-        
-        // Add current rotation
-        rotationSamples.Enqueue(handTransform.rotation);
+        Vector3 throwVector = Vector3.forward;
+        float throwSpeed = 0f;
 
-        // Keep only the last N samples (20-30)
-        while (positionSamples.Count > maxSamples)
+        if (_handSamples.Count < 2)
         {
-            positionSamples.Dequeue();
-        }
-        
-        while (rotationSamples.Count > maxSamples)
-        {
-            rotationSamples.Dequeue();
-        }
-    }
-
-    /// <summary>
-    /// Calculate throw vector when frisbee is released
-    /// Call this when the player releases the frisbee
-    /// </summary>
-    public void CalculateLeftThrow()
-    {
-        CalculateThrowVector(
-            leftHandSamples, 
-            leftHandRotations, 
-            leftHandTransform,
-            out Vector3 throwVector, 
-            out float throwSpeed
-        );
-        
-        LeftThrowVector = throwVector;
-        LeftThrowSpeed = throwSpeed;
-
-        if (showDebugInfo)
-        {
-            Debug.Log($"Left Throw - Vector: {throwVector}, Speed: {throwSpeed:F2} m/s");
-        }
-    }
-
-    /// <summary>
-    /// Calculate throw vector for right hand
-    /// </summary>
-    public void CalculateRightThrow()
-    {
-        CalculateThrowVector(
-            rightHandSamples, 
-            rightHandRotations, 
-            rightHandTransform,
-            out Vector3 throwVector, 
-            out float throwSpeed
-        );
-        
-        RightThrowVector = throwVector;
-        RightThrowSpeed = throwSpeed;
-
-        if (showDebugInfo)
-        {
-            Debug.Log($"Right Throw - Vector: {throwVector}, Speed: {throwSpeed:F2} m/s");
-        }
-    }
-
-    /// <summary>
-    /// Calculates throw direction using velocity from position samples and hand rotation
-    /// </summary>
-    private void CalculateThrowVector(
-        Queue<Vector3> positionSamples, 
-        Queue<Quaternion> rotationSamples,
-        Transform handTransform,
-        out Vector3 throwVector, 
-        out float throwSpeed)
-    {
-        throwVector = Vector3.forward;
-        throwSpeed = 0f;
-
-        if (positionSamples.Count < 2)
-        {
-            Debug.LogWarning("Not enough samples to calculate throw vector!");
-            return;
+            Debug.LogWarning("⚠️ Not enough samples to calculate throw vector!");
+            return Tuple.Create(throwVector, throwSpeed);
         }
 
-        // 1. Calculate velocity vector from position samples
-        Vector3 velocityVector = CalculateVelocityFromSamples(positionSamples, out throwSpeed);
+        // 1️⃣ Get DIRECTION from finger forward (where the finger points)
+        Vector3 fingerForward = _activeHandTransform.forward;
 
-        // 2. Get direction from hand rotation
-        Quaternion averageRotation = CalculateAverageRotation(rotationSamples);
-        Vector3 rotationDirection = averageRotation * Vector3.forward;
-
-        // 3. Combine velocity and rotation based on weight
-        if (throwSpeed >= minimumThrowSpeed)
-        {
-            // Blend velocity direction with rotation direction
-            throwVector = Vector3.Lerp(
-                velocityVector.normalized, 
-                rotationDirection, 
-                rotationWeight
-            ).normalized;
-
-            return;
-        }
-
-        // If speed too low, use rotation only
-        throwVector = rotationDirection;
+        // 2️⃣ Get VELOCITY from hand movement (for speed calculation)
+        Tuple<Vector3, float> velocityData = GetVelocityProprietiesFromSamples();
+        Vector3 velocityDirection = velocityData.Item1.normalized;
+        float rawHandSpeed = velocityData.Item2;
+   
+      
+    // 🎯 Mainly use finger direction, slightly influenced by velocity
+        throwVector = fingerForward;
             
-        if (showDebugInfo)
+        if (showDebugLogs)
         {
-            Debug.LogWarning($"Throw speed too low ({throwSpeed:F2} m/s), using rotation only");
+                Debug.Log($"🎯 [DIRECTION] Finger: {fingerForward}, Velocity: {velocityDirection}");
+                Debug.Log($"🎯 [BLEND] Final: {throwVector} ({fingerDirectionWeight * 100:F0}% finger)");
         }
         
+        // 4️⃣ Calculate THROW SPEED from hand velocity
+        float mappedThrowSpeed = velocityToThrowSpeedCurve.Evaluate(rawHandSpeed);
+        throwSpeed = Mathf.Clamp(mappedThrowSpeed, 5f, maxThrowVelocity);
+
+        if (showDebugLogs)
+        {
+            Vector3[] samples = _handSamples.ToArray();
+            float totalDistance = Vector3.Distance(samples[0], samples[^ 1]);
+            
+            Debug.Log($"📊 [TRACKING] Samples: {samples.Length}, Distance: {totalDistance * 100:F1}cm");
+            Debug.Log($"📊 [SPEED] Hand: {rawHandSpeed:F2} m/s → Frisbee: {throwSpeed:F2} m/s");
+            
+            if (Mathf.Abs(throwSpeed - standardThrowVelocity) < 2f)
+            {
+                Debug.Log($"✅ Close to standard velocity ({standardThrowVelocity} m/s)");
+            }
+        }
+
+        // 5️⃣ Validate minimum speed
+        if (rawHandSpeed >= minimumThrowSpeed)
+        {            
+            if (showDebugLogs)
+            {
+                Debug.Log($"✅ [RESULT] Valid throw! Direction: {throwVector}, Speed: {throwSpeed:F2} m/s");
+            }
+            
+            return Tuple.Create(throwVector, throwSpeed);
+        }
+
+        if (showDebugLogs)
+        {
+            Debug.LogWarning($"⚠️ [RESULT] Hand speed too low ({rawHandSpeed:F2} < {minimumThrowSpeed})");
+        }
+        
+        // Se muito lento, usa só a direção do dedo
+        return Tuple.Create(fingerForward, throwSpeed);
     }
 
-    /// <summary>
-    /// Calculates average velocity from position samples
-    /// </summary>
-    private Vector3 CalculateVelocityFromSamples(Queue<Vector3> samples, out float speed)
+    private Tuple<Vector3, float> GetVelocityProprietiesFromSamples()
     {
-        Vector3[] sampleArray = samples.ToArray();
+        Vector3[] sampleArray = _handSamples.ToArray();
         Vector3 totalVelocity = Vector3.zero;
         int validSamples = 0;
 
-        // Calculate velocity between consecutive samples
         for (int i = 1; i < sampleArray.Length; i++)
         {
-            Vector3 velocity = (sampleArray[i] - sampleArray[i - 1]) / Time.fixedDeltaTime;
+            Vector3 delta = sampleArray[i] - sampleArray[i - 1];
+            Vector3 velocity = delta / Time.deltaTime;
             totalVelocity += velocity;
             validSamples++;
         }
 
         Vector3 averageVelocity = validSamples > 0 ? totalVelocity / validSamples : Vector3.zero;
-        speed = averageVelocity.magnitude;
+        float speed = averageVelocity.magnitude;
 
-        return averageVelocity;
+        return Tuple.Create(averageVelocity, speed);
     }
 
-    /// <summary>
-    /// Calculates average rotation from rotation samples
-    /// Using quaternion averaging technique
-    /// </summary>
-    private Quaternion CalculateAverageRotation(Queue<Quaternion> rotations)
-    {
-        if (rotations.Count == 0)
-        {
-            return Quaternion.identity;
-        }
-
-        Quaternion[] rotArray = rotations.ToArray();
-        
-        // Use the most recent rotations (last 5-10 samples) for better responsiveness
-        int samplesToUse = Mathf.Min(10, rotArray.Length);
-        int startIndex = rotArray.Length - samplesToUse;
-
-        Vector4 cumulative = Vector4.zero;
-
-        for (int i = startIndex; i < rotArray.Length; i++)
-        {
-            Quaternion q = rotArray[i];
-            
-            // Ensure consistent quaternion signs
-            if (Vector4.Dot(cumulative, new Vector4(q.x, q.y, q.z, q.w)) < 0)
-            {
-                cumulative -= new Vector4(q.x, q.y, q.z, q.w);
-            }
-            else
-            {
-                cumulative += new Vector4(q.x, q.y, q.z, q.w);
-            }
-        }
-
-        cumulative /= samplesToUse;
-        
-        return new Quaternion(cumulative.x, cumulative.y, cumulative.z, cumulative.w).normalized;
-    }
-
-    /// <summary>
-    /// Starts tracking - call when player grabs frisbee
-    /// </summary>
     public void StartTracking()
     {
-        _isTracking = true;
-        ClearSamples();
+        _handSamples.Clear();
+        _activeHand = leftHand.IsTracked ? leftHand : rightHand;
+        UpdateActiveHandTransform();
         
-        if (showDebugInfo)
+        if (showDebugLogs)
         {
-            Debug.Log("Started tracking frisbee throw");
+            Debug.Log($"🎬 Started tracking {(_activeHand == leftHand ? "LEFT" : "RIGHT")} hand");
         }
     }
 
-    /// <summary>
-    /// Stops tracking - call when player releases frisbee
-    /// </summary>
     public void StopTracking()
     {
-        _isTracking = false;
+        if (showDebugLogs)
+        {
+            Debug.Log($"🛑 Stopped tracking. Samples: {_handSamples.Count}");
+        }
         
-        if (showDebugInfo)
-        {
-            Debug.Log("Stopped tracking frisbee throw");
-        }
-    }
-
-    /// <summary>
-    /// Clears all stored samples
-    /// </summary>
-    public void ClearSamples()
-    {
-        leftHandSamples.Clear();
-        rightHandSamples.Clear();
-        leftHandRotations.Clear();
-        rightHandRotations.Clear();
-    }
-
-    // Visualize throw vectors in Scene view
-    private void OnDrawGizmos()
-    {
-        if (!_isTracking) return;
-
-        // Draw left hand throw vector
-        if (leftHandTransform != null && leftHandSamples.Count > 0)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(leftHandTransform.position, leftHandTransform.position + LeftThrowVector * 0.5f);
-            Gizmos.DrawWireSphere(leftHandTransform.position, 0.02f);
-        }
-
-        // Draw right hand throw vector
-        if (rightHandTransform != null && rightHandSamples.Count > 0)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(rightHandTransform.position, rightHandTransform.position + RightThrowVector * 0.5f);
-            Gizmos.DrawWireSphere(rightHandTransform.position, 0.02f);
-        }
+        _activeHand = null;
+        _activeSkeleton = null;
+        _handSamples.Clear();
     }
 }
