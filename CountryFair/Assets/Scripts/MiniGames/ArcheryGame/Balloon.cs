@@ -30,15 +30,15 @@ public class BalloonScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (popped) return;
+        //if (popped) return;
 
-        if (collision.gameObject.CompareTag("Arrow"))
-        {
-            Pop();
-        }
+        //if (collision.gameObject.CompareTag("Arrow"))
+        //{
+        //    Pop();
+        //}
     }
 
-    private void Pop()
+    public void Pop()
     {
         popped = true;
 
@@ -60,5 +60,11 @@ public class BalloonScript : MonoBehaviour
         ArcheryGameManager.Instance.SetScore(scoreToAdd);
 
         Destroy(gameObject);
+    }
+
+    [ContextMenu("Test Pop")]
+    public void TestPop()
+    {
+        Pop();
     }
 }

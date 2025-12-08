@@ -11,6 +11,8 @@ TagManager:
   - Dog
   - ScoreArea
   - GameManager
+  - Balloon
+  - ScoreSystem
   layers:
   - Default
   - TransparentFX

@@ -5,9 +5,12 @@ using Oculus.Interaction.Input;
 public class BowHandTracking : MonoBehaviour
 {
     [Header("References")]
-    public Transform bowRoot;                
+    public Transform bowRoot;  
+    public Transform bowModel;                
+              
     public Transform arrowSpawn;
     public GameObject arrowPrefab;
+    public TrajectoryLine trajectoryLine;
 
     [Header("Right Hand Override")]
     public OVRHand pullingHand;               // opcional (se existir hand tracking)
@@ -32,6 +35,19 @@ public class BowHandTracking : MonoBehaviour
     public float closeThreshold = 0.25f;
     public float openThreshold = 0.10f;
 
+
+    [Header("Arrow Grab Detection")]
+    public Transform arrowGrabPoint;     // ponto que a mão tem de tocar
+    public float grabRadius = 0.05f;     // raio da zona de deteção
+
+    [Header("Stability Settings")]
+    public float positionSmooth = 15f;
+    public float rotationSmooth = 12f;
+
+    private Vector3 smoothedPos;
+    private Quaternion smoothedRot;
+
+
     // Runtime
     private GameObject currentArrow;
     private float currentPull = 0f;
@@ -40,6 +56,13 @@ public class BowHandTracking : MonoBehaviour
     private Vector3 stringMidStartLocalPos;
     private Vector3 stringMidStartWorldPos;
     private Transform runtimeMid;
+
+    private Vector3 shootDirection;
+    private float shootForce;
+    private MeshRenderer bowRenderer;
+    private Color originalColor;
+
+
 
     void Start()
     {
@@ -66,6 +89,14 @@ public class BowHandTracking : MonoBehaviour
 
         if (bowString != null)
             bowString.positionCount = 3;
+
+        bowRenderer = bowModel.GetComponent<MeshRenderer>();
+
+        if (bowRenderer != null)
+        {
+            originalColor = bowRenderer.sharedMaterial.color;  
+        }
+
     }
 
     void AssignRightHandSource()
@@ -89,6 +120,19 @@ public class BowHandTracking : MonoBehaviour
 
     void Update()
     {
+        if (arrowReady)
+        {
+            Vector3 startVel = shootDirection * shootForce;
+            trajectoryLine.ShowTrajectory(arrowSpawn.position, startVel);
+
+            SetBowTransparency(0.35f);
+        }
+        else
+        {
+            trajectoryLine.HideTrajectory();
+            SetBowTransparency(originalColor.a);
+        }
+
         if (handSource == null)
         {
             AssignRightHandSource();
@@ -98,7 +142,7 @@ public class BowHandTracking : MonoBehaviour
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
-        if (handClosed && !arrowReady)
+        if (handClosed && !arrowReady && !IsHandAtGrabPoint())
             PrepareArrow();
 
         if (arrowReady)
@@ -155,16 +199,20 @@ public class BowHandTracking : MonoBehaviour
 
         if (currentArrow != null)
         {
+            Vector3 offset = bowRoot.forward * 0.12f; // ajusta o valor
             currentArrow.transform.SetPositionAndRotation(
-                stringMidPoint.position,
+                stringMidPoint.position + offset,
                 bowRoot.rotation
             );
         }
+
+        // Direção do tiro = direção em que o arco aponta
+        shootDirection = bowRoot.forward;
+
+        // Força calculada com base no pull (mesmo que o FireArrow usa)
+        shootForce = Mathf.Lerp(minForce, maxForce, currentPull);
+
     }
-
-
-
-
 
 
     // FIRE ------------------------------------------
@@ -231,4 +279,23 @@ public class BowHandTracking : MonoBehaviour
         return OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.RTouch) < 0.1f &&
                OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger, OVRInput.Controller.RTouch) < 0.1f;
     }
+
+    void SetBowTransparency(float alpha)
+    {
+        if (bowRenderer == null) return;
+
+        Color c = bowRenderer.sharedMaterial.color;
+        c.a = alpha;
+        bowRenderer.sharedMaterial.color = c;
+    }
+
+    bool IsHandAtGrabPoint()
+    {
+        if (arrowGrabPoint == null || handSource == null)
+            return false;
+
+        float dist = Vector3.Distance(handSource.position, arrowGrabPoint.position);
+        return dist < grabRadius;
+    }
+
 }

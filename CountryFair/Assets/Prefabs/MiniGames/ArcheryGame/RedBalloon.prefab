@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8740365433530610567}
   m_Layer: 0
   m_Name: RedBalloon
-  m_TagString: Untagged
+  m_TagString: Balloon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -102,6 +102,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 2cd621b90e35c4feb8c9efbc9ab16ca9, type: 2}
     - target: {fileID: 919132149155446097, guid: 41917267eb4a54aea890f701336a36f5, type: 3}
       propertyPath: m_Name
+      value: Balloon
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 41917267eb4a54aea890f701336a36f5, type: 3}
+      propertyPath: m_TagString
       value: Balloon
       objectReference: {fileID: 0}
     m_RemovedComponents: []
