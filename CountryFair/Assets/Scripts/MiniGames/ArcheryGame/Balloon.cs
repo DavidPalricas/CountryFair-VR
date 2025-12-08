@@ -2,7 +2,13 @@ using UnityEngine;
 
 public class BalloonScript : MonoBehaviour
 {
-    [Header("Explosion Effect (optional)")]
+    [Header("Movement Settings")]
+    [SerializeField] bool canMove;
+    [SerializeField] float moveSpeed = 1f;
+    [SerializeField] float moveAmount = 1f;
+    private float startY;
+
+    [Header("Explosion Effect")]
     public GameObject popEffect;
 
     private bool popped = false;
@@ -14,6 +20,8 @@ public class BalloonScript : MonoBehaviour
 
     private void Awake()
     {
+        startY = transform.position.y;
+
         // Apanha o renderer do balão
         balloonRenderer = GetComponent<Renderer>();
 
@@ -28,14 +36,13 @@ public class BalloonScript : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider collision)
+    void Update()
     {
-        //if (popped) return;
-
-        //if (collision.gameObject.CompareTag("Arrow"))
-        //{
-        //    Pop();
-        //}
+        if (canMove)
+        {
+            float newY = startY + Mathf.Sin(Time.time * moveSpeed) * moveAmount;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        }
     }
 
     public void Pop()

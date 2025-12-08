@@ -40,13 +40,6 @@ public class BowHandTracking : MonoBehaviour
     public Transform arrowGrabPoint;     // ponto que a mão tem de tocar
     public float grabRadius = 0.05f;     // raio da zona de deteção
 
-    [Header("Stability Settings")]
-    public float positionSmooth = 15f;
-    public float rotationSmooth = 12f;
-
-    private Vector3 smoothedPos;
-    private Quaternion smoothedRot;
-
 
     // Runtime
     private GameObject currentArrow;
