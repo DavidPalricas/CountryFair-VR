@@ -836,7 +836,7 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.43021435, b: 0.25875083, a: 1}
+    - _BaseColor: {r: 0.5566037, g: 0.43015125, b: 0.25868773, a: 1}
     - _Color: {r: 0.5566037, g: 0.43021518, b: 0.25875166, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
@@ -2512,6 +2512,10 @@ PrefabInstance:
       propertyPath: bowStringPoint
       value: 
       objectReference: {fileID: 2125374928}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: closeThreshold
+      value: 0.4
+      objectReference: {fileID: 0}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: stringMidPoint
       value: 
