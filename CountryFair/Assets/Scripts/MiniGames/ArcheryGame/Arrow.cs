@@ -2,12 +2,15 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    Rigidbody rb;
+    private Rigidbody rb;
+    private ScoreAndStreakSystem scoreSystem;
+
     bool launched = false;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        scoreSystem = GameObject.FindGameObjectWithTag("ScoreSystem").GetComponent<ScoreAndStreakSystem>();
     }
 
     public void Launch(Vector3 direction, float force)
@@ -19,12 +22,11 @@ public class Arrow : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        if (!launched) return; // evita bugs enquanto ainda está no arco
-
         // --- SE BATER NO BALÃO ---
         if (col.gameObject.CompareTag("Balloon"))
         {
-            Destroy(gameObject); 
+            col.gameObject.GetComponent<BalloonScript>().Pop();
+            Destroy(gameObject);
             return;
         }
 
@@ -32,12 +34,9 @@ public class Arrow : MonoBehaviour
         if (col.gameObject.CompareTag("Ground"))
         {
             Destroy(gameObject);
+            scoreSystem.PlayerMissed();
             return;
         }
 
-        // --- SE BATER NOUTRO OBJETO (ALVO, MADEIRA, ETC.) ---
-        rb.isKinematic = true;
-        rb.useGravity = false;
-        transform.parent = col.transform; // seta fica presa
     }
 }

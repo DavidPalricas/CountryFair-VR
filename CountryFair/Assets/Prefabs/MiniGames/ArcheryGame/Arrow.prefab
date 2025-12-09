@@ -50,19 +50,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7b84bfbbefaee824497689fb25220c46, type: 3}
       propertyPath: m_LocalScale.z
-      value: 55.062897
+      value: 51.545456
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7b84bfbbefaee824497689fb25220c46, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7b84bfbbefaee824497689fb25220c46, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.031
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7b84bfbbefaee824497689fb25220c46, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.2405
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7b84bfbbefaee824497689fb25220c46, type: 3}
       propertyPath: m_LocalRotation.w
@@ -190,7 +190,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2

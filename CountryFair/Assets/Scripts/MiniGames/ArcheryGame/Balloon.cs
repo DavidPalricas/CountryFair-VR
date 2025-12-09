@@ -2,16 +2,26 @@ using UnityEngine;
 
 public class BalloonScript : MonoBehaviour
 {
-    [Header("Explosion Effect (optional)")]
+    [Header("Movement Settings")]
+    [SerializeField] bool canMove;
+    [SerializeField] float moveSpeed = 1f;
+    [SerializeField] float moveAmount = 1f;
+    private float startY;
+
+    [Header("Explosion Effect")]
     public GameObject popEffect;
 
     private bool popped = false;
 
     private Renderer balloonRenderer;
     private Color balloonColor;
+    [SerializeField] int scoreToAdd;
+
 
     private void Awake()
     {
+        startY = transform.position.y;
+
         // Apanha o renderer do balão
         balloonRenderer = GetComponent<Renderer>();
 
@@ -26,17 +36,16 @@ public class BalloonScript : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider collision)
+    void Update()
     {
-        if (popped) return;
-
-        if (collision.gameObject.CompareTag("Arrow"))
+        if (canMove)
         {
-            Pop();
+            float newY = startY + Mathf.Sin(Time.time * moveSpeed) * moveAmount;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
     }
 
-    private void Pop()
+    public void Pop()
     {
         popped = true;
 
@@ -55,6 +64,14 @@ public class BalloonScript : MonoBehaviour
             }
         }
 
+        ArcheryGameManager.Instance.SetScore(scoreToAdd);
+
         Destroy(gameObject);
+    }
+
+    [ContextMenu("Test Pop")]
+    public void TestPop()
+    {
+        Pop();
     }
 }

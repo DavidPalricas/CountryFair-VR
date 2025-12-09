@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8740365433530610567}
   m_Layer: 0
   m_Name: BlueBalloon
-  m_TagString: Untagged
+  m_TagString: Balloon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -104,6 +104,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Balloon
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 41917267eb4a54aea890f701336a36f5, type: 3}
+      propertyPath: m_TagString
+      value: Balloon
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -184,6 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BalloonScript
   popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
+  scoreToAdd: 1
 --- !u!4 &8949716481711875156 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 41917267eb4a54aea890f701336a36f5, type: 3}
