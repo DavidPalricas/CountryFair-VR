@@ -22,48 +22,20 @@ using UnityEngine;
 /// This provides clear visual feedback to the player about the game state.
 /// </para>
 /// </remarks>
-[RequireComponent(typeof(Renderer))]
 public class OnPlayerFront : FrisbeeState
 {   
-    /// <summary>
-    /// Initial horizontal throw velocity in meters per second.
-    /// Standard frisbee throws typically range from 10-20 m/s.
-    /// </summary>
-    [Header("Throw Settings")]
-    [SerializeField]
-    private float throwForce = 14f;
-    
-    /// <summary>
-    /// Initial vertical velocity component in meters per second.
-    /// Adds upward bias to the throw trajectory, affecting the arc height.
-    /// </summary>
-    [SerializeField]
-    private float upwardBias = 3f;
-    
-    /// <summary>
-    /// Angular velocity of the frisbee spin in radians per second.
-    /// Spin stabilizes the frisbee in flight and affects lift generation.
-    /// </summary>
-    [SerializeField]
-    private float spinSpeed = 50f;
-    
-    /// <summary>
-    /// Initial angle of attack in degrees.
-    /// Determines the frisbee's pitch relative to the velocity vector, affecting lift and drag characteristics.
-    /// Positive values pitch the nose up, negative values pitch it down.
-    /// </summary>
-    [SerializeField]
-    private float angleOfAttack = 10f;
-
-
-    /// <summary>
+  /// <summary>
     /// Alpha (opacity) value for the frisbee materials when the player cannot throw.
     /// Lower values make the frisbee more transparent, providing visual feedback that throwing is disabled.
     /// </summary>
     [Header("Can't Throw Frisbee Settings")]
-    [SerializeField]
+   
     private float cannotThrowAlpha = 0.5f;
 
+
+   [SerializeField]
+   private Renderer frisbeeRenderer;
+    
     /// <summary>
     /// Original parent transform of the frisbee (typically the player's hand).
     /// Used to reattach the frisbee when resetting to the held position.
@@ -111,6 +83,14 @@ public class OnPlayerFront : FrisbeeState
         _initialPosition = transform.position;
         _initialRotation = transform.rotation;
 
+
+        if (frisbeeRenderer == null)
+        {
+            Debug.LogError("Component Renderer is not assigned in OnPlayerFront script.");
+
+            return;
+        }
+
         SetUpMaterialsTransparency();
     }
 
@@ -138,7 +118,7 @@ public class OnPlayerFront : FrisbeeState
 /// </remarks>
 public void ThrowFrisbee()
 {   
-    if (fSM.CurrentState == this){
+    if (_dogInTarget){
         // Because the dog will go catch the frisbee.
         _dogInTarget = false;
     
@@ -266,8 +246,7 @@ public void ThrowFrisbee()
     /// </remarks>
     private void SetUpMaterialsTransparency()
     {   
-        materials = GetComponent<Renderer>().materials;  
-
+        materials = frisbeeRenderer.materials;
         
         foreach (Material mat in materials)
         {
