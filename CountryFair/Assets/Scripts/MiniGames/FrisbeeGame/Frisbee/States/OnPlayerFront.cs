@@ -146,13 +146,11 @@ public void ThrowFrisbee()
         transform.parent = null;
 
         _rigidbody.isKinematic = false;
+
         // Gravity will be applied manually via aerodynamic forces
         _rigidbody.useGravity = true; 
 
         _collider.isTrigger = false;
-
-        // Set initial angle of attack
-        _currentAlpha = angleOfAttack * Mathf.Deg2Rad;
 
         // Get throw direction from tracking component based on which hand threw
         // The tracking component calculates this from hand velocity and rotation
@@ -189,6 +187,7 @@ public void ThrowFrisbee()
         gameObject.SetActive(true);
 
         _rigidbody.useGravity = false;
+        _rigidbody.isKinematic = true;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
 
@@ -301,7 +300,10 @@ public void ThrowFrisbee()
     private void ResetTransform()
     {
         transform.parent = _originalParent;
-        transform.SetPositionAndRotation(_initialPosition, _initialRotation);
+
+        transform.localPosition = Vector3.zero;
+
+        transform.rotation = _initialRotation;
     }
 
     /// <summary>
@@ -382,4 +384,11 @@ public void ThrowFrisbee()
         }
     }
     */
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 0.5f);
+    }
 }

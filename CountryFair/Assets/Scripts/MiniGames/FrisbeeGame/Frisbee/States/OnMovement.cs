@@ -4,199 +4,164 @@ using UnityEngine.Events;
 /// <summary>
 /// State representing the frisbee in flight after being thrown.
 /// Simulates realistic frisbee physics including aerodynamic forces (lift and drag), spin dynamics,
-/// and gravity. Monitors for ground contact and score area triggers to determine when to transition
-/// to the landed state.
-/// 
+/// and gravity.
 /// Physics Reference: https://web.mit.edu/womens-ult/www/smite/frisbee_physics.pdf
-/// Aerodynamic Coefficients from Morrison 2005 research paper on frisbee aerodynamics.
 /// </summary>
 public class OnMovement : FrisbeeState
-{       
-    /// <summary>Frisbee mass in kilograms (standard: 0.175 kg).</summary>
-    [Header("Physical Properties")]
-    [SerializeField]
-    private float mass = 0.175f;
-    
-    /// <summary>Frisbee cross-sectional area in square meters (standard: 0.0568 m²).</summary>
-    [SerializeField]
-    private float area = 0.0568f;
-    
-    /// <summary>Air density at sea level in kg/m³ (standard: 1.23 kg/m³).</summary>
-    [SerializeField]
-    private float airDensity = 1.23f;
-    
-    /// <summary>Aerodynamic Coefficients - From Morrison 2005 research paper on frisbee aerodynamics</summary>
-    
-    /// <summary>Lift coefficient at zero angle of attack (α=0).</summary>
-    [Header("Aerodynamic Coefficients (from Morrison 2005)")]
-    [SerializeField]
-    private float cl0 = 0.1f;
-    
-    /// <summary>Lift coefficient rate of change with respect to angle of attack.</summary>
-    [SerializeField]
-    private float cLa = 1.4f;
-    
-    /// <summary>Drag coefficient at zero angle of attack (α=0).</summary>
-    [SerializeField]
-    private float cd0 = 0.08f;
-    
-    /// <summary>Drag coefficient rate of change with respect to angle of attack squared.</summary>
-    [SerializeField]
-    private float cDa = 2.72f;
-    
-    /// <summary>Reference angle of attack for drag calculations in degrees.</summary>
-    [SerializeField]
-    private float alpha0 = -4f;
+{
+    [Header("Aerodynamic Settings")]
+    [Tooltip("Densidade do ar em kg/m^3. Padrão ao nível do mar: 1.225")]
+    public float airDensity = 1.225f;
+
+    [Tooltip("Área do frisbee em m^2. Um disco oficial tem ~0.057m^2")]
+    public float area = 0.057f;
+
+    [Header("Coefficients (Morrison Model)")]
+    [Tooltip("Curva de Sustentação (CL) vs Ângulo de Ataque. Eixo X: Ângulo (-180 a 180), Eixo Y: CL")]
+    public AnimationCurve liftCoefficientCurve;
+
+    [Tooltip("Curva de Arrasto (CD) vs Ângulo de Ataque. Eixo X: Ângulo (-180 a 180), Eixo Y: CD")]
+    public AnimationCurve dragCoefficientCurve;
 
     /// <summary>Whether the frisbee has touched the ground during flight.</summary>
     private bool _touchedGround = false;
 
-
     public UnityEvent frisbeeThrown;
 
-    /// <summary>
-    /// Initializes the state by setting up physics component references.
-    /// </summary>
     protected override void Awake()
-    {  
+    {
         base.Awake();
+        // Setup padrão das curvas se não forem definidas no Inspector (Fallback de segurança)
+        if (liftCoefficientCurve.length == 0) SetupDefaultLiftCurve();
+        if (dragCoefficientCurve.length == 0) SetupDefaultDragCurve();
     }
 
     /// <summary>
     /// Called when entering the OnAir state (when frisbee is thrown).
     /// </summary>
     public override void Enter()
-   {
+    {
         base.Enter();
 
+        // Configuração vital para o Spin funcionar bem:
+        // Reduzimos o atrito angular para que o disco mantenha o spin por mais tempo.
+        _rigidbody.angularDamping = 0.1f; 
+        
         frisbeeThrown.Invoke();
-   }
+    }
 
     /// <summary>
     /// Called every physics frame while in the OnAir state.
-    /// Applies aerodynamic forces (lift, drag) and gravity to simulate realistic frisbee flight physics.
     /// </summary>
     public override void Execute()
     {
         base.Execute();
-
-        ApplyAerodynamicForces();
+        // ApplyAerodynamicForces();
     }
 
-    /// <summary>
-    /// Called when exiting the OnAir state (when frisbee lands).
-    /// </summary>
     public override void Exit()
-    {   
+    {
         base.Exit();
+        // Resetamos o atrito angular ao aterrar para ele não rolar para sempre
+        _rigidbody.angularDamping = 0.5f; 
     }
 
     /// <summary>
-    /// Applies aerodynamic forces (lift, drag) and gravity to the frisbee during flight.
-    /// Called every physics frame to update the frisbee's velocity based on aerodynamic equations.
-    /// When velocity drops below threshold and frisbee has touched ground (frisbee landed), triggers
-    /// the transition "StoppedOnGround" to the <see cref="Landed"/> state.
-    /// Invokes playerScored event if the frisbee stopped within the score area.
+    /// Calculates and applies Lift and Drag based on velocity and angle of attack.
     /// </summary>
     private void ApplyAerodynamicForces()
-    {   
-        Vector3 velocity = _rigidbody.linearVelocity;
+    {
+        // 1. Obter Velocidade e verificar paragem
+        Vector3 velocity = _rigidbody.linearVelocity; // Unity 6+ (use .velocity em versões anteriores)
         float vMagnitude = velocity.magnitude;
-
         const float STOP_THRESHOLD = 0.1f;
 
         if (vMagnitude < STOP_THRESHOLD)
-        {   
+        {
             if (_touchedGround)
-            {   
+            {
                 fSM.ChangeState("StoppedOnGround");
             }
-
             return;
         }
-       
-        /*
-        // Calculate lift coefficient: CL = CL0 + CLa * α
-        float cl = cl0 + cLa * _currentAlpha;
 
-        // Calculate drag coefficient: CD = CD0 + CDa * (α - α0)²
-        float alphaDiff = _currentAlpha - (alpha0 * Mathf.Deg2Rad);
-        float cd = cd0 + cDa * alphaDiff * alphaDiff;
+        // --- CÁLCULOS AERODINÂMICOS ---
 
-        // Calculate lift force: FL = 0.5 * ρ * v² * A * CL
-        // Lift is perpendicular to velocity, in the upward direction
-        // For a disc, lift acts upward relative to the disc's orientation
-        float liftMagnitude = 0.5f * airDensity * vMagnitude * vMagnitude * area * cl;
+        // 2. Calcular o Ângulo de Ataque (Alpha)
+        // Transformamos a velocidade para o espaço local do disco para saber
+        // se o ar está a bater "por baixo" ou "por cima".
+        // Assumindo que o eixo Z local é a "frente" e Y local é o "topo".
+        Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
-        // Get the disc's up vector (which determines lift direction)
-        Vector3 discUp = transform.up;
+        Debug.Log("Local Velocity: " + localVelocity.ToString("F2"));
+        
+        // Atan2 dá-nos o ângulo vertical da velocidade em relação ao plano do disco
+        float angleOfAttack = Mathf.Atan2(-localVelocity.y, localVelocity.z) * Mathf.Rad2Deg;
 
-        // Project disc up onto the plane perpendicular to velocity to get lift direction
-        Vector3 liftDirection = (discUp - Vector3.Dot(discUp, velocity.normalized) * velocity.normalized).normalized;
-        Vector3 liftForce = liftDirection * liftMagnitude;
+        // 3. Obter Coeficientes (CL e CD) das curvas baseadas no Alpha
+        float cl = liftCoefficientCurve.Evaluate(angleOfAttack);
+        float cd = dragCoefficientCurve.Evaluate(angleOfAttack);
 
-        // Calculate drag force: FD = 0.5 * ρ * v² * A * CD
-        // Drag opposes the velocity
-        float dragMagnitude = 0.5f * airDensity * vMagnitude * vMagnitude * area * cd;
-        Vector3 dragForce = -velocity.normalized * dragMagnitude;
+        // 4. Calcular Pressão Dinâmica (q = 0.5 * rho * v^2 * Area)
+        // Esta é a magnitude base da força do ar
+        float dynamicPressure = 0.5f * airDensity * vMagnitude * vMagnitude * area;
 
-        // Calculate gravity force: Fg = m * g
-        Vector3 gravityForce = Vector3.up * (Physics.gravity.y * mass);
-
-        // Apply all forces
-        _rigidbody.AddForce(liftForce);
+        // 5. Aplicar Força de Arrasto (Drag - D)
+        // O arrasto atua SEMPRE na direção oposta à velocidade
+        Vector3 dragDirection = -velocity.normalized;
+        Vector3 dragForce = dragDirection * (cd * dynamicPressure);
+        
         _rigidbody.AddForce(dragForce);
-        _rigidbody.AddForce(gravityForce);
 
-        // Gradually reduce spin (angular drag)
-        _rigidbody.angularVelocity *= 0.995f;
+        // 6. Aplicar Força de Sustentação (Lift - L)
+        // A sustentação atua perpendicularmente à velocidade.
+        // O produto vetorial (Cross Product) entre a velocidade e o eixo "direita" do disco
+        // dá-nos o vetor "para cima" relativo ao fluxo de ar.
+        Vector3 liftDirection = Vector3.Cross(velocity, transform.right).normalized;
+        
+        // Correção de segurança: se a velocidade for zero ou vertical, o cross product pode falhar
+        if (liftDirection == Vector3.zero) liftDirection = transform.up;
 
-        // Update angle of attack based on velocity and disc orientation
-        Vector3 horizontalVelocity = new(velocity.x, 0, velocity.z);
+        Vector3 liftForce = liftDirection * (cl * dynamicPressure);
 
-        const float HORIZONTAL_VELOCITY_THRESHOLD = 0.1f;
+        _rigidbody.AddForce(liftForce);
 
-        // Update the angle of attack based on the disc's orientation relative to the world
-        // Only update when the frisbee has significant horizontal movement (> 0.1 m/s)
-        // to avoid noisy calculations when the frisbee is nearly stationary
-        if (horizontalVelocity.magnitude > HORIZONTAL_VELOCITY_THRESHOLD)
-        {
-            // Calculate the angle between the disc's up vector and the world's up vector (Y-axis)
-            // This angle determines how tilted the frisbee is during flight
-            float angle = Vector3.Angle(discUp, Vector3.up);
-            
-            // Convert the angle to the angle of attack (alpha):
-            // When disc is horizontal: angle = 90°, so alpha = 0° (no tilt)
-            // When disc is vertical: angle = 0°, so alpha = 90° (full tilt)
-            // Formula: alpha = 90° - angle, then convert to radians
-            _currentAlpha = (90f - angle) * Mathf.Deg2Rad;
-        }
-        */
+        // DEBUG (Opcional: desenha as forças na Scene View)
+        // Debug.DrawRay(transform.position, dragForce, Color.blue); // Arrasto
+        // Debug.DrawRay(transform.position, liftForce, Color.green); // Sustentação
     }
 
-    /// <summary>
-    /// Detects when the frisbee collides with the ground.
-    /// Sets the _touchedGround flag to enable state transition when velocity reaches threshold.
-    /// </summary>
-    /// <param name="other">The collision data associated with this collision event.</param>
+    // --- Helpers para configurar curvas padrão se esqueceres no Inspector ---
+    private void SetupDefaultLiftCurve()
+    {
+        // Aproximação simplificada de Morrison
+        liftCoefficientCurve.AddKey(-10, -0.2f);
+        liftCoefficientCurve.AddKey(0, 0.15f); // Ligeira sustentação a 0 graus
+        liftCoefficientCurve.AddKey(15, 0.8f); // Pico de sustentação
+        liftCoefficientCurve.AddKey(45, 0.0f); // Stall
+    }
+
+    private void SetupDefaultDragCurve()
+    {
+        // Arrasto aumenta exponencialmente com o ângulo
+        dragCoefficientCurve.AddKey(0, 0.08f); // Mínimo arrasto
+        dragCoefficientCurve.AddKey(20, 0.4f);
+        dragCoefficientCurve.AddKey(90, 1.5f); // Máximo arrasto (lado plano contra o vento)
+    }
+
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Ground")) 
+        if (other.gameObject.CompareTag("Ground"))
         {
             _touchedGround = true;
         }
     }
 
-    /// <summary>
-    /// Detects when the frisbee leaves contact with the ground.
-    /// Clears the _touchedGround flag if the frisbee bounces back up.
-    /// </summary>
-    /// <param name="other">The collision data associated with this collision exit event.</param>
     private void OnCollisionExit(Collision other)
     {
-         if (other.gameObject.CompareTag("Ground")) 
+        if (other.gameObject.CompareTag("Ground"))
         {
-           _touchedGround = false;
+            _touchedGround = false;
         }
     }
 }
