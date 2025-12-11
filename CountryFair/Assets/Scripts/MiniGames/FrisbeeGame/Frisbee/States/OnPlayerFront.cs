@@ -167,11 +167,10 @@ public void ThrowFrisbee()
         gameObject.SetActive(true);
 
         _rigidbody.useGravity = false;
-        _rigidbody.isKinematic = true;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
 
-        _collider.isTrigger = false;
+        _collider.isTrigger = true;
     }
 
     /// <summary>
