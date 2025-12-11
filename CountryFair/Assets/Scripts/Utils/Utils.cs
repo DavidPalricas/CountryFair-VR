@@ -44,7 +44,7 @@ public static class Utils
             Debug.LogError("OVRCameraRig not found in the scene. Make sure you have an OVRCameraRig in your scene to use CastRayMetaQuest.");
             return new Ray();
         }
-
+ 
         Transform centerEyeTransform = ovrCameraRig.GetComponent<OVRCameraRig>().centerEyeAnchor;
 
         return new Ray(centerEyeTransform.position, centerEyeTransform.forward);
