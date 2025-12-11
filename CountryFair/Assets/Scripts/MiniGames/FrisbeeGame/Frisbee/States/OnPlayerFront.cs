@@ -43,12 +43,6 @@ public class OnPlayerFront : FrisbeeState
     private Transform _originalParent;
 
     /// <summary>
-    /// Initial local position of the frisbee relative to the player's hand.
-    /// Stored for reset functionality when the frisbee is returned.
-    /// </summary>
-    private Vector3 _initialPosition;
-
-    /// <summary>
     /// Initial local rotation of the frisbee relative to the player's hand.
     /// Stored for reset functionality when the frisbee is returned.
     /// </summary>
@@ -80,7 +74,6 @@ public class OnPlayerFront : FrisbeeState
         base.Awake();
         _originalParent = transform.parent;
 
-        _initialPosition = transform.position;
         _initialRotation = transform.rotation;
 
 
@@ -169,6 +162,7 @@ public void ThrowFrisbee()
         _rigidbody.useGravity = false;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
+        _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
         _collider.isTrigger = true;
     }

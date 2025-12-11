@@ -115,6 +115,25 @@ public class OnMovement : FrisbeeState
              // Adiciona uma força contrária ao movimento baseada no lift gerado
             _rigidbody.AddForce(-velocity.normalized * (dynamicLift * 0.1f));
         }
+        
+       
+       /*
+         For more realistic stability control, but the game objetc must not have freezed rotations in the Rigidbody
+        if (_rigidbody.angularVelocity.magnitude > 5.0f)
+       {
+           // 1. Descobrir para onde o disco "quer" apontar (Alinhar o eixo de rotação)
+           // Basicamente, tentamos manter o disco estável na sua inclinação atual
+           Vector3 currentUp = transform.up;
+           
+           // Criamos uma resistência a mudar de inclinação abruptamente (elimina o wobble)
+           // Ajusta o "5.0f" para mais forte se ainda tremer
+           _rigidbody.AddTorque(-_rigidbody.angularVelocity * 0.1f); 
+           
+           // Opcional: Forçar ligeiramente a ficar plano (como um giroscópio)
+           // Vector3 stabilityTorque = Vector3.Cross(currentUp, Vector3.up) * 5.0f;
+           // _rigidbody.AddTorque(stabilityTorque);
+       }
+       */
     }
 
     // Lógica de aterragem (Mata a rotação quando toca no chão)
@@ -124,10 +143,11 @@ public class OnMovement : FrisbeeState
         {
             _touchedGround = true;
             _rigidbody.angularDamping = 10.0f; // Trava o spin no chão
-            _rigidbody.freezeRotation.
         }
 
         Debug.Log("Frisbee collided with: " + other.gameObject.name);
+
+        _rigidbody.constraints = RigidbodyConstraints.None;
     }
 
     private void OnCollisionExit(Collision other)
