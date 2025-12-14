@@ -8,10 +8,12 @@ using UnityEngine.Events;
 /// </summary>
 public class Landed: FrisbeeState
 {    
+    [SerializeField]
+    private MeshRenderer frisbeeMeshRenderer;
 
 
     [SerializeField]
-    private MeshRenderer frisbeeMeshRenderer;
+    private int scorePoints = 1;
 
     /// <summary>Event invoked when the frisbee has successfully landed on the ground.
     /// </summary>
@@ -26,7 +28,7 @@ public class Landed: FrisbeeState
     /// This event is trigger in the <see cref="GiveFrisbeeToPlayer"/> state to alert the dog that the player has scored,
     /// and it must choose a new position accordingly.
     /// </remarks>
-    public UnityEvent playerScored;
+    public UnityEvent <int> playerScored;
 
 
     public UnityEvent playerMissed;
@@ -58,7 +60,7 @@ public class Landed: FrisbeeState
 
         if (FrisbeeOnScoreArea())
         {
-            playerScored.Invoke();
+            playerScored.Invoke(scorePoints);
         }
         else
         {

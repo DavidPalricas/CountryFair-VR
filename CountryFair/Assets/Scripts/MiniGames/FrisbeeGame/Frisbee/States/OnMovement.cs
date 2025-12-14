@@ -1,25 +1,28 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class OnMovement : FrisbeeState
 {
     [Header("Ajustes Aerodinâmicos")]
     [Tooltip("Força de sustentação. Quanto maior, mais ele sobe.")]
-    public float liftStrength = 0.15f; // Mantém baixo para não voar para o espaço
+    [SerializeField]
+    private float liftStrength = 0.15f; // Mantém baixo para não voar para o espaço
     
     [Tooltip("Arrasto quando o disco corta o ar (Faca).")]
-    public float baseDrag = 0.05f;     
+     [SerializeField]
+    private float baseDrag = 0.05f;     
     
     [Tooltip("Arrasto quando o disco cai de barriga (Paraquedas). Aumentei isto!")]
-    public float highAngleDrag = 3.5f; // AUMENTADO (era 1.5): Trava forte na queda
+    [SerializeField]
+    private float highAngleDrag = 3.5f; // AUMENTADO (era 1.5): Trava forte na queda
     
-    [Tooltip("Força que mantém o disco plano. Reduzi para permitir curvas naturais.")]
-    public float stabilityFactor = 2.0f; // REDUZIDO (era 5.0): Menos robótico, mais natural
-
     // Variáveis para controlar a aterragem
     private bool _touchedGround = false;
 
     // Guardar valores originais do Rigidbody
     private float _defaultAngularDrag;
+
+    public UnityEvent playerMissed;
 
     protected override void Awake()
     {
@@ -30,7 +33,7 @@ public class OnMovement : FrisbeeState
     public override void Enter()
     {
         base.Enter();
- 
+
         // Garante que o disco roda livremente no ar
         _rigidbody.angularDamping = 0.1f; 
     }
@@ -48,6 +51,8 @@ public class OnMovement : FrisbeeState
         _rigidbody.angularDamping = _defaultAngularDrag;
 
         _trajectoryLine.enabled = false;
+
+        _touchedGround = false;
     }
 
     private void ApplySimpleAerodynamics()
@@ -114,25 +119,6 @@ public class OnMovement : FrisbeeState
              // Adiciona uma força contrária ao movimento baseada no lift gerado
             _rigidbody.AddForce(-velocity.normalized * (dynamicLift * 0.1f));
         }
-        
-       
-       /*
-         For more realistic stability control, but the game objetc must not have freezed rotations in the Rigidbody
-        if (_rigidbody.angularVelocity.magnitude > 5.0f)
-       {
-           // 1. Descobrir para onde o disco "quer" apontar (Alinhar o eixo de rotação)
-           // Basicamente, tentamos manter o disco estável na sua inclinação atual
-           Vector3 currentUp = transform.up;
-           
-           // Criamos uma resistência a mudar de inclinação abruptamente (elimina o wobble)
-           // Ajusta o "5.0f" para mais forte se ainda tremer
-           _rigidbody.AddTorque(-_rigidbody.angularVelocity * 0.1f); 
-           
-           // Opcional: Forçar ligeiramente a ficar plano (como um giroscópio)
-           // Vector3 stabilityTorque = Vector3.Cross(currentUp, Vector3.up) * 5.0f;
-           // _rigidbody.AddTorque(stabilityTorque);
-       }
-       */
     }
 
     // Lógica de aterragem (Mata a rotação quando toca no chão)
@@ -160,7 +146,8 @@ public class OnMovement : FrisbeeState
     private void OnTriggerExit(Collider other)
     {
           if (other.gameObject.CompareTag("OutOfBounds") && fSM.CurrentState == this)
-        {
+        {   
+            playerMissed.Invoke();
             fSM.ChangeState("FrisbeeOutOfBounds");
         }
     }

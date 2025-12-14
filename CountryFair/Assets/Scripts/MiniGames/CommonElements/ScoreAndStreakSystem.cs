@@ -235,9 +235,9 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// to prevent conflicts.
     /// </para>
     /// </remarks>
-    public void PlayerScored()
+    public void PlayerScored(int points = 1)
     {
-        _scoreValue += 1;
+        _scoreValue += points;
         _streakValue += 1;
         streakSymbol.SetActive(true);
         

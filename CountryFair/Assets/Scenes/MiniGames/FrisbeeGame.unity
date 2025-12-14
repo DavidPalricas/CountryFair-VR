@@ -490,6 +490,7 @@ Transform:
   - {fileID: 1331511093}
   - {fileID: 1072984308}
   - {fileID: 11460878}
+  - {fileID: 1095198011}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &102101953 stripped
@@ -1556,6 +1557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Landed
   frisbeeMeshRenderer: {fileID: 1537203768}
+  scorePoints: 1
   frisbeeLanded:
     m_PersistentCalls:
       m_Calls:
@@ -1577,11 +1579,11 @@ MonoBehaviour:
       - m_Target: {fileID: 251507906}
         m_TargetAssemblyTypeName: ScoreAndStreakSystem, Assembly-CSharp
         m_MethodName: PlayerScored
-        m_Mode: 1
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1640,7 +1642,21 @@ MonoBehaviour:
   liftStrength: 0.2
   baseDrag: 0.05
   highAngleDrag: 3.5
-  stabilityFactor: 2
+  playerMissed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 251507906}
+        m_TargetAssemblyTypeName: ScoreAndStreakSystem, Assembly-CSharp
+        m_MethodName: PlayerMissed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &453551357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3361,16 +3377,16 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1095198007}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 132}
-  m_LocalScale: {x: 0.3132267, y: 0.3132267, z: 0.3132267}
+  m_LocalPosition: {x: 0, y: 0, z: 94.95224}
+  m_LocalScale: {x: 0.20881781, y: 0.20881781, z: 0.20881781}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 251507905}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 73867224}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 57.944736, y: 67.10732}
+  m_AnchoredPosition: {x: 37.086468, y: 48.023216}
   m_SizeDelta: {x: 2064, y: 2462.2742}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1095198012
@@ -8075,6 +8091,5 @@ SceneRoots:
   - {fileID: 1961428728}
   - {fileID: 147053873}
   - {fileID: 73867224}
-  - {fileID: 1095198011}
   - {fileID: 1143327412}
   - {fileID: 1786206288}
