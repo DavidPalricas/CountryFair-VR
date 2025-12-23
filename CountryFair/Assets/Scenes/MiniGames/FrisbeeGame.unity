@@ -718,6 +718,7 @@ GameObject:
   - component: {fileID: 147053873}
   - component: {fileID: 147053872}
   - component: {fileID: 147053874}
+  - component: {fileID: 147053875}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -765,6 +766,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee4d432b9d3e0d4f98fe23c09200b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheatCodesFrisbee
+--- !u!114 &147053875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147053871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6753d6224ed6d9c45a673b1419d2cdc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  dogBarkEvent:
+    Guid:
+      Data1: -413263387
+      Data2: 1324498562
+      Data3: 755644562
+      Data4: 9592824
+    Path: event:/DogBark
 --- !u!1 &205684291
 GameObject:
   m_ObjectHideFlags: 0
@@ -2210,6 +2230,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2483171111210845630, guid: f54012181eacade4ea242c65f804720f, type: 3}
     - {fileID: 2483171112681471076, guid: f54012181eacade4ea242c65f804720f, type: 3}
+    - {fileID: 2483171112402426310, guid: f54012181eacade4ea242c65f804720f, type: 3}
     m_RemovedGameObjects:
     - {fileID: 5233142801637857694, guid: f54012181eacade4ea242c65f804720f, type: 3}
     - {fileID: 3324988993691480672, guid: f54012181eacade4ea242c65f804720f, type: 3}
@@ -2248,6 +2269,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2483171112401766340, guid: f54012181eacade4ea242c65f804720f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 550832311}
+    - targetCorrespondingSourceObject: {fileID: 2483171112401766340, guid: f54012181eacade4ea242c65f804720f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2099040611}
     - targetCorrespondingSourceObject: {fileID: 2483171112401766342, guid: f54012181eacade4ea242c65f804720f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 550832310}
@@ -7499,6 +7523,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2483171112402263012, guid: f54012181eacade4ea242c65f804720f, type: 3}
   m_PrefabInstance: {fileID: 550832306}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2099040611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550832308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioListener
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1001 &5821167947749085354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8089,7 +8127,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 2087703035}
   - {fileID: 1961428728}
-  - {fileID: 147053873}
   - {fileID: 73867224}
   - {fileID: 1143327412}
   - {fileID: 1786206288}
+  - {fileID: 147053873}
