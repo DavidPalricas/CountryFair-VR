@@ -19,7 +19,6 @@ using UnityEngine.AI;
     /// </summary>
     [SerializeField]
     private float rotationSpeed = 2f;
-
     /// <summary>
     /// Reference to the NavMeshAgent component used for AI navigation and pathfinding.
     /// Automatically retrieved in <see cref="Awake"/> and configured to disable automatic rotation.
