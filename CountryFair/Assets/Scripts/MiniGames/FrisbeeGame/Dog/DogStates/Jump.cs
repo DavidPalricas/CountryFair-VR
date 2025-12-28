@@ -12,12 +12,6 @@ public class Jump: DogState
     [SerializeField]
     private int jumpNumbers = 2;
 
-
-    [SerializeField]
-    private Animator animator;
-
-    private bool animationStarted = false;
-
      protected override void Awake()
     {   
         base.Awake();
@@ -33,7 +27,8 @@ public class Jump: DogState
     {
         base.Enter();
 
-        animationStarted = true;
+        Invoke(nameof(JumpDog), animationsCooldown);
+
     }
 
     public override void Execute()
@@ -41,19 +36,14 @@ public class Jump: DogState
         base.Execute();
     }
 
-    private void LateUpdate()
+    private void JumpDog()
     {
-        if (animationStarted)
-        {   
-            animationStarted = false;
-
-            transform.DOJump(transform.position, jumpPower, jumpNumbers, jumpDuration).OnComplete( () => 
+        transform.DOJump(transform.position, jumpPower, jumpNumbers, jumpDuration).OnComplete( () => 
         {   
             animator.SetBool("StopAnim", false);
             animator.SetFloat("Speed", 1f);
             fSM.ChangeState("FrisbeeLanded");
         });
-        }
     }
 
     public override void Exit()

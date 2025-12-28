@@ -7525,10 +7525,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Jump
   rotationSpeed: 2
+  animationsCooldown: 2
+  animator: {fileID: 1186127261}
   jumpDuration: 1.6
   jumpPower: 0.3
   jumpNumbers: 2
-  animator: {fileID: 1186127261}
 --- !u!4 &2099040610 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2483171112402263012, guid: f54012181eacade4ea242c65f804720f, type: 3}
@@ -7669,6 +7670,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 73867224}
     m_Modifications:
+    - target: {fileID: 242158141072405705, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1186127261}
     - target: {fileID: 242158141072405705, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
       propertyPath: frisbeeGivenToPlayer.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -7825,6 +7830,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3270065638472790666, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1186127261}
     - target: {fileID: 3358900187291606798, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -7849,6 +7858,10 @@ PrefabInstance:
       propertyPath: transitions.Array.data[6].name
       value: Jump
       objectReference: {fileID: 0}
+    - target: {fileID: 3860491704330450109, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1186127261}
     - target: {fileID: 3860491704330450109, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -8117,6 +8130,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8955369674161117495, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1186127261}
     - target: {fileID: 8955369674161117495, guid: ed3a1a51081ad2546ae98829a89dc632, type: 3}
       propertyPath: m_Enabled
       value: 1

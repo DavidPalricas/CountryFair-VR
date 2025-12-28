@@ -51,12 +51,19 @@ public class CatchFrisbee : DogState
    {
         base.Enter();
 
+        SetFrisbeeDestination();
+
+        catchFrisbee.Invoke();
+   }
+
+   private void SetFrisbeeDestination()
+    {
         Vector3 frisbeePos = _frisbeeTransform.position;
 
         _agent.SetDestination(frisbeePos);
 
-        catchFrisbee.Invoke();
-   }
+        Debug.Log("Dog is heading to the frisbee at position: " + frisbeePos);
+    }
 
     /// <summary>
     /// Called every frame while in the CatchFrisbee state.

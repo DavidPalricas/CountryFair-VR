@@ -24,9 +24,6 @@ public class DogIdle : DogState
     [SerializeField]
     private GameObject scoreArea;
 
-   [SerializeField]
-    private Animator animator;
-
     /// <summary>
     /// Event invoked when the dog reaches its target position and enters the idle state.
     /// Its used to notify the player that the dog is ready for catching the frisbee see <see cref="OnPlayerFront.DogReachedTarget/>.
@@ -126,9 +123,7 @@ public class DogIdle : DogState
     public void FrisbeeLanded()
     {   scoreArea.SetActive(false);
 
-        // animator.SetBool("StopAnim", true);
-
-        animator.SetFloat("Speed", 1f);
+        animator.SetBool("StopAnim", true);
 
         fSM.ChangeState("Jump");
     }
