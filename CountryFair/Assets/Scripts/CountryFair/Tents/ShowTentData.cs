@@ -93,7 +93,7 @@ public class ShowTentData : MonoBehaviour
             return;
         }
 
-        // redButton.SetActive(false);
+        redButton.SetActive(false);
 
         if (miniGameObjectPrefab != null)
         {
@@ -134,7 +134,7 @@ public class ShowTentData : MonoBehaviour
 
             miniGameObject?.SetActive(isToShowData);
 
-           // redButton.SetActive(isToShowData);
+           redButton.SetActive(isToShowData);
 
             if (Gestures.GetInstance().GetGesture(Gestures.Type.RAY) && isToShowData)
             {
