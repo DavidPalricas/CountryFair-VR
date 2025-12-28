@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
-using DG.Tweening;
+
 
 /// <summary>
 /// Represents the idle waiting state of the dog in the Frisbee game.
@@ -23,15 +23,6 @@ public class DogIdle : DogState
     /// </remarks>
     [SerializeField]
     private GameObject scoreArea;
-
-    [Header("Jumps Settings")]
-    [SerializeField]
-    private float jumpDuration = 1.6f;
-
-    [SerializeField]
-    private float jumpPower = 0.3f;
-    [SerializeField]
-    private int jumpNumbers = 2;
 
     /// <summary>
     /// Event invoked when the dog reaches its target position and enters the idle state.
@@ -91,11 +82,19 @@ public class DogIdle : DogState
             return;
         }
 
+        if (animator == null)
+        {
+            Debug.LogError("Animator reference is null in DogIdle state.");
+            return;
+        }
+
         _gameManager.currentTargetPos = transform.position;
 
         scoreArea.SetActive(true);
 
         positionReached.Invoke();
+
+        animator.SetFloat("Speed", 0f);
     }
 
     /// <summary>
@@ -124,12 +123,9 @@ public class DogIdle : DogState
     public void FrisbeeLanded()
     {   scoreArea.SetActive(false);
 
-        RotateDogTowardsTarget(_frisbeeTransform);
+        animator.SetBool("StopAnim", true);
 
-        transform.DOJump(transform.position, jumpPower, jumpNumbers, jumpDuration).OnComplete( () => 
-        {
-            fSM.ChangeState("FrisbeeLanded");
-        });
+        fSM.ChangeState("Jump");
     }
 
     /// <summary>

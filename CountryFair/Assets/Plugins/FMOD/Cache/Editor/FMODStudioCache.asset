@@ -42,7 +42,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/FrisbbeeGame.bank
   Name: FrisbbeeGame
   StudioPath: bank:/FrisbbeeGame
-  lastModified: 639021133936067362
+  lastModified: 639023550631428456
   FileSizes: []
   Exists: 1
 --- !u!114 &11400000
@@ -68,7 +68,7 @@ MonoBehaviour:
   - {fileID: 5451680079303683946}
   StringsBanks:
   - {fileID: 4801317737628606392}
-  cacheTime: 639021133936067362
+  cacheTime: 639023550631443538
   cacheVersion: 131634
 --- !u!114 &4801317737628606392
 MonoBehaviour:
@@ -85,7 +85,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639021133934893922
+  lastModified: 639023550631443538
   FileSizes:
   - Name: 
     Value: 812
@@ -105,6 +105,6 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639021133934868812
+  lastModified: 639023550631433492
   FileSizes: []
   Exists: 1
