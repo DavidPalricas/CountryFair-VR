@@ -31,9 +31,9 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: WalkAnimation
-      takeName: WalkAnimation
-      internalID: -1205457719479408628
+      name: Armature.001|Armature.001Action
+      takeName: Armature.001|Armature.001Action
+      internalID: 2264077025236624520
       firstFrame: 0
       lastFrame: 15
       wrapMode: 0
@@ -60,11 +60,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: IdleAnimatiom
-      takeName: IdleAnimatiom
-      internalID: -367146292802974106
+      name: Armature.001|IdleAnimatiom
+      takeName: Armature.001|IdleAnimatiom
+      internalID: -8596565970839692843
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 24
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
