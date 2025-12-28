@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8740365433530610567}
+  - component: {fileID: 8051009527114115520}
   m_Layer: 0
   m_Name: YellowBalloonEffect
   m_TagString: Balloon
@@ -32,6 +33,20 @@ Transform:
   - {fileID: 8949716481711875156}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8051009527114115520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3396820265375727783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c6ba23cb9ff1df4abb399c34507cba5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopBalloon
+  popBalloonEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
+  effectDuration: 2
 --- !u!1001 &8915296324251304895
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -5,20 +5,9 @@ using UnityEngine;
 /// Tracks active balloon count and respawns new balloons up to the maximum limit.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class BalloonsSpawner : MonoBehaviour
-{
-    /// <summary>Prefab used to instantiate new balloons.</summary>
-    [SerializeField]
-    private GameObject balloonPrefab;
-
-    /// <summary>Maximum number of balloons that can exist simultaneously.</summary>
-    [Header("Spawner Settings")]
-    [SerializeField]
-    private int maxBalloons = 200;
-
-    /// <summary>Initial spawn height for new balloons.</summary>
-    [SerializeField]
-    private float balloonsInitialHeight = 2f;
+public class CountryFairBalloonSpawner : BalloonSpawner
+{   
+    [Header ("Extra Spawner Settings")]
 
     /// <summary>Minimum time interval between balloon spawns in seconds.</summary>
     [SerializeField]
@@ -28,8 +17,9 @@ public class BalloonsSpawner : MonoBehaviour
     [SerializeField]
     private float maxSpawnInterval = 1f;
 
-    /// <summary>Current number of active balloons in the scene.</summary>
-    private int currentBalloons = 0;
+    /// <summary>Initial spawn height for new balloons.</summary>
+    [SerializeField]
+    private float balloonsInitialHeight = 2f;
 
     /// <summary>Collider component defining the spawn area bounds.</summary>
     private Collider areaCollider;
@@ -38,8 +28,10 @@ public class BalloonsSpawner : MonoBehaviour
     /// Initializes the spawner by retrieving the collider component.
     /// Logs an error if the collider is not found.
     /// </summary>
-    private void Awake()
-    {
+    protected override void Awake()
+    {   
+        base.Awake();
+
         areaCollider = GetComponent<Collider>();
 
         if (areaCollider == null)
@@ -64,10 +56,12 @@ public class BalloonsSpawner : MonoBehaviour
     /// Assigns this spawner as a reference to the balloon.
     /// </summary>
     private void SpawnBalloon()
-    {
-        GameObject balloon = Instantiate(balloonPrefab, GetRandomPositionInBounds(), Quaternion.identity);
+    {  
+        GameObject balloonType = GetBalloonType();
 
-        balloon.GetComponent<Balloon>().spawner = this;
+        GameObject balloon = Instantiate(balloonType, GetRandomPositionInBounds(), Quaternion.identity);
+
+        MoveBalloon(balloon, balloonsInitialHeight);
 
         currentBalloons++;
     }
@@ -84,13 +78,5 @@ public class BalloonsSpawner : MonoBehaviour
         float randomZ = Random.Range(bounds.min.z, bounds.max.z);
 
         return new Vector3(randomX, balloonsInitialHeight, randomZ);
-    }
-
-    /// <summary>
-    /// Called by balloons when they pop. Decrements the active balloon count.
-    /// </summary>
-    public void BalloonPopped()
-    {
-        currentBalloons--;
     }
 }

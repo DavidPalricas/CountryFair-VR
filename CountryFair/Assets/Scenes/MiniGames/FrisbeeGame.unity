@@ -8457,19 +8457,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01ee92f52696e614bb4c94749cd422b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AreaToCatchFrisbee
-  floatDuration: 2
-  rotationDuration: 3
-  pulseDuration: 0.8
-  pulseScale: 1.05
   blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
   redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
   yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
-  minBaloons: 3
+  maxBalloons: 5
+  minBalloons: 3
   minHeightToBalloonExplode: 3
   maxHeightToBalloonExplode: 5
   minflyDuration: 1
   maxflyDuration: 2
-  popBalloonEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
+  floatDuration: 2
+  rotationDuration: 3
+  pulseDuration: 0.8
+  pulseScale: 1.05
   balloonsPlaceHoldersGroup: {fileID: 1373538561}
 --- !u!4 &5729329917447964983
 Transform:
