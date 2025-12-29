@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -95,13 +96,19 @@ public class ShowTentData : MonoBehaviour
 
         redButton.SetActive(false);
 
-        if (miniGameObjectPrefab != null)
+        if (miniGameObjectPrefab == null)
         {
-            AddMiniGameObject();
+            Debug.LogError("Mini Game Object is not assigned in ShowTentData script.");
+
             return;
         }
 
         Debug.LogWarning(gameObject.name + " does not have the mini game prefab to show!");
+    }
+
+    private void Start()
+    {
+        AddMiniGameObject();
     }
 
     /// <summary>
