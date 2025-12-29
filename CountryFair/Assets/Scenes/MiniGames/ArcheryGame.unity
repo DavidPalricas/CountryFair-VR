@@ -150,6 +150,7 @@ GameObject:
   m_Component:
   - component: {fileID: 106628085}
   - component: {fileID: 106628084}
+  - component: {fileID: 106628086}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -186,6 +187,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &106628086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106628083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62d87c5678270d148807b8d56ad8d4ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArcheryAudioManager
+  ambienceMusic:
+    Guid:
+      Data1: 1041645944
+      Data2: 1181187447
+      Data3: -176062317
+      Data4: -315743057
+    Path: event:/AmbienceMusic
 --- !u!1001 &114215624
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -836,8 +856,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.43015125, b: 0.25868773, a: 1}
-    - _Color: {r: 0.5566037, g: 0.43021518, b: 0.25875166, a: 1}
+    - _BaseColor: {r: 0.5566037, g: 0.43015027, b: 0.25868678, a: 1}
+    - _Color: {r: 0.5566037, g: 0.43015084, b: 0.25868732, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -2336,14 +2356,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8214833762151515641, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8214833762145502731, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
       insertIndex: 0
       addedObject: {fileID: 71659426}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8214833762145885179, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2135016404}
   m_SourcePrefab: {fileID: 100100000, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+--- !u!1 &2135016403 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8214833762145885179, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+  m_PrefabInstance: {fileID: 2135016402}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2135016404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135016403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioListener
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1001 &2384919264122894291
 PrefabInstance:
   m_ObjectHideFlags: 0

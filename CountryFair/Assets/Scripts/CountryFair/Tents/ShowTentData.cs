@@ -139,14 +139,9 @@ public class ShowTentData : MonoBehaviour
 
             textBox.SetActive(isToShowData);
 
-            miniGameObject?.SetActive(isToShowData);
+            miniGameObject.SetActive(isToShowData);
 
            redButton.SetActive(isToShowData);
-
-            if (Gestures.GetInstance().GetGesture(Gestures.Type.RAY) && isToShowData)
-            {
-                GoToMiniGame();
-            }
         }
     }
 

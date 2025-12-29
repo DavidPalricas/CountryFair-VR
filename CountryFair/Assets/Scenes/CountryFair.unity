@@ -2723,6 +2723,57 @@ MonoBehaviour:
   _freezeRotationX: 0
   _freezeRotationY: 0
   _freezeRotationZ: 0
+--- !u!1 &1818639630
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1818639632}
+  - component: {fileID: 1818639631}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1818639631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818639630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6753d6224ed6d9c45a673b1419d2cdc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  ambienceMusic:
+    Guid:
+      Data1: 1041645944
+      Data2: 1181187447
+      Data3: -176062317
+      Data4: -315743057
+    Path: event:/AmbienceMusic
+--- !u!4 &1818639632
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818639630}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.09372, y: 2.79406, z: -12.83841}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1822363052
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3682,7 +3733,7 @@ PrefabInstance:
       objectReference: {fileID: 4425362018096994360, guid: 01569bf784932d64199a9ae3852be027, type: 3}
     - target: {fileID: 7853941498539440499, guid: c6b4df8164f770c4f84d0b0ffbeab2c0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 270
+      value: 291
       objectReference: {fileID: 0}
     - target: {fileID: 7853941498539440499, guid: c6b4df8164f770c4f84d0b0ffbeab2c0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3690,7 +3741,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7853941498539440499, guid: c6b4df8164f770c4f84d0b0ffbeab2c0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2422
+      value: 2347
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2494783692818120610, guid: c6b4df8164f770c4f84d0b0ffbeab2c0, type: 3}
@@ -3840,3 +3891,4 @@ SceneRoots:
   - {fileID: 1512171738}
   - {fileID: 1068113599}
   - {fileID: 1871689546}
+  - {fileID: 1818639632}
