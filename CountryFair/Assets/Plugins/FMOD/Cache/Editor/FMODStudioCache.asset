@@ -42,7 +42,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/FrisbbeeGame.bank
   Name: FrisbbeeGame
   StudioPath: bank:/FrisbbeeGame
-  lastModified: 639023550631428456
+  lastModified: 639026173358629682
   FileSizes: []
   Exists: 1
 --- !u!114 &11400000
@@ -63,12 +63,13 @@ MonoBehaviour:
   - {fileID: -321977928887820435}
   EditorEvents:
   - {fileID: -5025496412724199257}
+  - {fileID: 6941727658375928780}
   EditorParameters: []
   MasterBanks:
   - {fileID: 5451680079303683946}
   StringsBanks:
   - {fileID: 4801317737628606392}
-  cacheTime: 639023550631443538
+  cacheTime: 639026173960949473
   cacheVersion: 131634
 --- !u!114 &4801317737628606392
 MonoBehaviour:
@@ -85,10 +86,10 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639023550631443538
+  lastModified: 639026173960949473
   FileSizes:
   - Name: 
-    Value: 812
+    Value: 868
   Exists: 1
 --- !u!114 &5451680079303683946
 MonoBehaviour:
@@ -105,6 +106,33 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639023550631433492
+  lastModified: 639026173960924268
   FileSizes: []
   Exists: 1
+--- !u!114 &6941727658375928780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/AmbienceMusic
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/AmbienceMusic
+  Guid:
+    Data1: 1041645944
+    Data2: 1181187447
+    Data3: -176062317
+    Data4: -315743057
+  Banks:
+  - {fileID: 5451680079303683946}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0

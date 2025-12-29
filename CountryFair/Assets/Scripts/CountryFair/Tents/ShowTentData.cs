@@ -32,6 +32,9 @@ public class ShowTentData : MonoBehaviour
     /// </summary>
     [SerializeField]
     private GameObject miniGameObjectPrefab;
+   
+   [SerializeField]
+    private GameObject redButton;
 
     /// <summary>
     /// Transform position where the instantiated mini-game preview object should be placed.
@@ -83,13 +86,28 @@ public class ShowTentData : MonoBehaviour
 
         textBox.GetComponentInChildren<TextMeshProUGUI>().text = textToShow;
 
-        if (miniGameObjectPrefab != null)
+        if (redButton == null)
         {
-            AddMiniGameObject();
+            Debug.LogError("Red Button is not assigned in ShowTentData script.");
+
+            return;
+        }
+
+        redButton.SetActive(false);
+
+        if (miniGameObjectPrefab == null)
+        {
+            Debug.LogError("Mini Game Object is not assigned in ShowTentData script.");
+
             return;
         }
 
         Debug.LogWarning(gameObject.name + " does not have the mini game prefab to show!");
+    }
+
+    private void Start()
+    {
+        AddMiniGameObject();
     }
 
     /// <summary>
@@ -120,12 +138,9 @@ public class ShowTentData : MonoBehaviour
 
             textBox.SetActive(isToShowData);
 
-            miniGameObject?.SetActive(isToShowData);
+            miniGameObject.SetActive(isToShowData);
 
-            if (Gestures.GetInstance().GetGesture(Gestures.Type.RAY) && isToShowData)
-            {
-                GoToMiniGame();
-            }
+           redButton.SetActive(isToShowData);
         }
     }
 
@@ -160,7 +175,7 @@ public class ShowTentData : MonoBehaviour
     /// If the scene name is incorrect or not added to Build Settings, loading will fail with an error message.
     /// Current implementation uses SceneManager.LoadScene which unloads the current scene.
     /// </remarks>
-    private void GoToMiniGame()
+    public void GoToMiniGame()
     {
         if (SceneManager.GetSceneByName(gameName) == null)
         {

@@ -38,16 +38,22 @@ public static class Utils
     public static Ray CastRayMetaQuest()
     {
         GameObject ovrCameraRig = GameObject.FindGameObjectWithTag("MainCamera");
-
+       
+       /*
         if (ovrCameraRig == null)
         {
             Debug.LogError("OVRCameraRig not found in the scene. Make sure you have an OVRCameraRig in your scene to use CastRayMetaQuest.");
             return new Ray();
         }
+        
  
         Transform centerEyeTransform = ovrCameraRig.GetComponent<OVRCameraRig>().centerEyeAnchor;
-
+       
         return new Ray(centerEyeTransform.position, centerEyeTransform.forward);
+
+        */
+
+        return new Ray(ovrCameraRig.transform.position, ovrCameraRig.transform.forward);
     }
 
     /// <summary>
