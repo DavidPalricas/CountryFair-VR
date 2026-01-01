@@ -1,22 +1,28 @@
 using UnityEngine;
+using UnityEngine.Events;
 
-public class DogFootSteps : MonoBehaviour
+/// <summary>
+/// Handles the dog's footstep sound effects during the dog's walk animation in the Frisbee game.
+/// </summary>
+public class DogFootSteps  : MonoBehaviour
 {
-    private FrisbeeAudioManager _audioManager;
+    /// <summary>
+    /// Unity event that triggers the dog footstep sound effect playback.
+    /// This event its to alert the <see cref="FrisbeeAudioManager"/> to play the sound. 
+    /// </summary>
+    public UnityEvent <AudioManager.GameSoundEffects, GameObject> playDogFootSteps;
 
-    private AudioManager.GameSoundEffects _footStepSoundEfect = AudioManager.GameSoundEffects.DOG_FOOTSTEPS;
-    private void Start()
-    {
-        _audioManager = GameObject.Find("GameManager").GetComponent<FrisbeeAudioManager>();
+    /// <summary>
+    /// The specific sound effect type for dog footsteps.
+    /// </summary>
+    private readonly AudioManager.GameSoundEffects _footStepSoundEfect = AudioManager.GameSoundEffects.DOG_FOOTSTEPS;
 
-        if (_audioManager == null)
-        {
-            Debug.LogError("FrisbeeAudioManager not found in the scene.");
-        }
-    }
-
+    /// <summary>
+    /// Plays the dog footstep sound effect by invoking the playDogFootSteps event.
+    /// This method is typically called from animation events.
+    /// </summary>
     public void PlayFootSteps()
     {
-        _audioManager.PlaySpatialSoundEffect(_footStepSoundEfect, gameObject);
+        playDogFootSteps.Invoke(_footStepSoundEfect, gameObject);
     }
 }
