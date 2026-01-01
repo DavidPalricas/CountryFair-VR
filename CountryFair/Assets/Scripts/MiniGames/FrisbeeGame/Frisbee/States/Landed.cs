@@ -15,6 +15,9 @@ public class Landed: FrisbeeState
     [SerializeField]
     private int scorePoints = 1;
 
+
+    private AudioManager.GameSoundEffects _scoreSoundEffect;
+
     /// <summary>Event invoked when the frisbee has successfully landed on the ground.
     /// </summary>
     /// <remarks>
@@ -30,6 +33,7 @@ public class Landed: FrisbeeState
     /// </remarks>
     public UnityEvent <int> playerScored;
 
+    public UnityEvent <AudioManager.GameSoundEffects> scoreSoundEffectEvent;
 
     public UnityEvent playerMissed;
 
@@ -44,6 +48,14 @@ public class Landed: FrisbeeState
         {
             Debug.LogError("MeshRenderer component is not assigned in Landed script.");
         }
+    }
+
+
+    public override void LateStart()
+    {
+        base.LateStart();
+
+        _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
     }
 
     /// <summary>
@@ -61,6 +73,8 @@ public class Landed: FrisbeeState
         if (FrisbeeOnScoreArea())
         {
             playerScored.Invoke(scorePoints);
+
+            scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
         }
         else
         {

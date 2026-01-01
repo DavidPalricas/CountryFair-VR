@@ -1,6 +1,6 @@
-using System;
 using Oculus.Interaction;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// State representing the frisbee being held in the player's hand before throwing.
@@ -63,7 +63,12 @@ public class OnPlayerFront : FrisbeeState
     /// Array of materials from the frisbee's Renderer component.
     /// Used to modify opacity based on throw availability.
     /// </summary>
-    private Material[] materials;
+    private Material[] _materials;
+
+    private AudioManager.GameSoundEffects _throwSoundEffect;
+
+
+    public UnityEvent <AudioManager.GameSoundEffects, GameObject> throwSoundEffectEvent;
 
     /// <summary>
     /// Initializes the OnPlayerHand state by storing initial transform values and configuring material transparency.
@@ -99,6 +104,14 @@ public class OnPlayerFront : FrisbeeState
     }
 
 
+    public override void LateStart()
+    {
+        base.LateStart();
+
+        _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
+    }
+
+
     /// <summary>
     /// Initiates the frisbee throw by configuring physics and applying initial forces.
     /// </summary>
@@ -127,8 +140,9 @@ public class OnPlayerFront : FrisbeeState
 
         _collider.isTrigger = false;
 
-
         _trajectoryLine.enabled = true; 
+
+        throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
 
         fSM.ChangeState("FrisbeeThrown");
     }
@@ -211,7 +225,7 @@ public class OnPlayerFront : FrisbeeState
             zWriteValue = 0;
         }
 
-        foreach (Material mat in materials)
+        foreach (Material mat in _materials)
         {
             Color color = mat.color;
             color.a = alphaToChange;
@@ -239,9 +253,9 @@ public class OnPlayerFront : FrisbeeState
     /// </remarks>
     private void SetUpMaterialsTransparency()
     {   
-        materials = frisbeeRenderer.materials;
+        _materials = frisbeeRenderer.materials;
         
-        foreach (Material mat in materials)
+        foreach (Material mat in _materials)
         {
             mat.SetFloat("_Surface", 1);
             mat.SetFloat("_Blend", 0);

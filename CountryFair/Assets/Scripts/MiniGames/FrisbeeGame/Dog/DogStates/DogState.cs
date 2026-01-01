@@ -43,6 +43,15 @@ using UnityEngine.AI;
     /// Initialized in <see cref="LateStart"/> and provides access to game state and adaptive parameters.
     /// </summary>
     protected FrisbeeGameManager _gameManager;
+   
+   /// <summary>
+    /// Reference to the Frisbee audio manager.
+    /// Initialized in <see cref="LateStart"/> and used to play sound effects related to the dog.
+    /// </summary>
+    protected FrisbeeAudioManager _audioManager;
+
+    
+    protected AudioManager.GameSoundEffects _gameSoundEffects;
 
      /// <summary>
     /// Reference to the frisbee's transform component.
@@ -97,11 +106,31 @@ using UnityEngine.AI;
             return;
         }
 
-        _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<FrisbeeGameManager>();
+        GameObject gameManagerObject = GameObject.FindGameObjectWithTag("GameManager");
+
+        if (gameObject == null)
+        {
+            Debug.LogError("GameManager game obejct not found in the scene.");
+
+            return;
+        }
+
+        _gameManager = gameManagerObject.GetComponent<FrisbeeGameManager>();
 
         if (_gameManager == null)
         {
-            Debug.LogError("GameManager game obejct not found or FrisbeeGameManager component.");
+            Debug.LogError("FrisbeeGameManager component.");
+
+            return;
+        }
+
+        _audioManager = gameManagerObject.GetComponent<FrisbeeAudioManager>();
+
+        if (_audioManager == null)
+        {
+            Debug.LogError("FrisbeeAudioManager component.");
+
+            return;
         }
     }
 
