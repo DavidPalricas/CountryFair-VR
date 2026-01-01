@@ -744,16 +744,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 147053871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6753d6224ed6d9c45a673b1419d2cdc8, type: 3}
+  m_Script: {fileID: 11500000, guid: 92ca02ddcde62c642bace59e254adc86, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  dogBarkEvent:
+  m_EditorClassIdentifier: Assembly-CSharp::FrisbeeAudioManager
+  ambienceMusic:
     Guid:
-      Data1: -413263387
-      Data2: 1324498562
-      Data3: 755644562
-      Data4: 9592824
-    Path: event:/DogBark
+      Data1: 1041645944
+      Data2: 1181187447
+      Data3: -176062317
+      Data4: -315743057
+    Path: event:/AmbienceMusic
+  dogBarkSound:
+    Guid:
+      Data1: -645732235
+      Data2: 1276830689
+      Data3: 319381179
+      Data4: 624469678
+    Path: event:/FrisbeeGame/DogBark
+  frisbeeThrowSound:
+    Guid:
+      Data1: 1410675346
+      Data2: 1212930598
+      Data3: -535680093
+      Data4: -1083065083
+    Path: event:/FrisbeeGame/FrisbeeThrow
+  pointScoredSound:
+    Guid:
+      Data1: 294725713
+      Data2: 1187458227
+      Data3: -26351985
+      Data4: -951385872
+    Path: event:/FrisbeeGame/ScorePoint
+  dogFootstepsSound:
+    Guid:
+      Data1: 1199296018
+      Data2: 1116568719
+      Data3: -84970573
+      Data4: -749454200
+    Path: event:/FrisbeeGame/DogFootSteps
 --- !u!1001 &232298549
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1449,7 +1477,7 @@ GameObject:
   - component: {fileID: 453551355}
   - component: {fileID: 453551361}
   m_Layer: 0
-  m_Name: PhysicsFrisbee
+  m_Name: Frisbee
   m_TagString: Frisbee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1528,9 +1556,24 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 5657806951949849020}
-        m_TargetAssemblyTypeName: ScoreAreaAnim, Assembly-CSharp
-        m_MethodName: ScoreAnim
+        m_TargetAssemblyTypeName: ScoreAreaAnimations, Assembly-CSharp
+        m_MethodName: ScoreAnimation
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  scoreSoundEffectEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 147053875}
+        m_TargetAssemblyTypeName: FrisbeeAudioManager, Assembly-CSharp
+        m_MethodName: PlaySoundEffect
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1598,6 +1641,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OnPlayerHand
   frisbeeRenderer: {fileID: 1537203768}
   frisbeeGrabbable: {fileID: 1537203770}
+  throwSoundEffectEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 147053875}
+        m_TargetAssemblyTypeName: FrisbeeAudioManager, Assembly-CSharp
+        m_MethodName: PlaySpatialSoundEffect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &453551358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5478,6 +5536,38 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5244915625381210605, guid: 5eae7575ec9f1574f895b7844b09846d, type: 3}
+--- !u!1 &1672262075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 563449790566060054, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+  m_PrefabInstance: {fileID: 8229344247421322364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1672262078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672262075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51351e18249b814428ff637281598f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DogFootSteps
+  playDogFootSteps:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 147053875}
+        m_TargetAssemblyTypeName: FrisbeeAudioManager, Assembly-CSharp
+        m_MethodName: PlaySpatialSoundEffect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1713816495
 GameObject:
   m_ObjectHideFlags: 0
@@ -7312,22 +7402,206 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 73867224}
     m_Modifications:
+    - target: {fileID: 48613479761229896, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 27.58004
+      objectReference: {fileID: 0}
+    - target: {fileID: 48613479761229896, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -35.17798
+      objectReference: {fileID: 0}
+    - target: {fileID: 48613479761229896, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -79.601395
+      objectReference: {fileID: 0}
+    - target: {fileID: 198158963279332478, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 28.510065
+      objectReference: {fileID: 0}
+    - target: {fileID: 198158963279332478, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -36.2541
+      objectReference: {fileID: 0}
+    - target: {fileID: 198158963279332478, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -93.83952
+      objectReference: {fileID: 0}
     - target: {fileID: 495728589920066737, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_Name
       value: Dog
+      objectReference: {fileID: 0}
+    - target: {fileID: 1107612702949421514, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 16.072796
+      objectReference: {fileID: 0}
+    - target: {fileID: 1107612702949421514, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 34.97128
+      objectReference: {fileID: 0}
+    - target: {fileID: 1107612702949421514, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 25.408134
+      objectReference: {fileID: 0}
+    - target: {fileID: 1551725178402411710, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -69.16459
+      objectReference: {fileID: 0}
+    - target: {fileID: 1551725178402411710, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 36.04149
+      objectReference: {fileID: 0}
+    - target: {fileID: 1551725178402411710, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -95.07874
+      objectReference: {fileID: 0}
+    - target: {fileID: 2120205125064846452, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 29.862696
+      objectReference: {fileID: 0}
+    - target: {fileID: 2120205125064846452, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -14.20734
+      objectReference: {fileID: 0}
+    - target: {fileID: 2120205125064846452, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -149.25093
+      objectReference: {fileID: 0}
+    - target: {fileID: 2379940986202699888, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 53.792072
+      objectReference: {fileID: 0}
+    - target: {fileID: 2379940986202699888, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -58.159973
+      objectReference: {fileID: 0}
+    - target: {fileID: 2379940986202699888, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 113.00741
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494912341771182980, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 28.84122
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494912341771182980, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -29.8518
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494912341771182980, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -92.061844
       objectReference: {fileID: 0}
     - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 453551357}
+    - target: {fileID: 4677665897276227089, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 28.93352
+      objectReference: {fileID: 0}
+    - target: {fileID: 4677665897276227089, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -28.32852
+      objectReference: {fileID: 0}
+    - target: {fileID: 4677665897276227089, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -95.854515
+      objectReference: {fileID: 0}
+    - target: {fileID: 4903043181724991073, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -21.228907
+      objectReference: {fileID: 0}
+    - target: {fileID: 4903043181724991073, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 5.961895
+      objectReference: {fileID: 0}
+    - target: {fileID: 4903043181724991073, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -16.901836
+      objectReference: {fileID: 0}
+    - target: {fileID: 5512244808440555834, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 19.566061
+      objectReference: {fileID: 0}
+    - target: {fileID: 5512244808440555834, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 22.616873
+      objectReference: {fileID: 0}
+    - target: {fileID: 5512244808440555834, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 71.813774
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896697756904063444, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 21.025694
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896697756904063444, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -32.527252
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896697756904063444, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -166.86563
+      objectReference: {fileID: 0}
     - target: {fileID: 6158268702081495465, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: frisbeeGivenToPlayer.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 453551355}
+    - target: {fileID: 6238890490688387629, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 15.714721
+      objectReference: {fileID: 0}
+    - target: {fileID: 6238890490688387629, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 17.257532
+      objectReference: {fileID: 0}
+    - target: {fileID: 6238890490688387629, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -129.14645
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563913859944586735, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -34.426994
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563913859944586735, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 10.543056
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563913859944586735, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -28.68251
+      objectReference: {fileID: 0}
+    - target: {fileID: 7030786685121026965, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -28.841217
+      objectReference: {fileID: 0}
+    - target: {fileID: 7030786685121026965, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 101.73181
+      objectReference: {fileID: 0}
+    - target: {fileID: 7030786685121026965, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 92.06183
+      objectReference: {fileID: 0}
+    - target: {fileID: 7121292979934276580, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 453551357}
+    - target: {fileID: 8381011576245472112, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 28.841213
+      objectReference: {fileID: 0}
+    - target: {fileID: 8381011576245472112, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -29.851831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8381011576245472112, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -92.06182
+      objectReference: {fileID: 0}
     - target: {fileID: 9067314237388515744, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.436098
@@ -7371,7 +7645,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 563449790566060054, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1672262078}
   m_SourcePrefab: {fileID: 100100000, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

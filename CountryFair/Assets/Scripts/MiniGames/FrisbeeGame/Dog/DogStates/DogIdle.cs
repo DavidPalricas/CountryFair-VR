@@ -30,6 +30,8 @@ public class DogIdle : DogState
     /// </summary>
     public UnityEvent positionReached;
 
+    private AudioManager.GameSoundEffects _barkSoundEffect;
+
     /// <summary>
     /// Initializes the DogIdle state and ensures the score area is initially deactivated.
     /// </summary>
@@ -55,6 +57,8 @@ public class DogIdle : DogState
     public override void LateStart()
     {
         base.LateStart();
+         
+        _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
     }
     
     /// <summary>
@@ -95,6 +99,8 @@ public class DogIdle : DogState
         positionReached.Invoke();
 
         animator.SetFloat("Speed", 0f);
+
+        _audioManager.PlaySpatialSoundEffect(_barkSoundEffect, gameObject);
     }
 
     /// <summary>

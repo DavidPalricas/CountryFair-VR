@@ -2,16 +2,46 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 
-
+/// <summary>
+/// Base audio manager class that handles ambient music and provides virtual methods for game-specific sound effects.
+/// This class uses FMOD for audio playback and should be inherited by specific game audio managers.
+/// </summary>
 public class AudioManager: MonoBehaviour
 {  
     [Header("Ambience Music")]
+    /// <summary>
+    /// FMOD event reference for the ambient background music.
+    /// </summary>
     [SerializeField]
     protected EventReference ambienceMusic;
+    
+    /// <summary>
+    /// Tracks whether the ambient music has been started to prevent multiple instances.
+    /// </summary>
     private static bool ambienceMusicStarted = false;
 
+    /// <summary>
+    /// The FMOD event instance for the ambient music that persists across scenes.
+    /// </summary>
     private static EventInstance ambienceMusicInstance;
 
+    /// <summary>
+    /// Enumeration of all available game sound effects across different mini-games.
+    /// </summary>
+    public enum GameSoundEffects {
+        /// <summary>Dog barking sound effect.</summary>
+        DOG_BARK,
+        /// <summary>Frisbee throwing sound effect.</summary>
+        FRISBEE_THROW,
+        /// <summary>Point scored sound effect.</summary>
+        POINT_SCORED,
+        /// <summary>Dog footsteps sound effect.</summary>
+        DOG_FOOTSTEPS,
+    }
+
+    /// <summary>
+    /// Initializes the audio manager. Starts ambient music if not already playing, otherwise resumes it.
+    /// </summary>
     protected virtual void Start()
     {
         if (!ambienceMusicStarted)
@@ -25,21 +55,50 @@ public class AudioManager: MonoBehaviour
         IsToPauseMusic(false);
     }
 
+    /// <summary>
+    /// Plays a spatial sound effect attached to a specific game object in 3D space.
+    /// This method must be overridden in derived classes.
+    /// </summary>
+    /// <param name="soundEffect">The type of sound effect to play.</param>
+    /// <param name="target">The game object to which the sound will be attached.</param>
+    public virtual void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
+    {
+        Debug.LogError("The PlaySpatialAudio method must be overridden in a derived class.");
+    }
+
+    /// <summary>
+    /// Plays a non-spatial sound effect at the default listener position.
+    /// This method must be overridden in derived classes.
+    /// </summary>
+    /// <param name="soundEffect">The type of sound effect to play.</param>
+    public virtual void PlaySoundEffect(GameSoundEffects soundEffect)
+    {
+        Debug.LogError("The PlayGlobalSoundEffect method must be overridden in a derived class.");
+    }
+
+    /// <summary>
+    /// Creates and starts the ambient music instance.
+    /// </summary>
     private void PlayAmbienceMusic()
     {
         ambienceMusicInstance = RuntimeManager.CreateInstance(ambienceMusic);
         ambienceMusicInstance.start();
     }
 
+    /// <summary>
+    /// Pauses the ambient music when the audio manager is destroyed.
+    /// </summary>
     private void OnDestroy()
     {
         IsToPauseMusic(true);
     }
 
-
+    /// <summary>
+    /// Pauses or resumes the ambient music.
+    /// </summary>
+    /// <param name="pauseMusic">True to pause the music, false to resume it.</param>
     private void IsToPauseMusic(bool pauseMusic)
     {
         ambienceMusicInstance.setPaused(pauseMusic);
     }
 }
-
