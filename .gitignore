@@ -209,3 +209,7 @@ CountryFair/Assets/Scripts/obj.meta
 CountryFair/Assets/_Recovery/
 CountryFair/Assets/_Recovery.meta
 
+# FMOD cache folders
+FMODProject/CountryFair/.cache/
+CountryFair/Assets/Plugins/FMOD/Cache/Editor
+
