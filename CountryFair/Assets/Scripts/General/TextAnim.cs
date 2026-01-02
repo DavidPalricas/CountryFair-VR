@@ -4,16 +4,16 @@ using DG.Tweening;
 /// <summary>
 /// Animates UI text with a continuous up-and-down floating motion.
 /// </summary>
-public class TentTextAnim : MonoBehaviour
+public class TextAnim : MonoBehaviour
 {
     /// <summary>Duration in seconds for the text to move up and then down.</summary>
     [Header("Animation Settings")]
     [SerializeField]
-    private readonly float animationDuration = 0.5f;
+    private float animationDuration = 0.5f;
 
     /// <summary>Distance in units the text moves vertically during the animation.</summary>
     [SerializeField]
-    private readonly float moveDistance = 200f;
+    private float moveDistance = 200f;
 
     /// <summary>Original local position stored on initialization.</summary>
     private Vector3 originalPosition;
