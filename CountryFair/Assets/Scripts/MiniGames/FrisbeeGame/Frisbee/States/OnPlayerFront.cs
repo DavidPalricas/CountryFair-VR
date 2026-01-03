@@ -99,15 +99,12 @@ public class OnPlayerFront : FrisbeeState
 
             return;
         }
-
-        SetUpMaterialsTransparency();
     }
-
-
     public override void LateStart()
     {
         base.LateStart();
-
+        
+        SetUpMaterialsTransparency();
         _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
     }
 
