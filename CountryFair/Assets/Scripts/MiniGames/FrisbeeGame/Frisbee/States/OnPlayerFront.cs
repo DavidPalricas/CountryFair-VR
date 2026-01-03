@@ -65,7 +65,7 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     private Material[] _materials;
 
-    private AudioManager.GameSoundEffects _throwSoundEffect;
+    private AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
 
 
     public UnityEvent <AudioManager.GameSoundEffects, GameObject> throwSoundEffectEvent;
@@ -99,16 +99,10 @@ public class OnPlayerFront : FrisbeeState
 
             return;
         }
-    }
-    public override void LateStart()
-    {
-        base.LateStart();
-        
-        SetUpMaterialsTransparency();
-        _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
-    }
 
-
+          SetUpMaterialsTransparency();
+    }
+ 
     /// <summary>
     /// Initiates the frisbee throw by configuring physics and applying initial forces.
     /// </summary>
