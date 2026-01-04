@@ -3,60 +3,41 @@ using UnityEngine.AI;
 using UnityEngine;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class Walk: PersonBaseState
+public class WanderingPerson: MonoBehaviour
 {   
-    [Header("Walk State Settings")]
     [SerializeField]
     private float walkRadius = 10f;
 
 
     [SerializeField]
-    private float probToContinueWalking = 0.7f;
+    private Animator animator;
 
 
     private NavMeshAgent _agent;
 
 
-    protected override void Awake()
-    {
-        base.Awake();
+    private void Awake()
+    {   
+        if (animator == null)
+        {
+            Debug.LogError("Animator reference is missing in Walkable Person.");
+            return;
+        }
+
         _agent = GetComponent<NavMeshAgent>();
     }
 
-
-    public override void Enter()
+    private void Start()
     {
-        base.Enter();
-
         ChooseRandomDestination();
     }
 
-
-    public override void Execute()
+    private void Update()
     {  
-        base.Execute();
-        
         if (DestinationReached())
         {   
-            float randomNumber = Utils.RandomValueInRange(0f, 1f);
-
-            if (randomNumber <= probToContinueWalking)
-            {
-                ChooseRandomDestination();
-
-                return;
-            }
-
-            animator.SetFloat("Speed", 0f);
-
-            fSM.ChangeState("Rest");
+            ChooseRandomDestination();
         }
-    }
-
-
-    public override void Exit()
-    {
-        base.Exit();  
     }
 
     private bool DestinationReached()
