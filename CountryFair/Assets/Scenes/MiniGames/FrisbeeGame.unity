@@ -708,33 +708,11 @@ MonoBehaviour:
       Data3: -84970573
       Data4: -749454200
     Path: event:/FrisbeeGame/DogFootSteps
---- !u!114 &169760401 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8402228718406852659, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
-  m_PrefabInstance: {fileID: 7847542444758605744}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f30a25afec5845e40802e1ba32e6fe55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PersonIdle
 --- !u!4 &169760406 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
   m_PrefabInstance: {fileID: 7847542444758605744}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &169760407 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1178953874425356907, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
-  m_PrefabInstance: {fileID: 7847542444758605744}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c4157c8e57a764cb4ea37df0f9dca3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Walk
 --- !u!1001 &214835240
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7800,11 +7778,11 @@ PrefabInstance:
     - target: {fileID: 7323715424550208781, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
       propertyPath: 'states.Array.data[0]'
       value: 
-      objectReference: {fileID: 169760407}
+      objectReference: {fileID: 0}
     - target: {fileID: 7323715424550208781, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
       propertyPath: 'states.Array.data[1]'
       value: 
-      objectReference: {fileID: 169760401}
+      objectReference: {fileID: 0}
     - target: {fileID: 7879746548298196654, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
       propertyPath: m_Layer
       value: 7
