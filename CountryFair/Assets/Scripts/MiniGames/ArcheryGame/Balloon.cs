@@ -11,62 +11,99 @@ public class BalloonScript : MonoBehaviour
     [Header("Explosion Effect")]
     public GameObject popEffect;
 
-    private bool popped = false;
-
     private Renderer balloonRenderer;
     private Color balloonColor;
-    [SerializeField] int scoreToAdd;
 
+    [SerializeField] int scoreToAdd;
+    [SerializeField] GameObject balloonPrefab;
+
+    private BoxCollider spawnArea;
+    private Vector3 balloonExtents;
 
     private void Awake()
     {
-        startY = transform.position.y;
+        spawnArea = GameObject.FindGameObjectWithTag("BalloonSpawn")
+            .GetComponent<BoxCollider>();
 
-        // Apanha o renderer do balão
+        // Renderer / cor
         balloonRenderer = GetComponent<Renderer>();
+        balloonColor = balloonRenderer != null && balloonRenderer.material.HasProperty("_Color")
+            ? balloonRenderer.material.color
+            : Color.white;
 
-        // Guarda a cor principal do material
-        if (balloonRenderer != null && balloonRenderer.material.HasProperty("_Color"))
-        {
-            balloonColor = balloonRenderer.material.color;
-        }
-        else
-        {
-            balloonColor = Color.white; // fallback
-        }
+        // Collider do balão (tamanho real)
+        Collider balloonCollider = GetComponent<Collider>();
+        balloonExtents = balloonCollider.bounds.extents;
+    }
+
+    void Start()
+    {
+        startY = transform.position.y;
     }
 
     void Update()
     {
-        if (canMove)
-        {
-            float newY = startY + Mathf.Sin(Time.time * moveSpeed) * moveAmount;
-            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
-        }
+        if (!canMove) return;
+
+        Bounds area = spawnArea.bounds;
+
+        float newY = startY + Mathf.Sin(Time.time * moveSpeed) * moveAmount;
+
+        // Clamp em Y
+        newY = Mathf.Clamp(
+            newY,
+            area.min.y + balloonExtents.y,
+            area.max.y - balloonExtents.y
+        );
+
+        // Clamp em X (caso haja drift / escala / animação)
+        float clampedX = Mathf.Clamp(
+            transform.position.x,
+            area.min.x + balloonExtents.x,
+            area.max.x - balloonExtents.x
+        );
+
+        transform.position = new Vector3(
+            clampedX,
+            newY,
+            transform.position.z
+        );
     }
 
     public void Pop()
     {
-        popped = true;
-
         if (popEffect != null)
         {
-            // Instancia o efeito
             GameObject fx = Instantiate(popEffect, transform.position, Quaternion.identity);
-
-            // Apanha o ParticleSystem do efeito
             ParticleSystem ps = fx.GetComponent<ParticleSystem>();
 
             if (ps != null)
             {
                 var main = ps.main;
-                main.startColor = balloonColor;    // define a cor no particle system
+                main.startColor = balloonColor;
             }
         }
 
         ArcheryGameManager.Instance.SetScore(scoreToAdd);
+        SpawnBalloon();
+        Destroy(transform.parent.gameObject);
+    }
 
-        Destroy(gameObject);
+    public void SpawnBalloon()
+    {
+        Vector3 halfSize = spawnArea.size * 0.5f;
+
+        Vector3 localRandom = new Vector3(
+            Random.Range(-halfSize.x + balloonExtents.x, halfSize.x - balloonExtents.x),
+            Random.Range(-halfSize.y + balloonExtents.y, halfSize.y - balloonExtents.y),
+            Random.Range(-halfSize.z + balloonExtents.z, halfSize.z - balloonExtents.z)
+        );
+
+        Vector3 worldPos = spawnArea.transform.TransformPoint(
+            spawnArea.center + localRandom
+        );
+
+        Instantiate(balloonPrefab, worldPos, Quaternion.identity);
     }
 
     [ContextMenu("Test Pop")]
