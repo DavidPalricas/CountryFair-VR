@@ -20,6 +20,10 @@ public class BalloonScript : MonoBehaviour
     private BoxCollider spawnArea;
     private Vector3 balloonExtents;
 
+
+    private ArcheryAudioManager _archeryAudioManager;
+
+    private AudioManager.GameSoundEffects popSoundEffect = AudioManager.GameSoundEffects.BALLOON_POP;
     private void Awake()
     {
         spawnArea = GameObject.FindGameObjectWithTag("BalloonSpawn")
@@ -34,6 +38,13 @@ public class BalloonScript : MonoBehaviour
         // Collider do balão (tamanho real)
         Collider balloonCollider = GetComponent<Collider>();
         balloonExtents = balloonCollider.bounds.extents;
+
+        _archeryAudioManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<ArcheryAudioManager>();
+
+        if (_archeryAudioManager == null)
+        {
+            Debug.LogError("ArcheryAudioManager not found in the scene or game manager game object");
+        }
     }
 
     void Start()
@@ -86,6 +97,7 @@ public class BalloonScript : MonoBehaviour
 
         ArcheryGameManager.Instance.SetScore(scoreToAdd);
         SpawnBalloon();
+        _archeryAudioManager.PlaySpatialSoundEffect(popSoundEffect, gameObject);
         Destroy(transform.parent.gameObject);
     }
 

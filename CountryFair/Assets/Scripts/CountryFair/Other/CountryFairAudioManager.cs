@@ -11,8 +11,10 @@ public class CountryFairAudioManager : AudioManager
 
     private EventInstance  _crowdNoiseInstance;
 
-   private void Awake()
-   {
+   protected override void Awake()
+   {  
+      base.Awake();
+
       if (crowdNoise.IsNull)
         {
             Debug.LogError("Crowd noise EventReference is not assigned in CountryFairAudioManager.");
@@ -32,6 +34,25 @@ public class CountryFairAudioManager : AudioManager
         _crowdNoiseInstance = RuntimeManager.CreateInstance(crowdNoise);
         RuntimeManager.AttachInstanceToGameObject(_crowdNoiseInstance, transform);
         _crowdNoiseInstance.start();
+    }
+
+
+    public override void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
+    {
+        EventReference eventToPlay;
+
+        switch (soundEffect)
+        {  
+           case GameSoundEffects.BUTTON_PRESSED:
+                eventToPlay = buttonPressedSound;
+                break;
+                
+            default:
+                Debug.LogError("Invalid sound effect: " + soundEffect);
+                return;
+        }
+
+        RuntimeManager.PlayOneShotAttached(eventToPlay, target);
     }
 
     private void OnDestroy()

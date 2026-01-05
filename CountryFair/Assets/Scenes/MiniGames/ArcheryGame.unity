@@ -203,11 +203,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 509427378}
+    m_TransformParent: {fileID: 1812671167}
     m_Modifications:
     - target: {fileID: 6442569606691477175, guid: 397561d8a03dd1646a270a11e70e8b87, type: 3}
       propertyPath: m_Name
       value: IdlePerson4 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189019485154658934, guid: 397561d8a03dd1646a270a11e70e8b87, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.6000001
       objectReference: {fileID: 0}
     - target: {fileID: 7189019485154658934, guid: 397561d8a03dd1646a270a11e70e8b87, type: 3}
       propertyPath: m_LocalPosition.x
@@ -360,7 +364,7 @@ GameObject:
   - component: {fileID: 106628086}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -413,6 +417,34 @@ MonoBehaviour:
       Data3: -176062317
       Data4: -315743057
     Path: event:/AmbienceMusic
+  buttonPressedSound:
+    Guid:
+      Data1: 1489044289
+      Data2: 1104193514
+      Data3: -385448515
+      Data4: 192746226
+    Path: event:/ButtonPressed
+  balloonPopSound:
+    Guid:
+      Data1: -1789323876
+      Data2: 1251181701
+      Data3: -685654340
+      Data4: 1802499245
+    Path: event:/ArcheryGame/BallonPop
+  cheerSound:
+    Guid:
+      Data1: 669172773
+      Data2: 1245436274
+      Data3: -34996824
+      Data4: 1414115382
+    Path: event:/ArcheryGame/Cheer
+  arrowShotSound:
+    Guid:
+      Data1: -101680292
+      Data2: 1187786217
+      Data3: -977968968
+      Data4: -1323825188
+    Path: event:/ArcheryGame/ShootArrow
 --- !u!1001 &114215624
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1270,7 +1302,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 509427378}
+    m_TransformParent: {fileID: 1812671167}
     m_Modifications:
     - target: {fileID: 6442569606691477175, guid: e3207fdb4484b654f9457d4230ee1313, type: 3}
       propertyPath: m_Name
@@ -1447,8 +1479,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4240756, b: 0.25261208, a: 1}
-    - _Color: {r: 0.5566037, g: 0.424076, b: 0.25261247, a: 1}
+    - _BaseColor: {r: 0.5566037, g: 0.42407012, b: 0.2526066, a: 1}
+    - _Color: {r: 0.5566037, g: 0.42407033, b: 0.2526068, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -1722,11 +1754,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 943778424}
-  - {fileID: 31748036}
-  - {fileID: 427405568}
-  - {fileID: 2104653380}
   - {fileID: 1573448341}
+  - {fileID: 1812671167}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &527498059
@@ -2428,7 +2457,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 509427378}
+    m_TransformParent: {fileID: 1812671167}
     m_Modifications:
     - target: {fileID: 6442569606691477175, guid: 1b8c6c276a3c26e40bf5b2558b5bf61d, type: 3}
       propertyPath: m_Name
@@ -3545,6 +3574,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e34d47d07205b614ebceb2d4c7752044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crowd
+  cheer:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 106628086}
+        m_TargetAssemblyTypeName: ArcheryAudioManager, Assembly-CSharp
+        m_MethodName: PlaySpatialSoundEffect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &1598806031
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4220,6 +4264,41 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4a26f9f60eee48a438427a660f204dcf, type: 3}
   m_PrefabInstance: {fileID: 1812578864}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1812671166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1812671167}
+  m_Layer: 0
+  m_Name: IdlePersons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1812671167
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812671166}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 943778424}
+  - {fileID: 31748036}
+  - {fileID: 427405568}
+  - {fileID: 2104653380}
+  m_Father: {fileID: 509427378}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1883390858
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4349,6 +4428,30 @@ PrefabInstance:
     - target: {fileID: 2086781719957038937, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 106628086}
+    - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySpatialSoundEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ArcheryAudioManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4807,11 +4910,19 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 509427378}
+    m_TransformParent: {fileID: 1812671167}
     m_Modifications:
     - target: {fileID: 6442569606691477175, guid: 18b6927b63ca33940b04d66275525969, type: 3}
       propertyPath: m_Name
       value: IdlePerson5 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189019485154658934, guid: 18b6927b63ca33940b04d66275525969, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.6000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189019485154658934, guid: 18b6927b63ca33940b04d66275525969, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6000001
       objectReference: {fileID: 0}
     - target: {fileID: 7189019485154658934, guid: 18b6927b63ca33940b04d66275525969, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5991,6 +6102,30 @@ PrefabInstance:
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: maxStringBackward
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: arrowShot.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: arrowShot.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 106628086}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: arrowShot.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: arrowShot.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySpatialSoundEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: arrowShot.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ArcheryAudioManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: arrowShot.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8478218324876617388, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: m_LocalPosition.x
