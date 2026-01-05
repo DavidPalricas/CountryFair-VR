@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7189019485154658934}
   - component: {fileID: 6866665496326073134}
-  - component: {fileID: 1178953874425356907}
+  - component: {fileID: 5884787708173257191}
   m_Layer: 0
-  m_Name: Person6
+  m_Name: IdlePerson6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,7 +56,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1178953874425356907
+--- !u!114 &5884787708173257191
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,10 +65,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6442569606691477175}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c4157c8e57a764cb4ea37df0f9dca3, type: 3}
+  m_Script: {fileID: 11500000, guid: f30a25afec5845e40802e1ba32e6fe55, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Walk
-  walkRadius: 10
+  m_EditorClassIdentifier: Assembly-CSharp::IdlePerson
   animator: {fileID: 3327886029541993553}
 --- !u!1001 &4334191495945747488
 PrefabInstance:
@@ -81,7 +80,7 @@ PrefabInstance:
     - target: {fileID: -7923764110535651215, guid: 095f014c1a176a743834385cd57a8317, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 80ec2f2b477af42478a48d22e0b6331d, type: 2}
+      objectReference: {fileID: 9100000, guid: 13b1f6cac016b4148ba9f2155d1f7c0c, type: 2}
     - target: {fileID: -3717114202187975224, guid: 095f014c1a176a743834385cd57a8317, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -124,7 +123,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2242888416370347441, guid: 095f014c1a176a743834385cd57a8317, type: 3}
       propertyPath: m_Name
-      value: Crypto Bro
+      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
