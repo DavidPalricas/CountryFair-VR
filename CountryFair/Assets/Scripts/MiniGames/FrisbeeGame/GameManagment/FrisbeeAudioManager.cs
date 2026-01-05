@@ -1,5 +1,6 @@
 using UnityEngine;
 using FMODUnity;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Manages audio playback for the Frisbee mini-game, including dog sounds, frisbee throws, and scoring effects.
@@ -31,6 +32,37 @@ public class FrisbeeAudioManager : AudioManager
     /// </summary>
     [SerializeField]
     private EventReference dogFootstepsSound;
+
+
+
+    private void Awake()
+    {
+        if (dogBarkSound.IsNull)
+        {
+            Debug.LogError("Dog bark sound EventReference is not assigned in FrisbeeAudioManager.");
+
+            return;
+        }
+
+        if (frisbeeThrowSound.IsNull)
+        {
+            Debug.LogError("Frisbee throw sound EventReference is not assigned in FrisbeeAudioManager.");
+
+            return;
+        }
+
+        if (pointScoredSound.IsNull)
+        {
+            Debug.LogError("Point scored sound EventReference is not assigned in FrisbeeAudioManager.");
+
+            return;
+        }
+
+        if (dogFootstepsSound.IsNull)
+        {
+            Debug.LogError("Dog footsteps sound EventReference is not assigned in FrisbeeAudioManager.");
+        }
+    }
 
 
     /// <summary>
