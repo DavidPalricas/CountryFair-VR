@@ -296,7 +296,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     public void PlayerMissed()
     {    
-        if (_streakValue > 0){
+        if (_streakValue > 0 && !DOTween.IsTweening(streakText.transform)){
             streakSymbol.SetActive(false);
             _streakValue = 0;
             UpdateStreakText();
