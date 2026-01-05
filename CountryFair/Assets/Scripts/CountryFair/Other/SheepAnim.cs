@@ -9,15 +9,15 @@ public class SheepAnimation : MonoBehaviour
     /// <summary>Maximum height the sheep bounces upward.</summary>
     [Header("Animation Settings")]
     [SerializeField]
-    private readonly float bounceHeight = 0.5f;
+    private float bounceHeight = 0.5f;
 
     /// <summary>Duration in seconds for one complete bounce cycle.</summary>
     [SerializeField]
-    private readonly float bounceDuration = 0.5f;
+    private  float bounceDuration = 0.5f;
     
     /// <summary>Amount of squashing and stretching deformation as a ratio of original scale.</summary>
     [SerializeField]
-    private readonly float squashAmount = 0.3f;
+    private float squashAmount = 0.3f;
 
     /// <summary>Original scale of the sheep stored on Start.</summary>
     private Vector3 originalScale;

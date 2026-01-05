@@ -8,12 +8,20 @@ public class WanderingPerson: MonoBehaviour
     [SerializeField]
     private float walkRadius = 10f;
 
+    [SerializeField]
+    private float stuckThreshold = 5f;
+
 
     [SerializeField]
     private Animator animator;
 
 
     private NavMeshAgent _agent;
+
+
+    private Vector3 previousPosition  = Vector3.zero;
+
+    private float stuckTimer = 0f;
 
 
     private void Awake()
@@ -34,7 +42,7 @@ public class WanderingPerson: MonoBehaviour
 
     private void Update()
     {  
-        if (DestinationReached())
+        if (DestinationReached() || IsStuck())
         {   
             ChooseRandomDestination();
         }
@@ -51,5 +59,24 @@ public class WanderingPerson: MonoBehaviour
         randomDirection += transform.position;
         NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, walkRadius, NavMesh.AllAreas);
         _agent.SetDestination(navHit.position);
+        stuckTimer = Time.time + stuckThreshold;
+    }
+
+
+    private bool IsStuck()
+    {
+        if (Time.time > stuckTimer)
+        {   
+            Vector3 currentPosition = transform.position;
+            
+            if (previousPosition != Vector3.zero || previousPosition == currentPosition)
+            {
+                return true;
+            }
+
+            previousPosition = currentPosition;
+        }
+
+        return false;
     }
 }
