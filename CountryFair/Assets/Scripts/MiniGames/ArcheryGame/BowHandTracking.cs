@@ -224,7 +224,7 @@ public class BowHandTracking : MonoBehaviour
                 float force = Mathf.Lerp(minForce, maxForce, currentPull);
                 rb.AddForce(arrowSpawn.forward * force, ForceMode.VelocityChange);
 
-                arrowShot?.Invoke(shootSoundEffect, currentArrow);
+                arrowShot?.Invoke(shootSoundEffect, gameObject);
             }
         }
 
