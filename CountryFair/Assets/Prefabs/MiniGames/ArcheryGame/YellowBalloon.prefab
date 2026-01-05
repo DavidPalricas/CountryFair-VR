@@ -189,9 +189,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BalloonScript
   canMove: 1
   moveSpeed: 0.5
-  moveAmount: 1
+  moveAmount: 0.7
   popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
   scoreToAdd: 3
+  balloonPrefab: {fileID: 3396820265375727783}
 --- !u!4 &8949716481711875156 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 41917267eb4a54aea890f701336a36f5, type: 3}
