@@ -1,7 +1,75 @@
+using UnityEngine;
+using FMODUnity;
+
 public class ArcheryAudioManager : AudioManager
 {  
+
+    [SerializeField]
+    private EventReference balloonPopSound;
+
+    [SerializeField]
+    private EventReference cheerSound;
+
+    [SerializeField]
+    private EventReference arrowShotSound;
+
+    protected override void Awake()
+    {   
+        base.Awake();
+
+        if (balloonPopSound.IsNull)
+        {
+            Debug.LogError("Balloon pop sound EventReference is not assigned in ArcheryAudioManager.");
+
+            return;
+        }
+
+        if (cheerSound.IsNull)
+        {
+            Debug.LogError("Cheer sound EventReference is not assigned in ArcheryAudioManager.");
+
+            return;
+        }
+
+        if (arrowShotSound.IsNull)
+        {
+            Debug.LogError("Arrow shot sound EventReference is not assigned in ArcheryAudioManager.");
+        }
+    }
+
     protected override void Start()
     {
         base.Start();
+    }
+
+
+    public override void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
+    {
+        EventReference eventToPlay;
+
+        switch (soundEffect)
+        {  
+           case GameSoundEffects.BUTTON_PRESSED:
+                eventToPlay = buttonPressedSound;
+                break;
+
+           case GameSoundEffects.BALLOON_POP:
+                eventToPlay = balloonPopSound;
+                break;
+
+            case GameSoundEffects.CHEER_SOUND_EFFECT:
+                eventToPlay = cheerSound;
+                break;
+
+            case GameSoundEffects.ARROW_SHOT:
+                eventToPlay = arrowShotSound;
+                break;
+   
+            default:
+                Debug.LogError("Invalid sound effect: " + soundEffect);
+                return;
+        }
+
+        RuntimeManager.PlayOneShotAttached(eventToPlay, target);
     }
 }
