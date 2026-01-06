@@ -17,7 +17,7 @@ public class Crowd: MonoBehaviour
 
     public void Cheer()
     {   
-        cheer.Invoke(_cheerSoundEffect, gameObject);
+        // cheer.Invoke(_cheerSoundEffect, gameObject);
 
         foreach (IdlePerson person in people)
         {
