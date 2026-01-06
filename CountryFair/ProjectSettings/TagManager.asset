@@ -15,6 +15,7 @@ TagManager:
   - ScoreSystem
   - OutOfBounds
   - BalloonSpawn
+  - CrowdArcheryGame
   layers:
   - Default
   - TransparentFX

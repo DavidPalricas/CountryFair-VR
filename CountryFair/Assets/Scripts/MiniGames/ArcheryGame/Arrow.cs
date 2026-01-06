@@ -7,10 +7,19 @@ public class Arrow : MonoBehaviour
 
     bool launched = false;
 
+    private Crowd _crowd;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         scoreSystem = GameObject.FindGameObjectWithTag("ScoreSystem").GetComponent<ScoreAndStreakSystem>();
+
+        _crowd = GameObject.FindGameObjectWithTag("CrowdArcheryGame").GetComponent<Crowd>();
+
+        if (_crowd == null)
+        {
+            Debug.LogError("Crowd GameObject not found in the scene or its crowd component is missing.");
+        }
     }
 
     public void Launch(Vector3 direction, float force)
@@ -26,6 +35,7 @@ public class Arrow : MonoBehaviour
         if (col.gameObject.CompareTag("Balloon"))
         {
             col.gameObject.GetComponent<BalloonScript>().Pop();
+            _crowd.Cheer();
             Destroy(gameObject);
             return;
         }

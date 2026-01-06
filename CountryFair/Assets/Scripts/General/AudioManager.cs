@@ -15,6 +15,13 @@ public class AudioManager: MonoBehaviour
     [SerializeField]
     protected EventReference ambienceMusic;
     
+    [Header("Button Pressed Sound Effect")]
+    /// <summary>
+    /// FMOD event reference for the button pressed sound effect.
+    /// </summary>
+    [SerializeField]
+    protected EventReference buttonPressedSound;
+    
     /// <summary>
     /// Tracks whether the ambient music has been started to prevent multiple instances.
     /// </summary>
@@ -29,6 +36,10 @@ public class AudioManager: MonoBehaviour
     /// Enumeration of all available game sound effects across different mini-games.
     /// </summary>
     public enum GameSoundEffects {
+        /* General Sound Effects */
+        BUTTON_PRESSED,
+
+        /* Frisbee Game Sound Effects*/
         /// <summary>Dog barking sound effect.</summary>
         DOG_BARK,
         /// <summary>Frisbee throwing sound effect.</summary>
@@ -37,6 +48,34 @@ public class AudioManager: MonoBehaviour
         POINT_SCORED,
         /// <summary>Dog footsteps sound effect.</summary>
         DOG_FOOTSTEPS,
+
+        /* Archery Game Sound Effects */
+        ///<summary>Balloon popping sound effect.</summary>
+        BALLOON_POP,
+        
+        ///<summary>Arrow shooting sound effect.</summary>
+        ARROW_SHOT,
+        
+        ///<summary>Cheering sound effect.</summary>
+        CHEER_SOUND_EFFECT
+    }
+
+
+    protected virtual void Awake()
+    {
+        if (ambienceMusic.IsNull)
+        {
+            Debug.LogError("Ambience music EventReference is not assigned in AudioManager.");
+
+            return;
+        }
+
+        if (buttonPressedSound.IsNull)
+        {
+            Debug.LogError("Button pressed sound EventReference is not assigned in AudioManager.");
+
+            return;
+        }
     }
 
     /// <summary>

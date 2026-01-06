@@ -1,5 +1,6 @@
 using UnityEngine;
 using Oculus.Interaction.Input;
+using UnityEngine.Events;
 
 [ExecuteAlways]
 public class BowHandTracking : MonoBehaviour
@@ -40,6 +41,7 @@ public class BowHandTracking : MonoBehaviour
     public Transform arrowGrabPoint;     // ponto que a mão tem de tocar
     public float grabRadius = 0.05f;     // raio da zona de deteção
 
+    public UnityEvent<AudioManager.GameSoundEffects, GameObject> arrowShot;
 
     // Runtime
     private GameObject currentArrow;
@@ -56,6 +58,7 @@ public class BowHandTracking : MonoBehaviour
     private Color originalColor;
 
 
+    private AudioManager.GameSoundEffects shootSoundEffect = AudioManager.GameSoundEffects.ARROW_SHOT;
 
     void Start()
     {
@@ -220,6 +223,8 @@ public class BowHandTracking : MonoBehaviour
                 rb.isKinematic = false;
                 float force = Mathf.Lerp(minForce, maxForce, currentPull);
                 rb.AddForce(arrowSpawn.forward * force, ForceMode.VelocityChange);
+
+                arrowShot?.Invoke(shootSoundEffect, gameObject);
             }
         }
 
