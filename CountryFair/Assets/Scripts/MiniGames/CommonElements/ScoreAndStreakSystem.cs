@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Events;
 
 /// <summary>
 /// Manages score and streak tracking with animated visual feedback for mini-games.
@@ -168,6 +169,11 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// Increments with each <see cref="PlayerScored"/> call and resets to 0 on <see cref="PlayerMissed"/>.
     /// </summary>
     private int _streakValue = 0;
+    
+    /// <summary>
+    /// Event invoked to check if the session score goal has been reached.
+    /// </summary>
+    public UnityEvent <int> checkIfGoalReached;
 
     /// <summary>
     /// Initializes the score and streak system by validating references and setting initial UI state.
@@ -267,6 +273,8 @@ public class ScoreAndStreakSystem : MonoBehaviour
         {
             streakText.transform.DOPunchRotation(new Vector3(0, 0, 15), streakPunchDuration, 8, 0.5f);
         }
+
+        checkIfGoalReached.Invoke(_scoreValue);
     }
     
     /// <summary>
