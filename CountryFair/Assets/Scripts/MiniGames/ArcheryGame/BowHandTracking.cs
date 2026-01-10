@@ -58,7 +58,7 @@ public class BowHandTracking : MonoBehaviour
     private Color originalColor;
 
 
-    private AudioManager.GameSoundEffects shootSoundEffect = AudioManager.GameSoundEffects.ARROW_SHOT;
+    private readonly AudioManager.GameSoundEffects shootSoundEffect = AudioManager.GameSoundEffects.ARROW_SHOT;
 
     void Start()
     {

@@ -3,14 +3,16 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {   
     [SerializeField]
-    private int sessionScoreGoal = 3;
+    protected int sessionScoreGoal = 3;
 
-    public void SessionScoreGoal(int currentScore)
+
+    protected virtual void Awake()
     {
-        if (currentScore == sessionScoreGoal)
-        {   
-            // Pauses the game
-            Time.timeScale = 0f;
-        }
+       PlayerPrefs.SetInt("SessionGoal", sessionScoreGoal);
+    }
+
+    public void SessionGoalReached()
+    {  
+        Time.timeScale = 0f;
     }
 }

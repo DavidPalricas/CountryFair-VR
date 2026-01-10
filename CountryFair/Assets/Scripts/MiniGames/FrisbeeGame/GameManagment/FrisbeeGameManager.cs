@@ -9,7 +9,7 @@ using UnityEngine;
 /// and maintains shared state information (like target positions) that dog states can access.
 /// The adaptive parameters are recalculated at game start based on the initial positions of game entities.
 /// </remarks>
-public class FrisbeeGameManager : MonoBehaviour
+public class FrisbeeGameManager : GameManager
 {
     /// <summary>
     /// Dictionary of adaptive parameters used to dynamically adjust game difficulty and behavior.
@@ -32,6 +32,11 @@ public class FrisbeeGameManager : MonoBehaviour
     /// </remarks>
    [HideInInspector]
     public Vector3 currentTargetPos = Vector3.zero;
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
 
     /// <summary>
     /// Initializes the game manager at the start of the game.

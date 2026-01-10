@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Events;
 
 /// <summary>
 /// Manages score and streak tracking with animated visual feedback for mini-games.
@@ -44,6 +45,9 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </summary>
     [SerializeField]
     private TextMeshProUGUI streakText;
+
+    [SerializeField]
+    private TextMeshProUGUI sessionGoalText;
 
     /// <summary>
     /// GameObject representing the streak indicator symbol.
@@ -169,6 +173,13 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </summary>
     private int _streakValue = 0;
 
+    private int _sessionGoal = 0;
+    
+    /// <summary>
+    /// Event invoked to check if the session score goal has been reached.
+    /// </summary>
+    public UnityEvent sessionGoalReached;
+
     /// <summary>
     /// Initializes the score and streak system by validating references and setting initial UI state.
     /// </summary>
@@ -211,6 +222,12 @@ public class ScoreAndStreakSystem : MonoBehaviour
 
         UpdateScoreText();
         UpdateStreakText();
+    }
+
+    private void Start()
+    {   
+        _sessionGoal = PlayerPrefs.GetInt("SessionGoal", 0);
+        sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
     }
 
     /// <summary>
@@ -266,6 +283,11 @@ public class ScoreAndStreakSystem : MonoBehaviour
         if (_streakValue >= highStreaksNumber)
         {
             streakText.transform.DOPunchRotation(new Vector3(0, 0, 15), streakPunchDuration, 8, 0.5f);
+        }
+
+        if (_scoreValue >= _sessionGoal)
+        {
+            sessionGoalReached.Invoke();
         }
     }
     
@@ -326,7 +348,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     private void UpdateScoreText()
     {
-        scoreText.text = $"Pontos: {_scoreValue}";
+        scoreText.text = $"Pontos Atuais: {_scoreValue}";
     }
     
     /// <summary>

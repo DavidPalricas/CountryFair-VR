@@ -1,13 +1,15 @@
 using UnityEngine;
 
-public class ArcheryGameManager : MonoBehaviour
+public class ArcheryGameManager : GameManager
 {
     public static ArcheryGameManager Instance { get; private set; }
     [SerializeField] private int score;
     [SerializeField] private ScoreAndStreakSystem scoreSystem;
 
-    void Awake()
-    {
+    protected override void Awake()
+    {   
+        base.Awake();
+        
         if(Instance != null && Instance != this)
         {
             Destroy(gameObject);
