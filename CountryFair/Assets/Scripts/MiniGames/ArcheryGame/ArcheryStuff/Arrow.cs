@@ -9,6 +9,9 @@ public class Arrow : MonoBehaviour
     [HideInInspector]
     public bool readyToLaunch = false;
 
+
+    public bool InAir { get ; private set; } = false;
+
     private Crowd _crowd;
 
 
@@ -38,6 +41,7 @@ public class Arrow : MonoBehaviour
     public void Launch(float launchForce)
     {
         readyToLaunch = false;
+        InAir = true;
 
         parentTransform = transform.parent;
 
@@ -78,9 +82,9 @@ public class Arrow : MonoBehaviour
     private void SetArrowToOrginalPosition()
     {  
         _rb.isKinematic = true;
-
-      
-        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        InAir = false;
+       
         transform.parent = parentTransform;
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 }

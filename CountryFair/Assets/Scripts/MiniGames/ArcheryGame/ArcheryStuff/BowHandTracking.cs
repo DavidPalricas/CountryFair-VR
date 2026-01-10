@@ -130,16 +130,9 @@ public class BowHandTracking : MonoBehaviour
 
     private void AssignRightHandSource()
     {
-        // 1. If OVRHand exists and is tracked → use it
-        if (pullingHand != null && pullingHand.IsTracked)
-        {
-            _handSource = pullingHand.transform;
-            Debug.Log("[Bow] Using real RIGHT HAND for pulling.");
-            return;
-        }
-
         // 2. Otherwise → use RightControllerAnchor
         OVRCameraRig rig = FindFirstObjectByType<OVRCameraRig>();
+
         if (rig != null)
         {
             _handSource = rig.rightControllerAnchor;
@@ -171,7 +164,7 @@ public class BowHandTracking : MonoBehaviour
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
-        if (handClosed && !arrow.readyToLaunch && IsHandAtGrabPoint())
+        if (handClosed && !arrow.InAir && !arrow.readyToLaunch && IsHandAtGrabPoint())
         {
             PrepareArrow();
         }
