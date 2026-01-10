@@ -459,6 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125f3715004ba694e958d7e76a8ab923, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryGameManager
+  sessionScoreGoal: 5
   score: 0
   scoreSystem: {fileID: 1278128321}
 --- !u!4 &106628085
@@ -651,6 +652,18 @@ PrefabInstance:
       propertyPath: streakPunchScale
       value: 1.1
       objectReference: {fileID: 0}
+    - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: sessionGoalReached.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 106628084}
+    - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: sessionGoalReached.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SessionGoalReached
+      objectReference: {fileID: 0}
+    - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: sessionGoalReached.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ArcheryGameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 4630222193451751886, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_Name
       value: Score And Streak System
@@ -673,6 +686,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4984518191379675620, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_fontColorGradient.bottomRight.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 287.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -53
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 210
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740646175960316075, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
+      propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6993947051740798286, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
@@ -1851,8 +1892,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.42275578, b: 0.25129226, a: 1}
-    - _Color: {r: 0.5566037, g: 0.4227734, b: 0.25130987, a: 1}
+    - _BaseColor: {r: 0.5566037, g: 0.42274177, b: 0.25127825, a: 1}
+    - _Color: {r: 0.5566037, g: 0.42275575, b: 0.25129223, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
