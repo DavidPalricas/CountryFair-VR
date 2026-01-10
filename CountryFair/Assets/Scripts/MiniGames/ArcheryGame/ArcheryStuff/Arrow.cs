@@ -1,23 +1,30 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Arrow : MonoBehaviour
 {
     private Rigidbody _rb;
-    private ScoreAndStreakSystem scoreSystem;
-
-    public bool ReadyToLaunch  { get; set; } = false;
+    
+    [HideInInspector]
+    public bool readyToLaunch = false;
 
     private Crowd _crowd;
 
 
     private Transform parentTransform = null;
 
+
+    [SerializeField]
+    private UnityEvent <int> playerScored;
+   
+   [SerializeField]
+    private UnityEvent playerMissed;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-        scoreSystem = GameObject.FindGameObjectWithTag("ScoreSystem").GetComponent<ScoreAndStreakSystem>();
-
+    
         _crowd = GameObject.FindGameObjectWithTag("CrowdArcheryGame").GetComponent<Crowd>();
 
         if (_crowd == null)
@@ -30,7 +37,7 @@ public class Arrow : MonoBehaviour
 
     public void Launch(float launchForce)
     {
-        ReadyToLaunch = false;
+        readyToLaunch = false;
 
         parentTransform = transform.parent;
 
@@ -46,8 +53,13 @@ public class Arrow : MonoBehaviour
     {
         // --- SE BATER NO BALÃO ---
         if (col.gameObject.CompareTag("Balloon"))
-        {
-            col.gameObject.GetComponent<BalloonScript>().Pop();
+        {   
+            BalloonScript balloonScript = col.gameObject.GetComponent<BalloonScript>();
+
+            balloonScript.Pop();
+
+            playerScored.Invoke(balloonScript.scoreToAdd);
+
             _crowd.Cheer();
             SetArrowToOrginalPosition();
             return;
@@ -56,7 +68,7 @@ public class Arrow : MonoBehaviour
         // --- SE BATER NO CHÃO ---
         if (col.gameObject.CompareTag("Ground"))
         {
-            scoreSystem.PlayerMissed();
+            playerMissed.Invoke();
             SetArrowToOrginalPosition();
             return;
         }

@@ -14,7 +14,7 @@ public class BalloonScript : MonoBehaviour
     private Renderer balloonRenderer;
     private Color balloonColor;
 
-    [SerializeField] int scoreToAdd;
+    public  int scoreToAdd;
     [SerializeField] GameObject balloonPrefab;
 
     private BoxCollider spawnArea;
@@ -95,7 +95,6 @@ public class BalloonScript : MonoBehaviour
             }
         }
 
-        ArcheryGameManager.Instance.SetScore(scoreToAdd);
         SpawnBalloon();
         _archeryAudioManager.PlaySpatialSoundEffect(popSoundEffect, gameObject);
         Destroy(transform.parent.gameObject);

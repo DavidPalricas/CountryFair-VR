@@ -149,7 +149,7 @@ public class BowHandTracking : MonoBehaviour
 
     private void Update()
     {
-        if (arrow.ReadyToLaunch)
+        if (arrow.readyToLaunch)
         {
             Vector3 startVel = _shootDirection * _shootForce;
             trajectoryLine.ShowTrajectory(arrow.transform.position, startVel);
@@ -171,17 +171,17 @@ public class BowHandTracking : MonoBehaviour
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
-        if (handClosed && !arrow.ReadyToLaunch && IsHandAtGrabPoint())
+        if (handClosed && !arrow.readyToLaunch && IsHandAtGrabPoint())
         {
             PrepareArrow();
         }
            
-        if (arrow.ReadyToLaunch)
+        if (arrow.readyToLaunch)
         {
             UpdatePull();
         }
           
-        if (arrow.ReadyToLaunch && handOpen)
+        if (arrow.readyToLaunch && handOpen)
         {
              FireArrow();
         }
@@ -193,7 +193,7 @@ public class BowHandTracking : MonoBehaviour
     // PREPARAR SETA -------------------------------
     private void PrepareArrow()
     {
-        arrow.ReadyToLaunch = true;
+        arrow.readyToLaunch = true;
         _currentPull = 0f;
 
         _stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
