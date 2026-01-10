@@ -1,15 +1,16 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Arrow : MonoBehaviour
 {
     private Rigidbody rb;
     private ScoreAndStreakSystem scoreSystem;
 
-    bool launched = false;
+    private bool launched = false;
 
     private Crowd _crowd;
 
-    void Awake()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         scoreSystem = GameObject.FindGameObjectWithTag("ScoreSystem").GetComponent<ScoreAndStreakSystem>();

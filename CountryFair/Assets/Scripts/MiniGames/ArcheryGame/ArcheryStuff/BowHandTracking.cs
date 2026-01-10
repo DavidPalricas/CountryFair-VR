@@ -1,124 +1,160 @@
 using UnityEngine;
-using Oculus.Interaction.Input;
 using UnityEngine.Events;
 
 [ExecuteAlways]
 public class BowHandTracking : MonoBehaviour
 {
     [Header("References")]
-    public Transform bowRoot;  
-    public Transform bowModel;                
-              
-    public Transform arrowSpawn;
-    public GameObject arrowPrefab;
-    public TrajectoryLine trajectoryLine;
+    [SerializeField]
+    private Transform bowRoot;  
+
+    [SerializeField]
+    private Transform bowModel;                
+
+    [SerializeField]   
+    private Transform arrowSpawn;
+    [SerializeField]
+    private GameObject arrowPrefab;
+    [SerializeField]
+    private TrajectoryLine trajectoryLine;
 
     [Header("Right Hand Override")]
-    public OVRHand pullingHand;               // opcional (se existir hand tracking)
-    private Transform handSource;             // mão OU controlador (fallback automático)
+    [SerializeField]
+    private OVRHand pullingHand;    
+    
+               // opcional (se existir hand tracking)
+         // mão OU controlador (fallback automático)
 
     [Header("Line Renderer / String")]
-    public LineRenderer bowString;
-    public Transform stringMidPoint;
-    public Vector3 topLocalPos = new Vector3(0f, 0.15f, 0f);
-    public Vector3 bottomLocalPos = new Vector3(0f, -0.15f, 0f);
+    [SerializeField]
+    private LineRenderer bowString;
+
+    [SerializeField]
+    private Transform stringMidPoint;
+
+    [SerializeField]
+    private Vector3 topLocalPos = new (0f, 0.15f, 0f);
+
+    [SerializeField]
+    private Vector3 bottomLocalPos = new (0f, -0.15f, 0f);
 
     [Header("Pull Settings")]
-    public float maxPullDistance = 0.35f;
-    public float maxStringBackward = 0.25f;
-    [Range(0f, 1f)] public float pullSmooth = 0.2f;
+    [SerializeField]
+    private float maxPullDistance = 0.35f;
+    
+    [SerializeField]
+    private float maxStringBackward = 0.25f;
+
+    [Range(0f, 1f)]
+     [SerializeField] 
+     private float pullSmooth = 0.2f;
 
     [Header("Force")]
-    public float minForce = 5f;
-    public float maxForce = 60f;
+    [SerializeField]
+    private float minForce = 5f;
+    [SerializeField]
+    private float maxForce = 60f;
 
     [Header("Finger Detection")]
-    public float closeThreshold = 0.25f;
-    public float openThreshold = 0.10f;
+    [SerializeField]
+    private float closeThreshold = 0.25f;
+    [SerializeField]
+    private float openThreshold = 0.10f;
 
 
     [Header("Arrow Grab Detection")]
-    public Transform arrowGrabPoint;     // ponto que a mão tem de tocar
-    public float grabRadius = 0.05f;     // raio da zona de deteção
+    [SerializeField]
+    private Transform arrowGrabPoint;     // ponto que a mão tem de tocar
+    [SerializeField]
+    private float grabRadius = 0.05f;     // raio da zona de deteção
 
     public UnityEvent<AudioManager.GameSoundEffects, GameObject> arrowShot;
+    
+
+    private Transform _handSource;    
 
     // Runtime
-    private GameObject currentArrow;
-    private float currentPull = 0f;
-    private bool arrowReady = false;
+    private GameObject _currentArrow;
+    private float _currentPull = 0f;
+    private bool _arrowReady = false;
 
-    private Vector3 stringMidStartLocalPos;
-    private Vector3 stringMidStartWorldPos;
-    private Transform runtimeMid;
+    private Vector3 _stringMidStartLocalPos;
+    private Vector3 _stringMidStartWorldPos;
 
-    private Vector3 shootDirection;
-    private float shootForce;
-    private MeshRenderer bowRenderer;
-    private Color originalColor;
+    private Vector3 _shootDirection;
+    private float _shootForce;
+    private MeshRenderer _bowRenderer;
+    private Color _originalColor;
 
 
-    private readonly AudioManager.GameSoundEffects shootSoundEffect = AudioManager.GameSoundEffects.ARROW_SHOT;
+    private readonly AudioManager.GameSoundEffects _shootSoundEffect = AudioManager.GameSoundEffects.ARROW_SHOT;
 
-    void Start()
+    private void Start()
     {
         if (bowRoot == null)
-            bowRoot = transform;
-
+        {
+             bowRoot = transform;
+        }
+           
         // --- HAND SOURCE SETUP (VERY IMPORTANT) ---
         AssignRightHandSource();
 
         // --- STRING MIDPOINT ---
         if (stringMidPoint == null)
         {
-            GameObject go = new GameObject("StringMidPoint_Runtime");
-            go.hideFlags = HideFlags.DontSaveInBuild;
+            GameObject go = new("StringMidPoint_Runtime")
+            {
+                hideFlags = HideFlags.DontSaveInBuild
+            };
+
             go.transform.SetParent(bowRoot, false);
             go.transform.localPosition = Vector3.zero;
             stringMidPoint = go.transform;
-            runtimeMid = stringMidPoint;
+  
         }
 
-        stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
-        stringMidPoint.localPosition = stringMidStartLocalPos;
-        stringMidStartWorldPos = stringMidPoint.position;
+        _stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
+        stringMidPoint.localPosition = _stringMidStartLocalPos;
+        _stringMidStartWorldPos = stringMidPoint.position;
 
         if (bowString != null)
-            bowString.positionCount = 3;
-
-        bowRenderer = bowModel.GetComponent<MeshRenderer>();
-
-        if (bowRenderer != null)
         {
-            originalColor = bowRenderer.sharedMaterial.color;  
+            bowString.positionCount = 3;
+        }
+        
+        _bowRenderer = bowModel.GetComponent<MeshRenderer>();
+
+        if (_bowRenderer != null)
+        {
+            _originalColor = _bowRenderer.sharedMaterial.color;  
         }
 
     }
 
-    void AssignRightHandSource()
+    private void AssignRightHandSource()
     {
         // 1. If OVRHand exists and is tracked → use it
         if (pullingHand != null && pullingHand.IsTracked)
         {
-            handSource = pullingHand.transform;
+            _handSource = pullingHand.transform;
             Debug.Log("[Bow] Using real RIGHT HAND for pulling.");
             return;
         }
 
         // 2. Otherwise → use RightControllerAnchor
-        var rig = FindObjectOfType<OVRCameraRig>();
+        OVRCameraRig rig = FindFirstObjectByType<OVRCameraRig>();
         if (rig != null)
         {
-            handSource = rig.rightControllerAnchor;
+            _handSource = rig.rightControllerAnchor;
             Debug.Log("[Bow] Using RIGHT CONTROLLER as pulling hand fallback.");
         }
     }
 
-    void Update()
+    private void Update()
     {
-        if (arrowReady)
+        if (_arrowReady)
         {
-            Vector3 startVel = shootDirection * shootForce;
+            Vector3 startVel = _shootDirection * _shootForce;
             trajectoryLine.ShowTrajectory(arrowSpawn.position, startVel);
 
             SetBowTransparency(0.35f);
@@ -126,10 +162,10 @@ public class BowHandTracking : MonoBehaviour
         else
         {
             trajectoryLine.HideTrajectory();
-            SetBowTransparency(originalColor.a);
+            SetBowTransparency(_originalColor.a);
         }
 
-        if (handSource == null)
+        if (_handSource == null)
         {
             AssignRightHandSource();
             return;
@@ -138,106 +174,117 @@ public class BowHandTracking : MonoBehaviour
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
-        if (handClosed && !arrowReady && !IsHandAtGrabPoint())
+        if (handClosed && !_arrowReady && !IsHandAtGrabPoint())
+        {
             PrepareArrow();
+        }
+           
 
-        if (arrowReady)
+        if (_arrowReady)
+        {
             UpdatePull();
-
-        if (arrowReady && handOpen)
-            FireArrow();
+        }
+          
+        if (_arrowReady && handOpen)
+        {
+             FireArrow();
+        }
+           
 
         UpdateBowString();
     }
 
     // PREPARAR SETA -------------------------------
-    void PrepareArrow()
+    private void PrepareArrow()
     {
         if (arrowPrefab == null || arrowSpawn == null)
             return;
 
-        arrowReady = true;
+        _arrowReady = true;
 
-        currentArrow = Instantiate(arrowPrefab, arrowSpawn.position, arrowSpawn.rotation, arrowSpawn);
+        _currentArrow = Instantiate(arrowPrefab, arrowSpawn.position, arrowSpawn.rotation, arrowSpawn);
 
-        Rigidbody rb = currentArrow.GetComponentInChildren<Rigidbody>();
+        Rigidbody rb = _currentArrow.GetComponentInChildren<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
-        currentPull = 0f;
+        _currentPull = 0f;
 
-        stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
-        stringMidPoint.localPosition = stringMidStartLocalPos;
-        stringMidStartWorldPos = stringMidPoint.position;
+        _stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
+        stringMidPoint.localPosition = _stringMidStartLocalPos;
+        _stringMidStartWorldPos = stringMidPoint.position;
     }
 
     // PULL -----------------------------------------
     void UpdatePull()
     {
-        Vector3 handPos = handSource.position;
+        Vector3 handPos = _handSource.position;
 
         // SEMPRE recalcular posição inicial da corda
-        stringMidStartWorldPos = bowRoot.TransformPoint(stringMidStartLocalPos);
+        _stringMidStartWorldPos = bowRoot.TransformPoint(_stringMidStartLocalPos);
 
         Vector3 pullDir = bowRoot.forward;
 
-        float rawDist = Vector3.Dot(handPos - stringMidStartWorldPos, pullDir);
+        float rawDist = Vector3.Dot(handPos - _stringMidStartWorldPos, pullDir);
 
         float backwardDist = Mathf.Max(0f, -rawDist);
 
         float pullAmount = Mathf.Clamp01(backwardDist / maxPullDistance);
 
-        currentPull = Mathf.Lerp(currentPull, pullAmount,
+        _currentPull = Mathf.Lerp(_currentPull, pullAmount,
             1f - Mathf.Exp(-pullSmooth * 30f * Time.deltaTime));
 
-        Vector3 targetPos = stringMidStartWorldPos - bowRoot.forward * (currentPull * maxStringBackward);
+        Vector3 targetPos = _stringMidStartWorldPos - bowRoot.forward * (_currentPull * maxStringBackward);
 
         stringMidPoint.position = targetPos;
 
-        if (currentArrow != null)
+        if (_currentArrow != null)
         {
             Vector3 offset = bowRoot.forward * 0.12f; // ajusta o valor
-            currentArrow.transform.SetPositionAndRotation(
+            _currentArrow.transform.SetPositionAndRotation(
                 stringMidPoint.position + offset,
                 bowRoot.rotation
             );
         }
 
         // Direção do tiro = direção em que o arco aponta
-        shootDirection = bowRoot.forward;
+        _shootDirection = bowRoot.forward;
 
         // Força calculada com base no pull (mesmo que o FireArrow usa)
-        shootForce = Mathf.Lerp(minForce, maxForce, currentPull);
-
+        _shootForce = Mathf.Lerp(minForce, maxForce, _currentPull);
     }
 
 
     // FIRE ------------------------------------------
-    void FireArrow()
+    private void FireArrow()
     {
-        if (currentArrow != null)
+        if (_currentArrow != null)
         {
-            currentArrow.transform.parent = null;
-            Rigidbody rb = currentArrow.GetComponentInChildren<Rigidbody>();
+            _currentArrow.transform.parent = null;
+            Rigidbody rb = _currentArrow.GetComponentInChildren<Rigidbody>();
+
             if (rb != null)
             {
                 rb.isKinematic = false;
-                float force = Mathf.Lerp(minForce, maxForce, currentPull);
+                float force = Mathf.Lerp(minForce, maxForce, _currentPull);
                 rb.AddForce(arrowSpawn.forward * force, ForceMode.VelocityChange);
 
-                arrowShot?.Invoke(shootSoundEffect, gameObject);
+                arrowShot?.Invoke(_shootSoundEffect, gameObject);
             }
         }
 
-        stringMidPoint.localPosition = stringMidStartLocalPos;
-        currentPull = 0f;
-        arrowReady = false;
-        currentArrow = null;
+        stringMidPoint.localPosition = _stringMidStartLocalPos;
+        _currentPull = 0f;
+        _arrowReady = false;
+        _currentArrow = null;
     }
 
     // STRING -----------------------------------------
-    void UpdateBowString()
+    private void UpdateBowString()
     {
-        if (bowString == null) return;
+        if (bowString == null)
+        {
+            return;
+        } 
 
         Vector3 topWorld = bowRoot.TransformPoint(topLocalPos);
         Vector3 bottomWorld = bowRoot.TransformPoint(bottomLocalPos);
@@ -248,7 +295,7 @@ public class BowHandTracking : MonoBehaviour
     }
 
     // HAND STATE --------------------------------------
-    bool IsHandClosed()
+    private bool IsHandClosed()
     {
         // If hand tracking exists
         if (pullingHand != null && pullingHand.IsTracked)
@@ -264,7 +311,7 @@ public class BowHandTracking : MonoBehaviour
                OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger, OVRInput.Controller.RTouch) > 0.2f;
     }
 
-    bool IsHandOpen()
+    private bool IsHandOpen()
     {
         if (pullingHand != null && pullingHand.IsTracked)
         {
@@ -278,22 +325,27 @@ public class BowHandTracking : MonoBehaviour
                OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger, OVRInput.Controller.RTouch) < 0.1f;
     }
 
-    void SetBowTransparency(float alpha)
+    private void SetBowTransparency(float alpha)
     {
-        if (bowRenderer == null) return;
+        if (_bowRenderer == null)
+        {
+            return;
+        } 
 
-        Color c = bowRenderer.sharedMaterial.color;
+        Color c = _bowRenderer.sharedMaterial.color;
         c.a = alpha;
-        bowRenderer.sharedMaterial.color = c;
+        _bowRenderer.sharedMaterial.color = c;
     }
 
-    bool IsHandAtGrabPoint()
+    private bool IsHandAtGrabPoint()
     {
-        if (arrowGrabPoint == null || handSource == null)
+        if (arrowGrabPoint == null || _handSource == null)
+        {
             return false;
+        }
+     
+        float dist = Vector3.Distance(_handSource.position, arrowGrabPoint.position);
 
-        float dist = Vector3.Distance(handSource.position, arrowGrabPoint.position);
         return dist < grabRadius;
     }
-
 }
