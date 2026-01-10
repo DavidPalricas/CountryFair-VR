@@ -12,9 +12,8 @@ public class BowHandTracking : MonoBehaviour
     private Transform bowModel;                
 
     [SerializeField]   
-    private Transform arrowSpawn;
-    [SerializeField]
-    private GameObject arrowPrefab;
+    private Arrow arrow;
+
     [SerializeField]
     private TrajectoryLine trajectoryLine;
 
@@ -73,11 +72,9 @@ public class BowHandTracking : MonoBehaviour
 
     private Transform _handSource;    
 
-    // Runtime
-    private GameObject _currentArrow;
-    private float _currentPull = 0f;
-    private bool _arrowReady = false;
 
+    private float _currentPull = 0f;
+  
     private Vector3 _stringMidStartLocalPos;
     private Vector3 _stringMidStartWorldPos;
 
@@ -152,10 +149,10 @@ public class BowHandTracking : MonoBehaviour
 
     private void Update()
     {
-        if (_arrowReady)
+        if (!arrow.ReadyToLaunch)
         {
             Vector3 startVel = _shootDirection * _shootForce;
-            trajectoryLine.ShowTrajectory(arrowSpawn.position, startVel);
+            trajectoryLine.ShowTrajectory(arrow.transform.position, startVel);
 
             SetBowTransparency(0.35f);
         }
@@ -174,18 +171,18 @@ public class BowHandTracking : MonoBehaviour
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
-        if (handClosed && !_arrowReady && !IsHandAtGrabPoint())
+        if (handClosed && !arrow.ReadyToLaunch && !IsHandAtGrabPoint())
         {
             PrepareArrow();
         }
            
 
-        if (_arrowReady)
+        if (arrow.ReadyToLaunch)
         {
             UpdatePull();
         }
           
-        if (_arrowReady && handOpen)
+        if (arrow.ReadyToLaunch && handOpen)
         {
              FireArrow();
         }
@@ -197,16 +194,7 @@ public class BowHandTracking : MonoBehaviour
     // PREPARAR SETA -------------------------------
     private void PrepareArrow()
     {
-        if (arrowPrefab == null || arrowSpawn == null)
-            return;
-
-        _arrowReady = true;
-
-        _currentArrow = Instantiate(arrowPrefab, arrowSpawn.position, arrowSpawn.rotation, arrowSpawn);
-
-        Rigidbody rb = _currentArrow.GetComponentInChildren<Rigidbody>();
-        if (rb != null) rb.isKinematic = true;
-
+        arrow.ReadyToLaunch = true;
         _currentPull = 0f;
 
         _stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
@@ -215,7 +203,7 @@ public class BowHandTracking : MonoBehaviour
     }
 
     // PULL -----------------------------------------
-    void UpdatePull()
+    private void UpdatePull()
     {
         Vector3 handPos = _handSource.position;
 
@@ -237,15 +225,12 @@ public class BowHandTracking : MonoBehaviour
 
         stringMidPoint.position = targetPos;
 
-        if (_currentArrow != null)
-        {
-            Vector3 offset = bowRoot.forward * 0.12f; // ajusta o valor
-            _currentArrow.transform.SetPositionAndRotation(
-                stringMidPoint.position + offset,
-                bowRoot.rotation
-            );
-        }
-
+        Vector3 offset = bowRoot.forward * 0.12f; // ajusta o valor
+        arrow.transform.SetPositionAndRotation(
+            stringMidPoint.position + offset,
+            bowRoot.rotation
+        );
+        
         // Direção do tiro = direção em que o arco aponta
         _shootDirection = bowRoot.forward;
 
@@ -256,36 +241,20 @@ public class BowHandTracking : MonoBehaviour
 
     // FIRE ------------------------------------------
     private void FireArrow()
-    {
-        if (_currentArrow != null)
-        {
-            _currentArrow.transform.parent = null;
-            Rigidbody rb = _currentArrow.GetComponentInChildren<Rigidbody>();
+    {       
+        float launchForce = Mathf.Lerp(minForce, maxForce, _currentPull);
 
-            if (rb != null)
-            {
-                rb.isKinematic = false;
-                float force = Mathf.Lerp(minForce, maxForce, _currentPull);
-                rb.AddForce(arrowSpawn.forward * force, ForceMode.VelocityChange);
+        arrow.Launch(launchForce);
 
-                arrowShot?.Invoke(_shootSoundEffect, gameObject);
-            }
-        }
-
+        arrowShot?.Invoke(_shootSoundEffect, gameObject);
+        
         stringMidPoint.localPosition = _stringMidStartLocalPos;
         _currentPull = 0f;
-        _arrowReady = false;
-        _currentArrow = null;
     }
 
     // STRING -----------------------------------------
     private void UpdateBowString()
     {
-        if (bowString == null)
-        {
-            return;
-        } 
-
         Vector3 topWorld = bowRoot.TransformPoint(topLocalPos);
         Vector3 bottomWorld = bowRoot.TransformPoint(bottomLocalPos);
 
@@ -298,7 +267,7 @@ public class BowHandTracking : MonoBehaviour
     private bool IsHandClosed()
     {
         // If hand tracking exists
-        if (pullingHand != null && pullingHand.IsTracked)
+        if (pullingHand.IsTracked)
         {
             float i = pullingHand.GetFingerPinchStrength(OVRHand.HandFinger.Index);
             float m = pullingHand.GetFingerPinchStrength(OVRHand.HandFinger.Middle);
@@ -313,7 +282,7 @@ public class BowHandTracking : MonoBehaviour
 
     private bool IsHandOpen()
     {
-        if (pullingHand != null && pullingHand.IsTracked)
+        if (pullingHand.IsTracked)
         {
             float i = pullingHand.GetFingerPinchStrength(OVRHand.HandFinger.Index);
             float m = pullingHand.GetFingerPinchStrength(OVRHand.HandFinger.Middle);
@@ -327,11 +296,6 @@ public class BowHandTracking : MonoBehaviour
 
     private void SetBowTransparency(float alpha)
     {
-        if (_bowRenderer == null)
-        {
-            return;
-        } 
-
         Color c = _bowRenderer.sharedMaterial.color;
         c.a = alpha;
         _bowRenderer.sharedMaterial.color = c;
@@ -339,11 +303,6 @@ public class BowHandTracking : MonoBehaviour
 
     private bool IsHandAtGrabPoint()
     {
-        if (arrowGrabPoint == null || _handSource == null)
-        {
-            return false;
-        }
-     
         float dist = Vector3.Distance(_handSource.position, arrowGrabPoint.position);
 
         return dist < grabRadius;
