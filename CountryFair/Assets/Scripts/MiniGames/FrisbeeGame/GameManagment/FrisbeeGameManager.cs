@@ -33,6 +33,11 @@ public class FrisbeeGameManager : GameManager
    [HideInInspector]
     public Vector3 currentTargetPos = Vector3.zero;
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     /// <summary>
     /// Initializes the game manager at the start of the game.
     /// </summary>

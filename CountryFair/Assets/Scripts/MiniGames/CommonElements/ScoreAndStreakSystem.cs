@@ -46,6 +46,9 @@ public class ScoreAndStreakSystem : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI streakText;
 
+    [SerializeField]
+    private TextMeshProUGUI sessionGoalText;
+
     /// <summary>
     /// GameObject representing the streak indicator symbol.
     /// Activated when a streak begins and deactivated when the streak is broken.
@@ -169,11 +172,13 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// Increments with each <see cref="PlayerScored"/> call and resets to 0 on <see cref="PlayerMissed"/>.
     /// </summary>
     private int _streakValue = 0;
+
+    private int _sessionGoal = 0;
     
     /// <summary>
     /// Event invoked to check if the session score goal has been reached.
     /// </summary>
-    public UnityEvent <int> checkIfGoalReached;
+    public UnityEvent sessionGoalReached;
 
     /// <summary>
     /// Initializes the score and streak system by validating references and setting initial UI state.
@@ -217,6 +222,12 @@ public class ScoreAndStreakSystem : MonoBehaviour
 
         UpdateScoreText();
         UpdateStreakText();
+    }
+
+    private void Start()
+    {   
+        _sessionGoal = PlayerPrefs.GetInt("SessionGoal", 0);
+        sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
     }
 
     /// <summary>
@@ -274,7 +285,10 @@ public class ScoreAndStreakSystem : MonoBehaviour
             streakText.transform.DOPunchRotation(new Vector3(0, 0, 15), streakPunchDuration, 8, 0.5f);
         }
 
-        checkIfGoalReached.Invoke(_scoreValue);
+        if (_scoreValue >= _sessionGoal)
+        {
+            sessionGoalReached.Invoke();
+        }
     }
     
     /// <summary>
@@ -334,7 +348,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     private void UpdateScoreText()
     {
-        scoreText.text = $"Pontos: {_scoreValue}";
+        scoreText.text = $"Pontos Atuais: {_scoreValue}";
     }
     
     /// <summary>

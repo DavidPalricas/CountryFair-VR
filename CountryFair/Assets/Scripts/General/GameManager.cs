@@ -5,13 +5,14 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     protected int sessionScoreGoal = 3;
 
-    public void SessionScoreGoal(int currentScore)
+
+    protected virtual void Awake()
+    {
+       PlayerPrefs.SetInt("SessionGoal", sessionScoreGoal);
+    }
+
+    public void SessionGoalReached()
     {  
-        Debug.Log("Current Score: " + currentScore + " / Session Score Goal: " + sessionScoreGoal);
-        if (currentScore >= sessionScoreGoal)
-        {   
-            // Pauses the game
-            Time.timeScale = 0f;
-        }
+        Time.timeScale = 0f;
     }
 }
