@@ -13,10 +13,6 @@ public class Arrow : MonoBehaviour
 
     private Transform parentTransform = null;
 
-    private Vector3 originalPosition = Vector3.zero;
-
-    private Quaternion originalRotation = Quaternion.identity;
-
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -38,9 +34,6 @@ public class Arrow : MonoBehaviour
 
         parentTransform = transform.parent;
 
-        originalPosition = transform.localPosition;
-
-        originalRotation = transform.rotation;
 
         _rb.isKinematic = false;
 
@@ -63,8 +56,8 @@ public class Arrow : MonoBehaviour
         // --- SE BATER NO CHÃO ---
         if (col.gameObject.CompareTag("Ground"))
         {
-            SetArrowToOrginalPosition();
             scoreSystem.PlayerMissed();
+            SetArrowToOrginalPosition();
             return;
         }
     }
@@ -74,8 +67,8 @@ public class Arrow : MonoBehaviour
     {  
         _rb.isKinematic = true;
 
+      
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         transform.parent = parentTransform;
-        transform.localPosition = originalPosition;
-        _rb.rotation = originalRotation;
     }
 }

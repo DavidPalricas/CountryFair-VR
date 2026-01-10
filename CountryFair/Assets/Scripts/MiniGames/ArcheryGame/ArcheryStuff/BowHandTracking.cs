@@ -149,7 +149,7 @@ public class BowHandTracking : MonoBehaviour
 
     private void Update()
     {
-        if (!arrow.ReadyToLaunch)
+        if (arrow.ReadyToLaunch)
         {
             Vector3 startVel = _shootDirection * _shootForce;
             trajectoryLine.ShowTrajectory(arrow.transform.position, startVel);
@@ -171,12 +171,11 @@ public class BowHandTracking : MonoBehaviour
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
-        if (handClosed && !arrow.ReadyToLaunch && !IsHandAtGrabPoint())
+        if (handClosed && !arrow.ReadyToLaunch && IsHandAtGrabPoint())
         {
             PrepareArrow();
         }
            
-
         if (arrow.ReadyToLaunch)
         {
             UpdatePull();
@@ -305,6 +304,6 @@ public class BowHandTracking : MonoBehaviour
     {
         float dist = Vector3.Distance(_handSource.position, arrowGrabPoint.position);
 
-        return dist < grabRadius;
+        return dist <= grabRadius;
     }
 }
