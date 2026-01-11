@@ -58,11 +58,11 @@ public class Arrow : MonoBehaviour
         // --- SE BATER NO BALÃO ---
         if (col.gameObject.CompareTag("Balloon"))
         {   
-            BalloonScript balloonScript = col.gameObject.GetComponent<BalloonScript>();
+            BalloonArcheryGame balloon = col.gameObject.GetComponent<BalloonArcheryGame>();
 
-            balloonScript.Pop();
+            balloon.Pop();
 
-            playerScored.Invoke(balloonScript.scoreToAdd);
+            playerScored.Invoke(balloon.GetScoreValue());
 
             _crowd.Cheer();
             SetArrowToOrginalPosition();
