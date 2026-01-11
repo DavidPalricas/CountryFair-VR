@@ -181,7 +181,7 @@ public class CheatCodesFrisbee : MonoBehaviour
         switch (cheatCode)
         {
             case "throw":
-                _frisbeePlayerFrontState.ThrowFrisbee();
+                _frisbeePlayerFrontState.ThrowFrisbee(true);
                 break;
 
             case "score":

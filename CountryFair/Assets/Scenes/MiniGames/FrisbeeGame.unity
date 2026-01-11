@@ -1108,11 +1108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8862bea98fed5448c81a6a656d69cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &235142643 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-  m_PrefabInstance: {fileID: 215725505992445147}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &251507905 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
@@ -2294,9 +2289,6 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2483171112402263012, guid: f54012181eacade4ea242c65f804720f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 235142643}
-    - targetCorrespondingSourceObject: {fileID: 2483171112402263012, guid: f54012181eacade4ea242c65f804720f, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 715297729}
     - targetCorrespondingSourceObject: {fileID: 863333690809584309, guid: f54012181eacade4ea242c65f804720f, type: 3}
       insertIndex: -1
@@ -2749,6 +2741,22 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: transitions.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: transitions.Array.data[5].to
+      value: 
+      objectReference: {fileID: 1123418846}
+    - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: transitions.Array.data[5].from
+      value: 
+      objectReference: {fileID: 715297730}
+    - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: transitions.Array.data[5].name
+      value: HeldInOtherHand
+      objectReference: {fileID: 0}
     - target: {fileID: 4426682393301741663, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: _handAligment
       value: 0
@@ -2949,6 +2957,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7760067509062637252, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
   m_PrefabInstance: {fileID: 715297728}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &715297730 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2865989487675939233, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+  m_PrefabInstance: {fileID: 715297728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115b6dc8a166bbf4297fb617a31b13a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OnAir
 --- !u!1001 &766014734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4703,20 +4722,32 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _whenUnselect:
-    m_PersistentCalls:
-      m_Calls:
       - m_Target: {fileID: 1123418846}
         m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
-        m_MethodName: ThrowFrisbee
-        m_Mode: 1
+        m_MethodName: GrabbedByRightHand
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
+        m_CallState: 2
+  _whenUnselect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1123418846}
+        m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
+        m_MethodName: ThrowFrisbee
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 1589905544}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
@@ -6062,13 +6093,25 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1123418846}
+        m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
+        m_MethodName: GrabbedByRightHand
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnselect:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1123418846}
         m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
         m_MethodName: ThrowFrisbee
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8621,107 +8664,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioListener
   nonRigidbodyVelocity: 0
   attenuationObject: {fileID: 0}
---- !u!1001 &215725505992445147
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 2099040610}
-    m_Modifications:
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.016970634
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.09000015
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.35816002
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 311525491505367949, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 502370098805518999, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_Name
-      value: PlayerHoldingFrisbee
-      objectReference: {fileID: 0}
-    - target: {fileID: 502370098805518999, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033983588842324660, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1589905544}
-    - target: {fileID: 3033983588842324660, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: _whenUnselect.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 1589905544}
-    - target: {fileID: 3218043902507779282, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 251507906}
-    - target: {fileID: 4279597456614444230, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 251507906}
-    - target: {fileID: 4279597456614444230, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 251507906}
-    - target: {fileID: 4279597456614444230, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 6731033054151550059}
-    - target: {fileID: 4279597456614444230, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_Target
-      value: 
-      objectReference: {fileID: 5657806951949849020}
-    - target: {fileID: 4279597456614444230, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: frisbeeLanded.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 4335083379616336532}
-    - target: {fileID: 4279597456614444230, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: scoreSoundEffectEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 147053875}
-    - target: {fileID: 6437972841939353467, guid: 073183301c8205e44b07498e20ebc521, type: 3}
-      propertyPath: throwSoundEffectEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 147053875}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 073183301c8205e44b07498e20ebc521, type: 3}
 --- !u!114 &4335083379616336532 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}

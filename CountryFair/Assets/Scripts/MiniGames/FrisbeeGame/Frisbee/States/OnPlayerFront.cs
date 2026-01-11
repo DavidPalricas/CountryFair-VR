@@ -30,7 +30,7 @@ public class OnPlayerFront : FrisbeeState
     /// Lower values make the frisbee more transparent, providing visual feedback that throwing is disabled.
     /// </summary>
    
-    private float cannotThrowAlpha = 0.5f;
+    private readonly float cannotThrowAlpha = 0.5f;
 
 
    [SerializeField]
@@ -59,13 +59,16 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     private bool _dogInTarget = true;
 
+
+    private bool _currentGrabHandIsRight = true;
+
     /// <summary>
     /// Array of materials from the frisbee's Renderer component.
     /// Used to modify opacity based on throw availability.
     /// </summary>
     private Material[] _materials;
 
-    private AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
+    private readonly AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
 
 
     public UnityEvent <AudioManager.GameSoundEffects, GameObject> throwSoundEffectEvent;
@@ -121,21 +124,26 @@ public class OnPlayerFront : FrisbeeState
     /// Physics Reference: https://web.mit.edu/womens-ult/www/smite/frisbee_physics.pdf
     /// </para>
     /// </remarks>
-    public void ThrowFrisbee()
+    public void ThrowFrisbee(bool thrownByRightHand)
     {   
-        transform.parent = null;
+        if (fSM.CurrentState == this && thrownByRightHand == _currentGrabHandIsRight)
+        {
+            transform.parent = null;
 
-        _rigidbody.isKinematic = false;
+            _rigidbody.isKinematic = false;
 
-        _rigidbody.useGravity = true;
+            _rigidbody.useGravity = true;
 
-        _collider.isTrigger = false;
+            _collider.isTrigger = false;
 
-        _trajectoryLine.enabled = true; 
+            _trajectoryLine.enabled = true; 
 
-        throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
+            frisbeeGrabbable.enabled = false;
 
-        fSM.ChangeState("FrisbeeThrown");
+            throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
+
+            fSM.ChangeState("FrisbeeThrown");
+        }
     }
 
 
@@ -358,4 +366,11 @@ public class OnPlayerFront : FrisbeeState
     {
         _dogInTarget = false;
     }
+
+
+    public void GrabbedByRightHand(bool isRightHand)
+    {
+        _currentGrabHandIsRight = isRightHand;
+    }
 }
+    
