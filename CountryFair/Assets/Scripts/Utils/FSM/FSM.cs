@@ -114,6 +114,12 @@ public class FSM : MonoBehaviour
             // Removes whitespaces and converts to lowercase to avoid case sensitivity and whitespaces issues
             if (transition.name.Replace(" ", "").ToLower() == transitionName.Replace(" ", "").ToLower() && (transition.from == null || CurrentState == transition.from))
             {   
+                if (!states.Contains(transition.to))
+                {
+                    Debug.LogError($"Transition target state {transition.to.StateName} not found in FSM states for game object {gameObject.name}.");
+                    return;
+                }
+
                 CurrentState.Exit();
                 CurrentState = transition.to;
                 CurrentState.Enter();

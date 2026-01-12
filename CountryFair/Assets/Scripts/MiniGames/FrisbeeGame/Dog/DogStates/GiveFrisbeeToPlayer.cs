@@ -8,7 +8,7 @@ using UnityEngine.Events;
 /// <remarks>
 /// This state activates a visual representation of the frisbee in the dog's mouth.
 /// When the dog reaches the player, it invokes the <see cref="frisbeeGivenToPlayer"/> event
-/// and triggers the transition "PlayerScored" to the <see cref="GoToNewTarget"/> state  or the transition "PlayerMissed"  to the <see cref="GoToPreviousTarget"/> state
+/// and triggers the transition "PlayerScored" to the <see cref="GoToTarget"/> state  or the transition "PlayerMissed"  to the <see cref="GoToPreviousTarget"/> state
 /// based on the <see cref="_playerScored"/> flag.
 /// </remarks>
 public class GiveFrisbeeToPlayer : DogState
@@ -21,16 +21,11 @@ public class GiveFrisbeeToPlayer : DogState
     private GameObject frisbeeInDogMouth;
 
     /// <summary>
-    /// Flag indicating whether the player scored on this round.
-    /// Set to true by calling <see cref="PlayerScored"/> and used to determine the next state transition.
-    /// </summary>
-    private bool _playerScored = false;
-
-    /// <summary>
     /// Event invoked when the dog successfully returns the frisbee to the player.
     /// This event is used to trigger the <see cref="Landed.FrisbeeGivenByDog"/> method to notify that the frisbee has been given back.
     /// </summary>
-    public UnityEvent frisbeeGivenToPlayer;
+    [SerializeField]
+    private UnityEvent frisbeeGivenToPlayer;
    
     /// <summary>
     /// Initializes the GiveFrisbeeToPlayer state and validates the frisbee reference.
@@ -110,12 +105,7 @@ public class GiveFrisbeeToPlayer : DogState
          {  
             frisbeeGivenToPlayer.Invoke();
 
-            string transitionName = _playerScored ? "PlayerScored" : "PlayerMissed";
-
-            fSM.ChangeState(transitionName);
-            
-            // Reset the flag for the next time (overrides to not use an if statement)
-            _playerScored = false;
+            fSM.ChangeState("FrisbeeGiven");
          }
     }
 
@@ -131,19 +121,5 @@ public class GiveFrisbeeToPlayer : DogState
         base.Exit();
 
         frisbeeInDogMouth.SetActive(false);
-    }
-    
-
-    /// <summary>
-    /// Marks that the player scored during this round.
-    /// Sets the <see cref="_playerScored"/> flag to true, which determines the next state transition.
-    /// </summary>
-    /// <remarks>
-    /// This method should be called by external game logic (e.g., score detection system)
-    /// before the dog reaches the player to ensure the correct state transition occurs.
-    /// </remarks>
-    public void PlayerScored()
-    {
-        _playerScored = true;
     }
 }

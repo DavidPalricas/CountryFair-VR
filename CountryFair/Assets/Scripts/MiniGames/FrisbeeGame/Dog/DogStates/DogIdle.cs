@@ -24,13 +24,20 @@ public class DogIdle : DogState
     [SerializeField]
     private GameObject scoreArea;
 
+
+    [Header("Idle Events")]
+
+    [SerializeField]
+    private UnityEvent <AudioManager.GameSoundEffects, GameObject> bark;
+
     /// <summary>
     /// Event invoked when the dog reaches its target position and enters the idle state.
     /// Its used to notify the player that the dog is ready for catching the frisbee see <see cref="OnPlayerFront.DogReachedTarget/>.
     /// </summary>
-    public UnityEvent positionReached;
+    [SerializeField]
+    private UnityEvent positionReached;
 
-    private AudioManager.GameSoundEffects _barkSoundEffect;
+    private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
 
     /// <summary>
     /// Initializes the DogIdle state and ensures the score area is initially deactivated.
@@ -57,8 +64,6 @@ public class DogIdle : DogState
     public override void LateStart()
     {
         base.LateStart();
-         
-        _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
     }
     
     /// <summary>
@@ -80,19 +85,7 @@ public class DogIdle : DogState
     {
         base.Enter();
 
-        if (_gameManager == null)
-        {
-            Debug.LogError("GameManager reference is null in DogIdle state.");
-            return;
-        }
-
-        if (animator == null)
-        {
-            Debug.LogError("Animator reference is null in DogIdle state.");
-            return;
-        }
-
-        _gameManager.currentTargetPos = transform.position;
+        _currentTargetPos = transform.position;
 
         scoreArea.SetActive(true);
 
@@ -100,7 +93,7 @@ public class DogIdle : DogState
 
         animator.SetFloat("Speed", 0f);
 
-        _audioManager.PlaySpatialSoundEffect(_barkSoundEffect, gameObject);
+        bark.Invoke(_barkSoundEffect, gameObject);
     }
 
     /// <summary>
