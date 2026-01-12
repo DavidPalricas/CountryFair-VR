@@ -18,9 +18,6 @@ public class FrisbeeState : State
     /// <summary>Reference to the trajectory visualization component.</summary>
     protected FrisbeeTrajectory _trajectoryLine;
 
-    /// <summary>Current angle of attack in radians - updated during flight based on disc orientation.</summary>
-    protected float _currentAlpha;
-
     /// <summary>
     /// Initializes the frisbee state by setting up references to rigidbody, collider, and trajectory line renderer and setting state properties(fsm and state name).
     /// Called when the state component is first created.

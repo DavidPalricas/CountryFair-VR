@@ -4760,7 +4760,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1123418846}
         m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
-        m_MethodName: GrabbedByRightHand
+        m_MethodName: set_IsBeingGrabbedByRightHand
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6131,7 +6131,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1123418846}
         m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
-        m_MethodName: GrabbedByRightHand
+        m_MethodName: set_IsBeingGrabbedByRightHand
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9250,12 +9250,16 @@ PrefabInstance:
       value: -92.061844
       objectReference: {fileID: 0}
     - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1123418846}
     - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: DogWillCatchFrsibee
+      value: set_DogInTarget
       objectReference: {fileID: 0}
     - target: {fileID: 4677665897276227089, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

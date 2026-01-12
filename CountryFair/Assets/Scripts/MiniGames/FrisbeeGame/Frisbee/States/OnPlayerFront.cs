@@ -25,21 +25,24 @@ using UnityEngine.Events;
 /// </remarks>
 public class OnPlayerFront : FrisbeeState
 {   
-  /// <summary>
+    [SerializeField]
+   private Grabbable frisbeeGrabbable;
+   
+   [SerializeField]
+    private UnityEvent <AudioManager.GameSoundEffects, GameObject> throwSoundEffectEvent;
+
+    [Header("Rendering Parameters")]
+    /// <summary>
     /// Alpha (opacity) value for the frisbee materials when the player cannot throw.
     /// Lower values make the frisbee more transparent, providing visual feedback that throwing is disabled.
     /// </summary>
-   
-    private readonly float cannotThrowAlpha = 0.5f;
-
+    
+    [SerializeField]  
+    private float cannotThrowAlpha = 0.5f;
 
    [SerializeField]
    private Renderer frisbeeRenderer;
 
-
-   [SerializeField]
-   private Grabbable frisbeeGrabbable;
-    
     /// <summary>
     /// Original parent transform of the frisbee (typically the player's hand).
     /// Used to reattach the frisbee when resetting to the held position.
@@ -53,16 +56,6 @@ public class OnPlayerFront : FrisbeeState
     private Quaternion  _initialRotation;
 
     /// <summary>
-    /// Flag indicating whether the dog has reached its target position.
-    /// Set to true when the dog reaches its target position via <see cref="DogReachedTarget"/>.
-    /// Its set to true becuase the dog starts in the target position at game start.
-    /// </summary>
-    private bool _dogInTarget = true;
-
-
-    private bool _currentGrabHandIsRight = true;
-
-    /// <summary>
     /// Array of materials from the frisbee's Renderer component.
     /// Used to modify opacity based on throw availability.
     /// </summary>
@@ -71,7 +64,31 @@ public class OnPlayerFront : FrisbeeState
     private readonly AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
 
 
-    public UnityEvent <AudioManager.GameSoundEffects, GameObject> throwSoundEffectEvent;
+    /// <summary>
+    /// Flag indicating whether the dog has reached its target position.
+    /// Set to true when the dog reaches its target position via <see cref="DogReachedTarget"/>.
+    /// Its set to true becuase the dog starts in the target position at game start.
+    /// </summary>
+    /// <value>
+    /// True if the dog is in position to catch the frisbee, false otherwise.
+    /// </value>
+    /// <notes>>
+    /// This flag is changed via inspector when the dog will catch the frisbee (see <see cref="CatchFrisbee"/> state) and the dog game object.
+    /// </notes>>
+    public bool DogInTarget { get; set; } = true;
+    
+    /// <summary>
+    /// Fkag indicating if the frisbee is being grabbed by the right hand.
+    /// </summary> <summary>
+    /// Set to true if the frisbee is held by the right hand, false if held by the left hand.
+    /// </summary>
+    /// <value>
+    /// True if grabbed by right hand, false otherwise.
+    /// </value>
+    /// <notes>>
+    /// This flag is set externally via inspector by the grab interactables on the frisbee for each hand.
+    /// </notes>>
+    public bool IsBeingGrabbedByRightHand {get; set;} = false;
 
     /// <summary>
     /// Initializes the OnPlayerHand state by storing initial transform values and configuring material transparency.
@@ -84,6 +101,7 @@ public class OnPlayerFront : FrisbeeState
     protected override void Awake()
     {  
         base.Awake();
+        
         _originalParent = transform.parent;
 
         _initialRotation = transform.rotation;
@@ -126,7 +144,7 @@ public class OnPlayerFront : FrisbeeState
     /// </remarks>
     public void ThrowFrisbee(bool thrownByRightHand)
     {   
-        if (fSM.CurrentState == this && thrownByRightHand == _currentGrabHandIsRight)
+        if (fSM.CurrentState == this && thrownByRightHand == IsBeingGrabbedByRightHand)
         {
             transform.parent = null;
 
@@ -183,7 +201,7 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When <see cref="_dogInTarget"/> is true:
+    /// When <see cref="DogInTarget"/> is true:
     /// <list type="bullet">
     /// <item><description>Alpha is set to 1.0 (fully opaque)</description></item>
     /// <item><description>Render queue is set to 2000 (opaque rendering)</description></item>
@@ -191,7 +209,7 @@ public class OnPlayerFront : FrisbeeState
     /// </list>
     /// </para>
     /// <para>
-    /// When <see cref="_dogInTarget"/> is false:
+    /// When <see cref="DogInTarget"/> is false:
     /// <list type="bullet">
     /// <item><description>Alpha is set to <see cref="cannotThrowAlpha"/> (semi-transparent)</description></item>
     /// <item><description>Render queue is set to 3000 (transparent rendering)</description></item>
@@ -208,7 +226,7 @@ public class OnPlayerFront : FrisbeeState
 
         int renderQueue, zWriteValue;
 
-        if (_dogInTarget)
+        if (DogInTarget)
         {   
             const float MAX_ALPHA = 1f;
 
@@ -292,7 +310,7 @@ public class OnPlayerFront : FrisbeeState
     /// Resets the frisbee to its held position and configures it for being held.
     /// </summary>
     /// <remarks>
-    /// Updates the material opacity based on <see cref="_dogInTarget"/> status and calls
+    /// Updates the material opacity based on <see cref="DogInTarget"/> status and calls
     /// <see cref="PlayerHoldingFrisbee"/> to reset physics and transform.
     /// This state is entered when the dog returns the frisbee to the player or at game start.
     /// </remarks>
@@ -312,7 +330,7 @@ public class OnPlayerFront : FrisbeeState
     /// <remarks>
     /// <para>
     /// Detects when the player presses the PrimaryIndexTrigger (VR controller trigger).
-    /// If <see cref="_dogInTarget"/> is true, initiates the throw by:
+    /// If <see cref="DogInTarget"/> is true, initiates the throw by:
     /// <list type="number">
     /// <item><description>Calling <see cref="ThrowFrisbee"/> to apply physics</description></item>
     /// <item><description>Triggering the "FrisbeeThrown" transition to the <see cref="OnMovement"/> state</description></item>
@@ -344,33 +362,13 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     /// <remarks>
     /// This method should be called by the dog's idle state (via UnityEvent) to signal that
-    /// the game is ready for the next throw. Sets <see cref="_dogInTarget"/> to true and updates
+    /// the game is ready for the next throw. Sets <see cref="DogInTarget"/> to true and updates
     /// material opacity to full visibility, indicating to the player that throwing is now allowed.
     /// </remarks>
     public void DogReachedTarget()
     {
-        _dogInTarget = true;
+        DogInTarget = true;
         ChangeMaterialsOpacity();
-    }
-
-    /// <summary>
-    /// Called externally when the dog is moving towards the frisbee to catch it.
-    /// Disables throwing by updating the visual feedback, making the frisbee semi-transparent.
-    /// </summary>
-    /// <remarks>
-    /// This method should be called by the dog's catching state (via UnityEvent) to signal that
-    /// the dog is actively pursuing the frisbee. Sets <see cref="_dogInTarget"/> to false,
-    /// preventing the player from throwing again until the dog returns to its ready position.
-    /// </remarks>
-    public void DogWillCatchFrsibee()
-    {
-        _dogInTarget = false;
-    }
-
-
-    public void GrabbedByRightHand(bool isRightHand)
-    {
-        _currentGrabHandIsRight = isRightHand;
     }
 }
     
