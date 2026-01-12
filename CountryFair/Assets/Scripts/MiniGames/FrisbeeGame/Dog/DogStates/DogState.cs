@@ -38,26 +38,7 @@ using UnityEngine.AI;
     /// </summary>
     protected Transform _playerTransform;
 
-    /// <summary>
-    /// Reference to the Frisbee game manager.
-    /// Initialized in <see cref="LateStart"/> and provides access to game state and adaptive parameters.
-    /// </summary>
-    protected FrisbeeGameManager _gameManager;
-   
-   /// <summary>
-    /// Reference to the Frisbee audio manager.
-    /// Initialized in <see cref="LateStart"/> and used to play sound effects related to the dog.
-    /// </summary>
-    protected FrisbeeAudioManager _audioManager;
-
-    
-    protected AudioManager.GameSoundEffects _gameSoundEffects;
-
-     /// <summary>
-    /// Reference to the frisbee's transform component.
-    /// Found in the scene during <see cref="LateStart"/> using the "Frisbee" tag.
-    /// </summary>
-    protected Transform _frisbeeTransform;
+    protected static Vector3 _currentTargetPos;
 
     /// <summary>
     /// Initializes the dog state by setting up state properties and configuring the NavMeshAgent.
@@ -97,39 +78,9 @@ using UnityEngine.AI;
             return;
         }
 
-        _frisbeeTransform = GameObject.FindGameObjectWithTag("Frisbee").transform;
-
-        if (_frisbeeTransform == null)
+         if (animator == null)
         {
-            Debug.LogError("Frisbee GameObject not found in the scene.");
-
-            return;
-        }
-
-        GameObject gameManagerObject = GameObject.FindGameObjectWithTag("GameManager");
-
-        if (gameObject == null)
-        {
-            Debug.LogError("GameManager game obejct not found in the scene.");
-
-            return;
-        }
-
-        _gameManager = gameManagerObject.GetComponent<FrisbeeGameManager>();
-
-        if (_gameManager == null)
-        {
-            Debug.LogError("FrisbeeGameManager component.");
-
-            return;
-        }
-
-        _audioManager = gameManagerObject.GetComponent<FrisbeeAudioManager>();
-
-        if (_audioManager == null)
-        {
-            Debug.LogError("FrisbeeAudioManager component.");
-
+            Debug.LogError("Animator reference is null in DogIdle state.");
             return;
         }
     }

@@ -15,15 +15,15 @@ public class Landed: FrisbeeState
     [SerializeField]
     private int scorePoints = 1;
 
-
-    private AudioManager.GameSoundEffects _scoreSoundEffect;
+    [Header("Landed Events")]
 
     /// <summary>Event invoked when the frisbee has successfully landed on the ground.
     /// </summary>
     /// <remarks>
     /// This event is triggered in the <see cref="DogIdle.FrisbeeLanded"/> to trigger the dog to catch the frisbee.
     /// </remarks>
-    public UnityEvent frisbeeLanded;
+    [SerializeField]
+    private UnityEvent frisbeeLanded;
 
         /// <summary>Event invoked when the player successfully scores by landing the frisbee in the score area.
     /// </summary>
@@ -31,11 +31,16 @@ public class Landed: FrisbeeState
     /// This event is trigger in the <see cref="GiveFrisbeeToPlayer"/> state to alert the dog that the player has scored,
     /// and it must choose a new position accordingly.
     /// </remarks>
-    public UnityEvent <int> playerScored;
+    [SerializeField]
+    private UnityEvent <int> playerScored;
+    
+    [SerializeField]
+    private UnityEvent <AudioManager.GameSoundEffects> scoreSoundEffectEvent;
 
-    public UnityEvent <AudioManager.GameSoundEffects> scoreSoundEffectEvent;
+    [SerializeField]
+    private UnityEvent playerMissed;
 
-    public UnityEvent playerMissed;
+    private readonly AudioManager.GameSoundEffects _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
 
     /// <summary>
     /// Initializes the state by setting up physics component references.
@@ -54,8 +59,6 @@ public class Landed: FrisbeeState
     public override void LateStart()
     {
         base.LateStart();
-
-        _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
     }
 
     /// <summary>
@@ -78,10 +81,10 @@ public class Landed: FrisbeeState
         }
         else
         {
-            playerMissed.Invoke();
+          playerMissed.Invoke();
         }
-       
-        frisbeeLanded.Invoke();
+
+          frisbeeLanded.Invoke();
     }
 
     /// <summary>

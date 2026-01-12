@@ -53,6 +53,15 @@ public class OnMovement : FrisbeeState
     [Tooltip("Drag coefficient when the disc falls belly-first (parachute effect). Higher values create stronger braking on descent.")]
     [SerializeField]
     private float highAngleDrag = 3.5f;
+
+    /// <summary>
+    /// Unity event invoked when the frisbee exits the play area bounds.
+    /// Listeners can use this to trigger game logic such as score penalties or UI updates.
+    /// </summary>
+    
+    [SerializeField]
+    private UnityEvent playerMissed;
+
     
     /// <summary>
     /// Flag indicating whether the frisbee has made contact with the ground.
@@ -66,11 +75,6 @@ public class OnMovement : FrisbeeState
     /// </summary>
     private float _defaultAngularDrag;
 
-    /// <summary>
-    /// Unity event invoked when the frisbee exits the play area bounds.
-    /// Listeners can use this to trigger game logic such as score penalties or UI updates.
-    /// </summary>
-    public UnityEvent playerMissed;
 
     /// <summary>
     /// Initializes the OnMovement state by storing default physics values.
@@ -197,17 +201,6 @@ public class OnMovement : FrisbeeState
 
         _rigidbody.AddForce(liftForce);
 
-        Debug.Log("AeorDymanic Details: " +
-                 "\n Frisbee Foward: " + transform.forward.ToString("F2") +
-                  "\n Speed: " + speed.ToString("F2") +
-                  "\n Velocity: " + velocity.ToString("F2") +
-                  "\n MoveDir: " + moveDirection.ToString("F2") +
-                  "\n Angle of attack: " + angleOfAttack.ToString("F2") +
-                  "\n AeroFactor: " + aerodynamicFactor.ToString("F2") +
-                  "\n DynamicLift: " + dynamicLift.ToString("F2") + 
-                "\n LiftForce: " + liftForce.ToString("F2")
-                  );
-        
         if (aerodynamicFactor > 0)
         {
             _rigidbody.AddForce(-velocity.normalized * (dynamicLift * 0.1f));

@@ -795,7 +795,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c54feeb03e1a0a48bb59380ce4db49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeGameManager
-  sessionScoreGoal: 3
+  sessionScoreGoal: 100
   currentTargetPos: {x: 0, y: 0, z: 0}
 --- !u!4 &147053873
 Transform:
@@ -2778,13 +2778,29 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 251507906}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 8229344247421322366}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -2796,14 +2812,22 @@ PrefabInstance:
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 6731033054151550059}
+      objectReference: {fileID: 8229344247421322366}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: frisbeeLanded.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4335083379616336532}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: PlayerMissed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: set_PlayerScored
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -2815,7 +2839,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: PlayerScored
+      value: set_PlayerScored
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: frisbeeLanded.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -2830,12 +2854,24 @@ PrefabInstance:
       value: PlaySoundEffect
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: GoToTarget, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: ScoreAreaAnimations, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: GiveFrisbeeToPlayer, Assembly-CSharp
+      value: GoToTarget, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 6888061685140415833, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: m_Size.x
@@ -4724,7 +4760,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1123418846}
         m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
-        m_MethodName: GrabbedByRightHand
+        m_MethodName: set_IsBeingGrabbedByRightHand
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6095,7 +6131,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1123418846}
         m_TargetAssemblyTypeName: OnPlayerFront, Assembly-CSharp
-        m_MethodName: GrabbedByRightHand
+        m_MethodName: set_IsBeingGrabbedByRightHand
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8843,17 +8879,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
---- !u!114 &6731033054151550059 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6158268702081495465, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
-  m_PrefabInstance: {fileID: 8229344247421322364}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08eeddb7e649e2c4d866d67478354c46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GiveFrisbeeToPlayer
 --- !u!4 &6986087513512687457 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9067314237388515744, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
@@ -9136,6 +9161,46 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.017
       objectReference: {fileID: 0}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: states.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: 'states.Array.data[4]'
+      value: 
+      objectReference: {fileID: 8229344247421322365}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[4].to
+      value: 
+      objectReference: {fileID: 8229344247421322365}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[5].to
+      value: 
+      objectReference: {fileID: 8229344247421322365}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[1].name
+      value: FrisbeeGiven
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[4].from
+      value: 
+      objectReference: {fileID: 4335083379616336532}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[4].name
+      value: Jump
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[5].from
+      value: 
+      objectReference: {fileID: 4335083379616336532}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[5].name
+      value: Jump
+      objectReference: {fileID: 0}
     - target: {fileID: 1551725178402411710, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -69.16459
@@ -9185,12 +9250,16 @@ PrefabInstance:
       value: -92.061844
       objectReference: {fileID: 0}
     - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1123418846}
     - target: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: DogWillCatchFrsibee
+      value: set_DogInTarget
       objectReference: {fileID: 0}
     - target: {fileID: 4677665897276227089, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9289,8 +9358,24 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: bark.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053875}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySpatialSoundEffect
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -9309,8 +9394,16 @@ PrefabInstance:
       value: DogReachedTarget
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FrisbeeAudioManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: OnPlayerFront, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -9380,7 +9473,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4324059591031471897, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -9388,6 +9482,28 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1672262078}
   m_SourcePrefab: {fileID: 100100000, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+--- !u!114 &8229344247421322365 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3607899206716178632, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+  m_PrefabInstance: {fileID: 8229344247421322364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64f008a66b0059547ba4fa2383024f3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Jump
+--- !u!114 &8229344247421322366 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1080295073776879282, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+  m_PrefabInstance: {fileID: 8229344247421322364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f9560c5b32f5ba4b980bedea200516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoToNewPosition
 --- !u!1001 &9022235213021595668
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -12,17 +12,6 @@ using UnityEngine;
 public class FrisbeeGameManager : GameManager
 {
     /// <summary>
-    /// Dictionary of adaptive parameters used to dynamically adjust game difficulty and behavior.
-    /// Currently includes "DogDistance" which determines how far the dog positions itself from the player.
-    /// </summary>
-    /// <remarks>
-    /// Parameters are set during initialization in <see cref="SetAdaptiveParameters"/>.
-    /// Dog states can read these values to adapt their behavior based on game conditions.
-    /// </remarks>
-    /// <value>A dictionary mapping parameter names (string) to their float values.</value>
-    public Dictionary<string, float> AdaptiveParameters {get; private set;} = new Dictionary<string, float>();
-
-    /// <summary>
     /// The current target position where the dog is positioned or moving toward.
     /// Used by states like <see cref="GoToPreviousTarget"/> to return the dog to a previous location.
     /// </summary>
@@ -60,8 +49,9 @@ public class FrisbeeGameManager : GameManager
     /// Additional adaptive parameters can be added here as the game evolves.
     /// </remarks>
     private void SetAdaptiveParameters()
-    {
-        AdaptiveParameters["DogDistance"] = GetPlayerDistanceToDog();
+    {    
+
+        PlayerPrefs.SetFloat("DogDistance", GetPlayerDistanceToDog());
     }
 
     /// <summary>
