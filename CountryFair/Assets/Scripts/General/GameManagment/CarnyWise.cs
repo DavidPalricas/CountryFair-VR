@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(GameManager))]
 public class CannyWise : MonoBehaviour
 {
     [Header("Adaptation Configuration")] 
@@ -22,10 +23,20 @@ public class CannyWise : MonoBehaviour
     private int _struggleCounter = 0;
     private int _excelCounter = 0;
 
-    private readonly string _sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+    private readonly string _sessionID = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
     private readonly List<float> _tasksTimes = new ();
     private readonly List<float> _tasksPrecisions = new ();
+
+    private string _miniGameName;
+
+
+    private void Awake()
+    {
+        GameManager gameManager = GetComponent<GameManager>();
+
+        _miniGameName = gameManager is FrisbeeGameManager ? "frisbee" : "archery";
+    }
 
     public void StartTaskTimer()
     {   // If the timer already started, do not reset
@@ -116,12 +127,21 @@ public class CannyWise : MonoBehaviour
 
     public void SessionGoalReached()
     {
-        SaveData();
+        SaveSessionData();
     }
 
-    private void SaveData()
+    private void SaveSessionData()
     {
        float averageTaskPrecision = _tasksPrecisions.Average();
        float averageTaskTime = _tasksTimes.Average();
+
+       SessionData sessionData = new()
+       {
+           SessionGoal = _tasksPrecisions.Count,
+           AverageTaskPrecision = averageTaskPrecision,
+           AverageTaskCompletionTime = averageTaskTime
+       };
+
+       DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, _miniGameName);
     }
 }
