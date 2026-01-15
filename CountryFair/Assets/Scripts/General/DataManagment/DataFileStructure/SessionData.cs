@@ -1,7 +1,7 @@
 [System.Serializable]
 public class SessionData
 {
-    public int SessionGoal { get; set; }
-    public float AverageTaskPrecision { get; set; }
-    public float AverageTaskCompletionTime { get; set; }
+    public string SessionGoal { get; set; }
+    public string AverageTaskPrecision { get; set; }
+    public string AverageTaskCompletionTime { get; set; }
 }

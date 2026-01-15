@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(GameManager))]
-public class CannyWise : MonoBehaviour
+public class CarnyWise : MonoBehaviour
 {
     [Header("Adaptation Configuration")] 
     [SerializeField, Range(0f, 1f)]
@@ -50,22 +50,28 @@ public class CannyWise : MonoBehaviour
     public void PlayerMissed()
     {
         _currentAttemptsForTask++;
+        Debug.Log($"Player Missed! Current Attempts: {_currentAttemptsForTask}");
     }
 
     public void PlayerScored()
     {
         _currentAttemptsForTask++;
-
+        Debug.Log($"Player Scored! Current Attempts: {_currentAttemptsForTask}");
         float timeTaken = Time.time - _taskStartTime;
 
         const int SCORE_ATTEMPT = 1; 
 
         float taskPrecision = SCORE_ATTEMPT / (float)_currentAttemptsForTask; 
 
+        Debug.Log("Task Precision: " + taskPrecision);
+
         _tasksPrecisions.Add(taskPrecision);
         _tasksTimes.Add(timeTaken);
 
         EvaluatePerformance(taskPrecision, timeTaken);
+        
+        // Resets for next task
+        _taskStartTime = 0f;
     }
 
     private void EvaluatePerformance(float precision, float timeTaken)
@@ -94,7 +100,9 @@ public class CannyWise : MonoBehaviour
 
 
     private void MantainFlowState()
-    {
+    {   
+        Debug.Log("Mantaining Flow State");
+
         if (_struggleCounter > 0)
         {
             _struggleCounter--;
@@ -110,7 +118,7 @@ public class CannyWise : MonoBehaviour
     {
         if (_excelCounter >= thresholdToChangeDiff)
         {
-            Debug.Log(">>> AUMENTAR DIFICULDADE DO JOGO <<<");
+            Debug.Log("Increae Game Difficulty");
 
             _excelCounter = 0; // Reset após mudança
 
@@ -119,7 +127,7 @@ public class CannyWise : MonoBehaviour
 
         if (_struggleCounter >= thresholdToChangeDiff)
         {
-            Debug.Log(">>> DIMINUIR DIFICULDADE DO JOGO <<<");
+            Debug.Log("Decrease Game Difficulty");
 
             _struggleCounter = 0; // Reset após mudança
         }
@@ -132,14 +140,15 @@ public class CannyWise : MonoBehaviour
 
     private void SaveSessionData()
     {
-       float averageTaskPrecision = _tasksPrecisions.Average();
-       float averageTaskTime = _tasksTimes.Average();
+       int averageTaskPrecision = (int)System.Math.Round(_tasksPrecisions.Average() * 100);
+
+       int averageTaskTime = (int)System.Math.Round(_tasksTimes.Average());
 
        SessionData sessionData = new()
        {
-           SessionGoal = _tasksPrecisions.Count,
-           AverageTaskPrecision = averageTaskPrecision,
-           AverageTaskCompletionTime = averageTaskTime
+           SessionGoal = $"{_tasksPrecisions.Count} pontos",
+           AverageTaskPrecision = $"{averageTaskPrecision} %",
+           AverageTaskCompletionTime = $"{averageTaskTime} segundos"
        };
 
        DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, _miniGameName);

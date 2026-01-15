@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -22,6 +23,16 @@ public class FrisbeeGameManager : GameManager
    [HideInInspector]
     public Vector3 currentTargetPos = Vector3.zero;
 
+    [SerializeField]
+    private GameObject scoreAreaPrefab;
+
+    [SerializeField]
+    private Collider dogAreaCollider;
+
+    private readonly List<GameObject> _scoreAreas = new();
+
+    private Transform _playerTransform;
+
     protected override void Awake()
     {
         base.Awake();
@@ -36,7 +47,15 @@ public class FrisbeeGameManager : GameManager
     /// based on the current game state.
     /// </remarks>
     private void Start()
-    {
+    {   
+        _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
+        if (_playerTransform == null){
+            Debug.LogError("Player GameObject not found in the scene.");
+
+            return;
+        }
+
         SetAdaptiveParameters();
     }
     
@@ -68,15 +87,59 @@ public class FrisbeeGameManager : GameManager
     /// </returns>
     private float GetPlayerDistanceToDog()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject dog = GameObject.FindGameObjectWithTag("Dog");
 
-        if (player == null || dog == null)
+        if ( dog == null)
         {
-            Debug.LogError("Player or Dog GameObject not found in the scene.");
+            Debug.LogError("Dog GameObject not found in the scene.");
             return 0f;  
         }
 
-        return Vector3.Distance(player.transform.position, dog.transform.position);
-    } 
+        return Vector3.Distance(_playerTransform.position, dog.transform.position);
+    }
+
+    public override void IncreaseDifficulty()
+    {
+        GameObject nearstScoreArea =  _scoreAreas.OrderBy(distanceToPlayer => 
+            Vector3.Distance(_playerTransform.position, distanceToPlayer.transform.position))
+            .First();
+
+        _scoreAreas.Remove(nearstScoreArea);
+    }
+
+
+    public override void DecreaseDifficulty()
+    {
+        GameObject newScoreArea = Instantiate(scoreAreaPrefab, GetScoreAreaPosition(), Quaternion.identity);
+        _scoreAreas.Add(newScoreArea);
+    }
+    
+
+   private Vector3 GetScoreAreaPosition()
+    {
+        float dogDistance = PlayerPrefs.GetFloat("DogDistance", 5f);
+
+        const float MIN_OFFSET = 0.2f;
+        const float MAX_OFFSET = 0.5f;
+        const float MIN_DISTANCE_BETWEEN_AREAS = 1.0f; 
+
+        Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+        float scoreAreaDistance = dogDistance * Utils.RandomValueInRange(MIN_OFFSET, MAX_OFFSET);
+
+        Vector3 scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
+        
+        scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
+
+        bool isTooClose = _scoreAreas.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS);
+
+        if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || isTooClose)
+        {
+            return GetScoreAreaPosition(); 
+        }
+
+        _scoreAreas.Add(Instantiate(scoreAreaPrefab, scoreAreaPosition, Quaternion.identity));
+
+        return scoreAreaPosition;
+    }
 }

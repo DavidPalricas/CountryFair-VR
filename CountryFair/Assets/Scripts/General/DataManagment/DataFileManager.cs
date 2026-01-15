@@ -7,91 +7,107 @@ public class DataFileManager
     // Nome do ficheiro
     private const string SAVE_FILE_NAME = "survivorData.json";
 
-    // Instância global para ser fácil aceder de outros scripts
-    private static DataFileManager instance  = null;
+    // Instância global (Singleton)
+    private static DataFileManager _instance  = null;
 
     // A variável que guarda os dados em memória
-    public DataFileRoot currentData;
+    public DataFileRoot CurrentData { get; private set; }
 
-    private DataFileManager(){}
+    private string _filePath;
+
+    private DataFileManager()
+    {
+        LoadData();
+        SetFilePath();
+    }
 
     public static DataFileManager GetInstance()
     {
-        return instance ??= new DataFileManager();
+        return _instance ??= new DataFileManager();
     }
 
+    private void SetFilePath()
+    {
+        #if UNITY_EDITOR
+         
+            string projectRoot = Directory.GetParent(Application.dataPath).ToString();
+            _filePath = Path.Combine(projectRoot, SAVE_FILE_NAME);
+        #else
+            _filePath = Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
+        #endif
+    }
 
     private void SaveData()
     {
-        // 1. Define o caminho correto para o Quest 3
-        string path = Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
+        // Usa a propriedade FilePath que criámos acima
+        string path = _filePath;
 
-        // 2. Serializa o objeto para texto JSON (formatado para leitura fácil)
-        string jsonString = JsonConvert.SerializeObject(currentData, Formatting.Indented);
+        string jsonString = JsonConvert.SerializeObject(CurrentData, Formatting.Indented);
 
-        // 3. Escreve no disco
         try
         {
             File.WriteAllText(path, jsonString);
-            Debug.Log($"[SaveManager] Dados gravados com sucesso em: {path}");
+            Debug.Log($"[DataFileManager] Dados gravados em: {path}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[SaveManager] Erro ao gravar: {e.Message}");
+            Debug.LogError($"[DataFileManager] Erro ao gravar: {e.Message}");
         }
     }
 
     public void LoadData()
     {
-        string path = Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
+        // Usa a propriedade FilePath que criámos acima
+        string path = _filePath;
 
         if (File.Exists(path))
         {
             try
             {
                 string jsonString = File.ReadAllText(path);
-                currentData = JsonConvert.DeserializeObject<DataFileRoot>(jsonString);
-                Debug.Log("[SaveManager] Dados carregados.");
+                CurrentData = JsonConvert.DeserializeObject<DataFileRoot>(jsonString);
+                Debug.Log($"[DataFileManager] Dados carregados de: {path}");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[SaveManager] Erro ao ler ficheiro, a criar novo: {e.Message}");
-                currentData = new DataFileRoot();
+                Debug.LogError($"[DataFileManager] Erro ao ler ficheiro (criando novo): {e.Message}");
+                CurrentData = new DataFileRoot();
             }
         }
         else
         {
-            Debug.Log("[SaveManager] Ficheiro não encontrado. A criar novo perfil.");
-            currentData = new DataFileRoot();
+            Debug.Log($"[DataFileManager] Ficheiro não encontrado em {path}. A criar novo perfil.");
+            CurrentData = new DataFileRoot();
         }
     }
 
-    // --- EXEMPLO DE COMO ADICIONAR DADOS ---
-    
-    // Método para ser chamado pelo seu script CannyWise
     public void SaveSessionData(SessionData newSession, string sessionID, string miniGameName)
     {
+        // Pequena proteção para garantir que os objetos internos existem
+        if (CurrentData == null) CurrentData = new DataFileRoot();
+        if (CurrentData.frisbeeGame == null) CurrentData.frisbeeGame = new ();
+        if (CurrentData.archeryGame == null) CurrentData.archeryGame = new ();
+
         if (miniGameName == "frisbee")
         {
-            if (currentData.frisbeeGame.SessionsData.ContainsKey(sessionID))
+            if (CurrentData.frisbeeGame.SessionsData.ContainsKey(sessionID))
             {
-                currentData.frisbeeGame.SessionsData[sessionID] = newSession; 
+                CurrentData.frisbeeGame.SessionsData[sessionID] = newSession; 
             }
             else
             {
-                currentData.frisbeeGame.SessionsData.Add(sessionID, newSession); // Cria
+                CurrentData.frisbeeGame.SessionsData.Add(sessionID, newSession);
             }
-                
         }
         else if (miniGameName == "archery")
         {
-            if (currentData.archeryGame.SessionsData.ContainsKey(sessionID))
+            if (CurrentData.archeryGame.SessionsData.ContainsKey(sessionID))
             {
-                currentData.archeryGame.SessionsData[sessionID] = newSession;
+                CurrentData.archeryGame.SessionsData[sessionID] = newSession;
             }
             else
             {
-                currentData.archeryGame.SessionsData.Add(sessionID, newSession);
+                CurrentData.archeryGame.SessionsData.Add(sessionID, newSession);
             }
         }
         else

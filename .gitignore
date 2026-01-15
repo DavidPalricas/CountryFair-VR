@@ -199,6 +199,9 @@ CountryFair/.vscode/
 # A folder for testing scenes
 CountryFair/Assets/Scenes/TestScenes/
 
+# The json file geenrated to store survivor data
+CountryFair/survivorData.json
+
 # Folders for compiled scripts
 CountryFair/Assets/Scripts/bin/
 CountryFair/Assets/Scripts/bin.meta
