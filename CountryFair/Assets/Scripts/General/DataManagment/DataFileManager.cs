@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json; 
 
@@ -57,16 +58,14 @@ public class DataFileManager
 
     public void LoadData()
     {
-        // Usa a propriedade FilePath que criámos acima
-        string path = _filePath;
 
-        if (File.Exists(path))
+        if (File.Exists(_filePath))
         {
             try
             {
-                string jsonString = File.ReadAllText(path);
+                string jsonString = File.ReadAllText(_filePath);
                 CurrentData = JsonConvert.DeserializeObject<DataFileRoot>(jsonString);
-                Debug.Log($"[DataFileManager] Dados carregados de: {path}");
+                Debug.Log($"[DataFileManager] Dados carregados de: {_filePath}");
             }
             catch (System.Exception e)
             {
@@ -76,7 +75,7 @@ public class DataFileManager
         }
         else
         {
-            Debug.Log($"[DataFileManager] Ficheiro não encontrado em {path}. A criar novo perfil.");
+            Debug.Log($"[DataFileManager] Ficheiro não encontrado em {_filePath}. A criar novo perfil.");
             CurrentData = new DataFileRoot();
         }
     }
@@ -117,5 +116,13 @@ public class DataFileManager
         }
 
         SaveData(); 
+    }
+
+
+    public void AddFrisbeeAdaptiveParameters(Dictionary<string, string> adaptiveParameters)
+    {
+        CurrentData.frisbeeGame.AdadaptiveParameters = adaptiveParameters;
+
+        SaveData();
     }
 }

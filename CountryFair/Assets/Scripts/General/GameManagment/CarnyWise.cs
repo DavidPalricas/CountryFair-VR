@@ -31,19 +31,21 @@ public class CarnyWise : MonoBehaviour
     private string _miniGameName;
 
 
+    private GameManager _gameManager;
+
+
     private void Awake()
     {
-        GameManager gameManager = GetComponent<GameManager>();
+        _gameManager = GetComponent<GameManager>();
 
-        _miniGameName = gameManager is FrisbeeGameManager ? "frisbee" : "archery";
+        _miniGameName = _gameManager is FrisbeeGameManager ? "frisbee" : "archery";
     }
 
     public void StartTaskTimer()
     {   // If the timer already started, do not reset
-        if (_taskStartTime != 0f)
+        if (_taskStartTime > 0f)
         {
              _taskStartTime = Time.time;
-            _currentAttemptsForTask = 0; 
         }
     }
 
@@ -54,8 +56,9 @@ public class CarnyWise : MonoBehaviour
     }
 
     public void PlayerScored()
-    {
+    {   
         _currentAttemptsForTask++;
+
         Debug.Log($"Player Scored! Current Attempts: {_currentAttemptsForTask}");
         float timeTaken = Time.time - _taskStartTime;
 
@@ -72,6 +75,7 @@ public class CarnyWise : MonoBehaviour
         
         // Resets for next task
         _taskStartTime = 0f;
+        _currentAttemptsForTask = 0; 
     }
 
     private void EvaluatePerformance(float precision, float timeTaken)
@@ -118,18 +122,18 @@ public class CarnyWise : MonoBehaviour
     {
         if (_excelCounter >= thresholdToChangeDiff)
         {
-            Debug.Log("Increae Game Difficulty");
+            _gameManager.IncreaseDifficulty();
 
-            _excelCounter = 0; // Reset após mudança
+            _excelCounter = 0; 
 
             return;
         }
 
         if (_struggleCounter >= thresholdToChangeDiff)
         {
-            Debug.Log("Decrease Game Difficulty");
+            _gameManager.DecreaseDifficulty();
 
-            _struggleCounter = 0; // Reset após mudança
+            _struggleCounter = 0; 
         }
     }
 
