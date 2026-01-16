@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: 6802523290220963775}
   - component: {fileID: 7321478195982527030}
   - component: {fileID: 4259010315456286546}
+  - component: {fileID: 8996311874865107283}
   m_Layer: 0
   m_Name: ScoreArea
   m_TagString: ScoreArea
@@ -318,7 +319,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.9659258, z: 0, w: 0.2588191}
   m_LocalPosition: {x: 7.4691772, y: -4.3012505, z: -17.25582}
-  m_LocalScale: {x: 2, y: 0.16849524, z: 2}
+  m_LocalScale: {x: 1.5, y: 0.12637143, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6927789706856555201}
@@ -427,6 +428,23 @@ MonoBehaviour:
   pulseDuration: 0.8
   pulseScale: 1.05
   balloonsPlaceHoldersGroup: {fileID: 6927789706856555201}
+--- !u!114 &8996311874865107283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7792656481613747585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565f27c2467a56f489237bb182dae115, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreAreaExtraSettings
+  moveSpeed: 2
+  radius: 0.5
+  timeVisible: 3
+  timeInvisible: 2
+  fadeDuration: 0.5
 --- !u!1 &8112464984895706668
 GameObject:
   m_ObjectHideFlags: 0
