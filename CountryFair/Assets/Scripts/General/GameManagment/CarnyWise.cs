@@ -84,6 +84,8 @@ public class CarnyWise : MonoBehaviour
         {
             _excelCounter++;
             _struggleCounter = 0; 
+
+            Debug.Log("CarnyWise: Excel Counter Incremented");
             
             CheckToChangeDifficulty();
             return;
@@ -124,6 +126,8 @@ public class CarnyWise : MonoBehaviour
         {
             _gameManager.IncreaseDifficulty();
 
+            Debug.Log("CarnyWise: Increasing Difficulty");
+
             _excelCounter = 0; 
 
             return;
@@ -133,7 +137,7 @@ public class CarnyWise : MonoBehaviour
         {
             _gameManager.DecreaseDifficulty();
 
-            _struggleCounter = 0; 
+            Debug.Log("CarnyWise: Decreasing Difficulty");
         }
     }
 
