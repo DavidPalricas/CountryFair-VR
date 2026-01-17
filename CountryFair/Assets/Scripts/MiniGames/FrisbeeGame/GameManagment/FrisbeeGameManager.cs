@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -22,6 +23,16 @@ public class FrisbeeGameManager : GameManager
    [HideInInspector]
     public Vector3 currentTargetPos = Vector3.zero;
 
+    [SerializeField]
+    private GameObject scoreAreaPrefab;
+
+    [SerializeField]
+    private Collider dogAreaCollider;
+
+    private readonly List<GameObject> _scoreAreas = new();
+
+    private Transform _playerTransform;
+
     protected override void Awake()
     {
         base.Awake();
@@ -36,8 +47,27 @@ public class FrisbeeGameManager : GameManager
     /// based on the current game state.
     /// </remarks>
     private void Start()
-    {
-        SetAdaptiveParameters();
+    {   
+        _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
+        if (_playerTransform == null){
+            Debug.LogError("Player GameObject not found in the scene.");
+
+            return;
+        }
+
+        DataFileManager dataFileManager = DataFileManager.GetInstance();
+
+        Dictionary<string, string> frisbeeAdaptiveParameters = dataFileManager.CurrentData.frisbeeGame.AdadaptiveParameters;
+
+        if (!frisbeeAdaptiveParameters.ContainsKey("DogDistance") || !frisbeeAdaptiveParameters.ContainsKey("NumberOfScoreAreas"))
+        {    
+             SetAdaptiveParameters(dataFileManager);
+
+             return;
+        }
+
+        ApplyAdaptiveParameters(frisbeeAdaptiveParameters);
     }
     
     /// <summary>
@@ -48,10 +78,30 @@ public class FrisbeeGameManager : GameManager
     /// the player and dog. This value is used by dog states to determine positioning relative to the player.
     /// Additional adaptive parameters can be added here as the game evolves.
     /// </remarks>
-    private void SetAdaptiveParameters()
+    private void SetAdaptiveParameters(DataFileManager dataFileManager)
     {    
+        Dictionary<string, string> defaultFrisbeeAdaptiveParameters = new()
+        {
+                ["DogDistance"] = GetPlayerDistanceToDog().ToString(),
+                ["NumberOfScoreAreas"] = "3"
+        };
 
-        PlayerPrefs.SetFloat("DogDistance", GetPlayerDistanceToDog());
+        dataFileManager.AddFrisbeeAdaptiveParameters(defaultFrisbeeAdaptiveParameters);
+
+        ApplyAdaptiveParameters(defaultFrisbeeAdaptiveParameters);
+    }
+
+    private void ApplyAdaptiveParameters(Dictionary<string, string> frisbeeAdaptiveParameters)
+    {   
+        float dogDistance = float.Parse(frisbeeAdaptiveParameters["DogDistance"]);
+        PlayerPrefs.SetFloat("DogDistance", dogDistance);
+
+        int numberOfScoreAreas = int.Parse(frisbeeAdaptiveParameters["NumberOfScoreAreas"]);
+
+        for (int i = 0; i < numberOfScoreAreas; i++)
+        {
+            AddScoreArea();
+        }
     }
 
     /// <summary>
@@ -68,15 +118,64 @@ public class FrisbeeGameManager : GameManager
     /// </returns>
     private float GetPlayerDistanceToDog()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject dog = GameObject.FindGameObjectWithTag("Dog");
 
-        if (player == null || dog == null)
+        if ( dog == null)
         {
-            Debug.LogError("Player or Dog GameObject not found in the scene.");
+            Debug.LogError("Dog GameObject not found in the scene.");
             return 0f;  
         }
 
-        return Vector3.Distance(player.transform.position, dog.transform.position);
-    } 
+        return Vector3.Distance(_playerTransform.position, dog.transform.position);
+    }
+
+    public override void IncreaseDifficulty()
+    {
+        GameObject nearstScoreArea =  _scoreAreas.OrderBy(distanceToPlayer => 
+            Vector3.Distance(_playerTransform.position, distanceToPlayer.transform.position))
+            .First();
+
+        _scoreAreas.Remove(nearstScoreArea);
+
+        Destroy(nearstScoreArea);
+    }
+
+
+    public override void DecreaseDifficulty()
+    {   
+        AddScoreArea(); 
+    }
+
+    private void AddScoreArea()
+    {
+        GameObject newScoreArea = Instantiate(scoreAreaPrefab, GetScoreAreaPosition(), Quaternion.identity);
+        _scoreAreas.Add(newScoreArea);
+    }
+    
+
+   private Vector3 GetScoreAreaPosition()
+    {
+        float dogDistance = PlayerPrefs.GetFloat("DogDistance", 5f);
+
+        const float MIN_OFFSET = 0.2f;
+        const float MAX_OFFSET = 1f;
+        const float MIN_DISTANCE_BETWEEN_AREAS = 2f; 
+
+        Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+        float scoreAreaDistance = dogDistance * Random.Range(MIN_OFFSET, MAX_OFFSET);
+
+        Vector3 scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
+        
+        scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
+
+        bool isTooClose = _scoreAreas.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS);
+
+        if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || isTooClose)
+        {
+            return GetScoreAreaPosition(); 
+        }
+
+        return scoreAreaPosition;
+    }
 }

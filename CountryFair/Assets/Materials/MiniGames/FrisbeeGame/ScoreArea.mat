@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CatchFrisbeeAreaMat
-  m_Shader: {fileID: -6465566751694194690, guid: 9fa790506652879409fa993785897065, type: 3}
+  m_Name: ScoreArea
+  m_Shader: {fileID: -6465566751694194690, guid: 72283146eaf4a6744a7cae94d49f6cb0, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
@@ -23,7 +23,7 @@ Material:
   disabledShaderPasses:
   - DepthOnly
   - MOTIONVECTORS
-  m_LockedProperties: 
+  m_LockedProperties: _CastShadows
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -47,7 +47,7 @@ Material:
     - _CastShadows: 1
     - _Cull: 2
     - _DstBlend: 10
-    - _FrenelPower: 1.5
+    - _FrenelPower: 1.8
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5
