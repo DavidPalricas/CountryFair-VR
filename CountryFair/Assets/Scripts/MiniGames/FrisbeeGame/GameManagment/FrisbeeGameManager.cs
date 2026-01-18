@@ -12,7 +12,7 @@ public class FrisbeeGameManager : GameManager
     public float baseDogDistance = 5f;       
     
     [Tooltip("Quanto o cão recua por nível (m).")]
-    public float distanceIncrement = 0.5f;   
+    public float distanceIncrement = 2.5f;   
     
     [Tooltip("Limite MÁXIMO físico. O cão nunca passa daqui para não lesionar o paciente.")]
     public float maxDogDistance = 20f;       
@@ -21,7 +21,7 @@ public class FrisbeeGameManager : GameManager
     public int baseTargetCount = 3;
     
     [Tooltip("Quantos alvos novos ganha por nível (Ex: 0.2 = 1 alvo a cada 5 níveis).")]
-    public float targetsPerLevel = 0.2f;    
+    public float targetsPerLevel = 1.5f;    
 
     [Header("3. Curvas de Complexidade (0 a 1)")]
     [Tooltip("Define a % de alvos que se movem baseada na 'Saturação' do nível.")]
@@ -104,7 +104,7 @@ public class FrisbeeGameManager : GameManager
         // 3. Fator de Complexidade (Saturação)
         // Converte o nível infinito (0 a 1000) num valor de 0.0 a 1.0 que sobe rápido e desacelera.
         // Fórmula: x / (x + k). Ajuste k (20f) para mudar a inclinação da curva.
-        float saturationFactor = difficultyLevel / (difficultyLevel + 20f);
+        float saturationFactor = difficultyLevel / (difficultyLevel + 4f);
 
         _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
         _currentVisibilityRatio = visibilityRatioCurve.Evaluate(saturationFactor);
