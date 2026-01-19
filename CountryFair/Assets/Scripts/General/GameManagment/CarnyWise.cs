@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(GameManager))]
 public class CarnyWise : MonoBehaviour
@@ -14,6 +15,9 @@ public class CarnyWise : MonoBehaviour
 
     [SerializeField]
     private int thresholdToChangeDiff = 3; 
+
+    [SerializeField]
+    private UnityEvent<bool> showFeedback;
 
     // Variáveis de Estado
     private float _taskStartTime = 0f;
@@ -126,7 +130,7 @@ public class CarnyWise : MonoBehaviour
         {
             _gameManager.IncreaseDifficulty();
 
-            Debug.Log("CarnyWise: Increasing Difficulty");
+            showFeedback.Invoke(true);
 
             _excelCounter = 0; 
 
@@ -137,7 +141,9 @@ public class CarnyWise : MonoBehaviour
         {
             _gameManager.DecreaseDifficulty();
 
-            Debug.Log("CarnyWise: Decreasing Difficulty");
+            showFeedback.Invoke(false);
+
+           _struggleCounter = 0; 
         }
     }
 
