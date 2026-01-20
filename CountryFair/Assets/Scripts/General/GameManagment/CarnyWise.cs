@@ -125,7 +125,8 @@ public class CarnyWise : MonoBehaviour
     }
 
     private void CheckToChangeDifficulty()
-    {
+    {  
+        Debug.Log($"Checking to change difficulty: Excel {_excelCounter}, Struggle {_struggleCounter}");
         if (_excelCounter >= thresholdToChangeDiff)
         {
             _gameManager.IncreaseDifficulty();
@@ -133,7 +134,6 @@ public class CarnyWise : MonoBehaviour
             showFeedback.Invoke(true);
 
             _excelCounter = 0; 
-
             return;
         }
 

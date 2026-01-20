@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -161.8, y: -349.86}
+  m_AnchoredPosition: {x: -160.9, y: -349.65}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2754063939242669136
@@ -162,9 +162,9 @@ Transform:
   m_GameObject: {fileID: 1744076748135970294}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.6942, y: -2.2345395, z: 21.5334}
-  m_LocalScale: {x: 0.43346083, y: 0.23129785, z: 0.23129785}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -2.2323, y: -2.06, z: 21.5334}
+  m_LocalScale: {x: 0.72163105, y: 0.33311516, z: 0.33311516}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7927277439255945617}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -252,8 +252,8 @@ Transform:
   m_GameObject: {fileID: 1879802877358828048}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.04, y: -1.3353658, z: -0.10798645}
-  m_LocalScale: {x: 1.2901, y: 1, z: 1}
+  m_LocalPosition: {x: 3.9613, y: -1.3353658, z: -0.10798645}
+  m_LocalScale: {x: 2.1582096, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7531318957229989169}
@@ -461,7 +461,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4785945408561029625}
   m_Layer: 0
-  m_Name: DialgoueBox
+  m_Name: DialgoBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -480,8 +480,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7531318957229989169}
   - {fileID: 7927277439255945617}
+  - {fileID: 7531318957229989169}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6899774077599986464
@@ -620,7 +620,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -278.3, y: -356}
+  m_AnchoredPosition: {x: -277.6, y: -356}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4875680668408715756
@@ -651,7 +651,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Algum Texto
+  m_text: Muito bem!\nVamos tornar isto um bocadinho mais interessante.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
   m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}

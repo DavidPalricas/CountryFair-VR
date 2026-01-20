@@ -43,6 +43,9 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
    private const string _FEEDBACK_JSON_FILE_NAME = "change_difficulty.json";
 
    private DiffcultyFeedBackData _feedBackData;
+   private Vector3 _originalIncreaseScale;
+   private Vector3 _originalDecreaseScale;
+   private Vector3 _originalDialogueBoxScale;
 
     private void Awake()
     {   
@@ -66,6 +69,10 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
             return ;
         }
         
+        _originalIncreaseScale = increaseDiffExpression.transform.localScale;
+        _originalDecreaseScale = decreaseDiffExpression.transform.localScale;
+        _originalDialogueBoxScale = dialogueBoxGameObject.transform.localScale;
+
         increaseDiffExpression.SetActive(false);
         decreaseDiffExpression.SetActive(false);
         dialogueBoxGameObject.SetActive(false);
@@ -133,6 +140,8 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
         {
             increaseDiffExpression.SetActive(true);
 
+            Debug.Log("Showing increase difficulty feedback.");
+
             feedbackTexts = _feedBackData.IncreaseDiff;
         }
         else
@@ -178,6 +187,11 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
             increaseDiffExpression.SetActive(false);
             decreaseDiffExpression.SetActive(false);
             dialogueBoxGameObject.SetActive(false);
+
+            // Restore original scales so they appear correctly next time
+            increaseDiffExpression.transform.localScale = _originalIncreaseScale;
+            decreaseDiffExpression.transform.localScale = _originalDecreaseScale;
+            dialogueBoxGameObject.transform.localScale = _originalDialogueBoxScale;
         });
     }
 }

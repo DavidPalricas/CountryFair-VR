@@ -1,16 +1,16 @@
 {
     "IncreaseDiff": [
-        "Isso está demasiado fácil para ti. Vamos apertar!",
-        "Estás imparável! Vamos ver como te aguentas agora.",
-        "Grande ritmo. Acho que estás pronto para mais?",
-        "Isso foi canja. Vamos passar às coisas sérias.",
-        "Muito bem! Vamos tornar isto um bocadinho mais interessante."
+        "Isso está demasiado fácil para ti.\nVamos apertar!",
+        "Estás imparável!\nVamos ver como te aguentas agora.",
+        "Grande ritmo.\nAcho que estás pronto para mais?",
+        "Isso foi canja.\nVamos passar às coisas sérias.",
+        "Muito bem!\nVamos tornar isto um bocadinho mais interessante."
     ],
     "DecreaseDiff": [
-        "Tenta agora. Facilitei um pouco para te focares.",
-        "Vamos abrandar um bocadinho. O que importa é chegar lá.",
-        "Está tudo bem. Vamos recuperar o fôlego e seguir.",
-        "Vamos aliviar um bocado. O importante é não parar.",
-        "Está tudo bem. Vamos simplificar para apanhares o jeito."
+        "Tenta agora.\nFacilitei um pouco para te focares.",
+        "Vamos abrandar um bocadinho.\nO que importa é chegar lá.",
+        "Está tudo bem.\nVamos recuperar o fôlego e seguir.",
+        "Vamos aliviar um bocado.\nO importante é não parar.",
+        "Está tudo bem.\nVamos simplificar para apanhares o jeito."
     ]
 }
