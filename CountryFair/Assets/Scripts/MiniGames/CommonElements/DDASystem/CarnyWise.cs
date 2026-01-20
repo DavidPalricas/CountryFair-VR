@@ -145,7 +145,6 @@ public class CarnyWise : MonoBehaviour
         }
     }
 
-
     private void IncreaseDifficulty()
     {
         _gameManager.IncreaseDifficulty();

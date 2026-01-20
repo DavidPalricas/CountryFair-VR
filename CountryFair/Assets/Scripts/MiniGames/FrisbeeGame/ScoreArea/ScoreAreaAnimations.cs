@@ -6,7 +6,9 @@ using System.Linq;
 /// <summary>
 /// Handles the animation of the score area including floating, rotating, and pulsing effects.
 /// </summary>
+
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(ScoreAreaProperties))]
 public class ScoreAreaAnimations : BalloonSpawner
 {
     [Header("Rotate Animation Settings")]
@@ -49,6 +51,7 @@ public class ScoreAreaAnimations : BalloonSpawner
     /// </summary>
     private Sequence _animSequence;
 
+    private ScoreAreaProperties _scoreAreaProperties;
 
     [Header("Score Animation Settings")]
     /// <summary>
@@ -84,6 +87,8 @@ public class ScoreAreaAnimations : BalloonSpawner
         _balloonsPlaceHolders = Utils.GetChildren(balloonsPlaceHoldersGroup);
 
         maxBalloons = _balloonsPlaceHolders.Length;
+
+        _scoreAreaProperties = GetComponent<ScoreAreaProperties>();
     }
 
     /// <summary>

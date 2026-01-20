@@ -1,15 +1,10 @@
 using UnityEngine;
-using UnityEngine.Networking;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Newtonsoft.Json;
 using DG.Tweening;
 
 
 
-public class CarnyWiseDiffFeedback : MonoBehaviour
+public class CarnyWiseDiffFeedback : UIDialog
 {  
     [Header("Display Configuration")]
    [SerializeField]
@@ -18,59 +13,37 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
    [SerializeField]
    private float transitionDuration = 0.4f;
 
-   [Header("View Positioning")]
-   [SerializeField]
-   private Transform centerEyeTransform;
-
-   [SerializeField]
-   private float distanceFromPlayer = 12f;
-
-   [SerializeField]
-   private float heightOffset = 2.5f;
-
-   [SerializeField]
-   private float horizontalOffset =7f;
-
    [Header("Carny Wise Expressions")]
    [SerializeField]
    private GameObject increaseDiffExpression;
    [SerializeField]
    private GameObject decreaseDiffExpression;
 
-   [Header("Dialogue Box")]
-   [SerializeField]
-   private GameObject dialogueBoxGameObject;
-
-    [SerializeField]
-   private TextMeshProUGUI dialogueBoxText;
-
-   private const string _FEEDBACK_JSON_FILE_NAME = "change_difficulty.json";
-
    private DiffcultyFeedBackData _feedbackData;
 
    private Dictionary<string, Vector3> _feedbackElementsScales;
 
 
-    private void Awake()
+    protected override void Awake()
     {   
+        SetJSONFileName();
+
+        base.Awake();
+
+        _feedbackData = data as DiffcultyFeedBackData;
+
+        if (_feedbackData == null)
+        {
+            Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
+
+            return;
+        }
+
         if (increaseDiffExpression == null || decreaseDiffExpression == null)
         {
             Debug.LogError("One carny wise expression or more are not assigned in the inspector.");
 
             return;
-        }
-
-        if (dialogueBoxGameObject == null || dialogueBoxText == null)
-        {
-            Debug.LogError("Dialogue box or text is not assigned in the inspector.");
-
-            return;
-        }
-
-        if (centerEyeTransform == null){
-            Debug.LogError("Center Eye Transform is not assigned in the inspector.");
-
-            return ;
         }
 
         _feedbackElementsScales = new Dictionary<string, Vector3>(){
@@ -79,63 +52,14 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
             { "DialogueBox", dialogueBoxGameObject.transform.localScale }
         };
         
- 
-
         increaseDiffExpression.SetActive(false);
         decreaseDiffExpression.SetActive(false);
-        dialogueBoxGameObject.SetActive(false);
-        
-        StartCoroutine(LoadFeedbackDataRoutine());
     }
 
-    private IEnumerator LoadFeedbackDataRoutine()
+
+    protected override void SetJSONFileName()
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, _FEEDBACK_JSON_FILE_NAME);
-        string jsonContent = "";
-
-        // READ FOR ANDROID (Meta Quest 3)
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            using UnityWebRequest request = UnityWebRequest.Get(filePath);
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Error reading JSON on Quest: " + request.error);
-                yield break; // Exit coroutine if failed
-            }
-
-            jsonContent = request.downloadHandler.text;
-        }
- 
-        // LOGIC FOR PC / EDITOR
-        else 
-        {
-            if (File.Exists(filePath))
-            {
-                jsonContent = File.ReadAllText(filePath);
-                
-            }
-            else
-            {
-                Debug.LogError("File not found on PC: " + filePath);
-                yield break;
-            }
-        }
-
-        // PARSE (Igual para ambos)
-        try
-        {
-            if (!string.IsNullOrEmpty(jsonContent))
-            {
-               _feedbackData = JsonConvert.DeserializeObject<DiffcultyFeedBackData>(jsonContent);
-                Debug.Log("JSON loaded successfully!");
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Error in JSON format: " + e.Message);
-        }
+        _jsonFileName = "change_difficulty.json";
     }
 
     public void ShowNewDiffFeedback(bool isToIncrease)
@@ -175,7 +99,7 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
         transform.position = targetPosition;
     }
 
-    private void HideFeedback()
+    protected override void HideFeedback()
     {
         Sequence sequence = DOTween.Sequence();
 

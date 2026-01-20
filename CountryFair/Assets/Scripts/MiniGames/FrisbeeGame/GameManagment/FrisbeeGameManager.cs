@@ -165,8 +165,8 @@ public class FrisbeeGameManager : GameManager
         var shuffled = _scoreAreas.OrderBy(x => Random.value).ToList();
 
         for (int i = 0; i < total; i++)
-        {
-            if (!shuffled[i].TryGetComponent<ScoreAreaExtraSettings>(out var scoreArea)) continue;
+        {   
+            if (!shuffled[i].TryGetComponent<ScoreAreaProperties>(out var scoreArea)) continue;
            
             scoreArea.AdjustMovement( i < targetMovingCount);
 

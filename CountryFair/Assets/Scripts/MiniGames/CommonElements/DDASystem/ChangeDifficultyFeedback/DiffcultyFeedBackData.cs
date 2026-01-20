@@ -1,8 +1,7 @@
 
 using System.Collections.Generic;
 
-[System.Serializable]
-public class DiffcultyFeedBackData
+public class DiffcultyFeedBackData : JSONData
 {   
     public List<string> IncreaseDiff{ get; set;}
     
