@@ -49,7 +49,7 @@ public class FrisbeeGameManager : GameManager
         if (visibilityRatioCurve.length == 0) visibilityRatioCurve = AnimationCurve.EaseInOut(0, 0, 1, 0.5f);
     }
 
-    private void Start()
+    public override void TutorialCompleted()
     {
         _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
@@ -68,23 +68,13 @@ public class FrisbeeGameManager : GameManager
         ApplyDifficultySettings();
     }
 
-    // --- INTERFACE COM CARNYWISE ---
 
-    public override void IncreaseDifficulty()
+
+    public override void ChangeDifficulty(bool isToIncreaseDiff)
     {
-        difficultyLevel++;
-        Debug.Log($"<color=green>PROGRESSÃO:</color> Subindo para Nível {difficultyLevel}");
+        difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
+        Debug.Log($"<color=blue>DDA:</color> Ajustando dificuldade para Nível {difficultyLevel} ({(isToIncreaseDiff ? "Subiu" : "Desceu")})");
         ApplyDifficultySettings();
-    }
-
-    public override void DecreaseDifficulty()
-    {
-        if (difficultyLevel > 0)
-        {
-            difficultyLevel--;
-            Debug.Log($"<color=yellow>AJUSTE:</color> Descendo para Nível {difficultyLevel}");
-            ApplyDifficultySettings();
-        }
     }
 
     // --- MATEMÁTICA DE ADAPTAÇÃO ---

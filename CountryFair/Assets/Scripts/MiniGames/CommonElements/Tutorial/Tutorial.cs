@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
+
 
 public class Tutorial: UIDialog
-{  
+{   
+    [SerializeField]
+    private UnityEvent tutorialCompleted;
+
     [Header("Game Elements")]
     [SerializeField]
     private GameObject tutorialElements;
@@ -21,18 +26,16 @@ public class Tutorial: UIDialog
 
     protected override void Awake()
     {  
-        SetJSONFileName();
-        
         base.Awake();
 
-        if (data is TutorialData tutorialData)
+        if (data is not TutorialData tutorialData)
         {
-            _rules = tutorialData.Rules;
+            Debug.LogError("Error Converting data to TutorialData.");
+
+            return;
         }
-        else
-        {
-            Debug.LogError("Tutorial data is not properly loaded or of incorrect type.");
-        }
+
+        _rules = tutorialData.Rules;
 
         if (tutorialElements  == null || postTutorialElements == null)
         {
@@ -51,13 +54,18 @@ public class Tutorial: UIDialog
     }
 
 
+    protected override System.Type GetJSONDataType()
+    {
+        return typeof(TutorialData);
+    }
+
     protected override void SetJSONFileName()
     {
         string sceneName = SceneManager.GetActiveScene().name.ToLower();
 
         if (sceneName.Contains("frisbee"))
         {
-            _jsonFileName = "frisbee_tutorial.json";
+            _jsonFileName = "frisbbee_tutorial.json";
 
             return;
         }
@@ -105,13 +113,9 @@ public class Tutorial: UIDialog
 
         if (_currentTasksCompleted >= _numberOfTasks)
         {
-            TutorialCompleted();
+             dialogueBoxText.text = "Parabéns! Você está pronto para começar o jogo!\n\tQuando estiver pronto carregue no botão e boa sorte!";
+             tutorialCompleted.Invoke();
             return;
         }
-    }
-
-    private void TutorialCompleted()
-    {
-        dialogueBoxText.text = "Parabéns! Você está pronto para começar o jogo!\n\tQuando estiver pronto carregue no botão e boa sorte!";
     }
 }

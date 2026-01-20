@@ -2,8 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
 
-
-
 public class CarnyWiseDiffFeedback : UIDialog
 {  
     [Header("Display Configuration")]
@@ -26,18 +24,16 @@ public class CarnyWiseDiffFeedback : UIDialog
 
     protected override void Awake()
     {   
-        SetJSONFileName();
-
         base.Awake();
 
-        _feedbackData = data as DiffcultyFeedBackData;
-
-        if (_feedbackData == null)
+        if (data is not DiffcultyFeedBackData)
         {
-            Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
+              Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
 
             return;
         }
+
+        _feedbackData = data as DiffcultyFeedBackData;
 
         if (increaseDiffExpression == null || decreaseDiffExpression == null)
         {
@@ -51,11 +47,18 @@ public class CarnyWiseDiffFeedback : UIDialog
             { "DecreaseDiffExpr", decreaseDiffExpression.transform.localScale },
             { "DialogueBox", dialogueBoxGameObject.transform.localScale }
         };
+
+        dialogueBoxGameObject.SetActive(false);
         
         increaseDiffExpression.SetActive(false);
         decreaseDiffExpression.SetActive(false);
     }
 
+
+    protected override System.Type GetJSONDataType()
+    {
+        return typeof(DiffcultyFeedBackData);
+    }
 
     protected override void SetJSONFileName()
     {

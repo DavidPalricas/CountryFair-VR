@@ -990,7 +990,6 @@ GameObject:
   - component: {fileID: 147053872}
   - component: {fileID: 147053874}
   - component: {fileID: 147053875}
-  - component: {fileID: 147053876}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -1157,37 +1156,6 @@ MonoBehaviour:
       Data3: -84970573
       Data4: -749454200
     Path: event:/FrisbeeGame/DogFootSteps
---- !u!114 &147053876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 147053871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 561676bcf7a1edb4dbe02673e70077fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CannyWise
-  precisionThresholdToIncreaseDiff: 0.6
-  precisionThresholdToDecreaseDiff: 0.4
-  thresholdToChangeDiff: 3
-  failingConsecutiveThreshold: 4
-  showFeedback:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4786872874757885024}
-        m_TargetAssemblyTypeName: CarnyWiseDiffFeedback, Assembly-CSharp
-        m_MethodName: ShowNewDiffFeedback
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!4 &169760406 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
@@ -3172,7 +3140,7 @@ PrefabInstance:
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerMissed.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 147053876}
+      objectReference: {fileID: 4786872874757885025}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3188,7 +3156,7 @@ PrefabInstance:
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
-      objectReference: {fileID: 147053876}
+      objectReference: {fileID: 4786872874757885025}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: frisbeeLanded.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3263,7 +3231,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
-      value: CannyWise, Assembly-CSharp
+      value: CarnyWise, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6228545201461579978, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: playerScored.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_BoolArgument
@@ -5294,7 +5262,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 147053876}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: CannyWise, Assembly-CSharp
         m_MethodName: StartTaskTimer
         m_Mode: 1
@@ -6711,7 +6679,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 147053876}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: CannyWise, Assembly-CSharp
         m_MethodName: StartTaskTimer
         m_Mode: 1
@@ -9496,6 +9464,34 @@ PrefabInstance:
       propertyPath: postTutorialElements
       value: 
       objectReference: {fileID: 476691671}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053872}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TutorialCompleted
+      objectReference: {fileID: 0}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FrisbeeGameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -9582,7 +9578,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6414094022825278280, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_Name
-      value: CarnyWiseDialogues
+      value: CarnyWise
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053872}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeDifficulty
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FrisbeeGameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7979614268624152678, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: heightOffset
@@ -9610,15 +9630,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3.192576
+      value: 3.1925757
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalScale.y
-      value: 3.192576
+      value: 3.1925757
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 3.192576
+      value: 3.1925757
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9674,17 +9694,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
   m_PrefabInstance: {fileID: 4786872874757885022}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4786872874757885024 stripped
+--- !u!114 &4786872874757885025 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7979614268624152678, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
   m_PrefabInstance: {fileID: 4786872874757885022}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e757538c941480c4eb456f9dd6f6e573, type: 3}
+  m_Script: {fileID: 11500000, guid: 561676bcf7a1edb4dbe02673e70077fa, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CarnyWiseDiffFeedback
+  m_EditorClassIdentifier: Assembly-CSharp::CarnyWise
 --- !u!114 &5657806951949849020 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8148269385368887191, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
@@ -9847,7 +9867,7 @@ PrefabInstance:
     - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: sessionGoalReached.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 147053872}
+      objectReference: {fileID: 4786872874757885025}
     - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: checkIfGoalReached.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -9870,7 +9890,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: sessionGoalReached.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: FrisbeeGameManager, Assembly-CSharp
+      value: CarnyWise, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4287795889322539246, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: checkIfGoalReached.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName

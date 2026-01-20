@@ -8,7 +8,7 @@ using TMPro;
 
 public class UIDialog : MonoBehaviour
 {
-     [Header("View Positioning")]
+   [Header("View Positioning")]
    [SerializeField]
    protected Transform centerEyeTransform;
 
@@ -32,9 +32,10 @@ public class UIDialog : MonoBehaviour
 
    protected string _jsonFileName;
 
-
    protected virtual void Awake()
    {  
+      SetJSONFileName();
+
       if (centerEyeTransform == null){
             Debug.LogError("Center Eye Transform is not assigned in the inspector.");
 
@@ -48,16 +49,19 @@ public class UIDialog : MonoBehaviour
          return;
       }
 
-      dialogueBoxGameObject.SetActive(false);
-
       StartCoroutine(LoadJSONDataRoutine());
+   }
+
+   protected virtual System.Type GetJSONDataType()
+   {
+       Debug.LogError("GetJSONDataType method must be overridden in derived classes.");
+
+       return null;
    }
 
     private IEnumerator LoadJSONDataRoutine()
     {   
-        string baseFilePath = "DialogFiles/" + _jsonFileName;
-
-        string filePath = Path.Combine(Application.streamingAssetsPath, baseFilePath);
+        string filePath = Path.Combine(Application.streamingAssetsPath, "DialogFiles", _jsonFileName);
         string jsonContent = "";
 
         // READ FOR ANDROID (Meta Quest 3)
@@ -95,7 +99,7 @@ public class UIDialog : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(jsonContent))
             {
-                data = JsonConvert.DeserializeObject<JSONData>(jsonContent);
+                data = (JSONData)JsonConvert.DeserializeObject(jsonContent, GetJSONDataType());
                 Debug.Log("JSON loaded successfully!");
             }
         }
