@@ -11,8 +11,12 @@ using DG.Tweening;
 
 public class CarnyWiseDiffFeedback : MonoBehaviour
 {  
+    [Header("Display Configuration")]
    [SerializeField]
    private float displayDuration = 6f;
+
+   [SerializeField]
+   private float transitionDuration = 0.4f;
 
    [Header("View Positioning")]
    [SerializeField]
@@ -42,10 +46,10 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
 
    private const string _FEEDBACK_JSON_FILE_NAME = "change_difficulty.json";
 
-   private DiffcultyFeedBackData _feedBackData;
-   private Vector3 _originalIncreaseScale;
-   private Vector3 _originalDecreaseScale;
-   private Vector3 _originalDialogueBoxScale;
+   private DiffcultyFeedBackData _feedbackData;
+
+   private Dictionary<string, Vector3> _feedbackElementsScales;
+
 
     private void Awake()
     {   
@@ -68,10 +72,14 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
 
             return ;
         }
+
+        _feedbackElementsScales = new Dictionary<string, Vector3>(){
+            { "IncreaseDiffExpr", increaseDiffExpression.transform.localScale },
+            { "DecreaseDiffExpr", decreaseDiffExpression.transform.localScale },
+            { "DialogueBox", dialogueBoxGameObject.transform.localScale }
+        };
         
-        _originalIncreaseScale = increaseDiffExpression.transform.localScale;
-        _originalDecreaseScale = decreaseDiffExpression.transform.localScale;
-        _originalDialogueBoxScale = dialogueBoxGameObject.transform.localScale;
+ 
 
         increaseDiffExpression.SetActive(false);
         decreaseDiffExpression.SetActive(false);
@@ -120,7 +128,7 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(jsonContent))
             {
-               _feedBackData = JsonConvert.DeserializeObject<DiffcultyFeedBackData>(jsonContent);
+               _feedbackData = JsonConvert.DeserializeObject<DiffcultyFeedBackData>(jsonContent);
                 Debug.Log("JSON loaded successfully!");
             }
         }
@@ -139,15 +147,14 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
         if (isToIncrease)
         {
             increaseDiffExpression.SetActive(true);
-
-            Debug.Log("Showing increase difficulty feedback.");
-
-            feedbackTexts = _feedBackData.IncreaseDiff;
+            feedbackTexts = _feedbackData.IncreaseDiff;
         }
         else
         {
             decreaseDiffExpression.SetActive(true);
-            feedbackTexts = _feedBackData.DecreaseDiff;
+            feedbackTexts = _feedbackData.DecreaseDiff;
+
+            Debug.Log("Showing decrease difficulty feedback.");
         }
 
         dialogueBoxGameObject.SetActive(true);
@@ -165,7 +172,6 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
         targetPosition.y = centerEyeTransform.position.y - heightOffset; // Mantém a altura relativa ou fixa
         targetPosition.x = centerEyeTransform.position.x + horizontalOffset;
        
-
         transform.position = targetPosition;
     }
 
@@ -173,25 +179,26 @@ public class CarnyWiseDiffFeedback : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
 
+        const Ease TRANSITION_EASE = Ease.InBack;
+
         if (increaseDiffExpression.activeSelf)
         {
-            sequence.Append(increaseDiffExpression.transform.DOScale(0f, 0.4f).SetEase(Ease.InBack));
+            sequence.Append(increaseDiffExpression.transform.DOScale(0f, transitionDuration).SetEase(TRANSITION_EASE));
         }else if(decreaseDiffExpression.activeSelf)
         {
-            sequence.Append(decreaseDiffExpression.transform.DOScale(0f, 0.4f).SetEase(Ease.InBack));
+            sequence.Append(decreaseDiffExpression.transform.DOScale(0f, transitionDuration).SetEase(TRANSITION_EASE));
         }
            
-        sequence.Join(dialogueBoxGameObject.transform.DOScale(0f, 0.4f).SetEase(Ease.InBack).SetDelay(0.15f));
+        sequence.Join(dialogueBoxGameObject.transform.DOScale(0f, transitionDuration).SetEase(TRANSITION_EASE).SetDelay(0.15f));
 
         sequence.OnComplete(() => {
             increaseDiffExpression.SetActive(false);
             decreaseDiffExpression.SetActive(false);
             dialogueBoxGameObject.SetActive(false);
 
-            // Restore original scales so they appear correctly next time
-            increaseDiffExpression.transform.localScale = _originalIncreaseScale;
-            decreaseDiffExpression.transform.localScale = _originalDecreaseScale;
-            dialogueBoxGameObject.transform.localScale = _originalDialogueBoxScale;
+            increaseDiffExpression.transform.localScale = _feedbackElementsScales["IncreaseDiffExpr"];
+            decreaseDiffExpression.transform.localScale = _feedbackElementsScales["DecreaseDiffExpr"];
+            dialogueBoxGameObject.transform.localScale = _feedbackElementsScales["DialogueBox"];
         });
     }
 }
