@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(GameManager))]
 public class CarnyWise : MonoBehaviour
@@ -14,6 +15,12 @@ public class CarnyWise : MonoBehaviour
 
     [SerializeField]
     private int thresholdToChangeDiff = 3; 
+
+    [SerializeField]
+    private int failingConsecutiveThreshold = 4;
+
+    [SerializeField]
+    private UnityEvent<bool> showFeedback;
 
     // Variáveis de Estado
     private float _taskStartTime = 0f;
@@ -43,7 +50,7 @@ public class CarnyWise : MonoBehaviour
 
     public void StartTaskTimer()
     {   // If the timer already started, do not reset
-        if (_taskStartTime > 0f)
+        if (_taskStartTime <= 0f)
         {
              _taskStartTime = Time.time;
         }
@@ -52,7 +59,13 @@ public class CarnyWise : MonoBehaviour
     public void PlayerMissed()
     {
         _currentAttemptsForTask++;
-        Debug.Log($"Player Missed! Current Attempts: {_currentAttemptsForTask}");
+
+        if (_currentAttemptsForTask >= failingConsecutiveThreshold)
+        {
+            DecreaseDifficulty();
+
+            ResetTask();
+        }
     }
 
     public void PlayerScored()
@@ -73,7 +86,12 @@ public class CarnyWise : MonoBehaviour
 
         EvaluatePerformance(taskPrecision, timeTaken);
         
-        // Resets for next task
+        ResetTask();
+    }
+
+
+    private void ResetTask()
+    {
         _taskStartTime = 0f;
         _currentAttemptsForTask = 0; 
     }
@@ -83,8 +101,9 @@ public class CarnyWise : MonoBehaviour
         if (precision >= precisionThresholdToIncreaseDiff)
         {
             _excelCounter++;
-            _struggleCounter = 0; 
-            
+
+            _struggleCounter = Mathf.Max(0, _struggleCounter--);
+
             CheckToChangeDifficulty();
             return;
         }
@@ -92,7 +111,8 @@ public class CarnyWise : MonoBehaviour
         if (precision <= precisionThresholdToDecreaseDiff)
         {
             _struggleCounter++;
-            _excelCounter = 0; 
+
+            _excelCounter = Mathf.Max(0, _excelCounter--);
 
             CheckToChangeDifficulty();
 
@@ -107,35 +127,43 @@ public class CarnyWise : MonoBehaviour
     {   
         Debug.Log("Mantaining Flow State");
 
-        if (_struggleCounter > 0)
-        {
-            _struggleCounter--;
-        }
-
-        if (_excelCounter > 0)
-        {
-            _excelCounter--;
-        }
+        _struggleCounter = Mathf.Max(0, _struggleCounter--);
+        _excelCounter = Mathf.Max(0, _excelCounter--);
     }
 
     private void CheckToChangeDifficulty()
-    {
+    {  
         if (_excelCounter >= thresholdToChangeDiff)
         {
-            _gameManager.IncreaseDifficulty();
-
-            _excelCounter = 0; 
-
+            IncreaseDifficulty();
             return;
         }
 
         if (_struggleCounter >= thresholdToChangeDiff)
         {
-            _gameManager.DecreaseDifficulty();
-
-            _struggleCounter = 0; 
+            DecreaseDifficulty();
         }
     }
+
+
+    private void IncreaseDifficulty()
+    {
+        _gameManager.IncreaseDifficulty();
+
+        showFeedback.Invoke(true);
+
+        _excelCounter = 0; 
+    }
+
+    private void DecreaseDifficulty()
+    {
+        _gameManager.DecreaseDifficulty();
+
+        showFeedback.Invoke(false);
+
+        _struggleCounter = 0; 
+    }
+
 
     public void SessionGoalReached()
     {
