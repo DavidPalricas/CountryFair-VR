@@ -23,6 +23,7 @@ using UnityEngine.Events;
 /// This provides clear visual feedback to the player about the game state.
 /// </para>
 /// </remarks>
+[RequireComponent(typeof(FollowPlayerHead))]
 public class OnPlayerFront : FrisbeeState
 {   
     [SerializeField]
@@ -63,6 +64,7 @@ public class OnPlayerFront : FrisbeeState
 
     private readonly AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
 
+    private FollowPlayerHead _followPlayerHead;
 
     /// <summary>
     /// Flag indicating whether the dog has reached its target position.
@@ -121,10 +123,65 @@ public class OnPlayerFront : FrisbeeState
             return;
         }
 
+        _followPlayerHead = GetComponent<FollowPlayerHead>();
+
           SetUpMaterialsTransparency();
     }
  
+   
+
     /// <summary>
+    /// Called when entering the OnPlayerHand state.
+    /// Resets the frisbee to its held position and configures it for being held.
+    /// </summary>
+    /// <remarks>
+    /// Updates the material opacity based on <see cref="DogInTarget"/> status and calls
+    /// <see cref="PlayerHoldingFrisbee"/> to reset physics and transform.
+    /// This state is entered when the dog returns the frisbee to the player or at game start.
+    /// </remarks>
+    public override void Enter()
+   {
+        base.Enter();
+
+        ChangeMaterialsOpacity();
+
+        PlayerHoldingFrisbee();
+   }
+
+    /// <summary>
+    /// Called every frame while in the OnPlayerHand state.
+    /// Monitors for throw input and initiates the throw sequence when conditions are met.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Detects when the player presses the PrimaryIndexTrigger (VR controller trigger).
+    /// If <see cref="DogInTarget"/> is true, initiates the throw by:
+    /// <list type="number">
+    /// <item><description>Calling <see cref="ThrowFrisbee"/> to apply physics</description></item>
+    /// <item><description>Triggering the "FrisbeeThrown" transition to the <see cref="OnMovement"/> state</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// If the dog hasn't reached its position yet, the throw is blocked (visual feedback via transparency).
+    /// </para>
+    /// </remarks>
+    public override void Execute()
+    {
+         base.Execute();
+    }
+
+    /// <summary>
+    /// Called when exiting the OnPlayerHand state.
+    /// </summary>
+    /// <remarks>
+    /// Performs base cleanup for state exit. The throw has already been initiated in <see cref="Execute"/>.
+    /// </remarks>
+    public override void Exit()
+    {   
+        base.Exit();
+    }
+
+     /// <summary>
     /// Initiates the frisbee throw by configuring physics and applying initial forces.
     /// </summary>
     /// <remarks>
@@ -145,7 +202,9 @@ public class OnPlayerFront : FrisbeeState
     public void ThrowFrisbee(bool thrownByRightHand)
     {   
         if (fSM.CurrentState == this && thrownByRightHand == IsBeingGrabbedByRightHand)
-        {
+        {   
+            _followPlayerHead.enabled = false;
+            
             transform.parent = null;
 
             _rigidbody.isKinematic = false;
@@ -164,8 +223,6 @@ public class OnPlayerFront : FrisbeeState
         }
     }
 
-
-    
     /// <summary>
     /// Resets the frisbee to its held state in the player's hand.
     /// </summary>
@@ -194,6 +251,10 @@ public class OnPlayerFront : FrisbeeState
         _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
         _collider.isTrigger = true;
+
+         frisbeeGrabbable.enabled = false;
+
+         _followPlayerHead.enabled = true;
     }
 
     /// <summary>
@@ -303,57 +364,6 @@ public class OnPlayerFront : FrisbeeState
         transform.localPosition = Vector3.zero;
 
         transform.rotation = _initialRotation;
-    }
-
-    /// <summary>
-    /// Called when entering the OnPlayerHand state.
-    /// Resets the frisbee to its held position and configures it for being held.
-    /// </summary>
-    /// <remarks>
-    /// Updates the material opacity based on <see cref="DogInTarget"/> status and calls
-    /// <see cref="PlayerHoldingFrisbee"/> to reset physics and transform.
-    /// This state is entered when the dog returns the frisbee to the player or at game start.
-    /// </remarks>
-    public override void Enter()
-   {
-        base.Enter();
-
-        ChangeMaterialsOpacity();
-
-        PlayerHoldingFrisbee();
-   }
-
-    /// <summary>
-    /// Called every frame while in the OnPlayerHand state.
-    /// Monitors for throw input and initiates the throw sequence when conditions are met.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Detects when the player presses the PrimaryIndexTrigger (VR controller trigger).
-    /// If <see cref="DogInTarget"/> is true, initiates the throw by:
-    /// <list type="number">
-    /// <item><description>Calling <see cref="ThrowFrisbee"/> to apply physics</description></item>
-    /// <item><description>Triggering the "FrisbeeThrown" transition to the <see cref="OnMovement"/> state</description></item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// If the dog hasn't reached its position yet, the throw is blocked (visual feedback via transparency).
-    /// </para>
-    /// </remarks>
-    public override void Execute()
-    {
-         base.Execute();
-    }
-
-    /// <summary>
-    /// Called when exiting the OnPlayerHand state.
-    /// </summary>
-    /// <remarks>
-    /// Performs base cleanup for state exit. The throw has already been initiated in <see cref="Execute"/>.
-    /// </remarks>
-    public override void Exit()
-    {   
-        base.Exit();
     }
 
     /// <summary>

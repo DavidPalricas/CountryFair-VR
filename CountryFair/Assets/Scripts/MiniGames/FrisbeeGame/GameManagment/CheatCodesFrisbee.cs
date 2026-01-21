@@ -55,7 +55,7 @@ public class CheatCodesFrisbee : MonoBehaviour
     /// Finds and caches references to the Frisbee and ScoreArea game objects and their components.
     /// Unity callback called when the script instance is being loaded.
     /// </summary>
-    private void Awake()
+    private void Start()
     {   
         _maxCheatLength = _cheatCodes.Max(c => c.Length);
 

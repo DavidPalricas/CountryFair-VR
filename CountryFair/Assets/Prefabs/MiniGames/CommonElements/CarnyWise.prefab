@@ -222,9 +222,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8878798017660467077}
+  - component: {fileID: 7732196806524324496}
   - component: {fileID: 7979614268624152678}
   m_Layer: 0
-  m_Name: CarnyWiseFeedBack
+  m_Name: CarnyWise
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -247,6 +248,25 @@ Transform:
   - {fileID: 1878236638267100241}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7732196806524324496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6414094022825278280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 561676bcf7a1edb4dbe02673e70077fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarnyWise
+  precisionThresholdToIncreaseDiff: 0.6
+  precisionThresholdToDecreaseDiff: 0.4
+  thresholdToChangeDiff: 3
+  failingConsecutiveThreshold: 4
+  showFeedback:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7979614268624152678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,15 +279,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e757538c941480c4eb456f9dd6f6e573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarnyWiseDiffFeedback
-  displayDuration: 4
   centerEyeTransform: {fileID: 0}
   distanceFromPlayer: 2
   heightOffset: 2
   horizontalOffset: 5
-  increaseDiffExpression: {fileID: 1707682700530216551}
-  decreaseDiffExpression: {fileID: 3865363042873844485}
   dialogueBoxGameObject: {fileID: 352828313340079023}
   dialogueBoxText: {fileID: 9127245463817792877}
+  displayDuration: 4
+  transitionDuration: 0.4
+  increaseDiffExpression: {fileID: 1707682700530216551}
+  decreaseDiffExpression: {fileID: 3865363042873844485}
 --- !u!1001 &6375902696103865768
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,7 +11,6 @@ public class Landed: FrisbeeState
     [SerializeField]
     private MeshRenderer frisbeeMeshRenderer;
 
-
     [SerializeField]
     private int scorePoints = 1;
 
@@ -42,6 +41,8 @@ public class Landed: FrisbeeState
 
     private readonly AudioManager.GameSoundEffects _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
 
+    public bool TutorialActive { get; set; } =  true;
+
     /// <summary>
     /// Initializes the state by setting up physics component references.
     /// </summary>
@@ -69,23 +70,31 @@ public class Landed: FrisbeeState
    {
         base.Enter();
 
-         Debug.Log("Frisbee Landed in poistion " + transform.position);
-
         _rigidbody.linearVelocity = Vector3.zero;
 
-        if (FrisbeeOnScoreArea())
-        {
-            playerScored.Invoke(scorePoints);
+        bool frisbeeOnScoreArea = FrisbeeOnScoreArea();
 
-            scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
+        if (TutorialActive)
+        {   
+            fSM.ChangeState("TutorialActive");
+            return;
+        }
+
+
+        if (frisbeeOnScoreArea)
+        {   
+            // This is event must be ivoked after the tutorial
+            playerScored.Invoke(scorePoints);
         }
         else
-        {
+        {     
           playerMissed.Invoke();
         }
 
-          frisbeeLanded.Invoke();
+        frisbeeLanded.Invoke();
     }
+
+
 
     /// <summary>
     /// Called every frame while in the Landed state.
@@ -110,7 +119,10 @@ public class Landed: FrisbeeState
     /// </summary>
     public void FrisbeeGivenByDog()
     {   
-        fSM.ChangeState("RetrievedByDog");
+        if (fSM.CurrentState == this)
+        {
+            fSM.ChangeState("RetrievedByDog");
+        }
     }
 
     private bool FrisbeeOnScoreArea()
@@ -124,7 +136,17 @@ public class Landed: FrisbeeState
         foreach (Collider collider in overlapResults)
         {
             if (collider != null && collider.gameObject.CompareTag("ScoreArea")) 
-            {
+            {   
+                if (!collider.gameObject.TryGetComponent<ScoreAreaAnimations>(out var scocreArea))
+                {
+                    Debug.LogError("ScoreAreaAnimations component is missing on the Score Area object.");
+
+                    return false;
+                }
+
+                scocreArea.ScoreAnimation();
+                scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
+
                 return true;
             }
         }

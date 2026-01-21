@@ -1,17 +1,28 @@
 using UnityEngine;
+using UnityEngine.Events;
 using DG.Tweening;
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
-public class ScoreAreaExtraSettings : MonoBehaviour
-{
+public class ScoreAreaProperties : MonoBehaviour
+{   
+    public AreaType areaType = AreaType.NORMAL;
+
+    [SerializeField]
+    private UnityEvent tutorialTaskCompleted;
+
+
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float radius = 0.5f;
+    [SerializeField] 
+    private float moveSpeed = 2f;
+    [SerializeField] 
+    private float radius = 0.5f;
 
     [Header("Visibility Settings")]
-    [SerializeField] private float timeVisible = 3f;  
-    [SerializeField] private float timeInvisible = 2f; 
+    [SerializeField] 
+    private float timeVisible = 3f;  
+    [SerializeField] 
+    private float timeInvisible = 2f; 
 
     private Vector3 _initialPosition = Vector3.zero;
     private Renderer _renderer;
@@ -23,6 +34,13 @@ public class ScoreAreaExtraSettings : MonoBehaviour
     // Unique ID to differentiate Blinking from Moving
     private string _blinkId; 
 
+    public enum AreaType
+    {
+        NORMAL,
+        DOG,
+        TUTORIAL
+    }
+
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
@@ -33,8 +51,14 @@ public class ScoreAreaExtraSettings : MonoBehaviour
     }
 
     public void AdjustMovement(bool isToMove)
-    {
-        if (isToMove)
+    {   
+        if (areaType != AreaType.NORMAL)
+        {
+            Debug.LogWarning("Movement adjustment is only applicable for NORMAL area type.");
+            return;
+        }
+
+        if (areaType == AreaType.NORMAL && isToMove)
         {
             StartMoving();
             return;
@@ -43,7 +67,12 @@ public class ScoreAreaExtraSettings : MonoBehaviour
     }
 
     public void AdjustVisibility(bool canChangeVisibility)
-    {
+    {  if (areaType != AreaType.NORMAL)
+        {
+            Debug.LogWarning("Visibility adjustment is only applicable for NORMAL area type.");
+            return;
+        }
+        
         if (canChangeVisibility)
         {
             StartBlinking();
@@ -125,7 +154,17 @@ public class ScoreAreaExtraSettings : MonoBehaviour
     }
 
     private void OnDestroy()
-    {
-        transform.DOKill(); 
+    {   
+        if (areaType == AreaType.NORMAL)
+        {
+              transform.DOKill(); 
+
+              return;
+        }
+
+        if (areaType == AreaType.TUTORIAL)
+        {
+            tutorialTaskCompleted.Invoke();
+        }
     }
 }

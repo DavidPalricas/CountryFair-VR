@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using GLTFast.Schema;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(GameManager))]
+[RequireComponent(typeof(CarnyWiseDiffFeedback))]
 public class CarnyWise : MonoBehaviour
 {
+    [SerializeField]
+    private UnityEvent <bool> changeDifficulty;
+
     [Header("Adaptation Configuration")] 
     [SerializeField, Range(0f, 1f)]
     private float precisionThresholdToIncreaseDiff = 0.7f; 
@@ -18,9 +23,6 @@ public class CarnyWise : MonoBehaviour
 
     [SerializeField]
     private int failingConsecutiveThreshold = 4;
-
-    [SerializeField]
-    private UnityEvent<bool> showFeedback;
 
     // Variáveis de Estado
     private float _taskStartTime = 0f;
@@ -37,15 +39,34 @@ public class CarnyWise : MonoBehaviour
 
     private string _miniGameName;
 
-
-    private GameManager _gameManager;
-
+    private CarnyWiseDiffFeedback _diffFeedback;
 
     private void Awake()
     {
-        _gameManager = GetComponent<GameManager>();
+        SetMiniGameName();
+        _diffFeedback = GetComponent<CarnyWiseDiffFeedback>();
+    }
 
-        _miniGameName = _gameManager is FrisbeeGameManager ? "frisbee" : "archery";
+
+    private void SetMiniGameName()
+    {
+        string sceneName = SceneManager.GetActiveScene().name.ToLower();
+
+        if (sceneName.Contains("frisbee"))
+        {
+            _miniGameName = "Frisbee Game";
+
+            return;
+        }
+
+        if (sceneName.Contains("archery"))
+        {
+            _miniGameName = "Archery Game";
+
+            return;
+        }
+      
+        Debug.LogError("Invalid scene"); 
     }
 
     public void StartTaskTimer()
@@ -84,9 +105,9 @@ public class CarnyWise : MonoBehaviour
         _tasksPrecisions.Add(taskPrecision);
         _tasksTimes.Add(timeTaken);
 
-        EvaluatePerformance(taskPrecision, timeTaken);
-        
         ResetTask();
+
+        EvaluatePerformance(taskPrecision, timeTaken);
     }
 
 
@@ -145,21 +166,26 @@ public class CarnyWise : MonoBehaviour
         }
     }
 
-
     private void IncreaseDifficulty()
     {
-        _gameManager.IncreaseDifficulty();
+        const bool IS_TO_INCREASE_DIFF = true;
 
-        showFeedback.Invoke(true);
+
+        changeDifficulty.Invoke(IS_TO_INCREASE_DIFF);
+       
+
+        _diffFeedback.ShowNewDiffFeedback(IS_TO_INCREASE_DIFF);
 
         _excelCounter = 0; 
     }
 
     private void DecreaseDifficulty()
     {
-        _gameManager.DecreaseDifficulty();
+        const bool IS_TO_INCREASE_DIFF = false;
 
-        showFeedback.Invoke(false);
+        changeDifficulty.Invoke(IS_TO_INCREASE_DIFF);
+
+        _diffFeedback.ShowNewDiffFeedback(IS_TO_INCREASE_DIFF);
 
         _struggleCounter = 0; 
     }
