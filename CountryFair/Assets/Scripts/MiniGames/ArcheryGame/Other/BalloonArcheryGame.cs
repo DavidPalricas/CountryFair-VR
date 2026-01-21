@@ -4,7 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
 public class BalloonArcheryGame : MonoBehaviour
-{
+{ 
+    public Colors color = Colors.RED;
+
     [Header("Movement Settings")]
     [SerializeField]
     private  bool canMove;
@@ -21,7 +23,7 @@ public class BalloonArcheryGame : MonoBehaviour
     private GameObject balloonPrefab;
 
     private Renderer _renderer;
-    private Color _color;
+    private Color _popEffectColor;
     
     [Header("Score Value")]
     [SerializeField]
@@ -30,6 +32,14 @@ public class BalloonArcheryGame : MonoBehaviour
 
     private BoxCollider _spawnArea;
     private Vector3 _extents;
+
+
+    public enum Colors
+    {
+        RED,
+        BLUE,
+        YELLOW,
+    }
 
 
     private ArcheryAudioManager _archeryAudioManager;
@@ -48,7 +58,7 @@ public class BalloonArcheryGame : MonoBehaviour
 
 
         _renderer = GetComponent<Renderer>();
-        _color =  _renderer.material.HasProperty("_Color")
+        _popEffectColor =  _renderer.material.HasProperty("_Color")
             ? _renderer.material.color
             : Color.white;
 
@@ -99,7 +109,7 @@ public class BalloonArcheryGame : MonoBehaviour
         if (fx.TryGetComponent<ParticleSystem>(out var ps))
          {
             ParticleSystem.MainModule main = ps.main;
-            main.startColor = _color;
+            main.startColor = _popEffectColor;
         }
         
         SpawnBalloon();
@@ -127,7 +137,12 @@ public class BalloonArcheryGame : MonoBehaviour
     }
 
     public int GetScoreValue()
-    {
-        return scoreValue;
+    {   
+
+        string colorName = color.ToString().ToLower();
+
+        string colorToScore = PlayerPrefs.GetString("BalloonColorToScore", "RED").ToLower();
+         
+        return colorName != colorToScore ? 0 : scoreValue;
     }
 }
