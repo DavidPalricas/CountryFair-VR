@@ -39,13 +39,13 @@ public class ArcheryGameManager : GameManager
         switch (colorToScore)
         {
             case "red":
-                balloonColorToScoreText.text += " Vermelho";
+                balloonColorToScoreText.text = "Cor para marcar pontos: Vermelho";
                 return;
             case "blue":
-                balloonColorToScoreText.text += " Azul";
+                balloonColorToScoreText.text = "Cor para marcar pontos: Azul";
                 return;
             case "yellow":
-                balloonColorToScoreText.text += " Amarelo";
+                balloonColorToScoreText.text = "Cor para marcar pontos: Amarelo";
                 return;
             default:
                 Debug.LogError("Invalid balloon color to score: " + colorToScore);
