@@ -42,6 +42,8 @@ public class Landed: FrisbeeState
 
     private readonly AudioManager.GameSoundEffects _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
 
+    public bool TutorialActive { get; set; } =  true;
+
     /// <summary>
     /// Initializes the state by setting up physics component references.
     /// </summary>
@@ -73,6 +75,13 @@ public class Landed: FrisbeeState
 
         _rigidbody.linearVelocity = Vector3.zero;
 
+        if (TutorialActive)
+        {
+            fSM.ChangeState("TutorialActive");
+
+            return;
+        }
+
         if (FrisbeeOnScoreArea())
         {
             playerScored.Invoke(scorePoints);
@@ -80,11 +89,11 @@ public class Landed: FrisbeeState
             scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
         }
         else
-        {
+        { 
           playerMissed.Invoke();
         }
 
-          frisbeeLanded.Invoke();
+        frisbeeLanded.Invoke();
     }
 
     /// <summary>

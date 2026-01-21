@@ -227,7 +227,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.6500003
+      value: 3.3700004
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.y
@@ -235,7 +235,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.69
+      value: -8.18
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalRotation.w
@@ -284,7 +284,7 @@ PrefabInstance:
     - target: {fileID: 8996311874865107283, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: tutorialTaskCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1312361772106625692}
+      objectReference: {fileID: 1299308354}
     - target: {fileID: 8996311874865107283, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: tutorialTaskCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -988,7 +988,6 @@ GameObject:
   m_Component:
   - component: {fileID: 147053873}
   - component: {fileID: 147053872}
-  - component: {fileID: 147053874}
   - component: {fileID: 147053875}
   m_Layer: 0
   m_Name: GameManager
@@ -1090,18 +1089,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &147053874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 147053871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ee4d432b9d3e0d4f98fe23c09200b04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CheatCodesFrisbee
 --- !u!114 &147053875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2128,6 +2115,7 @@ Transform:
   - {fileID: 1491771115}
   - {fileID: 1589905543}
   - {fileID: 1095198011}
+  - {fileID: 1126707452}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &487936262
@@ -3067,7 +3055,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: transitions.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: transitions.Array.data[5].to
@@ -3076,10 +3064,10 @@ PrefabInstance:
     - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: transitions.Array.data[5].from
       value: 
-      objectReference: {fileID: 715297730}
+      objectReference: {fileID: 1123418851}
     - target: {fileID: 3979462423311187213, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: transitions.Array.data[5].name
-      value: HeldInOtherHand
+      value: TutorialActive
       objectReference: {fileID: 0}
     - target: {fileID: 4426682393301741663, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: _handAligment
@@ -3373,17 +3361,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7760067509062637252, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
   m_PrefabInstance: {fileID: 715297728}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &715297730 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2865989487675939233, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
-  m_PrefabInstance: {fileID: 715297728}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 115b6dc8a166bbf4297fb617a31b13a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OnAir
 --- !u!1 &762571221 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7121292979934276580, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
@@ -3776,7 +3753,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.9800005
+      value: 4.7000003
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3784,7 +3761,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.2
+      value: -6.69
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3833,7 +3810,7 @@ PrefabInstance:
     - target: {fileID: 8996311874865107283, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: tutorialTaskCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1312361772106625692}
+      objectReference: {fileID: 1299308354}
     - target: {fileID: 8996311874865107283, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: tutorialTaskCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -4774,6 +4751,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed7e65aa88686849a4715c2e4ccf8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Landed
+--- !u!1 &1126707451
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1126707452}
+  - component: {fileID: 1126707453}
+  m_Layer: 0
+  m_Name: CheatCodes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1126707452
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126707451}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.4041107, y: 0.43298367, z: -9.470399}
+  m_LocalScale: {x: 0.66666657, y: 0.66666657, z: 0.66666657}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 476691672}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1126707453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126707451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ee4d432b9d3e0d4f98fe23c09200b04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheatCodesFrisbee
 --- !u!1 &1143327411
 GameObject:
   m_ObjectHideFlags: 0
@@ -5262,18 +5283,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CannyWise, Assembly-CSharp
-        m_MethodName: StartTaskTimer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
   _whenUnselect:
     m_PersistentCalls:
       m_Calls:
@@ -5551,6 +5560,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: eaab7f3b90db51d46b56add65f6e2bf8, type: 3}
   m_PrefabInstance: {fileID: 1297370631}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1299308354 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+  m_PrefabInstance: {fileID: 1312361772106625691}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cb6b4ff4272cf84ca8dee44f93210d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial
 --- !u!1001 &1314991773
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6679,18 +6699,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CannyWise, Assembly-CSharp
-        m_MethodName: StartTaskTimer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   _whenUnselect:
     m_PersistentCalls:
       m_Calls:
@@ -6872,7 +6880,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.05
+      value: 1.77
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6880,7 +6888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.7599998
+      value: -7.25
       objectReference: {fileID: 0}
     - target: {fileID: 4272867915382943544, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6929,7 +6937,7 @@ PrefabInstance:
     - target: {fileID: 8996311874865107283, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: tutorialTaskCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1312361772106625692}
+      objectReference: {fileID: 1299308354}
     - target: {fileID: 8996311874865107283, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
       propertyPath: tutorialTaskCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -7218,6 +7226,11 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &1676481960 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2723779426521911518, guid: 316faa56be726824192d355461c86468, type: 3}
+  m_PrefabInstance: {fileID: 1312361772106625691}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1713816495
 GameObject:
   m_ObjectHideFlags: 0
@@ -8287,6 +8300,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -3970243614316841892, guid: a3109693346215d48b49e1dc3bef5077, type: 3}
   m_PrefabInstance: {fileID: 1874906139}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1875002097 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8286811574419333668, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+  m_PrefabInstance: {fileID: 715297728}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1882345922
 PrefabInstance:
@@ -9420,25 +9438,9 @@ PrefabInstance:
       propertyPath: centerEyeTransform
       value: 
       objectReference: {fileID: 2099040610}
-    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
-      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_Target
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
-      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ShowNextStep
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
-      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: FrisbeeTutorial, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
-      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 6457992072635077217, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.46
+      value: -9.49
       objectReference: {fileID: 0}
     - target: {fileID: 6457992072635077217, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9446,7 +9448,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6457992072635077217, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 14.07
+      value: 13.82
       objectReference: {fileID: 0}
     - target: {fileID: 7738016394275872087, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_Name
@@ -9456,10 +9458,54 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: heightOffset
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: miniGameProp
+      value: 
+      objectReference: {fileID: 1875002097}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: PracticeElements
+      value: 
+      objectReference: {fileID: 1676481960}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: horizontalOffset
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: centerEyeTransform
+      value: 
+      objectReference: {fileID: 2099040610}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: postTutorialElements
+      value: 
+      objectReference: {fileID: 476691671}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053872}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1123418851}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: heightOffset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: miniGameProp
+      value: 
+      objectReference: {fileID: 1875002097}
     - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: centerEyeTransform
       value: 
       objectReference: {fileID: 2099040610}
+    - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: distanceFromPlayer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: postTutorialElements
       value: 
@@ -9506,17 +9552,6 @@ PrefabInstance:
       addedObject: {fileID: 899359013}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 316faa56be726824192d355461c86468, type: 3}
---- !u!114 &1312361772106625692 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}
-  m_PrefabInstance: {fileID: 1312361772106625691}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4cb6b4ff4272cf84ca8dee44f93210d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Tutorial
 --- !u!114 &4335083379616336532 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}

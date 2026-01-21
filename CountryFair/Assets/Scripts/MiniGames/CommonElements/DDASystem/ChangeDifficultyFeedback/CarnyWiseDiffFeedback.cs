@@ -26,14 +26,14 @@ public class CarnyWiseDiffFeedback : UIDialog
     {   
         base.Awake();
 
-        if (data is not DiffcultyFeedBackData)
+        if (_data is not DiffcultyFeedBackData)
         {
               Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
 
             return;
         }
 
-        _feedbackData = data as DiffcultyFeedBackData;
+        _feedbackData = _data as DiffcultyFeedBackData;
 
         if (increaseDiffExpression == null || decreaseDiffExpression == null)
         {
@@ -89,17 +89,6 @@ public class CarnyWiseDiffFeedback : UIDialog
         dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
 
         Invoke(nameof( HideFeedback), displayDuration);
-    }
-
-
-    private void PositionInFrontOfPlayer()
-    {   
-        // Since the center eye position is in negative Z axis, we subtract to move forward
-        Vector3 targetPosition = centerEyeTransform.position - centerEyeTransform.forward.normalized * distanceFromPlayer ; 
-        targetPosition.y = centerEyeTransform.position.y - heightOffset; // Mantém a altura relativa ou fixa
-        targetPosition.x = centerEyeTransform.position.x + horizontalOffset;
-       
-        transform.position = targetPosition;
     }
 
     protected override void HideFeedback()

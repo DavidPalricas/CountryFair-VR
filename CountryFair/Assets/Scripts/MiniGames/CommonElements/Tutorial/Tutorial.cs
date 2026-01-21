@@ -11,7 +11,14 @@ public class Tutorial: UIDialog
 
     [Header("Game Elements")]
     [SerializeField]
-    private GameObject tutorialElements;
+    private GameObject practiceElements;
+
+
+    [SerializeField]
+    private GameObject tutorialButton;
+
+    [SerializeField]
+    private GameObject miniGameProp;
 
     [SerializeField]
     private GameObject postTutorialElements;
@@ -28,7 +35,7 @@ public class Tutorial: UIDialog
     {  
         base.Awake();
 
-        if (data is not TutorialData tutorialData)
+        if (_data is not TutorialData tutorialData)
         {
             Debug.LogError("Error Converting data to TutorialData.");
 
@@ -37,20 +44,36 @@ public class Tutorial: UIDialog
 
         _rules = tutorialData.Rules;
 
-        if (tutorialElements  == null || postTutorialElements == null)
+        if (practiceElements  == null || postTutorialElements == null)
         {
-            Debug.LogError("Tutorial or Post elements are not assigned in the inspector.");
+            Debug.LogError("Practice or Post elements are not assigned in the inspector.");
 
             return;
         }
 
-        tutorialElements.SetActive(true);
+        if (tutorialButton == null)
+        {
+            Debug.LogError("Tutorial button is not assigned in the inspector.");
+
+            return;
+        }
+
+        if (miniGameProp == null)
+        {
+            Debug.LogError("Mini game prop is not assigned in the inspector.");
+
+            return;
+        }
+
+        _numberOfTasks =  Utils.GetChildren(practiceElements.transform).Length;
+
+        practiceElements.SetActive(false);     
+        miniGameProp.SetActive(false);
         postTutorialElements.SetActive(false);
 
- 
-        _numberOfTasks =  Utils.GetChildren(tutorialElements.transform).Length;
-
         ShowGameRule();
+
+        PositionInFrontOfPlayer();
     }
 
 
@@ -87,11 +110,13 @@ public class Tutorial: UIDialog
     {    
         if (_tutorialCompleted)
         {   
-            
-            tutorialElements.SetActive(false);
             postTutorialElements.SetActive(true);
-            Destroy(gameObject);
-            return;
+
+            tutorialCompleted.Invoke();
+
+            Destroy(transform.parent.gameObject);
+
+             return;
         }
 
         ShowGameRule();
@@ -100,11 +125,19 @@ public class Tutorial: UIDialog
     private void ShowGameRule()
     {
         if (_rules.Count == 0){
+            StartPractice();
             return;
         }
 
         dialogueBoxText.text = _rules[0];
         _rules.RemoveAt(0);
+    }
+
+
+    private void StartPractice(){
+        tutorialButton.SetActive(false);
+        practiceElements.SetActive(true);
+        miniGameProp.SetActive(true);
     }
 
     public void TaskCompleted()
@@ -114,7 +147,9 @@ public class Tutorial: UIDialog
         if (_currentTasksCompleted >= _numberOfTasks)
         {
              dialogueBoxText.text = "Parabéns! Você está pronto para começar o jogo!\n\tQuando estiver pronto carregue no botão e boa sorte!";
-             tutorialCompleted.Invoke();
+
+             tutorialButton.SetActive(true);
+             miniGameProp.SetActive(false);
             return;
         }
     }

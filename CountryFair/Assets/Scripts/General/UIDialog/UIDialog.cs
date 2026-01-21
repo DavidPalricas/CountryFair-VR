@@ -10,16 +10,16 @@ public class UIDialog : MonoBehaviour
 {
    [Header("View Positioning")]
    [SerializeField]
-   protected Transform centerEyeTransform;
+   private Transform centerEyeTransform;
 
    [SerializeField]
-   protected float distanceFromPlayer = 12f;
+   private float distanceFromPlayer = 12f;
 
    [SerializeField]
-   protected float heightOffset = 2.5f;
+   private float heightOffset = 2.5f;
 
    [SerializeField]
-   protected float horizontalOffset =7f;
+   private float horizontalOffset =7f;
 
    [Header("Dialogue Box")]
    [SerializeField]
@@ -28,7 +28,7 @@ public class UIDialog : MonoBehaviour
     [SerializeField]
    protected TextMeshProUGUI dialogueBoxText;
 
-   protected JSONData data;
+   protected JSONData _data;
 
    protected string _jsonFileName;
 
@@ -99,7 +99,7 @@ public class UIDialog : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(jsonContent))
             {
-                data = (JSONData)JsonConvert.DeserializeObject(jsonContent, GetJSONDataType());
+                _data = (JSONData)JsonConvert.DeserializeObject(jsonContent, GetJSONDataType());
                 Debug.Log("JSON loaded successfully!");
             }
         }
@@ -118,4 +118,14 @@ public class UIDialog : MonoBehaviour
    {
        Debug.LogError("SetJSONFileName method must be overridden in derived classes.");
    }
+
+    protected void PositionInFrontOfPlayer()
+    {   
+        // Since the center eye position is in negative Z axis, we subtract to move forward
+        Vector3 targetPosition = centerEyeTransform.position - centerEyeTransform.forward.normalized * distanceFromPlayer ; 
+        targetPosition.y = centerEyeTransform.position.y - heightOffset; // Mantém a altura relativa ou fixa
+        targetPosition.x = centerEyeTransform.position.x + horizontalOffset;
+       
+        transform.position = targetPosition;
+    }
 }
