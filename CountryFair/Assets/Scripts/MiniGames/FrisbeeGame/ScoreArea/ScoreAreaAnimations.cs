@@ -51,7 +51,7 @@ public class ScoreAreaAnimations : BalloonSpawner
     /// </summary>
     private Sequence _animSequence;
 
-    private ScoreAreaProperties _scoreAreaProperties;
+    private ScoreAreaProperties.AreaType  _areaType;
 
     [Header("Score Animation Settings")]
     /// <summary>
@@ -88,7 +88,7 @@ public class ScoreAreaAnimations : BalloonSpawner
 
         maxBalloons = _balloonsPlaceHolders.Length;
 
-        _scoreAreaProperties = GetComponent<ScoreAreaProperties>();
+        _areaType = GetComponent<ScoreAreaProperties>().areaType;
     }
 
     /// <summary>
@@ -154,6 +154,11 @@ public class ScoreAreaAnimations : BalloonSpawner
             GameObject balloon = Instantiate(balloonType, spawnPosition, Quaternion.identity);
 
             MoveBalloon(balloon, spawnPosition.y);
+        }
+
+        if (_areaType != ScoreAreaProperties.AreaType.DOG)
+        {
+            Destroy(gameObject);
         }
     }
   

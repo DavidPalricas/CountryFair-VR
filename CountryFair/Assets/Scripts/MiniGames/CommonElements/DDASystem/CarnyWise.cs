@@ -105,9 +105,9 @@ public class CarnyWise : MonoBehaviour
         _tasksPrecisions.Add(taskPrecision);
         _tasksTimes.Add(timeTaken);
 
-        EvaluatePerformance(taskPrecision, timeTaken);
-        
         ResetTask();
+
+        EvaluatePerformance(taskPrecision, timeTaken);
     }
 
 

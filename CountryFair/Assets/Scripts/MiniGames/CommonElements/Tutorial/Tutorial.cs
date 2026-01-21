@@ -67,13 +67,13 @@ public class Tutorial: UIDialog
 
         _numberOfTasks =  Utils.GetChildren(practiceElements.transform).Length;
 
+        Debug.Log("Number of tasks in tutorial: " + _numberOfTasks);
+
         practiceElements.SetActive(false);     
         miniGameProp.SetActive(false);
         postTutorialElements.SetActive(false);
 
         ShowGameRule();
-
-        PositionInFrontOfPlayer();
     }
 
 
@@ -110,6 +110,8 @@ public class Tutorial: UIDialog
     {    
         if (_tutorialCompleted)
         {   
+            miniGameProp.SetActive(true);
+
             postTutorialElements.SetActive(true);
 
             tutorialCompleted.Invoke();
@@ -150,6 +152,8 @@ public class Tutorial: UIDialog
 
              tutorialButton.SetActive(true);
              miniGameProp.SetActive(false);
+             _tutorialCompleted =true;
+             
             return;
         }
     }

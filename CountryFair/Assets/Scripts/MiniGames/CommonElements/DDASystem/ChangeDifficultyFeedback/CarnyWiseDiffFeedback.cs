@@ -68,7 +68,7 @@ public class CarnyWiseDiffFeedback : UIDialog
     public void ShowNewDiffFeedback(bool isToIncrease)
     {   
         PositionInFrontOfPlayer();
-
+        
         List<string> feedbackTexts;
 
         if (isToIncrease)

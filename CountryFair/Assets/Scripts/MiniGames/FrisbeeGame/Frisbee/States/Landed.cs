@@ -11,7 +11,6 @@ public class Landed: FrisbeeState
     [SerializeField]
     private MeshRenderer frisbeeMeshRenderer;
 
-
     [SerializeField]
     private int scorePoints = 1;
 
@@ -75,26 +74,34 @@ public class Landed: FrisbeeState
 
         _rigidbody.linearVelocity = Vector3.zero;
 
-        if (TutorialActive)
-        {
-            fSM.ChangeState("TutorialActive");
-
-            return;
-        }
 
         if (FrisbeeOnScoreArea())
-        {
-            playerScored.Invoke(scorePoints);
-
+        {   
             scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
+
+            if (TutorialActive)
+            {   
+                fSM.ChangeState("TutorialActive");
+                return;
+            }
+
+            playerScored.Invoke(scorePoints);
         }
         else
-        { 
+        {     
+            if (TutorialActive)
+            {   
+                fSM.ChangeState("TutorialActive");
+                return;
+            }
+
           playerMissed.Invoke();
         }
 
         frisbeeLanded.Invoke();
     }
+
+
 
     /// <summary>
     /// Called every frame while in the Landed state.
@@ -119,7 +126,10 @@ public class Landed: FrisbeeState
     /// </summary>
     public void FrisbeeGivenByDog()
     {   
-        fSM.ChangeState("RetrievedByDog");
+        if (fSM.CurrentState == this)
+        {
+            fSM.ChangeState("RetrievedByDog");
+        }
     }
 
     private bool FrisbeeOnScoreArea()
@@ -133,7 +143,16 @@ public class Landed: FrisbeeState
         foreach (Collider collider in overlapResults)
         {
             if (collider != null && collider.gameObject.CompareTag("ScoreArea")) 
-            {
+            {   
+                if (!collider.gameObject.TryGetComponent<ScoreAreaAnimations>(out var scocreArea))
+                {
+                    Debug.LogError("ScoreAreaAnimations component is missing on the Score Area object.");
+
+                    return true;
+                }
+
+                scocreArea.ScoreAnimation();
+
                 return true;
             }
         }

@@ -6,8 +6,7 @@ using DG.Tweening;
 [RequireComponent(typeof(Collider))]
 public class ScoreAreaProperties : MonoBehaviour
 {   
-    [SerializeField]
-    private AreaType areaType = AreaType.NORMAL;
+    public AreaType areaType = AreaType.NORMAL;
 
     [SerializeField]
     private UnityEvent tutorialTaskCompleted;

@@ -6,21 +6,9 @@ using System.IO;
 using TMPro;
 
 
-public class UIDialog : MonoBehaviour
+public class UIDialog : DisplayInPlayerFront
 {
-   [Header("View Positioning")]
-   [SerializeField]
-   private Transform centerEyeTransform;
-
-   [SerializeField]
-   private float distanceFromPlayer = 12f;
-
-   [SerializeField]
-   private float heightOffset = 2.5f;
-
-   [SerializeField]
-   private float horizontalOffset =7f;
-
+   
    [Header("Dialogue Box")]
    [SerializeField]
    protected GameObject dialogueBoxGameObject;
@@ -35,12 +23,6 @@ public class UIDialog : MonoBehaviour
    protected virtual void Awake()
    {  
       SetJSONFileName();
-
-      if (centerEyeTransform == null){
-            Debug.LogError("Center Eye Transform is not assigned in the inspector.");
-
-            return ;
-        }
 
       if (dialogueBoxGameObject == null || dialogueBoxText == null)
       {
@@ -119,13 +101,5 @@ public class UIDialog : MonoBehaviour
        Debug.LogError("SetJSONFileName method must be overridden in derived classes.");
    }
 
-    protected void PositionInFrontOfPlayer()
-    {   
-        // Since the center eye position is in negative Z axis, we subtract to move forward
-        Vector3 targetPosition = centerEyeTransform.position - centerEyeTransform.forward.normalized * distanceFromPlayer ; 
-        targetPosition.y = centerEyeTransform.position.y - heightOffset; // Mantém a altura relativa ou fixa
-        targetPosition.x = centerEyeTransform.position.x + horizontalOffset;
-       
-        transform.position = targetPosition;
-    }
+
 }
