@@ -187,12 +187,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3a7f0f7f2a51344eb14f496fe9861ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BalloonScript
+  color: 2
   canMove: 1
   moveSpeed: 0.5
   moveAmount: 0.7
   popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
-  scoreToAdd: 3
   balloonPrefab: {fileID: 3396820265375727783}
+  scoreValue: 0
 --- !u!4 &8949716481711875156 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 41917267eb4a54aea890f701336a36f5, type: 3}

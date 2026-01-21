@@ -62,9 +62,19 @@ public class Arrow : MonoBehaviour
 
             balloon.Pop();
 
-            playerScored.Invoke(balloon.GetScoreValue());
+            int scoreValue = balloon.GetScoreValue();
 
-            _crowd.Cheer();
+            if (scoreValue > 0)
+            {
+                playerScored.Invoke(scoreValue);
+
+                _crowd.Cheer();
+            }
+            else
+            {
+                playerMissed.Invoke();
+            }
+
             SetArrowToOrginalPosition();
             return;
         }
