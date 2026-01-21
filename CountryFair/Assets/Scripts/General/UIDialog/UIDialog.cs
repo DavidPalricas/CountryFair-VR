@@ -20,8 +20,10 @@ public class UIDialog : DisplayInPlayerFront
 
    protected string _jsonFileName;
 
-   protected virtual void Awake()
+   protected override void Awake()
    {  
+      base.Awake();
+      
       SetJSONFileName();
 
       if (dialogueBoxGameObject == null || dialogueBoxText == null)

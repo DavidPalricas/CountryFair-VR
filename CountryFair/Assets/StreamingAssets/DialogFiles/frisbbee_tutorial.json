@@ -1,7 +1,10 @@
 {
-    "Rules":["Neste jogo voce tem de atirar um frisbee\npara as areas laranjas para o cao ir busca-lo\ne marcar pontos.\n\n\tPressione no Botão Para Continuar.",
-             "Para atirar o frisbee, agarre-o com uma das suas mão e\n lance-o com o gesto aprsentado no video em cima.\n\n\tQuando estiver pronto para experimentar \n\t\tprressione no Botao." 
-    ],
+    "Rules":["Neste jogo voce tem de atirar um frisbee\npara a area laranja a volta do cao para poder\nmarcar pontos.\n\n\tPressione no Botao Para Continuar.",
+              "Voce pode lancar o frisbee para as outras\nareas laranjas, que o cao ira apanhar o frisbee.\n Mas nao ira marcar tantos pontos\n\n\tPressione no Botao Para Continuar.",
+              "Mas tenha em atencao a medida que vai progredindo,\n Estas areas podem girar, desaparecer ou ate os 2!!\n\n\tPressione no Botao Para Continuar.",
+              "Quando estiver pronto para praticar o\nlancamento do frisbee,\n\n\t Pressione no Botao Para Continuar."],
+    
+    "Guide": "Antes de chamar o cao para aqui,\nexperimente lancar o frisbee para esses alvos\nComo no video apresentado em cima.",
 
-    "Goal": "Antes de chamar o cao para aqui, experimente lançar o frisbee para esses alvos!"
+    "End": "Otimo trabalho!Agora voce este pronto para jogar\n com o cao!Voce ainda vai virar\n um jogador professional!Quando estiver pronto,\n\n\tPressione o botao para começar o jogo."
 }

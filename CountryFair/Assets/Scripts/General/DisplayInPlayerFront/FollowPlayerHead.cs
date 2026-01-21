@@ -64,8 +64,6 @@ public class FollowPlayerHead : DisplayInPlayerFront
 
     private Vector3 CalculateTargetPosition()
     {
-        // MATEMÁTICA CORRETA:
-        // Usa-se os vetores direcionais da cabeça (forward, up, right) e não os eixos do mundo (Vector3.up, etc.)
         Vector3 target = centerEyeTransform.position;
 
         target += centerEyeTransform.right * horizontalOffset;

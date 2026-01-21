@@ -6294,7 +6294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowPlayerHead
   centerEyeTransform: {fileID: 2099040610}
   distanceFromPlayer: 0.8
-  heightOffset: 0
+  heightOffset: -0.5
   horizontalOffset: 0
   smoothTime: 0.3
   lockRotationToHead: 1
@@ -9381,7 +9381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: heightOffset
-      value: 2.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: miniGameProp
@@ -9393,7 +9393,7 @@ PrefabInstance:
       objectReference: {fileID: 1676481960}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: horizontalOffset
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: centerEyeTransform
@@ -9744,7 +9744,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 42.9
+      value: -8
       objectReference: {fileID: 0}
     - target: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_LocalRotation.w

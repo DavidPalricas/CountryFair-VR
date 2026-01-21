@@ -13,7 +13,7 @@ public class DisplayInPlayerFront : MonoBehaviour
     [SerializeField] 
     protected float horizontalOffset = 0f;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (centerEyeTransform == null)
         {
@@ -24,12 +24,11 @@ public class DisplayInPlayerFront : MonoBehaviour
         PositionInFrontOfPlayer();
     }
 
-
     protected void PositionInFrontOfPlayer()
     {
         Vector3 targetPosition = centerEyeTransform.position - centerEyeTransform.forward.normalized * distanceFromPlayer ;
 
-        targetPosition.y = centerEyeTransform.position.y - heightOffset; // Mantém a altura relativa ou fixa
+        targetPosition.y = centerEyeTransform.position.y - heightOffset; 
 
         targetPosition.x = centerEyeTransform.position.x + horizontalOffset;
 

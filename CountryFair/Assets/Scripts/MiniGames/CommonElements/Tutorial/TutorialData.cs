@@ -4,5 +4,7 @@ public class TutorialData : JSONData
 {
     public List<string> Rules{ get; set;}
 
-    public string Goal{ get; set;}
+    public string Guide{ get; set;}
+
+    public string End{ get; set; }
 }

@@ -25,11 +25,11 @@ public class Tutorial: UIDialog
 
     private int _numberOfTasks;
 
-    private List<string> _rules;
+   private TutorialData _tutorialData;
 
     private int _currentTasksCompleted = 0;
 
-    private bool _tutorialCompleted = false;
+    private bool _finishedPracticing = false;
 
     protected override void Awake()
     {  
@@ -42,7 +42,7 @@ public class Tutorial: UIDialog
             return;
         }
 
-        _rules = tutorialData.Rules;
+        _tutorialData = tutorialData;
 
         if (practiceElements  == null || postTutorialElements == null)
         {
@@ -108,31 +108,39 @@ public class Tutorial: UIDialog
 
     public void NextStep()
     {    
-        if (_tutorialCompleted)
+        if (_finishedPracticing)
         {   
-            miniGameProp.SetActive(true);
-
-            postTutorialElements.SetActive(true);
-
-            tutorialCompleted.Invoke();
-
-            Destroy(transform.parent.gameObject);
-
-             return;
+            ReadyToPlay();
+            return;
         }
 
         ShowGameRule();
     }
 
-    private void ShowGameRule()
+
+    private void ReadyToPlay()
     {
-        if (_rules.Count == 0){
+        miniGameProp.SetActive(true);
+
+        postTutorialElements.SetActive(true);
+
+        tutorialCompleted.Invoke();
+
+        Destroy(transform.parent.gameObject);
+    }
+
+    private void ShowGameRule()
+    {   
+        List<string> rules = _tutorialData.Rules;
+
+        if (rules.Count == 0){
             StartPractice();
             return;
         }
 
-        dialogueBoxText.text = _rules[0];
-        _rules.RemoveAt(0);
+        dialogueBoxText.text = rules[0];
+
+        _tutorialData.Rules.RemoveAt(0);
     }
 
 
@@ -140,6 +148,17 @@ public class Tutorial: UIDialog
         tutorialButton.SetActive(false);
         practiceElements.SetActive(true);
         miniGameProp.SetActive(true);
+
+        dialogueBoxText.text = _tutorialData.Guide;
+    }
+
+    private void Completed()
+    {
+        dialogueBoxText.text = _tutorialData.End;
+
+        tutorialButton.SetActive(true);
+         miniGameProp.SetActive(false);
+        _finishedPracticing =true;
     }
 
     public void TaskCompleted()
@@ -147,14 +166,8 @@ public class Tutorial: UIDialog
         _currentTasksCompleted++;
 
         if (_currentTasksCompleted >= _numberOfTasks)
-        {
-             dialogueBoxText.text = "Parabéns! Você está pronto para começar o jogo!\n\tQuando estiver pronto carregue no botão e boa sorte!";
-
-             tutorialButton.SetActive(true);
-             miniGameProp.SetActive(false);
-             _tutorialCompleted =true;
-             
-            return;
+        {    
+            Completed();
         }
     }
 }

@@ -70,31 +70,24 @@ public class Landed: FrisbeeState
    {
         base.Enter();
 
-         Debug.Log("Frisbee Landed in poistion " + transform.position);
-
         _rigidbody.linearVelocity = Vector3.zero;
 
+        bool frisbeeOnScoreArea = FrisbeeOnScoreArea();
 
-        if (FrisbeeOnScoreArea())
+        if (TutorialActive)
         {   
-            scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
+            fSM.ChangeState("TutorialActive");
+            return;
+        }
 
-            if (TutorialActive)
-            {   
-                fSM.ChangeState("TutorialActive");
-                return;
-            }
 
+        if (frisbeeOnScoreArea)
+        {   
+            // This is event must be ivoked after the tutorial
             playerScored.Invoke(scorePoints);
         }
         else
         {     
-            if (TutorialActive)
-            {   
-                fSM.ChangeState("TutorialActive");
-                return;
-            }
-
           playerMissed.Invoke();
         }
 
@@ -148,10 +141,11 @@ public class Landed: FrisbeeState
                 {
                     Debug.LogError("ScoreAreaAnimations component is missing on the Score Area object.");
 
-                    return true;
+                    return false;
                 }
 
                 scocreArea.ScoreAnimation();
+                scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
 
                 return true;
             }
