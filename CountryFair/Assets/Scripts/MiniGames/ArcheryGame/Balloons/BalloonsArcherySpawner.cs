@@ -15,9 +15,6 @@ public class BalloonsArcherySpawner : MonoBehaviour
 
     private BoxCollider _spawnArea;
 
-    
-
-
     private void Awake()
     {
         _spawnArea = GetComponent<BoxCollider>();

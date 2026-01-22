@@ -463,7 +463,24 @@ MonoBehaviour:
   sessionScoreGoal: 1000
   difficultyLevel: 0
   balloonColorToScoreText: {fileID: 1730009024}
-  balloonArcherySpawnerObject: {fileID: 925036647}
+  balloonSpawnArea: {fileID: 925036648}
+  blueBalloonPrefab: {fileID: 3396820265375727783, guid: 8e9d91feadc8e4e9d816ee298dae3e26, type: 3}
+  redBalloonPrefab: {fileID: 3396820265375727783, guid: 6bc1fa59f754e43eca1ede6a24d1fe8c, type: 3}
+  yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 2f216f7780c07414e8283e089d6d69b3, type: 3}
+  baseBalloonCount: 5
+  balloonsPerLevel: 0.5
+  movingRatioCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  transparencyRatioCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &106628085
 Transform:
   m_ObjectHideFlags: 0
@@ -1467,7 +1484,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &284982582
 Transform:
   m_ObjectHideFlags: 0
@@ -2090,8 +2107,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.42256308, b: 0.25109956, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42256358, b: 0.25110006, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.42255998, b: 0.25109646, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42256188, b: 0.25109836, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
