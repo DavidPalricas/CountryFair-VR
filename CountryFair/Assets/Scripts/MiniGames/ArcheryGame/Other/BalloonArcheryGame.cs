@@ -1,48 +1,60 @@
 using UnityEngine;
 using UnityEngine.Events;
-
+using DG.Tweening; // Necessário para o DOTween
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
 public class BalloonArcheryGame : MonoBehaviour
-{   
+{
     [SerializeField]
     private Colors color = Colors.RED;
 
-    [SerializeField] 
+    [SerializeField]
     private GameObject balloonPrefab;
-    
+
     [Header("Tutorial Settings")]
     [SerializeField]
     private bool isFromTutorial = false;
-   
-   [SerializeField]
+
+    [SerializeField]
     private UnityEvent taskCompleted;
 
-    [Header("Movement Settings")]
+    [Header("Movement Settings (DOTween)")]
     [SerializeField]
-    private  bool canMove;
-    [SerializeField] 
-    private float moveSpeed = 1f;
+    private float moveDuration = 2f; // Tempo para ir de um ponto ao outro
+
+    [Header("Visual Settings")]
     [SerializeField]
-     private float moveAmount = 1f;
-    private float startY;
+    private float fadeDuration = 1f;
+
+    [SerializeField]
+    private float stayTranslucentDuration = 1f;
+
+    [SerializeField]
+    private float minAlpha = 0.3f; // Quão translúcido fica
 
     [Header("Explosion Effect")]
     public GameObject popEffect;
 
- 
     private Renderer _renderer;
-    private Color _popEffectColor;
+    private Color _originalColor;
     
     [Header("Score Value")]
     [SerializeField]
-    private  int scoreValue;
-
+    private int scoreValue;
 
     private BoxCollider _spawnArea;
     private Vector3 _extents;
 
+    // Propriedades auto-implementadas são suficientes
+    public bool CanMove { get; set; } = false;
+    public bool CanBeTransluced { get; set; } = false;
+
+    private string _colorName;
+
+    private string _colorToScore;
+
+    private Collider _collider;
 
     public enum Colors
     {
@@ -51,77 +63,157 @@ public class BalloonArcheryGame : MonoBehaviour
         YELLOW,
     }
 
-
     private ArcheryAudioManager _archeryAudioManager;
-
     private readonly AudioManager.GameSoundEffects popSoundEffect = AudioManager.GameSoundEffects.BALLOON_POP;
-    private void Awake()
-    {  
+   
+    private const int _INFINITE_LOOPS = -1;
 
+    private void Awake()
+    {
         if (popEffect == null)
         {
-            Debug.LogError("Pop");
+            Debug.LogError("Pop effect is missing");
+            return;
         }
 
-        _spawnArea = GameObject.FindGameObjectWithTag("BalloonSpawn")
-            .GetComponent<BoxCollider>();
+       
+        GameObject spawnObj = GameObject.FindGameObjectWithTag("BalloonSpawn");
 
 
+        if (spawnObj == null)
+        {
+            Debug.LogError("Balloon Spawn Area not found!");
+
+            return;
+        }
+        
+   
+        _spawnArea = spawnObj.GetComponent<BoxCollider>();
+ 
         _renderer = GetComponent<Renderer>();
-        _popEffectColor =  _renderer.material.HasProperty("_Color")
-            ? _renderer.material.color
-            : Color.white;
+        
+        // Garante que obtemos a cor correta dependendo do shader
+        if (_renderer.material.HasProperty("_Color"))
+        {
+            _originalColor = _renderer.material.color;
+        }
+        else if (_renderer.material.HasProperty("_BaseColor")) // URP
+        {
+            _originalColor = _renderer.material.GetColor("_BaseColor");
+        }
+        else
+        {
+            _originalColor = Color.white;
+        }
 
-        _extents = GetComponent<Collider>().bounds.extents;
+        _collider = GetComponent<Collider>();
+
+        _extents = _collider.bounds.extents;
 
         _archeryAudioManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<ArcheryAudioManager>();
+       
 
         if (_archeryAudioManager == null)
         {
-            Debug.LogError("ArcheryAudioManager not found in the scene or game manager game object");
-        }
+            Debug.LogError("ArcheryAudioManager or GameManager object not found in the scene.");
 
-        startY = transform.position.y;
+            return ;
+        } 
+
+        _colorName = color.ToString().ToLower(); 
     }
 
-    private void Update()
+    private void Start()
     {
-        if (canMove)
+        _colorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
+
+        if (CanMove)
         {
-            Bounds area = _spawnArea.bounds;
+            InitializeMovement();
+        }
 
-            float newY = startY + Mathf.Sin(Time.time * moveSpeed) * moveAmount;
+        if (CanBeTransluced)
+        {
+            InitializeTranslucency();
+        }
+    }
 
-            newY = Mathf.Clamp(
-                newY,
-                area.min.y + _extents.y,
-                area.max.y - _extents.y
-            );
+    private void InitializeMovement()
+    {
+        Bounds area = _spawnArea.bounds;
+        
+        bool moveVertical = Utils.RandomValueInRange(0f, 1f) > 0.5f;
 
-            float clampedX = Mathf.Clamp(
-                transform.position.x,
-                area.min.x + _extents.x,
-                area.max.x - _extents.x
-            );
+        if (moveVertical)
+        {   
+            float minY = area.min.y + _extents.y;
+            float maxY = area.max.y - _extents.y;
 
-            transform.position = new Vector3(
-                clampedX,
-                newY,
-                transform.position.z
-            );
-            }
+            // Move apenas no eixo Y (Sobe e Desce)
+            float targetY = Utils.RandomValueInRange(minY, maxY);
+
+            transform.DOMoveY(targetY, moveDuration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(_INFINITE_LOOPS, LoopType.Yoyo);
+
+            return ;
+        }
+        
+        float minX = area.min.x + _extents.x;
+        float maxX = area.max.x - _extents.x;
+
+        float minZ = area.min.z + _extents.z;
+        float maxZ = area.max.z - _extents.z;
+        
+        Vector3 targetPosition = new(
+            Utils.RandomValueInRange(minX, maxX),
+            transform.position.y, 
+            Utils.RandomValueInRange(minZ, maxZ)
+        );
+
+        transform.DOMove(targetPosition, moveDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(_INFINITE_LOOPS, LoopType.Yoyo);
+        
+    }
+
+    private void InitializeTranslucency()
+    {
+        // Sequence permite encadear animações e eventos lógicos
+        Sequence seq = DOTween.Sequence();
+
+        // 1. Desvanece até minAlpha
+        seq.Append(_renderer.material.DOFade(minAlpha, fadeDuration).SetEase(Ease.InOutSine));
+        
+        // 2. Assim que termina o fade out, desliga o collider
+        seq.AppendCallback(() => _collider.enabled = false);
+
+        // 3. (Opcional) Espera um pouco no estado "fantasma"
+        seq.AppendInterval(stayTranslucentDuration);
+
+        // 4. Volta a aparecer (Fade In)
+        seq.Append(_renderer.material.DOFade(1f, fadeDuration).SetEase(Ease.InOutSine));
+
+        // 5. Assim que fica visível, reativa o collider
+        seq.AppendCallback(() => _collider.enabled = true);
+
+        // 6. Define o loop infinito para toda a sequência
+        seq.SetLoops(_INFINITE_LOOPS);
     }
 
     public void Pop()
-    {    
+    {
+        transform.DOKill(); 
+        _renderer.material.DOKill();
+
         GameObject fx = Instantiate(popEffect, transform.position, Quaternion.identity);
-        
+
         if (fx.TryGetComponent<ParticleSystem>(out var ps))
-         {
+        {
             ParticleSystem.MainModule main = ps.main;
-            main.startColor = _popEffectColor;
+            main.startColor = _originalColor;
         }
-        
+
         _archeryAudioManager.PlaySpatialSoundEffect(popSoundEffect, gameObject);
 
         if (isFromTutorial)
@@ -133,7 +225,7 @@ public class BalloonArcheryGame : MonoBehaviour
             SpawnBalloon();
         }
 
-        Destroy(transform.parent.gameObject);
+        Destroy(gameObject); 
     }
 
     public void SpawnBalloon()
@@ -154,12 +246,16 @@ public class BalloonArcheryGame : MonoBehaviour
     }
 
     public int GetScoreValue()
-    {   
+    {
+      return _colorName == _colorToScore ? scoreValue : 0;   
+    }
 
-        string colorName = color.ToString().ToLower();
 
-        string colorToScore = PlayerPrefs.GetString("BalloonColorToScore", "RED").ToLower();
-         
-        return colorName != colorToScore ? 0 : scoreValue;
+    private void OnDestroy()
+    {
+        // Segurança absoluta para garantir que nenhum Tween fica "pendurado" na memória
+        transform.DOKill();
+        if(_renderer != null && _renderer.material != null)
+            _renderer.material.DOKill();
     }
 }
