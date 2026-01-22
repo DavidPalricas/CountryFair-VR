@@ -5,7 +5,7 @@ using UnityEngine;
 /// Tracks active balloon count and respawns new balloons up to the maximum limit.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class CountryFairBalloonSpawner : BalloonSpawner
+public class CountryFairBalloonSpawner : BalloonsSpawner
 {   
     [Header ("Extra Spawner Settings")]
 

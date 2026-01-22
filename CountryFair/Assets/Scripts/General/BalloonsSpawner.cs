@@ -3,7 +3,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
 
-public class BalloonSpawner : MonoBehaviour 
+public class BalloonsSpawner : MonoBehaviour 
 {  
     [Header("Balloons Prefabs")]
     /// <summary>
