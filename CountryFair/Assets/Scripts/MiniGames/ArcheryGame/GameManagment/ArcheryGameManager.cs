@@ -8,6 +8,9 @@ public class ArcheryGameManager : GameManager
     [SerializeField]
     private TextMeshProUGUI balloonColorToScoreText;
 
+    [SerializeField]
+    private GameObject balloonArcherySpawnerObject;
+
     protected override void Awake()
     {   
         base.Awake();

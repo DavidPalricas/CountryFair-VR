@@ -9,7 +9,7 @@ using System.Linq;
 
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(ScoreAreaProperties))]
-public class ScoreAreaAnimations : BalloonSpawner
+public class ScoreAreaAnimations : BalloonsSpawner
 {
     [Header("Rotate Animation Settings")]
     /// <summary>

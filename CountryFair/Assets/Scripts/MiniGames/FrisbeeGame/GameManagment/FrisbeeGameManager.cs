@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class FrisbeeGameManager : GameManager
 {
-    [Header("--- Estado da Sessão (Read Only) ---")]
-    public int difficultyLevel = 0; // Nível infinito
+   
     
     [Header("1. Configuração Física (Segurança)")]
     [Tooltip("Distância onde o cão começa (m). Calibra-se no Start.")]
@@ -79,7 +78,7 @@ public class FrisbeeGameManager : GameManager
 
     // --- MATEMÁTICA DE ADAPTAÇÃO ---
 
-    private void ApplyDifficultySettings()
+    protected override void ApplyDifficultySettings()
     {
         // 1. Distância (Com Teto de Segurança)
         float rawDistance = baseDogDistance + (difficultyLevel * distanceIncrement);

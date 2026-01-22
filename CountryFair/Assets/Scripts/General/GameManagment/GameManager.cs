@@ -4,6 +4,9 @@ public class GameManager : MonoBehaviour
 {   
     [SerializeField]
     protected int sessionScoreGoal = 3;
+   
+   [SerializeField]
+    protected int difficultyLevel = 0;
 
     protected virtual void Awake()
     {
@@ -17,6 +20,10 @@ public class GameManager : MonoBehaviour
 
     public virtual void ChangeDifficulty(bool isToIncreaseDiff){
         Debug.LogError("ChangeDifficulty should be overridden in derived classes.");
+    }
+
+    protected virtual void ApplyDifficultySettings(){
+        Debug.LogError("ApplyDifficultySettings should be overridden in derived classes.");
     }
 
 
