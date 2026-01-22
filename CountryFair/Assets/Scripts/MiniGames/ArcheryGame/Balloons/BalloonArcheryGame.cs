@@ -230,6 +230,11 @@ public class BalloonArcheryGame : MonoBehaviour
     }
 
 
+    public string GetBalloonColorName()
+    {
+        return _colorName;
+    }
+
     private void OnDestroy()
     {
         // Segurança absoluta para garantir que nenhum Tween fica "pendurado" na memória

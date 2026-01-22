@@ -1,30 +1,11 @@
-using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// Manages cheat code detection and activation for the Frisbee mini-game.
 /// Listens for keyboard input and triggers specific actions when valid cheat codes are entered.
 /// </summary>
-public class CheatCodesFrisbee : MonoBehaviour
+public class FrisbeeCheatCodes : CheatCodes
 {   
-    /// <summary>
-    /// Stores the current player keyboard input sequence for cheat code detection.
-    /// </summary>
-    private string _playerInput = "";
-
-    /// <summary>
-    /// Array of valid cheat codes that can be activated.
-    /// "throw" - Forces the frisbee to be thrown.
-    /// "score" - Forces a score point to be registered.
-    /// </summary>
-    private readonly string[] _cheatCodes = new string[] { "throw", "score"};
-
-    /// <summary>
-    /// Maximum length of any cheat code, used to limit input buffer size.
-    /// </summary>
-    private int _maxCheatLength;
-
     /// <summary>
     /// Reference to the frisbee's OnPlayerFront state component.
     /// </summary>
@@ -55,9 +36,9 @@ public class CheatCodesFrisbee : MonoBehaviour
     /// Finds and caches references to the Frisbee and ScoreArea game objects and their components.
     /// Unity callback called when the script instance is being loaded.
     /// </summary>
-    private void Start()
+    protected override void Start()
     {   
-        _maxCheatLength = _cheatCodes.Max(c => c.Length);
+        base.Start();
 
         GameObject frisbee = GameObject.FindGameObjectWithTag("Frisbee");
 
@@ -110,73 +91,12 @@ public class CheatCodesFrisbee : MonoBehaviour
     }
 
     /// <summary>
-    /// Subscribes to keyboard text input events when the component is enabled.
-    /// Unity callback called when the object becomes enabled and active.
-    /// </summary>
-    private void OnEnable()
-    {
-        if (Keyboard.current != null)
-        {
-            Keyboard.current.onTextInput += OnTextInput;
-        }
-    }
-
-    /// <summary>
-    /// Unsubscribes from keyboard text input events when the component is disabled.
-    /// Unity callback called when the object becomes disabled or inactive.
-    /// </summary>
-    private void OnDisable()
-    {
-        if (Keyboard.current != null)
-        {
-            Keyboard.current.onTextInput -= OnTextInput;
-        }
-    }
-
-    /// <summary>
-    /// Handles keyboard character input and checks for cheat code patterns.
-    /// Only processes alphanumeric characters and maintains a rolling buffer of recent input.
-    /// </summary>
-    /// <param name="c">The character that was input by the player.</param>
-    private void OnTextInput(char c)
-    {
-        if (char.IsLetterOrDigit(c))
-        {
-            _playerInput += c.ToString().ToLower();
-
-            if (_playerInput.Length > _maxCheatLength)
-            {
-                _playerInput = _playerInput[^_maxCheatLength..];
-            }
-
-            CheckCheatCode();
-        }
-    }
-
-    /// <summary>
-    /// Checks if the current input buffer contains any valid cheat codes.
-    /// Iterates through all registered cheat codes and activates the first match found.
-    /// </summary>
-    private void CheckCheatCode()
-    {
-       foreach (string code in _cheatCodes)
-       {
-           if (_playerInput.Contains(code))
-           {   
-               ActivateCheat(code);
-           
-               return;
-           }
-       }
-    }
-
-    /// <summary>
     /// Activates the specified cheat code and clears the input buffer.
     /// Executes different actions based on the cheat code provided.
     /// </summary>
     /// <param name="cheatCode">The cheat code string to activate.</param>
-    private void ActivateCheat(string cheatCode){
-        _playerInput = string.Empty;
+    protected override void ActivateCheat(string cheatCode){
+       base.ActivateCheat(cheatCode);
 
         switch (cheatCode)
         {
@@ -184,7 +104,7 @@ public class CheatCodesFrisbee : MonoBehaviour
                 _frisbeePlayerFrontState.ThrowFrisbee(false);
                 break;
 
-            case "score":
+            case "miss":
                   ForceScorePoint();      
                 break;
             default:
