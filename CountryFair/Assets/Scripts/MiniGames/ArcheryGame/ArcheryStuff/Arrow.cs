@@ -9,7 +9,7 @@ public class Arrow : MonoBehaviour
     [HideInInspector]
     public bool readyToLaunch = false;
 
-
+    public bool IsTutorialActive{get; set;} = true;
     public bool InAir { get ; private set; } = false;
 
     private Crowd _crowd;
@@ -62,21 +62,24 @@ public class Arrow : MonoBehaviour
 
             balloon.Pop();
 
-            int scoreValue = balloon.GetScoreValue();
-
-            if (scoreValue > 0)
-            {
-                playerScored.Invoke(scoreValue);
-
-                _crowd.Cheer();
-            }
-            else
-            {
-                playerMissed.Invoke();
-            }
-
             SetArrowToOrginalPosition();
-            return;
+
+
+            if (!IsTutorialActive)
+            {
+               int scoreValue = balloon.GetScoreValue();
+
+                if (scoreValue > 0)
+                {
+                    playerScored.Invoke(scoreValue);
+
+                    _crowd.Cheer();
+                }
+                else
+                {
+                    playerMissed.Invoke();
+                }
+            }
         }
 
         // --- SE BATER NO CHÃO ---

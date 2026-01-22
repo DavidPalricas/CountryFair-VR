@@ -1,11 +1,23 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
 public class BalloonArcheryGame : MonoBehaviour
-{ 
-    public Colors color = Colors.RED;
+{   
+    [SerializeField]
+    private Colors color = Colors.RED;
+
+    [SerializeField] 
+    private GameObject balloonPrefab;
+    
+    [Header("Tutorial Settings")]
+    [SerializeField]
+    private bool isFromTutorial = false;
+   
+   [SerializeField]
+    private UnityEvent taskCompleted;
 
     [Header("Movement Settings")]
     [SerializeField]
@@ -19,9 +31,7 @@ public class BalloonArcheryGame : MonoBehaviour
     [Header("Explosion Effect")]
     public GameObject popEffect;
 
-    [SerializeField] 
-    private GameObject balloonPrefab;
-
+ 
     private Renderer _renderer;
     private Color _popEffectColor;
     
@@ -112,9 +122,16 @@ public class BalloonArcheryGame : MonoBehaviour
             main.startColor = _popEffectColor;
         }
         
-        SpawnBalloon();
-
         _archeryAudioManager.PlaySpatialSoundEffect(popSoundEffect, gameObject);
+
+        if (isFromTutorial)
+        {
+            taskCompleted.Invoke();
+        }
+        else
+        {
+            SpawnBalloon();
+        }
 
         Destroy(transform.parent.gameObject);
     }
