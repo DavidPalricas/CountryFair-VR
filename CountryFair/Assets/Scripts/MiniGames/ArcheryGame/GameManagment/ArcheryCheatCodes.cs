@@ -3,8 +3,6 @@ using System.Linq;
 
 public class  ArcheryCheatCodes : CheatCodes
 {   
-    private string _balloonColorToScore = "";
-
     private Transform _arrowTransform = null;
 
     private Arrow _arrowComponent = null;
@@ -35,10 +33,7 @@ public class  ArcheryCheatCodes : CheatCodes
         }
 
         _arrowComponent = arrowComponent;
-
-        _balloonColorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
     }
-
 
     protected override void ActivateCheat(string cheatCode)
     {
@@ -61,13 +56,14 @@ public class  ArcheryCheatCodes : CheatCodes
     }
 
     private Vector3 GetCorrectBalloonPosition()
-    {
+    {  
+        string balloonColorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
+        
         Transform targetBalloonTransform = GameObject.FindGameObjectsWithTag("Balloon")
-            .FirstOrDefault(balloon => balloon.GetComponent<BalloonArcheryGame>().GetBalloonColorName().ToLower() == _balloonColorToScore)
+            .FirstOrDefault(balloon => balloon.GetComponent<BalloonArcheryGame>().GetBalloonColorName().ToLower() == balloonColorToScore)
             .transform;
             
         if (targetBalloonTransform == null){
-
             Debug.LogError("Correct balloon color not found!");
             return Vector3.zero;
         }

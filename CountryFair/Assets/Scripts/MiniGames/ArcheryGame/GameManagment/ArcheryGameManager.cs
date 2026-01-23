@@ -18,46 +18,50 @@ public class ArcheryGameManager : GameManager
 
     [Header("1. Configuração de Spawn (Infinito)")]
     [SerializeField] private int baseBalloonCount = 5;
-    
-    [Tooltip("Quantos balões novos por nível (Ex: 0.5 = 1 balão a cada 2 níveis)")]
     [SerializeField] private float balloonsPerLevel = 0.5f;
 
-    [Header("2. Curvas de Complexidade (0 a 1)")]
-    [Tooltip("Eixo X: Saturação de Dificuldade. Eixo Y: % de balões que se movem.")]
+    [Header("2. Curvas de Complexidade")]
     [SerializeField] private AnimationCurve movingRatioCurve;
-    
-    [Tooltip("Eixo X: Saturação de Dificuldade. Eixo Y: % de balões transparentes.")]
     [SerializeField] private AnimationCurve transparencyRatioCurve;
 
     // Estado Interno
     private readonly List<GameObject> _spawnedBalloons = new();
-    private float _currentMovingRatio;
-    private float _currentTransparencyRatio;
     private Dictionary<GameObject, int> balloonTypesCount;
     private GameObject _balloonPrefabToScore;
+    
+    // Variáveis de Controlo
+    private float _currentMovingRatio;
+    private float _currentTransparencyRatio;
+    private int _currentDesiredCount; // CRÍTICO: Para saber quantos devemos ter
 
     protected override void Awake()
     {   
         base.Awake(); 
 
-        // Validações de segurança
-        if (balloonColorToScoreText == null || balloonSpawnArea == null)
+        if (balloonColorToScoreText == null)
         {
-            Debug.LogError("Referências de UI ou Spawn Area em falta no ArcheryGameManager.");
+            Debug.LogError("Balloon Color To Score Text reference is missing.");
             return;
         }
 
-        if (redBalloonPrefab == null || blueBalloonPrefab == null || yellowBalloonPrefab == null)
+        if (balloonSpawnArea == null)
         {
-            Debug.LogError("Referências de Prefabs de balões em falta.");
+            Debug.LogError("Balloon Spawn Area reference is missing.");
             return;
         }
 
-        // Setup das curvas padrão (Fallback)
-        if (movingRatioCurve.length == 0) movingRatioCurve = AnimationCurve.EaseInOut(0, 0, 1, 0.8f);
-        if (transparencyRatioCurve.length == 0) transparencyRatioCurve = AnimationCurve.EaseInOut(0, 0, 1, 0.5f);
+        if (blueBalloonPrefab == null || yellowBalloonPrefab == null || redBalloonPrefab == null)
+        {
+            Debug.LogError("One or more balloon prefab references are missing.");
+            return;
+        }
 
-        // Inicializa Dicionário
+        if (movingRatioCurve.length == 0 || transparencyRatioCurve.length == 0)
+        {
+            Debug.LogError("One or more difficulty curves are not set.");
+            return;
+        }
+
         balloonTypesCount = new Dictionary<GameObject, int>
         {
             { blueBalloonPrefab, 0 },
@@ -68,6 +72,11 @@ public class ArcheryGameManager : GameManager
         SetBalloonColorToScore();
     }
 
+    private void Start()
+    {
+        ApplyDifficultySettings();
+    }
+
     public override void TutorialCompleted()
     {
         ApplyDifficultySettings();
@@ -76,106 +85,98 @@ public class ArcheryGameManager : GameManager
     public override void ChangeDifficulty(bool isToIncreaseDiff)
     {
         difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
-        Debug.Log($"<color=orange>ARCHERY DDA:</color> Nível {difficultyLevel} ({(isToIncreaseDiff ? "Subiu" : "Desceu")})");
+        Debug.Log($"<color=orange>ARCHERY DDA:</color> Nível {difficultyLevel}");
         ApplyDifficultySettings();
     }
 
-    // --- LÓGICA DE ADAPTAÇÃO ---
-
     protected override void ApplyDifficultySettings()
     {
-        // 1. Quantidade de Balões
-        int finalBalloonCount = Mathf.RoundToInt(baseBalloonCount + (difficultyLevel * balloonsPerLevel));
+        _currentDesiredCount = Mathf.RoundToInt(baseBalloonCount + (difficultyLevel * balloonsPerLevel));
 
-        // 2. Complexidade
         float saturationFactor = difficultyLevel / (difficultyLevel + 4f); 
         _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
         _currentTransparencyRatio = transparencyRatioCurve.Evaluate(saturationFactor);
 
-        Debug.Log($"[Archery Stats] Nível: {difficultyLevel} | Total: {finalBalloonCount} | Movimento: {_currentMovingRatio:P0} | Transparência: {_currentTransparencyRatio:P0}");
+        Debug.Log($"[Archery Stats] Total Ideal: {_currentDesiredCount} | Movimento: {_currentMovingRatio:P0}");
         
-        // 3. Define Regra e Sincroniza
         SetBalloonColorToScore();
-        SyncBalloons(finalBalloonCount);
+        SyncBalloons(_currentDesiredCount);
     }
 
     private void SyncBalloons(int desiredCount)
     {
-        // PASSO CRÍTICO: Limpa referências nulas antes de decidir spawnar novos
-        _spawnedBalloons.RemoveAll(item => item == null);
-
-        // Adiciona se faltar
         while (_spawnedBalloons.Count < desiredCount)
         {
             SpawnBalloon();
         }
 
-        // Remove se sobrar (Remove o mais antigo)
         while (_spawnedBalloons.Count > desiredCount)
         {
             RemoveBalloon();
         }
 
-        // Atualiza propriedades (Não precisa de limpar nulos novamente, acabámos de o fazer)
         UpdateBalloonsProperties();
     }
 
-    private void SpawnBalloon()
+    // Aceita um prefab opcional (Sua ideia)
+    private void SpawnBalloon(GameObject prefabToSpawn = null)
     {
         Vector3 pos = GetRandomBalloonPosition();
-        GameObject prefabToSpawn = GetBalloonType();
+        
+        // Se não forçado, deixa o algoritmo escolher o melhor para equilíbrio
+        if (prefabToSpawn == null)
+        {
+            prefabToSpawn = GetBalloonType();
+        }
 
         GameObject newBalloon = Instantiate(prefabToSpawn, pos, Quaternion.identity);
 
-        if (newBalloon.TryGetComponent(out BalloonArcheryGame balloonComponent))
-        {   
-            balloonComponent.OriginalPrefab = prefabToSpawn;
-        }
-        else
-        {
-            Debug.LogError("Spawned balloon does not have BalloonArcheryGame component.");
-        }
-
+        // GetComponent simples (assumindo script na raiz ou filho)
+        BalloonArcheryGame balloonComponent = newBalloon.GetComponentInChildren<BalloonArcheryGame>();
+        
+        balloonComponent.OriginalPrefab = prefabToSpawn;
+            
         _spawnedBalloons.Add(newBalloon);
     }
 
     private void RemoveBalloon()
     {
-        if (_spawnedBalloons.Count == 0) return;
-
-        GameObject target = _spawnedBalloons[0];
-
-        // Se tiver o componente, usa o método seguro que atualiza o dicionário e remove da lista
-        if (target != null && target.TryGetComponent(out BalloonArcheryGame balloonComponent))
+        if (_spawnedBalloons.Count > 0)
         {
-            BalloonDestroyed(target, balloonComponent.OriginalPrefab);
-        }
-        else
-        {
-            // Fallback caso o objeto esteja corrompido ou sem script
-            _spawnedBalloons.RemoveAt(0);
-        }
+            GameObject target = _spawnedBalloons[0];
+ 
+            BalloonArcheryGame balloonComponent = target.GetComponentInChildren<BalloonArcheryGame>();
 
-        if (target != null) Destroy(target);    
+            DestroyBalloon(target, balloonComponent.OriginalPrefab);
+        }  
     }
 
-    // Método robusto chamado pelo Sistema (RemoveBalloon) ou pelo Balão (Pop)
-    public void BalloonDestroyed(GameObject balloonDestroyed, GameObject balloonPrefab)
+    public void DestroyBalloon(GameObject balloonToDestroy, GameObject balloonPrefab)
     {   
-        if (balloonPrefab == null || !balloonTypesCount.ContainsKey(balloonPrefab))
-        {
-            // Warning em vez de Error para evitar spam em casos de teste
-            Debug.LogWarning("BalloonDestroyed: Prefab inválido ou não registado.");
-            return;
-        }
-
-        // Atualiza Matemática
         balloonTypesCount[balloonPrefab] = Mathf.Max(0, balloonTypesCount[balloonPrefab] - 1);
+        
 
-        // Atualiza Lista Física (Só remove se ainda lá estiver)
-        if (_spawnedBalloons.Contains(balloonDestroyed))
+        Debug.Log("Previous Balloon Counts: " + _spawnedBalloons.Count);
+        _spawnedBalloons.Remove(balloonToDestroy);
+
+       Debug.Log("After Balloon Counts: " + _spawnedBalloons.Count);
+
+        Destroy(balloonToDestroy);
+
+        if (_spawnedBalloons.Count < _currentDesiredCount)
         {
-            _spawnedBalloons.Remove(balloonDestroyed);
+            // Se não houver NENHUM da cor alvo, forçamos a cor alvo.
+            if (balloonTypesCount[_balloonPrefabToScore] == 0)
+            {
+                SpawnBalloon(_balloonPrefabToScore);
+            }
+            else
+            {
+                SpawnBalloon();
+            }
+            
+            // Importante: Aplicar propriedades ao novo balão para ele não ficar estático
+            UpdateBalloonsProperties();
         }
     }
 
@@ -185,17 +186,14 @@ public class ArcheryGameManager : GameManager
         int targetMovingCount = Mathf.RoundToInt(total * _currentMovingRatio);
         int targetTransparentCount = Mathf.RoundToInt(total * _currentTransparencyRatio);
 
-        // Embaralha uma cópia da lista para distribuir propriedades aleatoriamente
-        var shuffled = _spawnedBalloons.OrderBy(x => Random.value).ToList();
+        List<GameObject> shuffled = _spawnedBalloons.OrderBy(x => Random.value).ToList();
 
         for (int i = 0; i < total; i++)
-        {
-            if (shuffled[i].TryGetComponent<BalloonArcheryGame>(out var balloonScript))
-            {
-                // Os primeiros N da lista embaralhada ganham a habilidade
-                balloonScript.AdjustMovement(i < targetMovingCount);
-                balloonScript.AdjustTransparency(i < targetTransparentCount);
-            }
+        {    
+            BalloonArcheryGame balloonComponent = shuffled[i].GetComponentInChildren<BalloonArcheryGame>();
+
+            balloonComponent.AdjustMovement(i < targetMovingCount);
+            balloonComponent.AdjustTransparency(i < targetTransparentCount);
         }
     }
 
@@ -203,25 +201,27 @@ public class ArcheryGameManager : GameManager
     {
         Bounds bounds = balloonSpawnArea.bounds;
         
-        // Tenta 10 vezes encontrar uma posição livre
-        for (int i = 0; i < 10; i++)
+        float x = Random.Range(bounds.min.x, bounds.max.x);
+        float y = Random.Range(bounds.min.y, bounds.max.y);
+        float z = Random.Range(bounds.min.z, bounds.max.z);
+
+        Vector3 candidatePos = new (x, y, z);
+
+        const float SAFETEY_RADIUS = 0.3f;
+            
+        Collider[] hitColliders = Physics.OverlapSphere(candidatePos, SAFETEY_RADIUS);
+        bool hitBalloon = false;
+
+        foreach(Collider hit in hitColliders)
         {
-            float x = Random.Range(bounds.min.x, bounds.max.x);
-            float y = Random.Range(bounds.min.y, bounds.max.y);
-            float z = Random.Range(bounds.min.z, bounds.max.z);
-
-            Vector3 candidatePos = new Vector3(x, y, z);
-
-            // 0.3f é o raio estimado do balão
-            if (!Physics.CheckSphere(candidatePos, 0.3f)) 
+            if(hit.CompareTag("Balloon")) 
             {
-                return candidatePos;
+                hitBalloon = true; 
+                break;
             }
         }
 
-        // CORREÇÃO: Fallback seguro em vez de recursão infinita (Crash fix)
-        Debug.LogWarning("Não foi possível encontrar posição livre. Usando centro.");
-        return bounds.center;
+        return !hitBalloon ? candidatePos : GetRandomBalloonPosition();
     }
 
     private void SetBalloonColorToScore()
@@ -232,22 +232,24 @@ public class ArcheryGameManager : GameManager
         switch (colorToScore)
         {
             case "red": 
-                balloonColorToScoreText.text = "Cor para marcar: Vermelho"; 
-                _balloonPrefabToScore = redBalloonPrefab;
+                balloonColorToScoreText.text = "Cor: Vermelho"; 
+                _balloonPrefabToScore = redBalloonPrefab; 
                 break;
+
             case "blue": 
-                balloonColorToScoreText.text = "Cor para marcar: Azul"; 
-                _balloonPrefabToScore = blueBalloonPrefab;
+                balloonColorToScoreText.text = "Cor: Azul"; 
+                _balloonPrefabToScore = blueBalloonPrefab; 
                 break;
+
             case "yellow": 
-                balloonColorToScoreText.text = "Cor para marcar: Amarelo"; 
-                _balloonPrefabToScore = yellowBalloonPrefab;
+                balloonColorToScoreText.text = "Cor: Amarelo"; 
+                _balloonPrefabToScore = yellowBalloonPrefab; 
                 break;
-            default: 
-                Debug.LogError("Cor inválida gerada: " + colorToScore);    
+
+             default:
+                Debug.LogError("Invalid balloon color selected for scoring.");
                 return;
         }
-
         PlayerPrefs.SetString("BalloonColorToScore", colorToScore); 
     }
 
@@ -255,15 +257,13 @@ public class ArcheryGameManager : GameManager
     {   
         int minCount = balloonTypesCount.Min(typeCount => typeCount.Value);
 
-        // Encontra candidatos com a menor contagem
-        var candidates = balloonTypesCount
-            .Where(kvp => kvp.Value == minCount)
-            .Select(kvp => kvp.Key)
+        GameObject[] candidates = balloonTypesCount
+            .Where(element => element.Value == minCount)
+            .Select(element => element.Key)
             .ToArray();
 
         GameObject selectedBalloon;
 
-        // Prioridade ao balão que dá pontos se ele estiver entre os menos abundantes
         if (candidates.Contains(_balloonPrefabToScore))
         {
             selectedBalloon = _balloonPrefabToScore;

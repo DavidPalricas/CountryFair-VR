@@ -9,7 +9,7 @@ public class Arrow : MonoBehaviour
     [HideInInspector]
     public bool readyToLaunch = false;
 
-    public bool IsTutorialActive{get; set;} = true;
+    public bool IsTutorialActive{get; set;} = false;
     public bool InAir { get ; private set; } = false;
 
     private Crowd _crowd;

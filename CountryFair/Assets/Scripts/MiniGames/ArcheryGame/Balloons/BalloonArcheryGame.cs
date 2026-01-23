@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
-using UnityEngine.UIElements;
+
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
@@ -13,7 +13,8 @@ public class BalloonArcheryGame : MonoBehaviour
 
     [SerializeField] private Colors color = Colors.RED;
     [SerializeField] private GameObject popEffect;
-    [SerializeField] private int scoreValue = 10;
+
+
 
     [Header("Settings")]
     [SerializeField] private bool isFromTutorial = false;
@@ -26,6 +27,8 @@ public class BalloonArcheryGame : MonoBehaviour
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private float stayTranslucentDuration = 1f;
     [SerializeField] private float minAlpha = 0.3f;
+
+    private int _scoreValue = 1;
 
     // Estado Interno
     private Renderer _renderer;
@@ -104,16 +107,12 @@ public class BalloonArcheryGame : MonoBehaviour
             Debug.LogError("ArcheryGameManager or ArcheryAudioManager component not found on GameManager GameObject.");
         }
     }
-
-    private void Start()
-    {
-        isFromTutorial = PlayerPrefs.GetInt("IsArcheryTutorialActive", 1) == 1;
-    }
-       
+ 
     public void AdjustMovement(bool shouldMove)
     {
         if (shouldMove)
-        {
+        {   
+            _scoreValue *=  2; 
             StartMovement();
 
             return;
@@ -125,7 +124,9 @@ public class BalloonArcheryGame : MonoBehaviour
     public void AdjustTransparency(bool shouldFade)
     {
         if (shouldFade)
-        {
+        {   
+            _scoreValue *= 3;
+
             StartTranslucency();
             return;
         }
@@ -240,24 +241,25 @@ public class BalloonArcheryGame : MonoBehaviour
             }
         }
 
-      
         _archeryAudioManager.PlaySpatialSoundEffect(popSoundEffect, gameObject);
         
         if (isFromTutorial)
-        {
+        {   
             taskCompleted.Invoke();
+
+            Destroy(transform.parent.gameObject);
+
+            return;
         }
 
-        _archeryGameManager.BalloonDestroyed(gameObject, OriginalPrefab);
-           
-        Destroy(gameObject); 
+        _archeryGameManager.DestroyBalloon(transform.parent.gameObject, OriginalPrefab);
     }
 
     public int GetScoreValue()
     {   
         string colorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
 
-        return _colorName == colorToScore ? scoreValue : 0;
+        return _colorName == colorToScore ? _scoreValue : 0;
     }
 
     public string GetBalloonColorName()
