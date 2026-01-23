@@ -72,13 +72,9 @@ public class ArcheryGameManager : MiniGameManager
         SetBalloonColorToScore();
     }
 
-    private void Start()
-    {
-        ApplyDifficultySettings();
-    }
-
     public override void TutorialCompleted()
-    {
+    {   
+        base.TutorialCompleted();
         ApplyDifficultySettings();
     }
 

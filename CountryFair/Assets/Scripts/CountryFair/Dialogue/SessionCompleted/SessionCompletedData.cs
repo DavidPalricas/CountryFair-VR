@@ -1,4 +1,6 @@
+using System.Collections.Generic;
+
 public class SessionCompletedData : JSONData
 {
-    public string Congrats { get; set; }
+    public List<string> Congrats { get; set; }
 }

@@ -87,6 +87,8 @@ public class Intro : UIDialog
                 _currentDialogueLines = _introData.ZecaPart1;
                 characterNameText.text = "Zeca";
 
+                _currentDialogueState = IntroState.ZECA_PART1;
+
                 zeca.SetActive(true);
                 carnyWise.SetActive(false);
                 return;
@@ -94,6 +96,8 @@ public class Intro : UIDialog
             case IntroState.ZECA_PART1:
                 _currentDialogueLines = _introData.CarnyWise;
                 characterNameText.text = "Carny Wise";
+
+                _currentDialogueState = IntroState.CARNY_WISE;
 
                 zeca.SetActive(false);
                 carnyWise.SetActive(true);
@@ -103,6 +107,8 @@ public class Intro : UIDialog
             case IntroState.CARNY_WISE:
                 _currentDialogueLines = _introData.ZecaPart2;
                 characterNameText.text = "Zeca";
+
+                _currentDialogueState = IntroState.ZECA_PART2;
 
                 zeca.SetActive(true);
                 carnyWise.SetActive(false);
@@ -116,7 +122,7 @@ public class Intro : UIDialog
                  gameTents.SetActive(true);
                  GameManager.GetInstance().IntroCompleted = true;
 
-                 Destroy(gameObject);
+                 Destroy(transform.parent.gameObject);
                  
                  return;
             default:
@@ -139,19 +145,24 @@ public class Intro : UIDialog
 
 
     private void ShowDialogueLines()
-    {
-        dialogueBoxText.text = _currentDialogueLines[0];
+    {   if (_currentDialogueState != IntroState.COMPLETED)
+        {
+             dialogueBoxText.text = _currentDialogueLines[0];
 
-        _currentDialogueLines.RemoveAt(0);
+            _currentDialogueLines.RemoveAt(0);
+        }
     }
 
     public override void NextStep()
     {   
-        if (_currentDialogueLines.Count == 0)
+        if (enabled)
         {
-            SetCurrentDialogueLines();
-        }
+            if (_currentDialogueLines.Count == 0)
+            {
+                SetCurrentDialogueLines();
+            }
 
-        ShowDialogueLines();
+            ShowDialogueLines();
+        }
     }
 }

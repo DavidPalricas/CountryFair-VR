@@ -252,7 +252,7 @@ public class OnPlayerFront : FrisbeeState
 
         _collider.isTrigger = true;
 
-         frisbeeGrabbable.enabled = false;
+         frisbeeGrabbable.enabled = true;
 
          _followPlayerHead.enabled = true;
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
+[RequireComponent(typeof(CheatCodes))]
 public class MiniGameManager : MonoBehaviour
 {   
     [SerializeField]
@@ -8,16 +9,17 @@ public class MiniGameManager : MonoBehaviour
    [SerializeField]
     protected int difficultyLevel = 0;
 
+
+    private CheatCodes _cheatCodes;
+
     protected virtual void Awake()
     {
        PlayerPrefs.SetInt("SessionGoal", sessionScoreGoal);
-    }
 
-    public void SessionGoalReached()
-    {   
-        Invoke(nameof(ReturnToFair), 5f);
-    }
+       _cheatCodes = GetComponent<CheatCodes>();
 
+       _cheatCodes.enabled = false;
+    }
     public virtual void ChangeDifficulty(bool isToIncreaseDiff){
         Debug.LogError("ChangeDifficulty should be overridden in derived classes.");
     }
@@ -28,11 +30,6 @@ public class MiniGameManager : MonoBehaviour
 
 
     public virtual void TutorialCompleted(){
-        Debug.LogError("TutorialCompleted should be overridden in derived classes.");
-    }
-
-    private void ReturnToFair()
-    {
-        SceneManager.LoadScene("CountryFair");
+        _cheatCodes.enabled = true;
     }
 }

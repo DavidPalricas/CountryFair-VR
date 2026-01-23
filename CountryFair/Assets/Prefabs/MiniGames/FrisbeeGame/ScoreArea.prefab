@@ -87,7 +87,7 @@ Transform:
   m_GameObject: {fileID: 3365427521545221818}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.965926, z: 0.000000059604645, w: -0.25881848}
-  m_LocalPosition: {x: 0.06691415, y: -1.1106707, z: -0.24970986}
+  m_LocalPosition: {x: 0.06691415, y: 0.3, z: -0.24970986}
   m_LocalScale: {x: 0.19047616, y: 2.2609086, z: 0.19047616}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -440,11 +440,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 565f27c2467a56f489237bb182dae115, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreAreaExtraSettings
+  areaType: 0
+  tutorialTaskCompleted:
+    m_PersistentCalls:
+      m_Calls: []
   moveSpeed: 2
   radius: 0.5
   timeVisible: 3
   timeInvisible: 2
-  fadeDuration: 0.5
 --- !u!1 &8112464984895706668
 GameObject:
   m_ObjectHideFlags: 0

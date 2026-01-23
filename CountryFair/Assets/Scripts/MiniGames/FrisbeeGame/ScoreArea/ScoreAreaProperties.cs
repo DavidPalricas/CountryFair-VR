@@ -6,7 +6,8 @@ using DG.Tweening;
 [RequireComponent(typeof(Collider))]
 public class ScoreAreaProperties : MonoBehaviour
 {   
-    public AreaType areaType = AreaType.NORMAL;
+    [SerializeField]
+    private AreaType areaType = AreaType.NORMAL;
 
     [SerializeField]
     private UnityEvent tutorialTaskCompleted;
@@ -161,10 +162,17 @@ public class ScoreAreaProperties : MonoBehaviour
 
               return;
         }
+    }
 
-        if (areaType == AreaType.TUTORIAL)
-        {
-            tutorialTaskCompleted.Invoke();
+    public void OnPlayerScore(){
+        if (areaType != AreaType.DOG){
+
+            if (areaType == AreaType.TUTORIAL)
+            {
+                tutorialTaskCompleted.Invoke();
+            }
+
+            Destroy(gameObject);
         }
     }
 }

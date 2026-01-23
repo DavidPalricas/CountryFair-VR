@@ -15,13 +15,11 @@ public class SessionCompleted : UIDialog
 
     protected override void Awake()
     {    
-        if (!GameManager.GetInstance().IntroCompleted)
-        {
+        if ( !SessionWasCompleted()){
             enabled = false;
-
             return;
         }
-
+     
         base.Awake();
 
         if (_data is not SessionCompletedData sessionCompletedData)
@@ -34,6 +32,22 @@ public class SessionCompleted : UIDialog
         _sessionCompletedData = sessionCompletedData;
          
         SetCongratsDialogue();
+    }
+
+    private bool SessionWasCompleted(){
+        GameManager gameManager = GameManager.GetInstance();
+
+        if (!gameManager.IntroCompleted)
+        {
+            return false;
+        }
+
+        return gameManager.FrisbeeSessionCompleted || gameManager.ArcherySessionCompleted;
+    }
+
+    protected override System.Type GetJSONDataType()
+    {
+        return typeof(SessionCompletedData);
     }
 
     protected override void SetJSONFileName()
@@ -66,13 +80,15 @@ public class SessionCompleted : UIDialog
     {
         characterNameText.text= "Zeca";
 
-        dialogueBoxText.text = _sessionCompletedData.Congrats;
+        dialogueBoxText.text = _sessionCompletedData.Congrats[Utils.RandomValueInRange(0, _sessionCompletedData.Congrats.Count)];
     }
 
 
     public override void NextStep()
-    {    
-
-        Destroy(gameObject);
+    {    if (enabled)
+        {
+            Destroy(transform.parent.gameObject);
+        }
+         
     }
 }
