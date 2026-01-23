@@ -3,7 +3,11 @@ using UnityEngine.Events;
 
 [ExecuteAlways]
 public class BowHandTracking : MonoBehaviour
-{
+{   
+
+    [SerializeField]
+    private UnityEvent playerStartedPulling;
+
     [Header("References")]
     [SerializeField]
     private Transform bowRoot;  
@@ -185,13 +189,15 @@ public class BowHandTracking : MonoBehaviour
 
     // PREPARAR SETA -------------------------------
     private void PrepareArrow()
-    {
+    {   
         arrow.readyToLaunch = true;
         _currentPull = 0f;
 
         _stringMidStartLocalPos = (topLocalPos + bottomLocalPos) * 0.5f;
         stringMidPoint.localPosition = _stringMidStartLocalPos;
         _stringMidStartWorldPos = stringMidPoint.position;
+
+        playerStartedPulling.Invoke();
     }
 
     // PULL -----------------------------------------

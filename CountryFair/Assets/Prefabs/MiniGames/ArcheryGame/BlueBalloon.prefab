@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8740365433530610567}
   m_Layer: 0
   m_Name: BlueBalloon
-  m_TagString: Balloon
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -188,11 +188,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BalloonScript
   color: 1
-  canMove: 0
-  moveSpeed: 1
-  moveAmount: 1
-  popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
   balloonPrefab: {fileID: 3396820265375727783}
+  isFromTutorial: 0
+  taskCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  moveDuration: 2
+  fadeDuration: 1
+  stayTranslucentDuration: 1
+  minAlpha: 0.3
+  popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
   scoreValue: 0
 --- !u!4 &8949716481711875156 stripped
 Transform:
