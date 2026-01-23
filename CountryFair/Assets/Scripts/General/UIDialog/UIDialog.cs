@@ -103,5 +103,9 @@ public class UIDialog : DisplayInPlayerFront
        Debug.LogError("SetJSONFileName method must be overridden in derived classes.");
    }
 
+   public virtual void NextStep()
+   {
+      Debug.LogError("NextStep method must be overridden in derived classes.");
+   }
 
 }

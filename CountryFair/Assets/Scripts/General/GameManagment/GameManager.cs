@@ -1,38 +1,21 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
-public class GameManager : MonoBehaviour
+public class GameManager
 {   
-    [SerializeField]
-    protected int sessionScoreGoal = 3;
-   
-   [SerializeField]
-    protected int difficultyLevel = 0;
+    private static GameManager instance;
 
-    protected virtual void Awake()
+    public bool IntroCompleted { get; set; } = false;
+    public bool FrisbeeTutorialCompleted { get; set; } = false;
+
+    public bool ArcheryTutorialCompleted { get; set; } = false;
+
+    public bool FrisbeeSessionCompleted { get; set; } = false;
+    public bool ArcherySessionCompleted { get; set; } = false;
+
+    private GameManager() { }
+
+    public static GameManager GetInstance()
     {
-       PlayerPrefs.SetInt("SessionGoal", sessionScoreGoal);
-    }
+        instance ??= new GameManager();
 
-    public void SessionGoalReached()
-    {   
-        Invoke(nameof(ReturnToFair), 5f);
-    }
-
-    public virtual void ChangeDifficulty(bool isToIncreaseDiff){
-        Debug.LogError("ChangeDifficulty should be overridden in derived classes.");
-    }
-
-    protected virtual void ApplyDifficultySettings(){
-        Debug.LogError("ApplyDifficultySettings should be overridden in derived classes.");
-    }
-
-
-    public virtual void TutorialCompleted(){
-        Debug.LogError("TutorialCompleted should be overridden in derived classes.");
-    }
-
-    private void ReturnToFair()
-    {
-        SceneManager.LoadScene("CountryFair");
+        return instance;
     }
 }

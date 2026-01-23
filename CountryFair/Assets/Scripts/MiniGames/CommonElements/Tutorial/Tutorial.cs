@@ -31,9 +31,13 @@ public class Tutorial: UIDialog
 
     private bool _finishedPracticing = false;
 
+    private bool _isFromFrisbeGame = false;
+
     protected override void Awake()
     {  
         base.Awake();
+
+        CheckIfTutorialWasCompleted();
 
         if (_data is not TutorialData tutorialData)
         {
@@ -77,6 +81,28 @@ public class Tutorial: UIDialog
     }
 
 
+    private void CheckIfTutorialWasCompleted()
+    {
+        GameManager gameManager = GameManager.GetInstance();
+
+        if (_isFromFrisbeGame && gameManager.FrisbeeTutorialCompleted)
+        {   
+            tutorialCompleted.Invoke();
+            Destroy(transform.parent.gameObject);
+
+            return;
+        }
+
+        if (!_isFromFrisbeGame && gameManager.ArcheryTutorialCompleted)
+        {   
+            tutorialCompleted.Invoke();
+            Destroy(transform.parent.gameObject);
+        
+            return;
+        }
+    }
+
+
     protected override System.Type GetJSONDataType()
     {
         return typeof(TutorialData);
@@ -87,14 +113,16 @@ public class Tutorial: UIDialog
         string sceneName = SceneManager.GetActiveScene().name.ToLower();
 
         if (sceneName.Contains("frisbee"))
-        {
+        {    
+            _isFromFrisbeGame = true;
             _jsonFileName = "frisbbee_tutorial.json";
 
             return;
         }
 
         if (sceneName.Contains("archery"))
-        {
+        {   
+            _isFromFrisbeGame = false;
             _jsonFileName = "archery_tutorial.json";
 
             return;
@@ -106,7 +134,7 @@ public class Tutorial: UIDialog
     }
 
 
-    public void NextStep()
+    public override void NextStep()
     {    
         if (_finishedPracticing)
         {   
