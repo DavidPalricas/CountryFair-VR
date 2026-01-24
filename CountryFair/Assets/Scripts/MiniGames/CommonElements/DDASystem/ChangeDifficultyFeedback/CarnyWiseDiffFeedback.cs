@@ -3,42 +3,32 @@ using System.Collections.Generic;
 using DG.Tweening;
 
 public class CarnyWiseDiffFeedback : UIDialog
-{  
+{
     [Header("Display Configuration")]
-   [SerializeField]
-   private float displayDuration = 6f;
+    [SerializeField]
+    private float displayDuration = 6f;
 
-   [SerializeField]
-   private float transitionDuration = 0.4f;
+    [SerializeField]
+    private float transitionDuration = 0.4f;
 
-   [Header("Carny Wise Expressions")]
-   [SerializeField]
-   private GameObject increaseDiffExpression;
-   [SerializeField]
-   private GameObject decreaseDiffExpression;
+    [Header("Carny Wise Expressions")]
+    [SerializeField]
+    private GameObject increaseDiffExpression;
+    [SerializeField]
+    private GameObject decreaseDiffExpression;
 
-   private DiffcultyFeedBackData _feedbackData;
-
-   private Dictionary<string, Vector3> _feedbackElementsScales;
-
+    private DiffcultyFeedBackData _feedbackData;
+    private Dictionary<string, Vector3> _feedbackElementsScales;
 
     protected override void Awake()
-    {   
+    {
+        // 1. Inicia o download
         base.Awake();
 
-        if (_data is not DiffcultyFeedBackData)
-        {
-              Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
-
-            return;
-        }
-
-        _feedbackData = _data as DiffcultyFeedBackData;
-
+        // 2. Referências e Inicializações Físicas (Seguro)
         if (increaseDiffExpression == null || decreaseDiffExpression == null)
         {
             Debug.LogError("One carny wise expression or more are not assigned in the inspector.");
-
             return;
         }
 
@@ -49,11 +39,24 @@ public class CarnyWiseDiffFeedback : UIDialog
         };
 
         dialogueBoxGameObject.SetActive(false);
-        
         increaseDiffExpression.SetActive(false);
         decreaseDiffExpression.SetActive(false);
+
+        // O cast do _data foi REMOVIDO daqui.
     }
 
+    // --- NOVO: Chamado quando o JSON chega ---
+    protected override void OnDataLoaded()
+    {
+        if (_data is not DiffcultyFeedBackData)
+        {
+            Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
+            return;
+        }
+
+        _feedbackData = _data as DiffcultyFeedBackData;
+        Debug.Log("Feedback data loaded correctly.");
+    }
 
     protected override System.Type GetJSONDataType()
     {
@@ -65,10 +68,18 @@ public class CarnyWiseDiffFeedback : UIDialog
         _jsonFileName = "change_difficulty.json";
     }
 
+    // Este método é chamado por eventos externos
     public void ShowNewDiffFeedback(bool isToIncrease)
-    {   
+    {
+        // Proteção: Se tentarem chamar isto antes do download acabar
+        if (_feedbackData == null)
+        {
+            Debug.LogWarning("Tentativa de mostrar feedback antes do JSON carregar.");
+            return;
+        }
+
         PositionInFrontOfPlayer();
-        
+
         List<string> feedbackTexts;
 
         if (isToIncrease)
@@ -80,34 +91,37 @@ public class CarnyWiseDiffFeedback : UIDialog
         {
             decreaseDiffExpression.SetActive(true);
             feedbackTexts = _feedbackData.DecreaseDiff;
-
             Debug.Log("Showing decrease difficulty feedback.");
         }
 
         dialogueBoxGameObject.SetActive(true);
 
-        dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
+        if (feedbackTexts != null && feedbackTexts.Count > 0)
+        {
+            dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
+        }
 
-        Invoke(nameof( HideFeedback), displayDuration);
+        Invoke(nameof(HideFeedback), displayDuration);
     }
 
     protected override void HideFeedback()
     {
         Sequence sequence = DOTween.Sequence();
-
         const Ease TRANSITION_EASE = Ease.InBack;
 
         if (increaseDiffExpression.activeSelf)
         {
             sequence.Append(increaseDiffExpression.transform.DOScale(0f, transitionDuration).SetEase(TRANSITION_EASE));
-        }else if(decreaseDiffExpression.activeSelf)
+        }
+        else if (decreaseDiffExpression.activeSelf)
         {
             sequence.Append(decreaseDiffExpression.transform.DOScale(0f, transitionDuration).SetEase(TRANSITION_EASE));
         }
-           
+
         sequence.Join(dialogueBoxGameObject.transform.DOScale(0f, transitionDuration).SetEase(TRANSITION_EASE).SetDelay(0.15f));
 
-        sequence.OnComplete(() => {
+        sequence.OnComplete(() =>
+        {
             increaseDiffExpression.SetActive(false);
             decreaseDiffExpression.SetActive(false);
             dialogueBoxGameObject.SetActive(false);
