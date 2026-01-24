@@ -8,15 +8,24 @@ public class Tutorial : UIDialog
     [SerializeField]
     private UnityEvent tutorialCompleted;
 
-    [Header("Game Elements")]
-    [SerializeField]
-    private GameObject practiceElements;
 
+    [Header("Practise Elements")]
     [SerializeField]
-    private GameObject tutorialButton;
+    private GameObject videoScreen;
+   
+   [SerializeField]
+    private GameObject  miniGameVideo;
 
     [SerializeField]
     private GameObject miniGameProp;
+
+
+    [SerializeField]
+    private GameObject practiceElements;
+
+    [Header("Game Elements")]
+    [SerializeField]
+    private GameObject tutorialButton;
 
     [SerializeField]
     private GameObject postTutorialElements;
@@ -65,6 +74,7 @@ public class Tutorial : UIDialog
         practiceElements.SetActive(false);
         miniGameProp.SetActive(false);
         postTutorialElements.SetActive(false);
+        videoScreen.SetActive(false);
 
         // REMOVIDO DAQUI: O ShowGameRule() e o cast do _tutorialData.
         // O JSON ainda não chegou neste momento.
@@ -184,6 +194,8 @@ public class Tutorial : UIDialog
         tutorialButton.SetActive(false);
         practiceElements.SetActive(true);
         miniGameProp.SetActive(true);
+        videoScreen.SetActive(true);
+        miniGameVideo.SetActive(true);
 
         dialogueBoxText.text = _tutorialData.Guide;
     }
