@@ -5,71 +5,80 @@ using Newtonsoft.Json;
 using System.IO;
 using TMPro;
 
-
 public class UIDialog : DisplayInPlayerFront
 {
-   
-   [Header("Dialogue Box")]
-   [SerializeField]
-   protected GameObject dialogueBoxGameObject;
+    [Header("Dialogue Box")]
+    [SerializeField]
+    protected GameObject dialogueBoxGameObject;
 
     [SerializeField]
-   protected TextMeshProUGUI dialogueBoxText;
+    protected TextMeshProUGUI dialogueBoxText;
 
-   protected JSONData _data;
+    protected JSONData _data;
+    protected string _jsonFileName;
 
-   protected string _jsonFileName;
+    protected override void Awake()
+    {   
+       base.Awake();
+       SetJSONFileName();
 
-   protected override void Awake()
-   {  
-      base.Awake();
-      
-      SetJSONFileName();
+       if (dialogueBoxGameObject == null || dialogueBoxText == null)
+       {
+          Debug.LogError("Dialogue box or text is not assigned.");
+          return;
+       }
 
-      if (dialogueBoxGameObject == null || dialogueBoxText == null)
-      {
-         Debug.LogError("Dialogue box or text is not assigned in the inspector.");
+       // Inicia o carregamento. O resto acontece no Coroutine.
+       StartCoroutine(LoadJSONDataRoutine());
+    }
 
-         return;
-      }
+    // --- NOVO MÉTODO ---
+    // Este método é chamado automaticamente quando o download termina.
+    // As classes filhas (CountryFairDialogue) devem subscrever este método para iniciar a lógica.
+    protected virtual void OnDataLoaded()
+    {
+        // Por defeito não faz nada, a classe filha é que decide o que fazer.
+        Debug.Log("Dados carregados na base. À espera da lógica da classe filha.");
+    }
 
-      StartCoroutine(LoadJSONDataRoutine());
-   }
-
-   protected virtual System.Type GetJSONDataType()
-   {
-       Debug.LogError("GetJSONDataType method must be overridden in derived classes.");
-
-       return null;
-   }
+    protected virtual System.Type GetJSONDataType()
+    {
+        Debug.LogError("GetJSONDataType must be overridden.");
+        return null;
+    }
 
     private IEnumerator LoadJSONDataRoutine()
     {   
-        string filePath = Path.Combine(Application.streamingAssetsPath, "DialogFiles", _jsonFileName);
         string jsonContent = "";
+        
+        // Caminho relativo simples
+        string relativePath = $"DialogFiles/{_jsonFileName}";
 
-        // READ FOR ANDROID (Meta Quest 3)
+        // LÓGICA ANDROID (Meta Quest 3)
         if (Application.platform == RuntimePlatform.Android)
         {
-            using UnityWebRequest request = UnityWebRequest.Get(filePath);
-            yield return request.SendWebRequest();
+            // Força barras normais (/) para não quebrar o URI jar:file://
+            string uriPath = Path.Combine(Application.streamingAssetsPath, relativePath).Replace("\\", "/");
 
-            if (request.result != UnityWebRequest.Result.Success)
+            using (UnityWebRequest request = UnityWebRequest.Get(uriPath))
             {
-                Debug.LogError("Error reading JSON on Quest: " + request.error);
-                yield break; // Exit coroutine if failed
-            }
+                yield return request.SendWebRequest();
 
-            jsonContent = request.downloadHandler.text;
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError($"Erro ao ler JSON: {request.error} | URL: {uriPath}");
+                    yield break;
+                }
+                jsonContent = request.downloadHandler.text;
+            }
         }
- 
-        // LOGIC FOR PC / EDITOR
+        // LÓGICA PC
         else 
         {
+            string filePath = Path.Combine(Application.streamingAssetsPath, "DialogFiles", _jsonFileName);
             if (File.Exists(filePath))
             {
                 jsonContent = File.ReadAllText(filePath);
-                
             }
             else
             {
@@ -78,13 +87,17 @@ public class UIDialog : DisplayInPlayerFront
             }
         }
 
-        // PARSE (Igual para ambos)
+        // PARSE
         try
         {
-            if (!string.IsNullOrEmpty(jsonContent))
+            if (!string.IsNullOrWhiteSpace(jsonContent))
             {
                 _data = (JSONData)JsonConvert.DeserializeObject(jsonContent, GetJSONDataType());
                 Debug.Log("JSON loaded successfully!");
+                
+                // --- GATILHO AUTOMÁTICO ---
+                // Chama a função que avisa a classe filha que os dados estão prontos
+                OnDataLoaded(); 
             }
         }
         catch (System.Exception e)
@@ -93,19 +106,7 @@ public class UIDialog : DisplayInPlayerFront
         }
     }
 
-    protected virtual void HideFeedback()
-   {
-      Debug.LogError("HideFeedback method must be overridden in derived classes.");
-   }
-
-   protected virtual void SetJSONFileName()
-   {
-       Debug.LogError("SetJSONFileName method must be overridden in derived classes.");
-   }
-
-   public virtual void NextStep()
-   {
-      Debug.LogError("NextStep method must be overridden in derived classes.");
-   }
-
+    protected virtual void HideFeedback() {}
+    protected virtual void SetJSONFileName() {}
+    public virtual void NextStep() {}
 }
