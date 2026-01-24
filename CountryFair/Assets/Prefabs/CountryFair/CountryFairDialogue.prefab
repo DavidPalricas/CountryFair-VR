@@ -99,8 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8398187786344419838}
-  - component: {fileID: 3504783845717256979}
-  - component: {fileID: 3166386313551476031}
+  - component: {fileID: 1983537196744767392}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -125,7 +124,7 @@ Transform:
   - {fileID: 1878236638267100241}
   m_Father: {fileID: 8878798017660467077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3504783845717256979
+--- !u!114 &1983537196744767392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -134,38 +133,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1666570984189785501}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34d89eb2b9216524e9b0f0be0ecf7773, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c08830b0e3c58641a9f67d9f238d611, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Intro
+  m_EditorClassIdentifier: Assembly-CSharp::CountryFairDialogue
   centerEyeTransform: {fileID: 0}
   distanceFromPlayer: 0
   heightOffset: -0.5
-  horizontalOffset: 5
+  horizontalOffset: 2
   dialogueBoxGameObject: {fileID: 352828313340079023}
   dialogueBoxText: {fileID: 9127245463817792877}
   gameTents: {fileID: 0}
   zeca: {fileID: 515981779398727855}
   carnyWise: {fileID: 2016269200949315728}
-  characterNameText: {fileID: 7215190139517296227}
---- !u!114 &3166386313551476031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1666570984189785501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a9cc9f72770e9a4bae9ec486fb8fb0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SessionCompleted
-  centerEyeTransform: {fileID: 0}
-  distanceFromPlayer: 0
-  heightOffset: -0.5
-  horizontalOffset: 5
-  dialogueBoxGameObject: {fileID: 352828313340079023}
-  dialogueBoxText: {fileID: 9127245463817792877}
-  Zeca: {fileID: 515981779398727855}
   characterNameText: {fileID: 7215190139517296227}
 --- !u!1 &2016269200949315728
 GameObject:
@@ -183,7 +162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4210230198700442841
 Transform:
   m_ObjectHideFlags: 0
@@ -448,6 +427,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Carny Wise
       objectReference: {fileID: 0}
+    - target: {fileID: 2797224499791937733, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
+      propertyPath: m_text
+      value: "Antes de come\xE7ar, deixe-me apresento-te \\nCarny Wise, ele vai ajudar
+        voc\xEA a aprender os jogos!\\n\\n\\tPressione no Botao Para Continuar."
+      objectReference: {fileID: 0}
     - target: {fileID: 4348859363967742923, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
       propertyPath: m_text
       value: Carny Wise
@@ -547,7 +531,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
       propertyPath: _whenUnselect.m_PersistentCalls.m_Calls.Array.size
@@ -564,11 +548,7 @@ PrefabInstance:
     - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 3166386313551476031}
-    - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
-      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_Target
-      value: 
-      objectReference: {fileID: 3504783845717256979}
+      objectReference: {fileID: 1983537196744767392}
     - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
@@ -591,7 +571,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: SessionCompleted, Assembly-CSharp
+      value: CountryFairDialogue, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7516989854015812293, guid: d2d6934a666a18d46b8b7a3864dc9f63, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
