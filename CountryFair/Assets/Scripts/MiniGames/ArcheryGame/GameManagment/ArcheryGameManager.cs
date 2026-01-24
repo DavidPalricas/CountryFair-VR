@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ArcheryGameManager : GameManager
+public class ArcheryGameManager : MiniGameManager
 {   
     [Header("Game Specific References")]
     [SerializeField] private TextMeshProUGUI balloonColorToScoreText;
@@ -72,13 +72,9 @@ public class ArcheryGameManager : GameManager
         SetBalloonColorToScore();
     }
 
-    private void Start()
-    {
-        ApplyDifficultySettings();
-    }
-
     public override void TutorialCompleted()
-    {
+    {   
+        base.TutorialCompleted();
         ApplyDifficultySettings();
     }
 

@@ -31,8 +31,17 @@ public class Tutorial: UIDialog
 
     private bool _finishedPracticing = false;
 
+    private bool _isFromFrisbeGame = false;
+
     protected override void Awake()
-    {  
+    {      
+         if (TutorialWasCompleted())
+        {  
+            tutorialCompleted.Invoke();
+            Destroy(transform.parent.gameObject);
+            return;
+        }
+
         base.Awake();
 
         if (_data is not TutorialData tutorialData)
@@ -77,6 +86,44 @@ public class Tutorial: UIDialog
     }
 
 
+    private void CheckCurrenMiniGame(){
+        string sceneName = SceneManager.GetActiveScene().name.ToLower();
+
+        if (sceneName.Contains("frisbee"))
+        {
+            _isFromFrisbeGame = true;
+            return;
+        }
+
+        if (sceneName.Contains("archery")){
+            _isFromFrisbeGame = false;
+            return;
+        }
+
+        Debug.LogError("Invalid scene for tutorial detection.");
+    }
+
+
+    private bool TutorialWasCompleted()
+    {   
+
+        CheckCurrenMiniGame();
+        GameManager gameManager = GameManager.GetInstance();
+
+        if (_isFromFrisbeGame && gameManager.FrisbeeTutorialCompleted)
+        {   
+            return true;
+        }
+
+        if (!_isFromFrisbeGame && gameManager.ArcheryTutorialCompleted)
+        {   
+            return true;
+        }
+
+        return false;
+    }
+
+
     protected override System.Type GetJSONDataType()
     {
         return typeof(TutorialData);
@@ -84,29 +131,11 @@ public class Tutorial: UIDialog
 
     protected override void SetJSONFileName()
     {
-        string sceneName = SceneManager.GetActiveScene().name.ToLower();
-
-        if (sceneName.Contains("frisbee"))
-        {
-            _jsonFileName = "frisbbee_tutorial.json";
-
-            return;
-        }
-
-        if (sceneName.Contains("archery"))
-        {
-            _jsonFileName = "archery_tutorial.json";
-
-            return;
-        }
-      
-        Debug.LogError("No tutorial JSON file found for the current scene.");
-
-        return;
+        _jsonFileName = _isFromFrisbeGame ? "frisbee_tutorial.json" : "archery_tutorial.json";
     }
 
 
-    public void NextStep()
+    public override void NextStep()
     {    
         if (_finishedPracticing)
         {   
@@ -125,6 +154,15 @@ public class Tutorial: UIDialog
         postTutorialElements.SetActive(true);
 
         tutorialCompleted.Invoke();
+
+        if (_isFromFrisbeGame)
+        {
+            GameManager.GetInstance().FrisbeeTutorialCompleted = true;
+        }
+        else
+        {
+            GameManager.GetInstance().ArcheryTutorialCompleted = true;
+        }
 
         Destroy(transform.parent.gameObject);
     }

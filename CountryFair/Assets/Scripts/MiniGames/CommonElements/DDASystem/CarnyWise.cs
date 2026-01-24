@@ -54,14 +54,14 @@ public class CarnyWise : MonoBehaviour
 
         if (sceneName.Contains("frisbee"))
         {
-            _miniGameName = "Frisbee Game";
+            _miniGameName = "frisbee";
 
             return;
         }
 
         if (sceneName.Contains("archery"))
         {
-            _miniGameName = "Archery Game";
+            _miniGameName = "archery";
 
             return;
         }
@@ -193,7 +193,30 @@ public class CarnyWise : MonoBehaviour
 
     public void SessionGoalReached()
     {
-        SaveSessionData();
+       // SaveSessionData();
+
+        Invoke(nameof(ReturnToFair), 1f);     
+    }
+
+    private void ReturnToFair()
+    {   
+        GameManager gameManager = GameManager.GetInstance();
+
+        if (_miniGameName == "frisbee")
+        {
+            gameManager.FrisbeeSessionCompleted = true;
+            SceneManager.LoadScene("CountryFair");
+            return;
+        }
+
+        if (_miniGameName == "archery")
+        {
+            gameManager.ArcherySessionCompleted = true;
+            SceneManager.LoadScene("CountryFair");
+            return;
+        }
+
+        Debug.LogError("Invalid MiniGame Name " + _miniGameName);
     }
 
     private void SaveSessionData()

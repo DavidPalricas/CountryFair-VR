@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class FrisbeeGameManager : GameManager
-{
-   
-    
+public class FrisbeeGameManager : MiniGameManager
+{ 
     [Header("1. Configuração Física (Segurança)")]
     [Tooltip("Distância onde o cão começa (m). Calibra-se no Start.")]
     public float baseDogDistance = 5f;       
@@ -49,7 +47,9 @@ public class FrisbeeGameManager : GameManager
     }
 
     public override void TutorialCompleted()
-    {
+    {   
+        base.TutorialCompleted();
+        
         _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
         if (_playerTransform == null)
