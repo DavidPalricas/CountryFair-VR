@@ -3,40 +3,43 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 
-
-public class Tutorial: UIDialog
-{   
+public class Tutorial : UIDialog
+{
     [SerializeField]
     private UnityEvent tutorialCompleted;
 
-    [Header("Game Elements")]
-    [SerializeField]
-    private GameObject practiceElements;
 
-
+    [Header("Practise Elements")]
     [SerializeField]
-    private GameObject tutorialButton;
+    private GameObject videoScreen;
+   
+   [SerializeField]
+    private GameObject  miniGameVideo;
 
     [SerializeField]
     private GameObject miniGameProp;
+
+
+    [SerializeField]
+    private GameObject practiceElements;
+
+    [Header("Game Elements")]
+    [SerializeField]
+    private GameObject tutorialButton;
 
     [SerializeField]
     private GameObject postTutorialElements;
 
     private int _numberOfTasks;
-
-   private TutorialData _tutorialData;
-
+    private TutorialData _tutorialData;
     private int _currentTasksCompleted = 0;
-
     private bool _finishedPracticing = false;
-
     private bool _isFromFrisbeGame = false;
 
     protected override void Awake()
-    {      
-         if (TutorialWasCompleted())
-        {  
+    {
+        if (TutorialWasCompleted())
+        {
             tutorialCompleted.Invoke();
             Destroy(transform.parent.gameObject);
             return;
@@ -44,49 +47,54 @@ public class Tutorial: UIDialog
 
         base.Awake();
 
-        if (_data is not TutorialData tutorialData)
-        {
-            Debug.LogError("Error Converting data to TutorialData.");
-
-            return;
-        }
-
-        _tutorialData = tutorialData;
-
-        if (practiceElements  == null || postTutorialElements == null)
+        if (practiceElements == null || postTutorialElements == null)
         {
             Debug.LogError("Practice or Post elements are not assigned in the inspector.");
-
             return;
         }
 
         if (tutorialButton == null)
         {
             Debug.LogError("Tutorial button is not assigned in the inspector.");
-
             return;
         }
 
         if (miniGameProp == null)
         {
             Debug.LogError("Mini game prop is not assigned in the inspector.");
-
             return;
         }
 
-        _numberOfTasks =  Utils.GetChildren(practiceElements.transform).Length;
+        if (videoScreen == null || miniGameVideo == null)
+        {
+            Debug.LogError("Video screen or mini game video is not assigned in the inspector.");
+            return;
+        }
 
+        _numberOfTasks = Utils.GetChildren(practiceElements.transform).Length;
         Debug.Log("Number of tasks in tutorial: " + _numberOfTasks);
 
-        practiceElements.SetActive(false);     
+        practiceElements.SetActive(false);
         miniGameProp.SetActive(false);
         postTutorialElements.SetActive(false);
+        videoScreen.SetActive(false);
+    }
+
+    protected override void OnDataLoaded()
+    {
+        if (_data is not TutorialData tutorialData)
+        {
+            Debug.LogError("Error Converting data to TutorialData.");
+            return;
+        }
+
+        _tutorialData = tutorialData;
 
         ShowGameRule();
     }
 
-
-    private void CheckCurrenMiniGame(){
+    private void CheckCurrenMiniGame()
+    {
         string sceneName = SceneManager.GetActiveScene().name.ToLower();
 
         if (sceneName.Contains("frisbee"))
@@ -95,7 +103,8 @@ public class Tutorial: UIDialog
             return;
         }
 
-        if (sceneName.Contains("archery")){
+        if (sceneName.Contains("archery"))
+        {
             _isFromFrisbeGame = false;
             return;
         }
@@ -103,26 +112,23 @@ public class Tutorial: UIDialog
         Debug.LogError("Invalid scene for tutorial detection.");
     }
 
-
     private bool TutorialWasCompleted()
-    {   
-
+    {
         CheckCurrenMiniGame();
         GameManager gameManager = GameManager.GetInstance();
 
         if (_isFromFrisbeGame && gameManager.FrisbeeTutorialCompleted)
-        {   
+        {
             return true;
         }
 
         if (!_isFromFrisbeGame && gameManager.ArcheryTutorialCompleted)
-        {   
+        {
             return true;
         }
 
         return false;
     }
-
 
     protected override System.Type GetJSONDataType()
     {
@@ -131,14 +137,17 @@ public class Tutorial: UIDialog
 
     protected override void SetJSONFileName()
     {
+        // Usa o bool definido no CheckCurrenMiniGame (chamado no início do Awake)
         _jsonFileName = _isFromFrisbeGame ? "frisbee_tutorial.json" : "archery_tutorial.json";
     }
 
-
     public override void NextStep()
-    {    
+    {
+        // Proteção: Se o jogador clicar antes do JSON carregar
+        if (_tutorialData == null) return;
+
         if (_finishedPracticing)
-        {   
+        {
             ReadyToPlay();
             return;
         }
@@ -146,13 +155,10 @@ public class Tutorial: UIDialog
         ShowGameRule();
     }
 
-
     private void ReadyToPlay()
     {
         miniGameProp.SetActive(true);
-
         postTutorialElements.SetActive(true);
-
         tutorialCompleted.Invoke();
 
         if (_isFromFrisbeGame)
@@ -168,24 +174,26 @@ public class Tutorial: UIDialog
     }
 
     private void ShowGameRule()
-    {   
+    {
         List<string> rules = _tutorialData.Rules;
 
-        if (rules.Count == 0){
+        if (rules.Count == 0)
+        {
             StartPractice();
             return;
         }
 
         dialogueBoxText.text = rules[0];
-
         _tutorialData.Rules.RemoveAt(0);
     }
 
-
-    private void StartPractice(){
+    private void StartPractice()
+    {
         tutorialButton.SetActive(false);
         practiceElements.SetActive(true);
         miniGameProp.SetActive(true);
+        videoScreen.SetActive(true);
+        miniGameVideo.SetActive(true);
 
         dialogueBoxText.text = _tutorialData.Guide;
     }
@@ -195,8 +203,9 @@ public class Tutorial: UIDialog
         dialogueBoxText.text = _tutorialData.End;
 
         tutorialButton.SetActive(true);
-         miniGameProp.SetActive(false);
-        _finishedPracticing =true;
+        miniGameProp.SetActive(false);
+        videoScreen.SetActive(false);
+        _finishedPracticing = true;
     }
 
     public void TaskCompleted()
@@ -204,7 +213,7 @@ public class Tutorial: UIDialog
         _currentTasksCompleted++;
 
         if (_currentTasksCompleted >= _numberOfTasks)
-        {    
+        {
             Completed();
         }
     }
