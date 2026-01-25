@@ -46,15 +46,6 @@ public class OnMovement : FrisbeeState
     private float baseDrag = 0.05f;
     
     /// <summary>
-    /// High angle drag coefficient when the frisbee falls belly-first (parachute effect).
-    /// Creates stronger braking force during descent with high angle of attack.
-    /// Currently not actively used in the simplified aerodynamic model.
-    /// </summary>
-    [Tooltip("Drag coefficient when the disc falls belly-first (parachute effect). Higher values create stronger braking on descent.")]
-    [SerializeField]
-    private float highAngleDrag = 3.5f;
-
-    /// <summary>
     /// Unity event invoked when the frisbee exits the play area bounds.
     /// Listeners can use this to trigger game logic such as score penalties or UI updates.
     /// </summary>
@@ -138,6 +129,8 @@ public class OnMovement : FrisbeeState
         _rigidbody.angularDamping = _defaultAngularDrag;
 
         _trajectoryLine.enabled = false;
+
+        _rigidbody.isKinematic = true;
 
         _touchedGround = false;
     }

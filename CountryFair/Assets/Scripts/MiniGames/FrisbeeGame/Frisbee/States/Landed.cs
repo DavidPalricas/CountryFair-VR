@@ -11,8 +11,7 @@ public class Landed: FrisbeeState
     [SerializeField]
     private MeshRenderer frisbeeMeshRenderer;
 
-    [SerializeField]
-    private int scorePoints = 1;
+    public bool TutorialActive { get; set; } = true;
 
     [Header("Landed Events")]
 
@@ -41,7 +40,7 @@ public class Landed: FrisbeeState
 
     private readonly AudioManager.GameSoundEffects _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
 
-    public bool TutorialActive { get; set; } =  true;
+    private int _scorePoints = 1;
 
     /// <summary>
     /// Initializes the state by setting up physics component references.
@@ -84,7 +83,7 @@ public class Landed: FrisbeeState
         if (frisbeeOnScoreArea)
         {   
             // This is event must be ivoked after the tutorial
-            playerScored.Invoke(scorePoints);
+            playerScored.Invoke(_scorePoints);
         }
         else
         {     
@@ -136,16 +135,27 @@ public class Landed: FrisbeeState
         foreach (Collider collider in overlapResults)
         {
             if (collider != null && collider.gameObject.CompareTag("ScoreArea")) 
-            {   
-                if (!collider.gameObject.TryGetComponent<ScoreAreaAnimations>(out var scocreArea))
+            {    
+                GameObject scoreArea = collider.gameObject;
+
+                if (!scoreArea.TryGetComponent<ScoreAreaAnimations>(out var scoreAreaAnimations))
                 {
                     Debug.LogError("ScoreAreaAnimations component is missing on the Score Area object.");
 
                     return false;
                 }
 
-                scocreArea.ScoreAnimation();
+                if (!scoreArea.TryGetComponent<ScoreAreaProperties>(out var scoreAreaProperties))
+                {
+                    Debug.LogError("ScoreAreaProperties component is missing on the Score Area object.");
+
+                    return false;
+                }
+
+                scoreAreaAnimations.ScoreAnimation();
                 scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
+
+                _scorePoints = scoreAreaProperties.ScorePoints;
 
                 return true;
             }

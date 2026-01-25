@@ -1009,7 +1009,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c54feeb03e1a0a48bb59380ce4db49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeGameManager
-  sessionScoreGoal: 1
+  sessionScoreGoal: 20
   difficultyLevel: 0
   baseDogDistance: 5
   distanceIncrement: 0.5
@@ -1453,8 +1453,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 25.504412, y: 1, z: 1.8611522}
+  m_Center: {x: -6.124474, y: 0, z: 0.08826286}
 --- !u!4 &254994241 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1829207331711168921, guid: 0e7df4d72702850438fbe2ef4d2a582a, type: 3}
@@ -1511,8 +1511,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 19.491917, y: 1, z: 1.2029549}
+  m_Center: {x: 9.245972, y: 0, z: 0.10147661}
 --- !u!1001 &267438831
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3013,10 +3013,18 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.07637105
       objectReference: {fileID: 0}
+    - target: {fileID: 484220286984126603, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: _kinematicWhileSelected
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 626676503308568527, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: _handGhostProvider
       value: 
       objectReference: {fileID: 11400000, guid: 9b9df4f150839de48af887d742aabf53, type: 2}
+    - target: {fileID: 2513844753710845585, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2865989487675939233, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -3988,8 +3996,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1.3960726, z: 2.1475413}
+  m_Center: {x: -2.3585778e-10, y: -0.198036, z: 0.14955403}
 --- !u!1001 &1003186871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6261,7 +6269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowPlayerHead
   centerEyeTransform: {fileID: 2099040610}
   distanceFromPlayer: 0.8
-  heightOffset: -0.5
+  heightOffset: -0.6
   horizontalOffset: 0
   smoothTime: 0.3
   lockRotationToHead: 1
@@ -6534,8 +6542,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 15.97279, y: 1, z: 1}
+  m_Center: {x: 7.486395, y: 0, z: 0}
 --- !u!1 &1601322020 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7258768448477735823, guid: 33b9eed337152814d9e30538d0c98d86, type: 3}
@@ -7181,8 +7189,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 10.321239, y: 1, z: 1.0746025}
+  m_Center: {x: -9.302462, y: 0, z: -0.06867765}
 --- !u!1001 &1717694319
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7287,7 +7295,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 16271b4a0e80e834bbdd8954485754ba, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.53
+      value: -9.43
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 16271b4a0e80e834bbdd8954485754ba, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9467,7 +9475,7 @@ PrefabInstance:
       objectReference: {fileID: 2099040610}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: distanceFromPlayer
-      value: 14
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: postTutorialElements
@@ -9634,7 +9642,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7979614268624152678, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: heightOffset
-      value: 2.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7979614268624152678, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: displayDuration
@@ -9650,7 +9658,7 @@ PrefabInstance:
       objectReference: {fileID: 2099040610}
     - target: {fileID: 7979614268624152678, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: distanceFromPlayer
-      value: 12
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8557370047735245748, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_CullTransparentMesh
@@ -9815,7 +9823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8
+      value: 309
       objectReference: {fileID: 0}
     - target: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9839,7 +9847,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -556
+      value: -505
       objectReference: {fileID: 0}
     - target: {fileID: 1731276637148235079, guid: 59ce59f7a54d9574cb4d1b6f4469c3c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -1985,8 +1985,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4224222, b: 0.25095868, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42242244, b: 0.25095892, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4224208, b: 0.25095728, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42242217, b: 0.25095865, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -8001,6 +8001,30 @@ PrefabInstance:
     - target: {fileID: 1112736893632832592, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 106628086}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySpatialSoundEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ArcheryAudioManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1734110149491692014, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_IsActive

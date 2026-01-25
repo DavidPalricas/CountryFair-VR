@@ -51,12 +51,6 @@ public class OnPlayerFront : FrisbeeState
     private Transform _originalParent;
 
     /// <summary>
-    /// Initial local rotation of the frisbee relative to the player's hand.
-    /// Stored for reset functionality when the frisbee is returned.
-    /// </summary>
-    private Quaternion  _initialRotation;
-
-    /// <summary>
     /// Array of materials from the frisbee's Renderer component.
     /// Used to modify opacity based on throw availability.
     /// </summary>
@@ -106,8 +100,6 @@ public class OnPlayerFront : FrisbeeState
         
         _originalParent = transform.parent;
 
-        _initialRotation = transform.rotation;
-
 
         if (frisbeeRenderer == null)
         {
@@ -145,6 +137,8 @@ public class OnPlayerFront : FrisbeeState
 
         ChangeMaterialsOpacity();
 
+        _rigidbody.isKinematic = true;
+
         PlayerHoldingFrisbee();
    }
 
@@ -166,7 +160,7 @@ public class OnPlayerFront : FrisbeeState
     /// </para>
     /// </remarks>
     public override void Execute()
-    {
+    {   
          base.Execute();
     }
 
@@ -240,12 +234,13 @@ public class OnPlayerFront : FrisbeeState
     /// </para>
     /// </remarks>
     private void PlayerHoldingFrisbee()
-    {    
+    {   
         ResetTransform();
-        
+
         gameObject.SetActive(true);
 
         _rigidbody.useGravity = false;
+        _rigidbody.isKinematic = false;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
         _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
@@ -254,7 +249,7 @@ public class OnPlayerFront : FrisbeeState
 
          frisbeeGrabbable.enabled = true;
 
-         _followPlayerHead.enabled = true;
+        _followPlayerHead.enabled = true;
     }
 
     /// <summary>
@@ -361,9 +356,7 @@ public class OnPlayerFront : FrisbeeState
     {
         transform.parent = _originalParent;
 
-        transform.localPosition = Vector3.zero;
-
-        transform.rotation = _initialRotation;
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
     /// <summary>

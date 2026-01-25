@@ -100,11 +100,11 @@ public class FrisbeeCheatCodes : CheatCodes
 
         switch (cheatCode)
         {
-            case "throw":
+            case "miss":
                 _frisbeePlayerFrontState.ThrowFrisbee(false);
                 break;
 
-            case "miss":
+            case "score":
                   ForceScorePoint();      
                 break;
             default:

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
+using UnityEngine.SocialPlatforms.Impl;
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
@@ -35,6 +36,8 @@ public class ScoreAreaProperties : MonoBehaviour
     // Unique ID to differentiate Blinking from Moving
     private string _blinkId; 
 
+    public int ScorePoints  { get; private set; } = 1;
+
     public enum AreaType
     {
         NORMAL,
@@ -49,6 +52,12 @@ public class ScoreAreaProperties : MonoBehaviour
         _initialPosition = transform.position;
         
         _blinkId = "blink_" + GetInstanceID();
+
+
+        if (areaType == AreaType.DOG)
+        {
+            ScorePoints = 8;
+        }
     }
 
     public void AdjustMovement(bool isToMove)
@@ -60,7 +69,8 @@ public class ScoreAreaProperties : MonoBehaviour
         }
 
         if (areaType == AreaType.NORMAL && isToMove)
-        {
+        {   
+            ScorePoints *= 2;
             StartMoving();
             return;
         }
@@ -75,7 +85,8 @@ public class ScoreAreaProperties : MonoBehaviour
         }
         
         if (canChangeVisibility)
-        {
+        { 
+            ScorePoints *= 3;
             StartBlinking();
             return;
         }
