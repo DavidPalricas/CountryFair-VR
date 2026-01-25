@@ -38,7 +38,6 @@ public class Tutorial : UIDialog
 
     protected override void Awake()
     {
-        // 1. Configuração de Estado (Necessário ANTES do base.Awake para definir o nome do ficheiro)
         if (TutorialWasCompleted())
         {
             tutorialCompleted.Invoke();
@@ -46,10 +45,8 @@ public class Tutorial : UIDialog
             return;
         }
 
-        // 2. Inicia o Download (Assíncrono)
         base.Awake();
 
-        // 3. Configurações de Referências (Seguro fazer agora)
         if (practiceElements == null || postTutorialElements == null)
         {
             Debug.LogError("Practice or Post elements are not assigned in the inspector.");
@@ -68,19 +65,21 @@ public class Tutorial : UIDialog
             return;
         }
 
+        if (videoScreen == null || miniGameVideo == null)
+        {
+            Debug.LogError("Video screen or mini game video is not assigned in the inspector.");
+            return;
+        }
+
         _numberOfTasks = Utils.GetChildren(practiceElements.transform).Length;
         Debug.Log("Number of tasks in tutorial: " + _numberOfTasks);
 
         practiceElements.SetActive(false);
         miniGameProp.SetActive(false);
         postTutorialElements.SetActive(false);
-        videoScreen.SetActive(false);
-
-        // REMOVIDO DAQUI: O ShowGameRule() e o cast do _tutorialData.
-        // O JSON ainda não chegou neste momento.
+        // videoScreen.SetActive(false);
     }
 
-    // --- NOVO: Chamado automaticamente quando o JSON chega ---
     protected override void OnDataLoaded()
     {
         if (_data is not TutorialData tutorialData)
@@ -91,7 +90,6 @@ public class Tutorial : UIDialog
 
         _tutorialData = tutorialData;
 
-        // Agora que temos dados, começamos o fluxo
         ShowGameRule();
     }
 
@@ -206,6 +204,7 @@ public class Tutorial : UIDialog
 
         tutorialButton.SetActive(true);
         miniGameProp.SetActive(false);
+        videoScreen.SetActive(false);
         _finishedPracticing = true;
     }
 

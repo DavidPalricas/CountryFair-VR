@@ -9350,6 +9350,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1875002097}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: miniGameVideo
+      value: 
+      objectReference: {fileID: 1312361772106625692}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: PracticeElements
       value: 
       objectReference: {fileID: 1676481960}
@@ -9436,6 +9440,11 @@ PrefabInstance:
       addedObject: {fileID: 7357062}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 316faa56be726824192d355461c86468, type: 3}
+--- !u!1 &1312361772106625692 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 11247676160851388, guid: 316faa56be726824192d355461c86468, type: 3}
+  m_PrefabInstance: {fileID: 1312361772106625691}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4335083379616336532 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
