@@ -77,7 +77,7 @@ public class Tutorial : UIDialog
         practiceElements.SetActive(false);
         miniGameProp.SetActive(false);
         postTutorialElements.SetActive(false);
-        // videoScreen.SetActive(false);
+        videoScreen.SetActive(false);
     }
 
     protected override void OnDataLoaded()

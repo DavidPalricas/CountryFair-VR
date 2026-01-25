@@ -6462,6 +6462,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7881466077556996133, guid: c456f214b95f9ff44a7da7e2ac2369d7, type: 3}
   m_PrefabInstance: {fileID: 1569094785}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1589594815 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6457992071970025263, guid: 316faa56be726824192d355461c86468, type: 3}
+  m_PrefabInstance: {fileID: 1312361772106625691}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1589594818 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+  m_PrefabInstance: {fileID: 1312361772106625691}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1589594815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcccd3228553b9440be018cffe360f53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonPressed
 --- !u!1 &1589905544 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2086781719957038935, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
@@ -9265,6 +9281,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 11247676160851388, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1112736893632832592, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -9317,10 +9337,90 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053875}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySpatialSoundEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FrisbeeAudioManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279439000019667242, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6146736380258908976, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: centerEyeTransform
       value: 
       objectReference: {fileID: 2099040610}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1589594818}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1299308354}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1589594815}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 1589594815}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Pressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: NextStep
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ButtonPressed, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Tutorial, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: Tutorial, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457992071970025250, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6457992072635077217, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.49
@@ -9367,7 +9467,7 @@ PrefabInstance:
       objectReference: {fileID: 2099040610}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: distanceFromPlayer
-      value: 12
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: postTutorialElements
