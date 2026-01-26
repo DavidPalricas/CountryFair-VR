@@ -75,7 +75,6 @@ public class GiveFrisbeeToPlayer : DogState
 
         frisbeeInDogMouth.SetActive(true);
 
-
         _frisbeeTransform.parent = frisbeeInDogMouth.transform;
 
         _frisbeeTransform.localPosition = Vector3.zero;
