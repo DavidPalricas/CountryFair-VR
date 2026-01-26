@@ -36,6 +36,9 @@ public class FrisbeeGameManager : MiniGameManager
     private float _currentMovingRatio;
     private float _currentVisibilityRatio;
 
+    private float _scoreAreaRadius = 0;
+
+
     protected override void Awake()
     {
         base.Awake();
@@ -44,6 +47,8 @@ public class FrisbeeGameManager : MiniGameManager
         {
             Debug.LogError("One or more animation curves are not assigned in the inspector.");
         }
+
+        _scoreAreaRadius = scoreAreaPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
     }
 
     public override void TutorialCompleted()
@@ -84,16 +89,16 @@ public class FrisbeeGameManager : MiniGameManager
         
         PlayerPrefs.SetFloat("DogDistance", finalDogDistance);
 
-        int finalTargetCount = Mathf.RoundToInt(targetsCount + (difficultyLevel * targetsPerLevel));
+        _currentDesiredCount = Mathf.RoundToInt(targetsCount + (difficultyLevel * targetsPerLevel));
 
         float saturationFactor = difficultyLevel / (difficultyLevel + 4f);
 
         _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
         _currentVisibilityRatio = visibilityRatioCurve.Evaluate(saturationFactor);
 
-        Debug.Log($"[DDA] Level {difficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {finalTargetCount} | Complexity: {saturationFactor:P0}");
+        Debug.Log($"[DDA] Level {difficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {_currentDesiredCount} | Complexity: {saturationFactor:P0}");
 
-        SyncTargets(finalTargetCount);
+        SyncTargets(_currentDesiredCount);
     }
 
     protected override void SyncTargets(int desiredCount)
@@ -153,7 +158,6 @@ public class FrisbeeGameManager : MiniGameManager
         
         const float MIN_OFFSET = 0.2f;
         const float MAX_OFFSET = 1f;
-        const float MIN_DISTANCE_BETWEEN_AREAS = 2f; 
 
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
 
@@ -163,11 +167,13 @@ public class FrisbeeGameManager : MiniGameManager
         
         scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
 
-        bool isTooClose = _spawnedTargets.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS && dogScoreAreaCollider.bounds.Contains(scoreAreaPosition));
+        int layerMask = LayerMask.GetMask("ScoreArea");
 
-        if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || isTooClose)
+        bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, layerMask);
+
+        if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || collidesWithOtherAreas)
         {
-            return GetRandomTargetPosition(); 
+            return GetRandomTargetPosition();
         }
 
         return scoreAreaPosition;
@@ -180,6 +186,17 @@ public class FrisbeeGameManager : MiniGameManager
         Destroy(target);
 
         UpdateTargetsProperties();
+    }
+
+
+    public void RespawnScoreAreas()
+    {
+        while (_spawnedTargets.Count > 0)
+        {
+            RemoveTarget();
+        }
+
+        SyncTargets(_currentDesiredCount);
     }
 
     private float GetPlayerDistanceToDog()

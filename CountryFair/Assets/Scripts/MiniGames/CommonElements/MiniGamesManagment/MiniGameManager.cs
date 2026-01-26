@@ -19,6 +19,8 @@ public class MiniGameManager : MonoBehaviour
 
     protected readonly List<GameObject> _spawnedTargets = new();
 
+    protected int _currentDesiredCount; // CRÍTICO: Para saber quantos devemos ter
+
 
     private CheatCodes _cheatCodes;
 

@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 7321478195982527030}
   - component: {fileID: 4259010315456286546}
   - component: {fileID: 8996311874865107283}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ScoreArea
   m_TagString: ScoreArea
   m_Icon: {fileID: 0}

@@ -598,8 +598,8 @@ Transform:
   m_GameObject: {fileID: 95852563}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.684, y: -0.01, z: -1.8744}
-  m_LocalScale: {x: 2.2178254, y: 0.6666667, z: 1.5134435}
+  m_LocalPosition: {x: 2.684, y: -0.01, z: -1.6009}
+  m_LocalScale: {x: 2.2178254, y: 0.6666667, z: 1.4588257}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1491771115}
@@ -10202,9 +10202,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -93.83952
       objectReference: {fileID: 0}
+    - target: {fileID: 200309853390115956, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 495728589920066737, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_Name
       value: Dog
+      objectReference: {fileID: 0}
+    - target: {fileID: 1097502552645629996, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1107612702949421514, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -10233,6 +10241,10 @@ PrefabInstance:
     - target: {fileID: 1126964622158614856, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 1154028014834527547, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: states.Array.size
@@ -10342,6 +10354,14 @@ PrefabInstance:
       propertyPath: catchFrisbee.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: set_DogInTarget
       objectReference: {fileID: 0}
+    - target: {fileID: 3146609565993551375, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3443384099132641749, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4677665897276227089, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 28.93352
@@ -10365,6 +10385,14 @@ PrefabInstance:
     - target: {fileID: 4903043181724991073, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -16.901836
+      objectReference: {fileID: 0}
+    - target: {fileID: 5093749813451946641, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5117827802906955846, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5512244808440555834, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -10410,6 +10438,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -129.14645
       objectReference: {fileID: 0}
+    - target: {fileID: 6433331409223532722, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6563913859944586735, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -34.426994
@@ -10439,6 +10471,10 @@ PrefabInstance:
       value: ScoreArea
       objectReference: {fileID: 0}
     - target: {fileID: 7121292979934276580, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7121292979934276580, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -10454,6 +10490,10 @@ PrefabInstance:
       propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 147053875}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -10471,6 +10511,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1123418846}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053872}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -10483,8 +10531,20 @@ PrefabInstance:
       value: FrisbeeAudioManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RespawnScoreAreas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: OnPlayerFront, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FrisbeeGameManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: bark.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -10492,6 +10552,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: positionReached.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7572416769146546949, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: reSpawnScoreAreas.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8381011576245472112, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
@@ -10505,6 +10569,14 @@ PrefabInstance:
     - target: {fileID: 8381011576245472112, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -92.06182
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750646013376852451, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8858738009853749799, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9067314237388515744, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: m_LocalScale.x

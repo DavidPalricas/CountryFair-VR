@@ -31,7 +31,7 @@ public class ArcheryGameManager : MiniGameManager
     // Variáveis de Controlo
     private float _currentMovingRatio;
     private float _currentTransparencyRatio;
-    private int _currentDesiredCount; // CRÍTICO: Para saber quantos devemos ter
+
 
     protected override void Awake()
     {   
