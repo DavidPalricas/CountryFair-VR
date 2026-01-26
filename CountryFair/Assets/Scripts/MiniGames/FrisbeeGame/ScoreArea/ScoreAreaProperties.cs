@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
-using UnityEngine.SocialPlatforms.Impl;
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Collider))]
@@ -36,6 +35,9 @@ public class ScoreAreaProperties : MonoBehaviour
     // Unique ID to differentiate Blinking from Moving
     private string _blinkId; 
 
+
+    private FrisbeeGameManager _frisbeeGameManager;
+
     public int ScorePoints  { get; private set; } = 1;
 
     public enum AreaType
@@ -57,6 +59,13 @@ public class ScoreAreaProperties : MonoBehaviour
         if (areaType == AreaType.DOG)
         {
             ScorePoints = 8;
+        }
+
+        _frisbeeGameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<FrisbeeGameManager>();
+
+        if (_frisbeeGameManager == null)
+        {
+            Debug.LogError("FrisbeeGameManager not found in the scene.");
         }
     }
 
@@ -176,14 +185,18 @@ public class ScoreAreaProperties : MonoBehaviour
     }
 
     public void OnPlayerScore(){
-        if (areaType != AreaType.DOG){
-
-            if (areaType == AreaType.TUTORIAL)
-            {
-                tutorialTaskCompleted.Invoke();
-            }
+        if (areaType == AreaType.TUTORIAL)
+        {
+            tutorialTaskCompleted.Invoke();
 
             Destroy(gameObject);
+
+            return;
+        }
+
+        if (areaType == AreaType.NORMAL)
+        {
+             _frisbeeGameManager.DestroyTarget(gameObject);
         }
     }
 }

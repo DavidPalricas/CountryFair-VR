@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 
@@ -83,6 +84,8 @@ public class FrisbeeCheatCodes : CheatCodes
             Debug.LogError("DogScoreArea Transform not assigned.");
             return;
         }
+
+        _cheatCodes = new string[] { "miss", "score", "dog" };
     }
 
     /// <summary>
@@ -100,7 +103,11 @@ public class FrisbeeCheatCodes : CheatCodes
                 break;
 
             case "score":
-                  ForceScorePoint();      
+                  ForceScorePoint(false);      
+                break;
+
+            case "dog":
+                ForceScorePoint(true);
                 break;
             default:
                 Debug.LogError("Invalid cheat code: " + cheatCode);
@@ -113,15 +120,30 @@ public class FrisbeeCheatCodes : CheatCodes
     /// Sets the frisbee as a child of the score area and triggers the scoring state.
     /// Only works if the frisbee is in the OnPlayerFront state and the score area is active.
     /// </summary>
-    private void ForceScorePoint()
-    {
-        _frisbeeTransform.parent = dogScoreAreaTransform;
-        _frisbeeTransform.localPosition = Vector3.zero;
+    private void ForceScorePoint(bool isDog)
+    {   
+        _frisbeeTransform.parent =  null;
+        _frisbeeTransform.localPosition = isDog ? dogScoreAreaTransform.position : GetExtraScoreAreaPosition();
         
         if (_frisbeeFSM.CurrentState == _frisbeePlayerFrontState && dogScoreAreaTransform.gameObject.activeSelf)
         {
             _frisbeeFSM.ChangeState("ForcedPoint");
             return;
         }
+    }
+
+
+    private Vector3 GetExtraScoreAreaPosition()
+    {
+        GameObject[] scoreAreas = GameObject.FindGameObjectsWithTag("ScoreArea").
+                                  Where(scoreArea => scoreArea != dogScoreAreaTransform.gameObject).ToArray();
+
+        if (scoreAreas.Length == 0)
+        {
+            Debug.LogError("No Extra ScoreArea objects found in the scene.");
+            return Vector3.zero;
+        }
+
+        return scoreAreas[Utils.RandomValueInRange(0, scoreAreas.Length)].transform.position;
     }
 }

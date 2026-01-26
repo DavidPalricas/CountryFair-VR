@@ -172,6 +172,15 @@ public class FrisbeeGameManager : MiniGameManager
 
         return scoreAreaPosition;
     }
+    
+
+    public override void DestroyTarget(GameObject target, GameObject targetPrefab = null)
+    {
+        _spawnedTargets.Remove(target);
+        Destroy(target);
+
+        UpdateTargetsProperties();
+    }
 
     private float GetPlayerDistanceToDog()
     {

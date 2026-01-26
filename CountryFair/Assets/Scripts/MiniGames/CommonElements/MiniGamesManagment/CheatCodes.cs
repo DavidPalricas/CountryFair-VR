@@ -16,7 +16,7 @@ public class CheatCodes : MonoBehaviour
     /// "throw" - Forces the frisbee to be thrown.
     /// "score" - Forces a score point to be registered.
     /// </summary>
-    protected readonly string[] _cheatCodes = new string[] { "miss", "score"};
+    protected string[] _cheatCodes = new string[] { "miss", "score"};
     
 
     protected virtual void Start()

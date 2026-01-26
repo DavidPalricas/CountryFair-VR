@@ -1009,13 +1009,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c54feeb03e1a0a48bb59380ce4db49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeGameManager
-  sessionScoreGoal: 50
+  targetsCount: 3
+  targetsPerLevel: 0.2
+  sessionScoreGoal: 100
   difficultyLevel: 0
   baseDogDistance: 5
   distanceIncrement: 2
   maxDogDistance: 14
-  baseTargetCount: 3
-  targetsPerLevel: 0.2
   movingRatioCurve:
     serializedVersion: 2
     m_Curve:
