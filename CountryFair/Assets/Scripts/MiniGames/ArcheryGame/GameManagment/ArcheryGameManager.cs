@@ -12,20 +12,19 @@ public class ArcheryGameManager : MiniGameManager
     [SerializeField] private Collider balloonSpawnArea;
 
     [Header("Balloons Prefabs")]
-    [SerializeField] private GameObject blueBalloonPrefab;
-    [SerializeField] private GameObject redBalloonPrefab;
-    [SerializeField] private GameObject yellowBalloonPrefab;
+    [SerializeField]
+     private GameObject blueBalloonPrefab;
+    [SerializeField] 
+    private GameObject redBalloonPrefab;
+    [SerializeField] 
+    private GameObject yellowBalloonPrefab;
 
-    [Header("1. Configuração de Spawn (Infinito)")]
-    [SerializeField] private int baseBalloonCount = 5;
-    [SerializeField] private float balloonsPerLevel = 0.5f;
+    [Header("Complexity Curves")]
+    [SerializeField] 
+    private AnimationCurve movingRatioCurve;
+    [SerializeField] 
+    private AnimationCurve transparencyRatioCurve;
 
-    [Header("2. Curvas de Complexidade")]
-    [SerializeField] private AnimationCurve movingRatioCurve;
-    [SerializeField] private AnimationCurve transparencyRatioCurve;
-
-    // Estado Interno
-    private readonly List<GameObject> _spawnedBalloons = new();
     private Dictionary<GameObject, int> balloonTypesCount;
     private GameObject _balloonPrefabToScore;
     
@@ -87,7 +86,7 @@ public class ArcheryGameManager : MiniGameManager
 
     protected override void ApplyDifficultySettings()
     {
-        _currentDesiredCount = Mathf.RoundToInt(baseBalloonCount + (difficultyLevel * balloonsPerLevel));
+        _currentDesiredCount = Mathf.RoundToInt(targetsCount + (difficultyLevel * targetsPerLevel));
 
         float saturationFactor = difficultyLevel / (difficultyLevel + 4f); 
         _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
@@ -96,28 +95,27 @@ public class ArcheryGameManager : MiniGameManager
         Debug.Log($"[Archery Stats] Total Ideal: {_currentDesiredCount} | Movimento: {_currentMovingRatio:P0}");
         
         SetBalloonColorToScore();
-        SyncBalloons(_currentDesiredCount);
+        SyncTargets(_currentDesiredCount);
     }
 
-    private void SyncBalloons(int desiredCount)
+    protected override void SyncTargets(int desiredCount)
     {
-        while (_spawnedBalloons.Count < desiredCount)
+        while (_spawnedTargets.Count < desiredCount)
         {
-            SpawnBalloon();
+            AddTarget();
         }
 
-        while (_spawnedBalloons.Count > desiredCount)
+        while (_spawnedTargets.Count > desiredCount)
         {
-            RemoveBalloon();
+            RemoveTarget();
         }
 
-        UpdateBalloonsProperties();
+        UpdateTargetsProperties();
     }
 
-    // Aceita um prefab opcional (Sua ideia)
-    private void SpawnBalloon(GameObject prefabToSpawn = null)
+    protected override void AddTarget(GameObject prefabToSpawn = null)
     {
-        Vector3 pos = GetRandomBalloonPosition();
+        Vector3 pos = GetRandomTargetPosition();
         
         // Se não forçado, deixa o algoritmo escolher o melhor para equilíbrio
         if (prefabToSpawn == null)
@@ -132,57 +130,56 @@ public class ArcheryGameManager : MiniGameManager
         
         balloonComponent.OriginalPrefab = prefabToSpawn;
             
-        _spawnedBalloons.Add(newBalloon);
+        _spawnedTargets.Add(newBalloon);
     }
 
-    private void RemoveBalloon()
+    protected override void RemoveTarget()
     {
-        if (_spawnedBalloons.Count > 0)
+        if (_spawnedTargets.Count > 0)
         {
-            GameObject target = _spawnedBalloons[0];
+            GameObject target = _spawnedTargets[0];
  
             BalloonArcheryGame balloonComponent = target.GetComponentInChildren<BalloonArcheryGame>();
 
-            DestroyBalloon(target, balloonComponent.OriginalPrefab);
+            DestroyTarget(target, balloonComponent.OriginalPrefab);
         }  
     }
 
-    public void DestroyBalloon(GameObject balloonToDestroy, GameObject balloonPrefab)
+    public override void DestroyTarget(GameObject target, GameObject targetPrefab)
     {   
-        balloonTypesCount[balloonPrefab] = Mathf.Max(0, balloonTypesCount[balloonPrefab] - 1);
+        balloonTypesCount[targetPrefab] = Mathf.Max(0, balloonTypesCount[targetPrefab] - 1);
         
 
-        Debug.Log("Previous Balloon Counts: " + _spawnedBalloons.Count);
-        _spawnedBalloons.Remove(balloonToDestroy);
+        Debug.Log("Previous Balloon Counts: " + _spawnedTargets.Count);
+        _spawnedTargets.Remove(target);
 
-       Debug.Log("After Balloon Counts: " + _spawnedBalloons.Count);
+       Debug.Log("After Balloon Counts: " + _spawnedTargets.Count);
 
-        Destroy(balloonToDestroy);
+        Destroy(target);
 
-        if (_spawnedBalloons.Count < _currentDesiredCount)
+        if (_spawnedTargets.Count < _currentDesiredCount)
         {
             // Se não houver NENHUM da cor alvo, forçamos a cor alvo.
             if (balloonTypesCount[_balloonPrefabToScore] == 0)
             {
-                SpawnBalloon(_balloonPrefabToScore);
+                AddTarget(_balloonPrefabToScore);
             }
             else
             {
-                SpawnBalloon();
+                AddTarget();
             }
             
-            // Importante: Aplicar propriedades ao novo balão para ele não ficar estático
-            UpdateBalloonsProperties();
+            UpdateTargetsProperties();
         }
     }
 
-    private void UpdateBalloonsProperties()
+    protected override void UpdateTargetsProperties()
     {
-        int total = _spawnedBalloons.Count;
+        int total = _spawnedTargets.Count;
         int targetMovingCount = Mathf.RoundToInt(total * _currentMovingRatio);
         int targetTransparentCount = Mathf.RoundToInt(total * _currentTransparencyRatio);
 
-        List<GameObject> shuffled = _spawnedBalloons.OrderBy(x => Random.value).ToList();
+        List<GameObject> shuffled = _spawnedTargets.OrderBy(x => Random.value).ToList();
 
         for (int i = 0; i < total; i++)
         {    
@@ -193,7 +190,7 @@ public class ArcheryGameManager : MiniGameManager
         }
     }
 
-    private Vector3 GetRandomBalloonPosition()
+    protected override Vector3 GetRandomTargetPosition()
     {
         Bounds bounds = balloonSpawnArea.bounds;
         
@@ -217,7 +214,7 @@ public class ArcheryGameManager : MiniGameManager
             }
         }
 
-        return !hitBalloon ? candidatePos : GetRandomBalloonPosition();
+        return !hitBalloon ? candidatePos : GetRandomTargetPosition();
     }
 
     private void SetBalloonColorToScore()
@@ -249,7 +246,7 @@ public class ArcheryGameManager : MiniGameManager
         PlayerPrefs.SetString("BalloonColorToScore", colorToScore); 
     }
 
-    protected GameObject GetBalloonType()
+    private GameObject GetBalloonType()
     {   
         int minCount = balloonTypesCount.Min(typeCount => typeCount.Value);
 

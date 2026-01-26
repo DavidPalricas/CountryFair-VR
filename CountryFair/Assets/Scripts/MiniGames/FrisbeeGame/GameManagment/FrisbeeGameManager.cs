@@ -4,30 +4,25 @@ using UnityEngine;
 
 public class FrisbeeGameManager : MiniGameManager
 { 
-    [Header("1. Configuração Física (Segurança)")]
-    [Tooltip("Distância onde o cão começa (m). Calibra-se no Start.")]
-    public float baseDogDistance = 5f;       
+    [Header("Dog Settings")]
+    [SerializeField]
+    private float baseDogDistance = 5f;       
     
-    [Tooltip("Quanto o cão recua por nível (m).")]
-    public float distanceIncrement = 2.5f;   
+    [SerializeField]
+    private float distanceIncrement = 2.5f;   
     
-    [Tooltip("Limite MÁXIMO físico. O cão nunca passa daqui para não lesionar o paciente.")]
-    public float maxDogDistance = 20f;       
+    [SerializeField]
+    private float maxDogDistance = 20f;       
 
-    [Header("2. Configuração Cognitiva (Infinita)")]
-    public int baseTargetCount = 3;
-    
-    [Tooltip("Quantos alvos novos ganha por nível (Ex: 0.2 = 1 alvo a cada 5 níveis).")]
-    public float targetsPerLevel = 1.5f;    
+    [Header("Complexity Curves")]
+    [SerializeField]
+    private AnimationCurve movingRatioCurve;   
+    [SerializeField]
+    private AnimationCurve visibilityRatioCurve; 
 
-    [Header("3. Curvas de Complexidade (0 a 1)")]
-    [Tooltip("Define a % de alvos que se movem baseada na 'Saturação' do nível.")]
-    public AnimationCurve movingRatioCurve;     
-    [Tooltip("Define a % de alvos que piscam/somem.")]
-    public AnimationCurve visibilityRatioCurve; 
-
-    [Header("Referências")]
-    [SerializeField] private GameObject scoreAreaPrefab;
+    [Header("Game Specific References")]
+    [SerializeField] 
+    private GameObject scoreAreaPrefab;
     [SerializeField] 
     private Collider dogAreaCollider;
 
@@ -36,7 +31,6 @@ public class FrisbeeGameManager : MiniGameManager
 
     // Estado Interno
     private Transform _playerTransform;
-    private readonly List<GameObject> _scoreAreas = new();
     
     // Variáveis para spawn
     private float _currentMovingRatio;
@@ -74,8 +68,6 @@ public class FrisbeeGameManager : MiniGameManager
         ApplyDifficultySettings();
     }
 
-
-
     public override void ChangeDifficulty(bool isToIncreaseDiff)
     {
         difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
@@ -92,7 +84,7 @@ public class FrisbeeGameManager : MiniGameManager
         
         PlayerPrefs.SetFloat("DogDistance", finalDogDistance);
 
-        int finalTargetCount = Mathf.RoundToInt(baseTargetCount + (difficultyLevel * targetsPerLevel));
+        int finalTargetCount = Mathf.RoundToInt(targetsCount + (difficultyLevel * targetsPerLevel));
 
         float saturationFactor = difficultyLevel / (difficultyLevel + 4f);
 
@@ -101,48 +93,48 @@ public class FrisbeeGameManager : MiniGameManager
 
         Debug.Log($"[DDA] Level {difficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {finalTargetCount} | Complexity: {saturationFactor:P0}");
 
-        SyncScoreAreas(finalTargetCount);
+        SyncTargets(finalTargetCount);
     }
 
-    private void SyncScoreAreas(int desiredCount)
+    protected override void SyncTargets(int desiredCount)
     {
-        while (_scoreAreas.Count < desiredCount)
+        while (_spawnedTargets.Count < desiredCount)
         {
-            AddScoreArea();
+            AddTarget();
         }
         
-        while (_scoreAreas.Count > desiredCount)
+        while (_spawnedTargets.Count > desiredCount)
         {
-            RemoveScoreArea();
+            RemoveTarget();
         }
 
         UpdateTargetsProperties();
     }
 
-    private void AddScoreArea()
+    protected override void AddTarget(GameObject prefabToSpawn = null)
     {
-        Vector3 pos = GetScoreAreaPosition();
+        Vector3 pos = GetRandomTargetPosition();
         GameObject newScoreArea = Instantiate(scoreAreaPrefab, pos, Quaternion.identity);
-        _scoreAreas.Add(newScoreArea);
+        _spawnedTargets.Add(newScoreArea);
     }
 
-    private void RemoveScoreArea()
+    protected override void RemoveTarget()
     {
-        if (_scoreAreas.Count > 0)
+        if (_spawnedTargets.Count > 0)
         {
-            GameObject target = _scoreAreas[0];
-            _scoreAreas.RemoveAt(0);
+            GameObject target = _spawnedTargets[0];
+            _spawnedTargets.RemoveAt(0);
             Destroy(target);
         }
     }
 
-    private void UpdateTargetsProperties()
+    protected override void UpdateTargetsProperties()
     {
-        int total = _scoreAreas.Count;
+        int total = _spawnedTargets.Count;
         int targetMovingCount = Mathf.RoundToInt(total * _currentMovingRatio);
         int targetVisibleCount = Mathf.RoundToInt(total * _currentVisibilityRatio);
 
-        List<GameObject> shuffled = _scoreAreas.OrderBy(x => Random.value).ToList();
+        List<GameObject> shuffled = _spawnedTargets.OrderBy(x => Random.value).ToList();
 
         for (int i = 0; i < total; i++)
         {   
@@ -152,12 +144,10 @@ public class FrisbeeGameManager : MiniGameManager
 
                 scoreArea.AdjustVisibility(i < targetVisibleCount); 
             }
-           
-       
         }
     }
 
-    private Vector3 GetScoreAreaPosition()
+    protected override Vector3 GetRandomTargetPosition()
     {
         float currentDogDist = PlayerPrefs.GetFloat("DogDistance", baseDogDistance);
         
@@ -173,11 +163,11 @@ public class FrisbeeGameManager : MiniGameManager
         
         scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
 
-        bool isTooClose = _scoreAreas.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS && dogScoreAreaCollider.bounds.Contains(scoreAreaPosition));
+        bool isTooClose = _spawnedTargets.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS && dogScoreAreaCollider.bounds.Contains(scoreAreaPosition));
 
         if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || isTooClose)
         {
-            return GetScoreAreaPosition(); 
+            return GetRandomTargetPosition(); 
         }
 
         return scoreAreaPosition;

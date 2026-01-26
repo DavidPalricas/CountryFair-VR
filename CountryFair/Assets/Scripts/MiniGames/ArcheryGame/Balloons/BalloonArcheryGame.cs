@@ -252,7 +252,7 @@ public class BalloonArcheryGame : MonoBehaviour
             return;
         }
 
-        _archeryGameManager.DestroyBalloon(transform.parent.gameObject, OriginalPrefab);
+        _archeryGameManager.DestroyTarget(transform.parent.gameObject, OriginalPrefab);
     }
 
     public int GetScoreValue()

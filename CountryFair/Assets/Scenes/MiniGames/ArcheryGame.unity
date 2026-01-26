@@ -461,6 +461,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125f3715004ba694e958d7e76a8ab923, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryGameManager
+  targetsCount: 5
+  targetsPerLevel: 0.5
   sessionScoreGoal: 2
   difficultyLevel: 0
   balloonColorToScoreText: {fileID: 1730009024}
@@ -468,8 +470,6 @@ MonoBehaviour:
   blueBalloonPrefab: {fileID: 3396820265375727783, guid: 8e9d91feadc8e4e9d816ee298dae3e26, type: 3}
   redBalloonPrefab: {fileID: 3396820265375727783, guid: 6bc1fa59f754e43eca1ede6a24d1fe8c, type: 3}
   yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 2f216f7780c07414e8283e089d6d69b3, type: 3}
-  baseBalloonCount: 5
-  balloonsPerLevel: 0.5
   movingRatioCurve:
     serializedVersion: 2
     m_Curve:
@@ -1985,8 +1985,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4224208, b: 0.25095728, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42242217, b: 0.25095865, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4224206, b: 0.25095707, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42242077, b: 0.25095725, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
