@@ -1,11 +1,15 @@
 using UnityEngine;
 
+
 /// <summary>
 /// Manages cheat code detection and activation for the Frisbee mini-game.
 /// Listens for keyboard input and triggers specific actions when valid cheat codes are entered.
 /// </summary>
 public class FrisbeeCheatCodes : CheatCodes
 {   
+    [SerializeField]
+    private Transform dogScoreAreaTransform;
+
     /// <summary>
     /// Reference to the frisbee's OnPlayerFront state component.
     /// </summary>
@@ -15,11 +19,6 @@ public class FrisbeeCheatCodes : CheatCodes
     /// Reference to the frisbee's Landed state component.
     /// </summary>
     private Landed _frisbeeLandedState = null;
-
-    /// <summary>
-    /// Transform of the score area where points are registered.
-    /// </summary>
-     private Transform _scoreAreaTransform = null;
 
     /// <summary>
     /// Transform of the frisbee game object.
@@ -78,16 +77,12 @@ public class FrisbeeCheatCodes : CheatCodes
             return;
         }
 
-        GameObject scoreArea = GameObject.FindGameObjectWithTag("ScoreArea");
-
-
-        if (scoreArea == null)
+     
+        if (dogScoreAreaTransform == null)
         {
-            Debug.LogError("ScoreArea GameObject not found.");
+            Debug.LogError("DogScoreArea Transform not assigned.");
             return;
         }
-
-        _scoreAreaTransform = scoreArea.transform;
     }
 
     /// <summary>
@@ -120,10 +115,10 @@ public class FrisbeeCheatCodes : CheatCodes
     /// </summary>
     private void ForceScorePoint()
     {
-        _frisbeeTransform.parent = _scoreAreaTransform;
+        _frisbeeTransform.parent = dogScoreAreaTransform;
         _frisbeeTransform.localPosition = Vector3.zero;
         
-        if (_frisbeeFSM.CurrentState == _frisbeePlayerFrontState && _scoreAreaTransform.gameObject.activeSelf)
+        if (_frisbeeFSM.CurrentState == _frisbeePlayerFrontState && dogScoreAreaTransform.gameObject.activeSelf)
         {
             _frisbeeFSM.ChangeState("ForcedPoint");
             return;

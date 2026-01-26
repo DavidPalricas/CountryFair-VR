@@ -186,6 +186,13 @@ public class FrisbeeGameManager : MiniGameManager
     private float GetPlayerDistanceToDog()
     {
         GameObject dog = GameObject.FindGameObjectWithTag("Dog");
-        return dog != null ? Vector3.Distance(_playerTransform.position, dog.transform.position) : 0f;
+
+        if (dog == null)
+        {
+            Debug.LogError("Dog not found in the scene.");
+            return 0f;
+        }
+
+        return Vector3.Distance(_playerTransform.position, dog.transform.position);
     }
 }
