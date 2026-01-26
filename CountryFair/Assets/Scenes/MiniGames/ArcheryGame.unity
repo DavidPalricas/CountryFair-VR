@@ -1985,8 +1985,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.42241064, b: 0.25094712, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.4224149, b: 0.25095138, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4224075, b: 0.250944, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42240852, b: 0.250945, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -2488,11 +2488,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1987086193}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6414094022825278280, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_Name
       value: CarnyWise
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: changeDifficulty.m_PersistentCalls.m_Calls.Array.size
@@ -2536,27 +2540,27 @@ PrefabInstance:
       objectReference: {fileID: 2135016405}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.41666666
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.41666666
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.41666666
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -400.14987
+      value: -0.3597293
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -224.09418
+      value: 2.1739502
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -9.69621
+      value: -23.270905
       objectReference: {fileID: 0}
     - target: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2591,18 +2595,13 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
---- !u!4 &620701818 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8878798017660467077, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
-  m_PrefabInstance: {fileID: 620701817}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &620701819 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7732196806524324496, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
   m_PrefabInstance: {fileID: 620701817}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 561676bcf7a1edb4dbe02673e70077fa, type: 3}
   m_Name: 
@@ -7751,7 +7750,6 @@ RectTransform:
   m_Children:
   - {fileID: 1730009023}
   - {fileID: 114215625}
-  - {fileID: 620701818}
   m_Father: {fileID: 1370255372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8084,10 +8082,14 @@ PrefabInstance:
       objectReference: {fileID: 1370255371}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
@@ -8099,6 +8101,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1754926365}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 620701819}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: TutorialCompleted
       objectReference: {fileID: 0}
@@ -8107,12 +8117,28 @@ PrefabInstance:
       value: set_IsTutorialActive
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: set_enabled
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: ArcheryGameManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: Arrow, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: CarnyWise, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194829019654467593, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9124,3 +9150,4 @@ SceneRoots:
   - {fileID: 1844768436}
   - {fileID: 1370255372}
   - {fileID: 2057617483}
+  - {fileID: 620701817}
