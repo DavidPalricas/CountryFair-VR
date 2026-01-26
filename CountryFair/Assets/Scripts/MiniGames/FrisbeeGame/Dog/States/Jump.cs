@@ -42,7 +42,7 @@ public class Jump: DogState
         {   
             animator.SetBool("StopAnim", false);
             animator.SetFloat("Speed", 1f);
-            fSM.ChangeState("FrisbeeLanded");
+            fSM.ChangeState("CatchFrisbee");
         });
     }
 

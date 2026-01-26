@@ -28,7 +28,11 @@ public class FrisbeeGameManager : MiniGameManager
 
     [Header("Referências")]
     [SerializeField] private GameObject scoreAreaPrefab;
-    [SerializeField] private Collider dogAreaCollider;
+    [SerializeField] 
+    private Collider dogAreaCollider;
+
+    [SerializeField]
+    private Collider dogScoreAreaCollider;
 
     // Estado Interno
     private Transform _playerTransform;
@@ -41,9 +45,11 @@ public class FrisbeeGameManager : MiniGameManager
     protected override void Awake()
     {
         base.Awake();
-        // Curvas padrão de segurança (Logísticas)
-        if (movingRatioCurve.length == 0) movingRatioCurve = AnimationCurve.EaseInOut(0, 0, 1, 0.8f);
-        if (visibilityRatioCurve.length == 0) visibilityRatioCurve = AnimationCurve.EaseInOut(0, 0, 1, 0.5f);
+
+        if (movingRatioCurve.length == 0 || visibilityRatioCurve.length == 0)
+        {
+            Debug.LogError("One or more animation curves are not assigned in the inspector.");
+        }
     }
 
     public override void TutorialCompleted()
@@ -54,16 +60,17 @@ public class FrisbeeGameManager : MiniGameManager
 
         if (_playerTransform == null)
         {
-            Debug.LogError("CRÍTICO: Player não encontrado. O sistema de reabilitação não pode iniciar.");
+            Debug.LogError("Player not found. The rehabilitation system cannot start.");
             return;
         }
 
-        // CALIBRAÇÃO INICIAL:
-        // Assume que a distância inicial definida na cena é a "base" confortável para este paciente.
+    
         float initialDist = GetPlayerDistanceToDog();
-        if (initialDist > 0) baseDogDistance = initialDist;
+        if (initialDist > 0)
+        {
+            baseDogDistance = initialDist;
+        } 
 
-        // Aplica o nível 0
         ApplyDifficultySettings();
     }
 
@@ -72,7 +79,7 @@ public class FrisbeeGameManager : MiniGameManager
     public override void ChangeDifficulty(bool isToIncreaseDiff)
     {
         difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
-        Debug.Log($"<color=blue>DDA:</color> Ajustando dificuldade para Nível {difficultyLevel} ({(isToIncreaseDiff ? "Subiu" : "Desceu")})");
+        Debug.Log($"<color=blue>DDA:</color> Adjusting difficulty to Level {difficultyLevel} ({(isToIncreaseDiff ? "Increased" : "Decreased")})");
         ApplyDifficultySettings();
     }
 
@@ -80,51 +87,36 @@ public class FrisbeeGameManager : MiniGameManager
 
     protected override void ApplyDifficultySettings()
     {
-        // 1. Distância (Com Teto de Segurança)
         float rawDistance = baseDogDistance + (difficultyLevel * distanceIncrement);
         float finalDogDistance = Mathf.Min(rawDistance, maxDogDistance);
         
-        // Salva para a IA do Cão ler
         PlayerPrefs.SetFloat("DogDistance", finalDogDistance);
 
-        // 2. Quantidade de Alvos (Sem Teto)
         int finalTargetCount = Mathf.RoundToInt(baseTargetCount + (difficultyLevel * targetsPerLevel));
 
-        // 3. Fator de Complexidade (Saturação)
-        // Converte o nível infinito (0 a 1000) num valor de 0.0 a 1.0 que sobe rápido e desacelera.
-        // Fórmula: x / (x + k). Ajuste k (20f) para mudar a inclinação da curva.
         float saturationFactor = difficultyLevel / (difficultyLevel + 4f);
 
         _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
         _currentVisibilityRatio = visibilityRatioCurve.Evaluate(saturationFactor);
 
-        Debug.Log($"[DDA] Nível {difficultyLevel} | Dist: {finalDogDistance:F1}m | Alvos: {finalTargetCount} | Complexidade: {saturationFactor:P0}");
+        Debug.Log($"[DDA] Level {difficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {finalTargetCount} | Complexity: {saturationFactor:P0}");
 
         SyncScoreAreas(finalTargetCount);
     }
 
-    // --- GESTÃO DOS OBJETOS ---
-
     private void SyncScoreAreas(int desiredCount)
     {
-        // Adiciona se faltar
         while (_scoreAreas.Count < desiredCount)
         {
             AddScoreArea();
         }
         
-        // Remove se sobrar (Remove o mais antigo/primeiro da lista)
         while (_scoreAreas.Count > desiredCount)
         {
             RemoveScoreArea();
         }
 
-        // Atualiza propriedades de TODOS (mesmo os antigos) para a nova dificuldade
         UpdateTargetsProperties();
-        
-        // Opcional: Reposicionar todos para o novo padrão de ângulo?
-        // Para reabilitação, talvez seja melhor reposicionar apenas quando o paciente acerta, 
-        // mas aqui vamos manter a posição até serem reciclados para não "teletransportar" na cara do paciente.
     }
 
     private void AddScoreArea()
@@ -150,20 +142,20 @@ public class FrisbeeGameManager : MiniGameManager
         int targetMovingCount = Mathf.RoundToInt(total * _currentMovingRatio);
         int targetVisibleCount = Mathf.RoundToInt(total * _currentVisibilityRatio);
 
-        // Embaralha para aleatoriedade
-        var shuffled = _scoreAreas.OrderBy(x => Random.value).ToList();
+        List<GameObject> shuffled = _scoreAreas.OrderBy(x => Random.value).ToList();
 
         for (int i = 0; i < total; i++)
         {   
-            if (!shuffled[i].TryGetComponent<ScoreAreaProperties>(out var scoreArea)) continue;
-           
-            scoreArea.AdjustMovement( i < targetMovingCount);
+            if (shuffled[i].TryGetComponent<ScoreAreaProperties>(out var scoreArea))
+            {
+                scoreArea.AdjustMovement( i < targetMovingCount);
 
-            scoreArea.AdjustVisibility(i < targetVisibleCount); 
+                scoreArea.AdjustVisibility(i < targetVisibleCount); 
+            }
+           
+       
         }
     }
-
-    // --- LÓGICA DE POSICIONAMENTO CLÍNICO (O CONE) ---
 
     private Vector3 GetScoreAreaPosition()
     {
@@ -181,7 +173,7 @@ public class FrisbeeGameManager : MiniGameManager
         
         scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
 
-        bool isTooClose = _scoreAreas.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS);
+        bool isTooClose = _scoreAreas.Any(scoreArea => Vector3.Distance(scoreArea.transform.position, scoreAreaPosition) < MIN_DISTANCE_BETWEEN_AREAS && dogScoreAreaCollider.bounds.Contains(scoreAreaPosition));
 
         if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || isTooClose)
         {

@@ -124,7 +124,7 @@ public class DogIdle : DogState
 
         animator.SetBool("StopAnim", true);
 
-        fSM.ChangeState("Jump");
+        fSM.ChangeState("FrisbeeLanded");
     }
 
     /// <summary>

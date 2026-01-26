@@ -137,8 +137,6 @@ public class OnPlayerFront : FrisbeeState
 
         ChangeMaterialsOpacity();
 
-        _rigidbody.isKinematic = true;
-
         PlayerHoldingFrisbee();
    }
 

@@ -8,7 +8,7 @@ public class FollowPlayerHead : DisplayInPlayerFront
     [Header("Smoothing & Deadzone")]
     [SerializeField] private float smoothTime = 0.3f; // Tempo para alcançar o alvo (maior = mais lento/suave)
    
-    private static float _movementThreshold = 0.5f; // Distância mínima para ativar o movimento
+    private readonly static float _movementThreshold = 0.5f; // Distância mínima para ativar o movimento
     [SerializeField] private bool lockRotationToHead = true;
 
     private Vector3 _currentVelocity;
@@ -55,10 +55,14 @@ public class FollowPlayerHead : DisplayInPlayerFront
 
         // Rotação: Geralmente queres que o UI olhe para o jogador
         if (lockRotationToHead)
-        {
+        {    
+
+            transform.localRotation  = Quaternion.identity;
+            /*
             // Rotação suave também é recomendada para evitar enjoo
             Quaternion targetRot = Quaternion.LookRotation(transform.position - centerEyeTransform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 5f);
+            */
         }
     }
 

@@ -73,27 +73,21 @@ public class Landed: FrisbeeState
 
         bool frisbeeOnScoreArea = FrisbeeOnScoreArea();
 
-        if (TutorialActive)
-        {   
-            fSM.ChangeState("TutorialActive");
-            return;
-        }
+        if (!TutorialActive)
+        {
+            if (frisbeeOnScoreArea)
+            {   
+                // This is event must be ivoked after the tutorial
+                playerScored.Invoke(_scorePoints);
+            }
+            else
+            {     
+            playerMissed.Invoke();
+            }
 
-
-        if (frisbeeOnScoreArea)
-        {   
-            // This is event must be ivoked after the tutorial
-            playerScored.Invoke(_scorePoints);
+            frisbeeLanded.Invoke();
         }
-        else
-        {     
-          playerMissed.Invoke();
-        }
-
-        frisbeeLanded.Invoke();
     }
-
-
 
     /// <summary>
     /// Called every frame while in the Landed state.
@@ -102,6 +96,21 @@ public class Landed: FrisbeeState
     public override void Execute()
     {
          base.Execute();
+    }
+
+
+    private void LateUpdate()
+    {  
+        /* This transition is handled here instead of in the Enter method to allow the physics engine to update properly.
+           Processing it immediately in Enter could cause multiple state transitions (OnMovement -> Landed -> OnPlayerFront)
+           to occur within a single frame, potentially bypassing necessary logic.
+        */  
+
+        if (fSM.CurrentState == this && TutorialActive)
+        {
+            fSM.ChangeState("TutorialActive");
+            return;
+        }
     }
 
     /// <summary>

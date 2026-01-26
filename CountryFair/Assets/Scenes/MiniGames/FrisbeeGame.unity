@@ -1075,6 +1075,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   scoreAreaPrefab: {fileID: 7792656481613747585, guid: 61ad24bfc49b55947a152e9c3571bf99, type: 3}
   dogAreaCollider: {fileID: 95852565}
+  dogScoreAreaCollider: {fileID: 8229344247421322367}
 --- !u!4 &147053873
 Transform:
   m_ObjectHideFlags: 0
@@ -6269,7 +6270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowPlayerHead
   centerEyeTransform: {fileID: 2099040610}
   distanceFromPlayer: 0.8
-  heightOffset: -0.6
+  heightOffset: -0.4
   horizontalOffset: 0
   smoothTime: 0.3
   lockRotationToHead: 1
@@ -10245,9 +10246,13 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
-      propertyPath: transitions.Array.data[4].to
+      propertyPath: transitions.Array.data[3].to
       value: 
       objectReference: {fileID: 8229344247421322365}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[4].to
+      value: 
+      objectReference: {fileID: 8229344247421322368}
     - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: transitions.Array.data[5].to
       value: 
@@ -10257,12 +10262,16 @@ PrefabInstance:
       value: FrisbeeGiven
       objectReference: {fileID: 0}
     - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
-      propertyPath: transitions.Array.data[4].from
+      propertyPath: transitions.Array.data[3].from
       value: 
       objectReference: {fileID: 4335083379616336532}
     - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+      propertyPath: transitions.Array.data[4].from
+      value: 
+      objectReference: {fileID: 8229344247421322365}
+    - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: transitions.Array.data[4].name
-      value: Jump
+      value: Catch Frisbee
       objectReference: {fileID: 0}
     - target: {fileID: 1547234363429646910, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
       propertyPath: transitions.Array.data[5].from
@@ -10583,6 +10592,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9560c5b32f5ba4b980bedea200516d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoToNewPosition
+--- !u!65 &8229344247421322367 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 1850659961439078584, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+  m_PrefabInstance: {fileID: 8229344247421322364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8229344247421322368 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2793601278903920947, guid: 9331c9cb940cd224b9264874b2583091, type: 3}
+  m_PrefabInstance: {fileID: 8229344247421322364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b754fa109214b44badd62ed0149c704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CatchFrisbee
 --- !u!1001 &9022235213021595668
 PrefabInstance:
   m_ObjectHideFlags: 0

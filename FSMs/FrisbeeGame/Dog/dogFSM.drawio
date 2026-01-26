@@ -1,28 +1,17 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.1.0">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0" version="29.3.4">
   <diagram name="Page-1" id="itZTwmWDZ6zW11r-xoa-">
-    <mxGraphModel dx="1427" dy="1598" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1625" dy="1371" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="wgV-nxuEOwkFHzoWTz88-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Idle" vertex="1">
-          <mxGeometry height="80" width="120" x="-20" y="140" as="geometry" />
+          <mxGeometry height="80" width="120" x="-30" y="140" as="geometry" />
         </mxCell>
         <mxCell id="wgV-nxuEOwkFHzoWTz88-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Give Frisbee to Player" vertex="1">
-          <mxGeometry height="80" width="120" x="430" y="140" as="geometry" />
+          <mxGeometry height="80" width="120" x="232" y="-30" as="geometry" />
         </mxCell>
-        <mxCell id="wgV-nxuEOwkFHzoWTz88-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;div&gt;Go To New Target&lt;/div&gt;" vertex="1">
-          <mxGeometry height="80" width="120" x="210" y="140" as="geometry" />
-        </mxCell>
-        <mxCell id="wgV-nxuEOwkFHzoWTz88-4" edge="1" parent="1" source="wgV-nxuEOwkFHzoWTz88-1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" target="7Jr8dRMbmzM1DdbHhbPv-3" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="190" y="290" as="sourcePoint" />
-            <mxPoint x="240" y="240" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="wgV-nxuEOwkFHzoWTz88-7" connectable="0" parent="wgV-nxuEOwkFHzoWTz88-4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Frisbee Landed" vertex="1">
-          <mxGeometry relative="1" x="-0.1467" as="geometry">
-            <mxPoint x="-35" y="-30" as="offset" />
-          </mxGeometry>
+        <mxCell id="wgV-nxuEOwkFHzoWTz88-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;div&gt;Go To Target&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="232" y="140" as="geometry" />
         </mxCell>
         <mxCell id="wgV-nxuEOwkFHzoWTz88-5" edge="1" parent="1" source="wgV-nxuEOwkFHzoWTz88-3" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="wgV-nxuEOwkFHzoWTz88-1" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
@@ -30,19 +19,21 @@
             <mxPoint x="320" y="290" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="wgV-nxuEOwkFHzoWTz88-6" edge="1" parent="1" source="wgV-nxuEOwkFHzoWTz88-2" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="wgV-nxuEOwkFHzoWTz88-3" value="">
+        <mxCell id="wgV-nxuEOwkFHzoWTz88-6" edge="1" parent="1" source="wgV-nxuEOwkFHzoWTz88-2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="wgV-nxuEOwkFHzoWTz88-3" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
             <mxPoint x="330" y="280" as="sourcePoint" />
             <mxPoint x="428" y="382" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="wgV-nxuEOwkFHzoWTz88-8" connectable="0" parent="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Player Scored" vertex="1">
-          <mxGeometry x="380" y="160" as="geometry" />
+        <mxCell id="wgV-nxuEOwkFHzoWTz88-8" connectable="0" parent="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="FrisbeeGiven" vertex="1">
+          <mxGeometry x="340" y="90" as="geometry">
+            <mxPoint x="8" y="-3" as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="wgV-nxuEOwkFHzoWTz88-9" connectable="0" parent="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Position Reached" vertex="1">
           <mxGeometry x="160" y="150" as="geometry" />
         </mxCell>
-        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-1" edge="1" parent="1" source="7Jr8dRMbmzM1DdbHhbPv-3" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.522;entryY=0.017;entryDx=0;entryDy=0;entryPerimeter=0;" target="wgV-nxuEOwkFHzoWTz88-2" value="">
+        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-1" edge="1" parent="1" source="7Jr8dRMbmzM1DdbHhbPv-3" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.522;entryY=0.017;entryDx=0;entryDy=0;entryPerimeter=0;" target="wgV-nxuEOwkFHzoWTz88-2" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
             <mxPoint x="350" y="60" as="sourcePoint" />
             <mxPoint x="500" y="60" as="targetPoint" />
@@ -50,31 +41,35 @@
         </mxCell>
         <mxCell id="7Jr8dRMbmzM1DdbHhbPv-2" connectable="0" parent="7Jr8dRMbmzM1DdbHhbPv-1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Frisbee Caught" vertex="1">
           <mxGeometry relative="1" x="-0.1467" as="geometry">
-            <mxPoint x="56" y="-20" as="offset" />
+            <mxPoint x="59" y="-2" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="7Jr8dRMbmzM1DdbHhbPv-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Catch Frisbee" vertex="1">
-          <mxGeometry height="80" width="120" x="232" y="-10" as="geometry" />
+          <mxGeometry height="80" width="120" x="232" y="-230" as="geometry" />
         </mxCell>
-        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-4" parent="1" style="text;whiteSpace=wrap;html=1;" value="&lt;div&gt;Player Missed&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="40" width="110" x="440" y="290" as="geometry" />
+        <mxCell id="3fqbUO3Qnwr5klw3VJle-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Jump" vertex="1">
+          <mxGeometry height="80" width="120" x="-30" y="-230" as="geometry" />
         </mxCell>
-        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-5" edge="1" parent="1" source="wgV-nxuEOwkFHzoWTz88-2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="7Jr8dRMbmzM1DdbHhbPv-6" value="">
+        <mxCell id="3fqbUO3Qnwr5klw3VJle-3" edge="1" parent="1" source="wgV-nxuEOwkFHzoWTz88-1" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="3fqbUO3Qnwr5klw3VJle-2" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="496" y="300" as="sourcePoint" />
-            <mxPoint x="400" y="430" as="targetPoint" />
+            <mxPoint x="260" y="174" as="sourcePoint" />
+            <mxPoint x="428" y="80" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-6" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;div&gt;Go To Previous Target&lt;/div&gt;" vertex="1">
-          <mxGeometry height="80" width="120" x="210" y="300" as="geometry" />
+        <mxCell id="3fqbUO3Qnwr5klw3VJle-4" connectable="0" parent="3fqbUO3Qnwr5klw3VJle-3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Frisbee Landed" vertex="1">
+          <mxGeometry relative="1" x="-0.1467" as="geometry">
+            <mxPoint x="-60" y="-30" as="offset" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-7" connectable="0" parent="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Position Reached" vertex="1">
-          <mxGeometry x="90" y="310" as="geometry" />
-        </mxCell>
-        <mxCell id="7Jr8dRMbmzM1DdbHhbPv-8" edge="1" parent="1" source="7Jr8dRMbmzM1DdbHhbPv-6" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="wgV-nxuEOwkFHzoWTz88-1" value="">
+        <mxCell id="3fqbUO3Qnwr5klw3VJle-5" edge="1" parent="1" source="3fqbUO3Qnwr5klw3VJle-2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="7Jr8dRMbmzM1DdbHhbPv-3" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="130" y="325" as="sourcePoint" />
-            <mxPoint y="535" as="targetPoint" />
+            <mxPoint x="160" y="170" as="sourcePoint" />
+            <mxPoint x="269" y="-70" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3fqbUO3Qnwr5klw3VJle-6" connectable="0" parent="3fqbUO3Qnwr5klw3VJle-5" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Catch Frisbee" vertex="1">
+          <mxGeometry relative="1" x="-0.1467" as="geometry">
+            <mxPoint x="9" y="-31" as="offset" />
           </mxGeometry>
         </mxCell>
       </root>
