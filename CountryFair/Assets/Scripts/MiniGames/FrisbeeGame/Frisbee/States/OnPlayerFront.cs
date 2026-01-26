@@ -354,7 +354,9 @@ public class OnPlayerFront : FrisbeeState
     {
         transform.parent = _originalParent;
 
-        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        transform.localRotation = Quaternion.identity;
+
+        // transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
     /// <summary>

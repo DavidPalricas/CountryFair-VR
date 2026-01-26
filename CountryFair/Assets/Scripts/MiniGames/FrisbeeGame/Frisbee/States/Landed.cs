@@ -86,7 +86,11 @@ public class Landed: FrisbeeState
             }
 
             frisbeeLanded.Invoke();
+
+            return;
         }
+
+        fSM.ChangeState("TutorialActive");
     }
 
     /// <summary>

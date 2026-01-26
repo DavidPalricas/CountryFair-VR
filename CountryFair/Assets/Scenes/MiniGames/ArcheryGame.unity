@@ -463,7 +463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryGameManager
   targetsCount: 5
   targetsPerLevel: 0.5
-  sessionScoreGoal: 2
+  sessionScoreGoal: 50
   difficultyLevel: 0
   balloonColorToScoreText: {fileID: 1730009024}
   balloonSpawnArea: {fileID: 925036648}
@@ -1985,8 +1985,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4224206, b: 0.25095707, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42242077, b: 0.25095725, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.42241636, b: 0.25095284, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42242056, b: 0.25095704, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -6223,8 +6223,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -421.4, y: -49.5}
-  m_SizeDelta: {x: 600, y: 50}
+  m_AnchoredPosition: {x: -403.5, y: -49.5}
+  m_SizeDelta: {x: 800, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1730009024
 MonoBehaviour:
@@ -6246,7 +6246,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Cor Correta:'
+  m_text: 'Cor para fazer pontos: Vermelho'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
   m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
@@ -7749,8 +7749,8 @@ RectTransform:
   m_LocalScale: {x: 2.4, y: 2.4, z: 2.4}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 114215625}
   - {fileID: 1730009023}
+  - {fileID: 114215625}
   - {fileID: 620701818}
   m_Father: {fileID: 1370255372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

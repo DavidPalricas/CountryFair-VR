@@ -40,6 +40,8 @@ using UnityEngine.AI;
 
     protected static Vector3 _currentTargetPos;
 
+    protected Transform _frisbeeTransform;
+
     /// <summary>
     /// Initializes the dog state by setting up state properties and configuring the NavMeshAgent.
     /// </summary>
@@ -74,6 +76,15 @@ using UnityEngine.AI;
         if (_playerTransform == null)
         {
             Debug.LogError("Player GameObject not found in the scene.");
+
+            return;
+        }
+
+         _frisbeeTransform = GameObject.FindGameObjectWithTag("Frisbee").transform;
+
+        if (_frisbeeTransform == null)
+        {
+            Debug.LogError("Frisbee GameObject not found in the scene.");
 
             return;
         }

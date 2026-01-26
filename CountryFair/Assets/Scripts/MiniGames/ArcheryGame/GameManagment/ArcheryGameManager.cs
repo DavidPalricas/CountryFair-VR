@@ -225,17 +225,17 @@ public class ArcheryGameManager : MiniGameManager
         switch (colorToScore)
         {
             case "red": 
-                balloonColorToScoreText.text = "Cor: Vermelho"; 
+                balloonColorToScoreText.text = "Cor para fazer pontos: Vermelho"; 
                 _balloonPrefabToScore = redBalloonPrefab; 
                 break;
 
             case "blue": 
-                balloonColorToScoreText.text = "Cor: Azul"; 
+                balloonColorToScoreText.text = "Cor para fazer pontos: Azul"; 
                 _balloonPrefabToScore = blueBalloonPrefab; 
                 break;
 
             case "yellow": 
-                balloonColorToScoreText.text = "Cor: Amarelo"; 
+                balloonColorToScoreText.text = "Cor para fazer pontos: Amarelo"; 
                 _balloonPrefabToScore = yellowBalloonPrefab; 
                 break;
 

@@ -19,9 +19,6 @@ public class CatchFrisbee : DogState
     /// Reference to the frisbee's transform component.
     /// Found in the scene during <see cref="LateStart"/> using the "Frisbee" tag.
     /// </summary>
-    private Transform _frisbeeTransform;
-    
-
 
     /// <summary>
     /// Initializes the CatchFrisbee state by calling the base DogState initialization.
@@ -46,15 +43,6 @@ public class CatchFrisbee : DogState
     public override void LateStart()
     {
         base.LateStart();
-
-        _frisbeeTransform = GameObject.FindGameObjectWithTag("Frisbee").transform;
-
-        if (_frisbeeTransform == null)
-        {
-            Debug.LogError("Frisbee GameObject not found in the scene.");
-
-            return;
-        }
     }
 
     /// <summary>
