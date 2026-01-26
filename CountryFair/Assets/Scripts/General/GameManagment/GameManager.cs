@@ -5,7 +5,7 @@ public class GameManager
     public bool IntroCompleted { get; set; } = false;
     public bool FrisbeeTutorialCompleted { get; set; } = false;
 
-    public bool ArcheryTutorialCompleted { get; set; } = false;
+    public bool ArcheryTutorialCompleted { get; set; } = true;
 
     public bool FrisbeeSessionCompleted { get; set; } = false;
     public bool ArcherySessionCompleted { get; set; } = false;

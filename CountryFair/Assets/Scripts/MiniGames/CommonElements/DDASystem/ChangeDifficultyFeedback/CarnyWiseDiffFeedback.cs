@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using DG.Tweening;
 
 public class CarnyWiseDiffFeedback : UIDialog
 {
@@ -19,6 +19,7 @@ public class CarnyWiseDiffFeedback : UIDialog
 
     private DiffcultyFeedBackData _feedbackData;
 
+    private Queue<bool> _pendingRequests = new ();
 
     protected override void Awake()
     {
@@ -26,7 +27,7 @@ public class CarnyWiseDiffFeedback : UIDialog
 
         if (increaseDiffExpression == null || decreaseDiffExpression == null)
         {
-            Debug.LogError("One carny wise expression or more are not assigned in the inspector.");
+            Debug.LogError("ERROR: Carny Wise expressions are not assigned.");
             return;
         }
 
@@ -35,16 +36,25 @@ public class CarnyWiseDiffFeedback : UIDialog
         decreaseDiffExpression.SetActive(false);
     }
 
+
     protected override void OnDataLoaded()
     {
         if (_data is not DiffcultyFeedBackData)
         {
-            Debug.LogError("Could not cast data to DiffcultyFeedBackData.");
+            Debug.LogError("ERROR: Cast to DiffcultyFeedBackData failed.");
             return;
         }
 
         _feedbackData = _data as DiffcultyFeedBackData;
-        Debug.Log("Feedback data loaded correctly.");
+        Debug.Log("[SUCCESS] Feedback Data loaded.");
+
+
+        while (_pendingRequests.Count > 0)
+        {
+            bool wasIncrease = _pendingRequests.Dequeue();
+            Debug.Log("[LOGIC] Processing delayed request from queue.");
+            ShowNewDiffFeedback(wasIncrease); 
+        }
     }
 
     protected override System.Type GetJSONDataType()
@@ -57,13 +67,14 @@ public class CarnyWiseDiffFeedback : UIDialog
         _jsonFileName = "change_difficulty.json";
     }
 
-  
+    // Método chamado pelo Jogo
     public void ShowNewDiffFeedback(bool isToIncrease)
     {
         if (_feedbackData == null)
         {
-            Debug.LogWarning("Tentativa de mostrar feedback antes do JSON carregar.");
-            return;
+            Debug.LogWarning($"[WARNING] Request received before load finished. Storing in queue... (Increase: {isToIncrease})");
+            _pendingRequests.Enqueue(isToIncrease);
+            return; 
         }
 
         PositionInFrontOfPlayer();
@@ -79,7 +90,6 @@ public class CarnyWiseDiffFeedback : UIDialog
         {
             decreaseDiffExpression.SetActive(true);
             feedbackTexts = _feedbackData.DecreaseDiff;
-            Debug.Log("Showing decrease difficulty feedback.");
         }
 
         dialogueBoxGameObject.SetActive(true);
@@ -88,14 +98,20 @@ public class CarnyWiseDiffFeedback : UIDialog
         {
             dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
         }
+        else
+        {
+            dialogueBoxText.text = "...";
+            Debug.LogError("List of feedback texts is null or empty.");
+        }
 
+        // Reseta o timer para esconder
+        CancelInvoke(nameof(HideFeedback));
         Invoke(nameof(HideFeedback), displayDuration);
     }
-
     private  void HideFeedback()
-    {
-        dialogueBoxGameObject.SetActive(false);
-        increaseDiffExpression.SetActive(false);
-        decreaseDiffExpression.SetActive(false);
-    }
+        {
+            dialogueBoxGameObject.SetActive(false);
+            increaseDiffExpression.SetActive(false);
+            decreaseDiffExpression.SetActive(false);
+        }
 }
