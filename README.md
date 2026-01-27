@@ -3,7 +3,7 @@
 This repository contains the source code developed as part of a Master's Thesis titled "Exploring the Effect of a Personalized Virtual Reality Serious Game for Stroke Rehabilitation", focused on stroke survivor rehabilitation using Virtual Reality Serious Games.
 
 # 📺 Demo
-[![Watch the video](https://www.youtube.com/watch?v=qCmjLENJX1o)
+[![Watch the video](https://www.youtube.com/watch?v=qCmjLENJX1o)]
 
 ### [VR Country Fair Demo](https://youtu.be/Yz8dQVBYweA)
 
