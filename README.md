@@ -3,7 +3,7 @@
 This repository contains the source code developed as part of a Master's Thesis titled "Exploring the Effect of a Personalized Virtual Reality Serious Game for Stroke Rehabilitation", focused on stroke survivor rehabilitation using Virtual Reality Serious Games.
 
 # 📺 Demo
-[![Watch the video](https://img.youtube.com/vi/Yz8dQVBYweA/maxresdefault.jpg)](https://youtu.be/Yz8dQVBYweA)
+[![Watch the video](https://www.youtube.com/watch?v=qCmjLENJX1o)
 
 ### [VR Country Fair Demo](https://youtu.be/Yz8dQVBYweA)
 
@@ -40,4 +40,4 @@ Some models were imported from the [Poly Pizza website](https://poly.pizza/). He
 * [sirkitree](https://poly.pizza/u/sirkitree)
 
 # 📝 Extra Notes
-* Part of this project was developed for the [Virtual And Augmented Reality](https://www.ua.pt/en/uc/12023) course at the **University of Aveiro**.
+* Part of this project was developed for the [Virtual And Augmented Reality](https://www.ua.pt/en/uc/12023) and [Serious Games](https://www.ua.pt/en/uc/15477) courses at the **University of Aveiro**.
