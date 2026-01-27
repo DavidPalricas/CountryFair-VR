@@ -80,7 +80,7 @@ public class FrisbeeGameManager : MiniGameManager
         ApplyDifficultySettings();
     }
 
-    // --- MATEMÁTICA DE ADAPTAÇÃO ---
+
 
     protected override void ApplyDifficultySettings()
     {
