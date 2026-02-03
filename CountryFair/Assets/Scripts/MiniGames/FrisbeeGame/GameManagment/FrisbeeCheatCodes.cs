@@ -84,8 +84,10 @@ public class FrisbeeCheatCodes : CheatCodes
             Debug.LogError("DogScoreArea Transform not assigned.");
             return;
         }
-
-        _cheatCodes = new string[] { "miss", "score", "dog" };
+ 
+        string[] frisbeeCheatCodes = new string[] {"dog"};
+        
+        _cheatCodes = _cheatCodes.Concat(frisbeeCheatCodes).ToArray();
     }
 
     /// <summary>
@@ -97,21 +99,30 @@ public class FrisbeeCheatCodes : CheatCodes
        base.ActivateCheat(cheatCode);
 
         switch (cheatCode)
-        {
+        {  
+            case "happy":
+            case "neutral":
+            case "sad":
+            case "angry":
+            case "disgust":
+            case "surprise":
+            case "fear":
+                ShowEmoji(cheatCode);
+                return;
             case "miss":
                 _frisbeePlayerFrontState.ThrowFrisbee(false);
-                break;
+                return;
 
             case "score":
                   ForceScorePoint(false);      
-                break;
-
+                return;
+            
             case "dog":
                 ForceScorePoint(true);
-                break;
+                return;
             default:
                 Debug.LogError("Invalid cheat code: " + cheatCode);
-                break;
+                return;
         }
     }
 
