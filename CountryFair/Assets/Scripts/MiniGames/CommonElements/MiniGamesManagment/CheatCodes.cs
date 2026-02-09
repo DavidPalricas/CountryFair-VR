@@ -46,7 +46,6 @@ public class CheatCodes : MonoBehaviour
         {
             string emojiName = emoji.name.ToLower();
             _emojisNames[emojiName] = emoji;
-            emoji.SetActive(false);
         }
     }
 
