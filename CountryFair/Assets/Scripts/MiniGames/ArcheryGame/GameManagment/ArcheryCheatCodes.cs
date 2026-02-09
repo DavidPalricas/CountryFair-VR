@@ -42,13 +42,25 @@ public class  ArcheryCheatCodes : CheatCodes
         switch (cheatCode)
         {  
             case "happy":
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.HAPPY);
+                return;
             case "neutral":
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.NEUTRAL);
+                return;
             case "sad":
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.SAD);
+                return;
             case "angry":
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.ANGRY);
+                return;
             case "disgust":
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.DISGUST);
+                return;
             case "surprise":
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.SURPRISE);
+                return;
             case "fear":
-                ShowEmoji(cheatCode);
+                _activateEmoji.Activate(ActivateEmoji.EmojiType.FEAR);
                 return;
             case "miss":
                 _arrowComponent.Launch(0f);
