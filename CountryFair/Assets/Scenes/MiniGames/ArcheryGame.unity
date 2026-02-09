@@ -270,7 +270,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1370255372}
     m_Modifications:
     - target: {fileID: 1297461513360187714, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -354,7 +354,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3160597209698737637, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 157.42166
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3160597209698737637, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -374,11 +374,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3160597209698737637, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -20.184969
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 3160597209698737637, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 163.07251
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 3160597209698737637, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -469,6 +469,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
+--- !u!224 &32811217 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3160597209698737637, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
+  m_PrefabInstance: {fileID: 32811216}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &35802205 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8931893437084419960, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
@@ -2190,8 +2195,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.42240122, b: 0.2509377, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42240125, b: 0.25093773, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4223981, b: 0.25093457, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.4224007, b: 0.2509372, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -4992,6 +4997,7 @@ Transform:
   m_Children:
   - {fileID: 1987086193}
   - {fileID: 925036649}
+  - {fileID: 32811217}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1402343791
@@ -9418,4 +9424,3 @@ SceneRoots:
   - {fileID: 2057617483}
   - {fileID: 620701817}
   - {fileID: 846735558}
-  - {fileID: 32811216}
