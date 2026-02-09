@@ -40,7 +40,16 @@ public class  ArcheryCheatCodes : CheatCodes
         base.ActivateCheat(cheatCode);
 
         switch (cheatCode)
-        {
+        {  
+            case "happy":
+            case "neutral":
+            case "sad":
+            case "angry":
+            case "disgust":
+            case "surprise":
+            case "fear":
+                ShowEmoji(cheatCode);
+                return;
             case "miss":
                 _arrowComponent.Launch(0f);
                 return;
