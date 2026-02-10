@@ -2,39 +2,46 @@ using UnityEngine;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System;
 
 /// <summary>
 /// Connects to a TCP server to listen for emoji commands.
+/// Handles connection lifecycle and threading.
 /// </summary>
 [RequireComponent(typeof(ActivateEmoji))]
 public class ServerListener : MonoBehaviour
-{   
+{ 
+    [Header("Server Connection Settings")]
     /// <summary>
     /// The IP address of the server to connect to.
     /// </summary>
-    [SerializeField]
-    private string serverIP = "172.20.10.2"; 
+    [SerializeField] private string serverIP = "172.20.10.2"; 
 
     /// <summary>
     /// The port number of the server to connect to.
     /// </summary>
-    [SerializeField]
-    private int serverPort = 50050;
+    [SerializeField] private int serverPort = 50050;
 
     /// <summary>
-    /// Reference to the emoji script. 
+    /// Reference to the emoji script component.
     /// </summary>
     private ActivateEmoji _emojiScript; 
     
     /// <summary>
-    /// The TCP client used for the connection.
+    /// The TCP client used for communication.
     /// </summary>
     private TcpClient _client;
 
     /// <summary>
-    /// The thread used to listen for incoming data.
+    /// The thread responsible for listening to incoming data.
     /// </summary>
     private Thread _receiveThread;
+    
+    /// <summary>
+    /// Critical flag to control the thread's life and safe shutdown.
+    /// Values written by one thread are immediately visible to others (volatile).
+    /// </summary>
+    private volatile bool _isRunning = false; 
 
     /// <summary>
     /// Unity Awake method. Initializes references.
@@ -45,7 +52,7 @@ public class ServerListener : MonoBehaviour
     }
 
     /// <summary>
-    /// Unity Start method. Initiates the connection.
+    /// Unity Start method. Begins the connection process.
     /// </summary>
     private void Start()
     {
@@ -53,67 +60,100 @@ public class ServerListener : MonoBehaviour
     }
 
     /// <summary>
-    /// Establishes a connection to the TCP server.
+    /// Establishes a connection to the TCP server and starts the listening thread.
     /// </summary>
     private void ConnectToTcpServer()
     {
         try 
         {
-            _client = new TcpClient(serverIP, serverPort);
+            _isRunning = true;
+
+            _client = new TcpClient
+            {
+                // Optional timeout to prevent blocking the game if the server doesn't respond
+                ReceiveTimeout = 5000
+            };
+            _client.Connect(serverIP, serverPort);
+
             _receiveThread = new Thread(ListenForData)
             {
                 IsBackground = true
             };
             _receiveThread.Start();
-            Debug.Log("Connected to external emotion server.");
+            
+            Debug.Log($"[SCENE: {gameObject.scene.name}] Connected to server.");
         }
         catch (System.Exception e) 
         {
-            Debug.LogError($"Error connecting: {e.Message}");
+            Debug.LogError($"Error connecting in scene {gameObject.scene.name}: {e.Message}");
         }
     }
 
     /// <summary>
     /// Listens for incoming data on a separate thread.
+    /// Manages the data stream and dispatches messages to the main thread.
     /// </summary>
-    /// <remarks>
-    /// This method runs on a separate thread (BE CAREFUL!).
-    /// </remarks>
     private void ListenForData()
     {
         try 
         {
             byte[] bytes = new byte[1024];
-            while (_client != null) 
+            
+            while (_isRunning && _client != null && _client.Connected) 
             {
                 using NetworkStream stream = _client.GetStream();
                 int length;
+
+                // Read blocks execution, but if we close the client in OnDestroy, it throws an exception and exits
                 while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    var incomingData = new byte[length];
-                    System.Array.Copy(bytes, 0, incomingData, 0, length);
+                    if (!_isRunning){
+                        break;
+                    } 
+
+                    byte[] incomingData = new byte[length];
+                    Array.Copy(bytes, 0, incomingData, 0, length);
 
                     string serverMessage = Encoding.ASCII.GetString(incomingData);
-                    Debug.Log($"Received: {serverMessage}");
 
-                    // DISPATCH TO MAIN THREAD
-                    // Unity does not allow modifying GameObjects from another thread.
-                    // We need a queue or scheduled action.
-                    // Simplified (but 'dirty') way to understand the concept:
+                    // Send to Main Thread
                     MainThreadDispatcher.Enqueue(() =>
                     {
-                        // HERE IS THE CALL YOU ASKED FOR:
-                        if (_emojiScript != null)
-                        {
-                            _emojiScript.ProcessServerString(serverMessage);
-                        }
+                        _emojiScript.ProcessServerString(serverMessage);
                     });
                 }
             }
         }
-        catch (System.Exception e) 
+        catch (System.IO.IOException) 
         {
-            Debug.Log($"Socket exception: {e.Message}");
+            // This normally happens when we close the socket when changing scenes.
+            // Ignore if we are closing explicitly.
+            if (_isRunning){
+                Debug.LogWarning("Connection lost with the server.");
+            }
         }
+        catch (Exception e) 
+        {
+            if (_isRunning){
+                Debug.LogError($"Socket error: {e.Message}");
+            } 
+        }
+    }
+
+    /// <summary>
+    /// Unity OnDestroy method.
+    /// Cleans up the connection and stops the thread to prevent memory leaks and zombie threads.
+    /// </summary>
+    /// <remarks>
+    /// --- THE MOST IMPORTANT PART ---
+    /// This ensures the old connection dies before the new one is born.
+    /// </remarks>
+    private void OnDestroy()
+    {
+        Debug.Log($"[SCENE: {gameObject.scene.name}] Cleaning up connection...");
+        
+        _isRunning = false;
+        _client?.Close(); // This forces the stream.Read to stop immediately
+        _client = null;
     }
 }
