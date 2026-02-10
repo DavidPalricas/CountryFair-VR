@@ -1,81 +1,75 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
+[DefaultExecutionOrder(100)] // Mantém isto. É obrigatório para VR sem jitter.
 public class FollowPlayerHead : DisplayInPlayerFront
 {
-
-
-    [Header("Smoothing & Deadzone")]
-    [SerializeField] private float smoothTime = 0.3f; // Tempo para alcançar o alvo (maior = mais lento/suave)
-   
-    private readonly static float _movementThreshold = 0.5f; // Distância mínima para ativar o movimento
-    [SerializeField] private bool lockRotationToHead = true;
+    [Header("Motion Settings")]
+    [SerializeField] private float positionSmoothTime = 0.2f; // Baixei para 0.2f. 0.3f é muito lento para um objeto físico.
+    [SerializeField] private float rotationSmoothTime = 5.0f; // Velocidade de Slerp
 
     private Vector3 _currentVelocity;
-    private bool _isFollowing = false;
+    
+    // Removi a variável deadzoneRadius e _targetPosition persistente.
+    // Elas eram a causa do efeito "travado".
 
-
+    protected override void Awake()
+    {
+        base.Awake();
+       
+        transform.SetPositionAndRotation(CalculateBaseTarget(), GetTargetRotation());
+    }
 
     private void LateUpdate()
     {
-        // LateUpdate é crucial para VR para evitar jitter, pois ocorre após o cálculo da posição da cabeça
-        UpdatePosition();
+        // O segredo da fluidez: Calcular e aplicar SEMPRE. 
+        // Não usar 'ifs' de distância.
+        HandlePosition();
+        HandleRotation();
     }
 
-    private void UpdatePosition()
+    private void HandlePosition()
     {
-        Vector3 targetPos = CalculateTargetPosition();
-        float distanceToTarget = Vector3.Distance(transform.position, targetPos);
+        Vector3 targetPos = CalculateBaseTarget();
 
-
-        const float THRESHOLD_TO_AVOID_MOTION_SICKNESS = 0.05f;
-
-        // Lógica de Histerese (Deadzone)
-        // Só começa a seguir se a distância exceder o limite
-        if (distanceToTarget > _movementThreshold)
-        {
-            _isFollowing = true;
-        }
-        // Opcional: Para de seguir se estiver muito perto (evita micro-ajustes constantes)
-        else if (distanceToTarget < THRESHOLD_TO_AVOID_MOTION_SICKNESS)
-        {
-            _isFollowing = false;
-        }
-
-        if (_isFollowing)
-        {
-            // SmoothDamp é superior ao Lerp ou DoTween para este caso específico
-            transform.position = Vector3.SmoothDamp(
-                transform.position, 
-                targetPos, 
-                ref _currentVelocity, 
-                smoothTime
-            );
-        }
-
-        // Rotação: Geralmente queres que o UI olhe para o jogador
-        if (lockRotationToHead)
-        {    
-
-            transform.localRotation  = Quaternion.identity;
-            /*
-            // Rotação suave também é recomendada para evitar enjoo
-            Quaternion targetRot = Quaternion.LookRotation(transform.position - centerEyeTransform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 5f);
-            */
-        }
+        // O SmoothDamp resolve o jitter sozinho. 
+        // Se o movimento da cabeça for minúsculo, o SmoothDamp filtra-o naturalmente.
+        transform.position = Vector3.SmoothDamp(
+            transform.position,
+            targetPos,
+            ref _currentVelocity,
+            positionSmoothTime
+        );
     }
 
-    private Vector3 CalculateTargetPosition()
+    private void HandleRotation()
     {
+        Quaternion targetRot = GetTargetRotation();
+
+        // Para objetos 3D, Slerp contínuo é visualmente mais agradável que SmoothDamp na rotação.
+        // Multiplicar por Time.deltaTime * velocidade é a forma correta de usar Slerp no Update.
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSmoothTime);
+    }
+
+    private Vector3 CalculateBaseTarget()
+    {
+        // Mantive a tua lógica de posicionamento relativa à câmara
         Vector3 target = centerEyeTransform.position;
-
         target += centerEyeTransform.right * horizontalOffset;
-
         target += centerEyeTransform.forward * distanceFromPlayer;
-
         target += centerEyeTransform.up * heightOffset;
         
         return target;
+    }
+    
+    private Quaternion GetTargetRotation()
+    {
+        // Mantive a tua lógica de ignorar a inclinação vertical (Pitch/Roll)
+        Vector3 forwardFlat = centerEyeTransform.forward;
+        forwardFlat.y = 0;
+        
+        if (forwardFlat.sqrMagnitude < 0.001f)
+            return transform.rotation;
+
+        return Quaternion.LookRotation(forwardFlat);
     }
 }
