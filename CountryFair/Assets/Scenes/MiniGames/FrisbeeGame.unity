@@ -9190,6 +9190,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6461612525873076729, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3435265760
+      objectReference: {fileID: 0}
+    - target: {fileID: 6461612525873076729, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6461612525873076729, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 3266473195
+      objectReference: {fileID: 0}
     - target: {fileID: 7029824144658080225, guid: ba4d4d6cd09bc5f4197349ed272f9b5c, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
