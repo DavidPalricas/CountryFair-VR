@@ -3,41 +3,82 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
+/// <summary>
+/// Connects to a TCP server to listen for emoji commands.
+/// </summary>
+[RequireComponent(typeof(ActivateEmoji))]
 public class ServerListener : MonoBehaviour
-{
-    // REFERÊNCIA AO SCRIPT DO EMOJI (Arrasta no Inspector)
-    [SerializeField] private ActivateEmoji _emojiScript; 
-    
-    // Configurações da conexão crua
-    private TcpClient _client;
-    private Thread _receiveThread;
-    private const string IP = "172.20.10.2"; // IP do teu servidor externo
-    private const int PORT = 50050;         // Porta do servidor externo
+{   
+    /// <summary>
+    /// The IP address of the server to connect to.
+    /// </summary>
+    [SerializeField]
+    private string serverIP = "172.20.10.2"; 
 
+    /// <summary>
+    /// The port number of the server to connect to.
+    /// </summary>
+    [SerializeField]
+    private int serverPort = 50050;
+
+    /// <summary>
+    /// Reference to the emoji script. 
+    /// </summary>
+    private ActivateEmoji _emojiScript; 
+    
+    /// <summary>
+    /// The TCP client used for the connection.
+    /// </summary>
+    private TcpClient _client;
+
+    /// <summary>
+    /// The thread used to listen for incoming data.
+    /// </summary>
+    private Thread _receiveThread;
+
+    /// <summary>
+    /// Unity Awake method. Initializes references.
+    /// </summary>
+    private void Awake()
+    {
+        _emojiScript = GetComponent<ActivateEmoji>();
+    }
+
+    /// <summary>
+    /// Unity Start method. Initiates the connection.
+    /// </summary>
     private void Start()
     {
         ConnectToTcpServer();
     }
 
+    /// <summary>
+    /// Establishes a connection to the TCP server.
+    /// </summary>
     private void ConnectToTcpServer()
     {
         try 
         {
-            _client = new TcpClient(IP, PORT);
+            _client = new TcpClient(serverIP, serverPort);
             _receiveThread = new Thread(ListenForData)
             {
                 IsBackground = true
             };
             _receiveThread.Start();
-            Debug.Log("Conectado ao servidor de emocoes externo.");
+            Debug.Log("Connected to external emotion server.");
         }
         catch (System.Exception e) 
         {
-            Debug.LogError($"Erro ao conectar: {e.Message}");
+            Debug.LogError($"Error connecting: {e.Message}");
         }
     }
 
-    // Este método corre numa thread separada (CUIDADO!)
+    /// <summary>
+    /// Listens for incoming data on a separate thread.
+    /// </summary>
+    /// <remarks>
+    /// This method runs on a separate thread (BE CAREFUL!).
+    /// </remarks>
     private void ListenForData()
     {
         try 
@@ -45,31 +86,28 @@ public class ServerListener : MonoBehaviour
             byte[] bytes = new byte[1024];
             while (_client != null) 
             {
-                using (NetworkStream stream = _client.GetStream()) 
+                using NetworkStream stream = _client.GetStream();
+                int length;
+                while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    int length;
-                    while ((length = stream.Read(bytes, 0, bytes.Length)) != 0) 
-                    {
-                        var incomingData = new byte[length];
-                        System.Array.Copy(bytes, 0, incomingData, 0, length);
-                        
-                        // 1. Receber string crua
-                        string serverMessage = Encoding.ASCII.GetString(incomingData);
-                        Debug.Log($"Recebido: {serverMessage}");
+                    var incomingData = new byte[length];
+                    System.Array.Copy(bytes, 0, incomingData, 0, length);
 
-                        // 2. DISPARAR PARA A MAIN THREAD
-                        // Unity não permite mexer em GameObjects a partir de outra Thread.
-                        // Precisamos de uma fila ou de uma ação agendada.
-                        // Forma simplificada (mas "suja") para entenderes o conceito:
-                        MainThreadDispatcher.Enqueue(() => 
+                    string serverMessage = Encoding.ASCII.GetString(incomingData);
+                    Debug.Log($"Received: {serverMessage}");
+
+                    // DISPATCH TO MAIN THREAD
+                    // Unity does not allow modifying GameObjects from another thread.
+                    // We need a queue or scheduled action.
+                    // Simplified (but 'dirty') way to understand the concept:
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        // HERE IS THE CALL YOU ASKED FOR:
+                        if (_emojiScript != null)
                         {
-                            // AQUI É A CHAMADA QUE PERGUNTASTE:
-                            if (_emojiScript != null)
-                            {
-                                _emojiScript.ProcessServerString(serverMessage);
-                            }
-                        });
-                    }
+                            _emojiScript.ProcessServerString(serverMessage);
+                        }
+                    });
                 }
             }
         }

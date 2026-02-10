@@ -2,87 +2,148 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
 
+/// <summary>
+/// Manages emoji activation and synchronization over the network.
+/// </summary>
 public class ActivateEmoji : NetworkBehaviour
 { 
+    /// <summary>
+    /// Dictionary to look up emoji GameObjects by name.
+    /// </summary>
     private readonly Dictionary<string, GameObject> _emojis = new();
-    private GameObject currentEmojiActive = null;
 
-    // Apenas o SERVIDOR pode escrever aqui.
+    /// <summary>
+    /// The currently active emoji GameObject.
+    /// </summary>
+    private GameObject _currentEmojiActive = null;
+
+    /// <summary>
+    /// Network variable to maintain emoji state across clients.
+    /// Only the server has permission to write to this variable.
+    /// </summary>
     private readonly NetworkVariable<EmojiType> _netEmojiState = new(
         EmojiType.NEUTRAL, 
         NetworkVariableReadPermission.Everyone, 
         NetworkVariableWritePermission.Server
     );
 
-    public enum EmojiType { SAD, HAPPY, ANGRY, DISGUST, SURPRISE, FEAR, NEUTRAL }
+    /// <summary>
+    /// Enumeration of supported emoji types.
+    /// </summary>
+    public enum EmojiType {
+         /// <summary>Represents a sad expression.</summary>
+         SAD, 
+         /// <summary>Represents a happy expression.</summary>
+         HAPPY, 
+         /// <summary>Represents an angry expression.</summary>
+         ANGRY, 
+         /// <summary>Represents a disgusted expression.</summary>
+         DISGUST, 
+         /// <summary>Represents a surprised expression.</summary>
+         SURPRISE, 
+         /// <summary>Represents a fearful expression.</summary>
+         FEAR, 
+         /// <summary>Represents a neutral expression.</summary>
+         NEUTRAL 
+    }
 
+    /// <summary>
+    /// Unity Awake method. Initializes internal state.
+    /// </summary>
     private void Awake()
     {
         SetEmojis();
     }
 
+    /// <summary>
+    /// Called when the object is spawned on the network.
+    /// Subscribes to state changes and updates visuals.
+    /// </summary>
     public override void OnNetworkSpawn()
     {
         _netEmojiState.OnValueChanged += OnEmojiStateChanged;
         
-        // Garante que quem entra tarde vê o emoji correto
+        // Ensures late joiners see the correct emoji
         UpdateVisuals(_netEmojiState.Value);
     }
 
+    /// <summary>
+    /// Called when the object is despawned from the network.
+    /// Unsubscribes from state changes.
+    /// </summary>
     public override void OnNetworkDespawn()
     {
         _netEmojiState.OnValueChanged -= OnEmojiStateChanged;
     }
 
-    // --- LÓGICA DE REDE ---
-
-    public void ProcessServerString(string rawMessage)
+    /// <summary>
+    /// Processes a string message from the server (e.g., from TCP listener) to update the emoji state.
+    /// </summary>
+    /// <param name="message">The string representation of the emoji type.</param>
+    public void ProcessServerString(string message)
     {
-        if (string.IsNullOrEmpty(rawMessage)) return;
+        if (string.IsNullOrEmpty(message))
+        {
+            Debug.LogWarning("Received Empty Message from the server");
 
-        // Parsing da string
-        rawMessage = rawMessage.Trim();
-        if (System.Enum.TryParse<EmojiType>(rawMessage, true, out EmojiType result))
+            return;
+        }
+
+        message = message.Trim();
+
+        if (System.Enum.TryParse(message, true, out EmojiType result))
         {
-            // 1. ATUALIZAÇÃO VISUAL IMEDIATA (O que tu pediste)
-            // Não espera por ninguém. O jogador vê logo a mudança.
             UpdateVisuals(result); 
+
+            return;
         }
-        else
-        {
-            Debug.LogError($"Emoji desconhecido: {rawMessage}");
-        }
+       
+        Debug.LogError($"Unknown emoji: {message}");
     }
 
+    /// <summary>
+    /// Callback when the network variable changes.
+    /// </summary>
+    /// <param name="previous">Previous state.</param>
+    /// <param name="current">New state.</param>
     private void OnEmojiStateChanged(EmojiType previous, EmojiType current)
     {
-        // Se a mudança veio da rede e eu já atualizei visualmente antes (via ProcessServerString),
-        // o UpdateVisuals lida com isso sem problemas (é idempotente).
         UpdateVisuals(current);
     }
 
-    // --- LÓGICA VISUAL ---
 
+    /// <summary>
+    /// Updates the visual representation of the active emoji.
+    /// </summary>
+    /// <param name="type">The emoji type to display.</param>
     public void UpdateVisuals(EmojiType type)
     { 
         string emojiName = type.ToString().ToLower();
 
         if (_emojis.TryGetValue(emojiName, out GameObject targetEmoji))
         {   
-            // Otimização: Se já estiver ativo, não faz nada (evita flickering)
-            if (currentEmojiActive == targetEmoji) return;
+            if (_currentEmojiActive == targetEmoji)
+            {
+                return;
+            } 
 
-            if (currentEmojiActive != null) currentEmojiActive.SetActive(false);
+            if (_currentEmojiActive != null)
+            {
+                _currentEmojiActive.SetActive(false);
+            } 
             
             targetEmoji.SetActive(true);
-            currentEmojiActive = targetEmoji;
+            _currentEmojiActive = targetEmoji;
+
+            return;
         }
-        else
-        {
-            Debug.LogError("Invalid emoji type: " + type);
-        }
+      
+        Debug.LogError("Invalid emoji type: " + type);
     }
 
+    /// <summary>
+    /// Initializes the emojis dictionary from child objects.
+    /// </summary>
     private void SetEmojis()
     {
         foreach (GameObject emoji in Utils.GetChildren(transform))
@@ -93,6 +154,8 @@ public class ActivateEmoji : NetworkBehaviour
         }
 
         if (_emojis.ContainsKey("neutral"))
-            currentEmojiActive = _emojis["neutral"];
+        {
+            _currentEmojiActive = _emojis["neutral"];
+        }   
     }
 }
