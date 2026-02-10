@@ -66,7 +66,7 @@ public class ServerListener : MonoBehaviour
     {
         try 
         {
-            // Tenta criar o cliente e conectar
+            // Attempts to create the client and connect
             _client = new TcpClient
             {
                 // Optional timeout to prevent blocking the game if the server doesn't respond
@@ -75,7 +75,7 @@ public class ServerListener : MonoBehaviour
             
             _client.Connect(serverIP, serverPort);
 
-            // Se chegou aqui, a conexão foi bem sucedida
+            // If it reached this point, the connection was successful
             _isRunning = true;
 
             _receiveThread = new Thread(ListenForData)
@@ -125,7 +125,7 @@ public class ServerListener : MonoBehaviour
                         // Send to Main Thread
                         MainThreadDispatcher.Enqueue(() =>
                         {
-                            // Pequena verificação de segurança extra para não dar erro se o objeto tiver sido destruído entretanto
+                            // Small extra safety check to avoid error if object was destroyed in the meantime
                             if (_emojiScript != null) 
                             {
                                 _emojiScript.ProcessServerString(serverMessage);
@@ -146,7 +146,7 @@ public class ServerListener : MonoBehaviour
         catch (Exception e) 
         {
             if (_isRunning){
-                Debug.LogWarning($"Socket warning: {e.Message}"); // Também mudei para Warning aqui
+                Debug.LogWarning($"Socket warning: {e.Message}"); // Also changed to Warning here
             } 
         }
     }
@@ -161,7 +161,7 @@ public class ServerListener : MonoBehaviour
     /// </remarks>
     private void OnDestroy()
     {
-        // Apenas loga se estava a correr, para não fazer spam se nunca se conectou
+        // Only logs if it was running, to avoid spam if it never connected
         if (_isRunning) {
             Debug.Log($"[SCENE: {gameObject.scene.name}] Cleaning up connection...");
         }
