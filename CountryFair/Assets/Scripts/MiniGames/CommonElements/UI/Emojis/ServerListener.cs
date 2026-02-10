@@ -66,14 +66,17 @@ public class ServerListener : MonoBehaviour
     {
         try 
         {
-            _isRunning = true;
-
+            // Tenta criar o cliente e conectar
             _client = new TcpClient
             {
                 // Optional timeout to prevent blocking the game if the server doesn't respond
                 ReceiveTimeout = 5000
             };
+            
             _client.Connect(serverIP, serverPort);
+
+            // Se chegou aqui, a conexão foi bem sucedida
+            _isRunning = true;
 
             _receiveThread = new Thread(ListenForData)
             {
@@ -83,9 +86,11 @@ public class ServerListener : MonoBehaviour
             
             Debug.Log($"[SCENE: {gameObject.scene.name}] Connected to server.");
         }
-        catch (System.Exception e) 
+        catch (Exception e) 
         {
-            Debug.LogError($"Error connecting in scene {gameObject.scene.name}: {e.Message}");
+            Debug.LogWarning($"[Optional] Could not connect to emotion server in scene {gameObject.scene.name}. Game continuing in offline mode. Reason: {e.Message}");
+            
+            _isRunning = false;
         }
     }
 
@@ -101,26 +106,32 @@ public class ServerListener : MonoBehaviour
             
             while (_isRunning && _client != null && _client.Connected) 
             {
-                using NetworkStream stream = _client.GetStream();
-                int length;
-
-                // Read blocks execution, but if we close the client in OnDestroy, it throws an exception and exits
-                while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
+                using (NetworkStream stream = _client.GetStream()) 
                 {
-                    if (!_isRunning){
-                        break;
-                    } 
+                    int length;
 
-                    byte[] incomingData = new byte[length];
-                    Array.Copy(bytes, 0, incomingData, 0, length);
-
-                    string serverMessage = Encoding.ASCII.GetString(incomingData);
-
-                    // Send to Main Thread
-                    MainThreadDispatcher.Enqueue(() =>
+                    // Read blocks execution, but if we close the client in OnDestroy, it throws an exception and exits
+                    while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        _emojiScript.ProcessServerString(serverMessage);
-                    });
+                        if (!_isRunning){
+                            break;
+                        } 
+
+                        byte[] incomingData = new byte[length];
+                        Array.Copy(bytes, 0, incomingData, 0, length);
+
+                        string serverMessage = Encoding.ASCII.GetString(incomingData);
+
+                        // Send to Main Thread
+                        MainThreadDispatcher.Enqueue(() =>
+                        {
+                            // Pequena verificação de segurança extra para não dar erro se o objeto tiver sido destruído entretanto
+                            if (_emojiScript != null) 
+                            {
+                                _emojiScript.ProcessServerString(serverMessage);
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -135,7 +146,7 @@ public class ServerListener : MonoBehaviour
         catch (Exception e) 
         {
             if (_isRunning){
-                Debug.LogError($"Socket error: {e.Message}");
+                Debug.LogWarning($"Socket warning: {e.Message}"); // Também mudei para Warning aqui
             } 
         }
     }
@@ -150,7 +161,10 @@ public class ServerListener : MonoBehaviour
     /// </remarks>
     private void OnDestroy()
     {
-        Debug.Log($"[SCENE: {gameObject.scene.name}] Cleaning up connection...");
+        // Apenas loga se estava a correr, para não fazer spam se nunca se conectou
+        if (_isRunning) {
+            Debug.Log($"[SCENE: {gameObject.scene.name}] Cleaning up connection...");
+        }
         
         _isRunning = false;
         _client?.Close(); // This forces the stream.Read to stop immediately

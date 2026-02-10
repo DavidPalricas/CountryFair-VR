@@ -2,148 +2,120 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-/// <summary>
-/// Manages emoji activation and synchronization over the network.
-/// </summary>
 public class ActivateEmoji : NetworkBehaviour
 { 
-    /// <summary>
-    /// Dictionary to look up emoji GameObjects by name.
-    /// </summary>
     private readonly Dictionary<string, GameObject> _emojis = new();
-
-    /// <summary>
-    /// The currently active emoji GameObject.
-    /// </summary>
     private GameObject _currentEmojiActive = null;
 
-    /// <summary>
-    /// Network variable to maintain emoji state across clients.
-    /// Only the server has permission to write to this variable.
-    /// </summary>
+    // Variável de controlo para evitar loops infinitos
+    private bool _isUpdatingFromNetwork = false;
+
     private readonly NetworkVariable<EmojiType> _netEmojiState = new(
         EmojiType.NEUTRAL, 
         NetworkVariableReadPermission.Everyone, 
         NetworkVariableWritePermission.Server
     );
 
-    /// <summary>
-    /// Enumeration of supported emoji types.
-    /// </summary>
-    public enum EmojiType {
-         /// <summary>Represents a sad expression.</summary>
-         SAD, 
-         /// <summary>Represents a happy expression.</summary>
-         HAPPY, 
-         /// <summary>Represents an angry expression.</summary>
-         ANGRY, 
-         /// <summary>Represents a disgusted expression.</summary>
-         DISGUST, 
-         /// <summary>Represents a surprised expression.</summary>
-         SURPRISE, 
-         /// <summary>Represents a fearful expression.</summary>
-         FEAR, 
-         /// <summary>Represents a neutral expression.</summary>
-         NEUTRAL 
-    }
+    public enum EmojiType { SAD, HAPPY, ANGRY, DISGUST, SURPRISE, FEAR, NEUTRAL }
 
-    /// <summary>
-    /// Unity Awake method. Initializes internal state.
-    /// </summary>
     private void Awake()
     {
         SetEmojis();
     }
 
-    /// <summary>
-    /// Called when the object is spawned on the network.
-    /// Subscribes to state changes and updates visuals.
-    /// </summary>
     public override void OnNetworkSpawn()
     {
         _netEmojiState.OnValueChanged += OnEmojiStateChanged;
         
-        // Ensures late joiners see the correct emoji
+        // Força atualização visual inicial sem disparar lógica de envio
+        _isUpdatingFromNetwork = true;
         UpdateVisuals(_netEmojiState.Value);
+        _isUpdatingFromNetwork = false;
     }
 
-    /// <summary>
-    /// Called when the object is despawned from the network.
-    /// Unsubscribes from state changes.
-    /// </summary>
     public override void OnNetworkDespawn()
     {
         _netEmojiState.OnValueChanged -= OnEmojiStateChanged;
     }
 
-    /// <summary>
-    /// Processes a string message from the server (e.g., from TCP listener) to update the emoji state.
-    /// </summary>
-    /// <param name="message">The string representation of the emoji type.</param>
-    public void ProcessServerString(string message)
-    {
-        if (string.IsNullOrEmpty(message))
-        {
-            Debug.LogWarning("Received Empty Message from the server");
-
-            return;
-        }
-
-        message = message.Trim();
-
-        if (System.Enum.TryParse(message, true, out EmojiType result))
-        {
-            UpdateVisuals(result); 
-
-            return;
-        }
-       
-        Debug.LogError($"Unknown emoji: {message}");
-    }
-
-    /// <summary>
-    /// Callback when the network variable changes.
-    /// </summary>
-    /// <param name="previous">Previous state.</param>
-    /// <param name="current">New state.</param>
+    // Chamado quando a variável muda na rede
     private void OnEmojiStateChanged(EmojiType previous, EmojiType current)
     {
+        // Proteção: Avisa o UpdateVisuals que isto veio da rede
+        _isUpdatingFromNetwork = true;
         UpdateVisuals(current);
+        _isUpdatingFromNetwork = false;
     }
 
-
-    /// <summary>
-    /// Updates the visual representation of the active emoji.
-    /// </summary>
-    /// <param name="type">The emoji type to display.</param>
+    // --- O MÉTODO QUE PEDISTE (HÍBRIDO) ---
     public void UpdateVisuals(EmojiType type)
     { 
+        // 1. ATUALIZAÇÃO VISUAL (Local e Imediata)
         string emojiName = type.ToString().ToLower();
 
         if (_emojis.TryGetValue(emojiName, out GameObject targetEmoji))
         {   
-            if (_currentEmojiActive == targetEmoji)
+            if (_currentEmojiActive != targetEmoji)
             {
-                return;
-            } 
-
-            if (_currentEmojiActive != null)
-            {
-                _currentEmojiActive.SetActive(false);
-            } 
-            
-            targetEmoji.SetActive(true);
-            _currentEmojiActive = targetEmoji;
-
-            return;
+                if (_currentEmojiActive != null) _currentEmojiActive.SetActive(false);
+                targetEmoji.SetActive(true);
+                _currentEmojiActive = targetEmoji;
+            }
         }
-      
-        Debug.LogError("Invalid emoji type: " + type);
+        else
+        {
+            Debug.LogError("Invalid emoji type: " + type);
+            return; // Se falhar visualmente, não propaga para a rede
+        }
+
+        // 2. LÓGICA DE REDE (Só executa se NÃO estivermos a atualizar via callback da rede)
+        if (!_isUpdatingFromNetwork)
+        {
+            SyncToNetwork(type);
+        }
     }
 
-    /// <summary>
-    /// Initializes the emojis dictionary from child objects.
-    /// </summary>
+    // Lógica isolada de envio
+    private void SyncToNetwork(EmojiType type)
+    {
+        // Verifica se o NetworkManager existe e está ligado
+        if (NetworkManager.Singleton == null || (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer))
+        {
+            return; // Estamos offline (modo teste), não faz nada na rede
+        }
+
+        // Evita envio redundante se o valor já for igual
+        if (_netEmojiState.Value == type) return;
+
+        if (IsServer)
+        {
+            _netEmojiState.Value = type;
+        }
+        else if (IsOwner) // Se for cheat local do dono
+        {
+            RequestEmojiChangeServerRpc(type);
+        }
+    }
+
+    [ServerRpc]
+    private void RequestEmojiChangeServerRpc(EmojiType newType)
+    {
+        _netEmojiState.Value = newType;
+    }
+
+    // --- UTILS E PARSING ---
+
+    public void ProcessServerString(string message)
+    {
+        if (string.IsNullOrEmpty(message)) return;
+        
+        message = message.Trim();
+        if (System.Enum.TryParse(message, true, out EmojiType result))
+        {
+            UpdateVisuals(result); 
+        }
+    }
+
     private void SetEmojis()
     {
         foreach (GameObject emoji in Utils.GetChildren(transform))
@@ -153,9 +125,6 @@ public class ActivateEmoji : NetworkBehaviour
             emoji.SetActive(false); 
         }
 
-        if (_emojis.ContainsKey("neutral"))
-        {
-            _currentEmojiActive = _emojis["neutral"];
-        }   
+        if (_emojis.ContainsKey("neutral")) _currentEmojiActive = _emojis["neutral"];
     }
 }
