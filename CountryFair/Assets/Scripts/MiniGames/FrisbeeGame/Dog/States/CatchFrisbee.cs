@@ -59,6 +59,8 @@ public class CatchFrisbee : DogState
 
         SetFrisbeeDestination();
 
+        Bark();
+
         catchFrisbee.Invoke();
    }
 

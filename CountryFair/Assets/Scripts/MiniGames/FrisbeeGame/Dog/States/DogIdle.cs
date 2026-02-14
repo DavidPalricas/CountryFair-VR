@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -24,12 +25,13 @@ public class DogIdle : DogState
     [SerializeField]
     private GameObject scoreArea;
 
+    [SerializeField]
+    private float minImpatientTime = 10f;
+    
+    [SerializeField]
+    private float maxImpatientTime = 15f;
 
     [Header("Idle Events")]
-
-    [SerializeField]
-    private UnityEvent <AudioManager.GameSoundEffects, GameObject> bark;
-
     [SerializeField]
     private UnityEvent reSpawnScoreAreas;
 
@@ -40,9 +42,10 @@ public class DogIdle : DogState
     [SerializeField]
     private UnityEvent positionReached;
 
-    private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
-
     private bool _firstTimeInIdle = true;
+
+
+    private float _impatientTimer = 0f;
 
     /// <summary>
     /// Initializes the DogIdle state and ensures the score area is initially deactivated.
@@ -90,17 +93,17 @@ public class DogIdle : DogState
     {
         base.Enter();
 
+        Bark();
+
+        RestImpatientTimer();
+
         _currentTargetPos = transform.position;
 
         scoreArea.SetActive(true);
 
-    
-
         positionReached.Invoke();
 
         animator.SetFloat("Speed", 0f);
-
-        bark.Invoke(_barkSoundEffect, gameObject);
 
         if (!_firstTimeInIdle)
         {
@@ -122,6 +125,13 @@ public class DogIdle : DogState
     public override void Execute()
     {
         base.Execute();
+
+
+        if (Time.time >= _impatientTimer)
+        {
+             Bark();
+            RestImpatientTimer();
+        }
 
         RotateDogTowardsTarget(_playerTransform);
     }
@@ -153,5 +163,10 @@ public class DogIdle : DogState
     public override void Exit()
     {
         base.Exit();
+    }
+
+    private void RestImpatientTimer()
+    {
+        _impatientTimer = Utils.RandomValueInRange(minImpatientTime, maxImpatientTime) + Time.time;
     }
 }

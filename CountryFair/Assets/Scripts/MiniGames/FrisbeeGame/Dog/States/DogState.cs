@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 /// <summary>
 /// Abstract base class for all dog behavior states in the Frisbee mini-game.
@@ -19,6 +20,12 @@ using UnityEngine.AI;
     /// </summary>
     [SerializeField]
     private float rotationSpeed = 2f;
+
+    [SerializeField]
+    protected UnityEvent<AudioManager.GameSoundEffects, GameObject> barkEvent;
+
+
+    [Header("Dog Animation Settings")]
 
     [SerializeField]
     protected float animationsCooldown = 1.5f;
@@ -41,6 +48,8 @@ using UnityEngine.AI;
     protected static Vector3 _currentTargetPos;
 
     protected Transform _frisbeeTransform;
+
+    private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
 
     /// <summary>
     /// Initializes the dog state by setting up state properties and configuring the NavMeshAgent.
@@ -139,5 +148,11 @@ using UnityEngine.AI;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
+    }
+
+
+    protected void Bark()
+    {
+         barkEvent.Invoke(_barkSoundEffect, gameObject);
     }
 }
