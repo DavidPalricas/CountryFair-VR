@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class AnimalWalk: State
+public class AnimalWalk: AnimalState
 {   
      [Range(0f, 1f)]
      [SerializeField]

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AnimalIdle: State
+public class AnimalIdle: AnimalState
 {
     [SerializeField]
     private float minTimeToIdle = 30f;

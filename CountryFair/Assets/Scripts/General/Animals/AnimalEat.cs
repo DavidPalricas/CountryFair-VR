@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AnimalEat: State
+public class AnimalEat: AnimalState
 {
     [SerializeField]
     private float minTimeToEat = 30f;
