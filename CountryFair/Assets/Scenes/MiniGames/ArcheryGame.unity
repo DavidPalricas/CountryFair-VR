@@ -685,7 +685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryGameManager
   targetsCount: 5
   targetsPerLevel: 0.5
-  sessionScoreGoal: 20
+  sessionScoreGoal: 200000
   difficultyLevel: 0
   balloonColorToScoreText: {fileID: 1730009024}
   balloonSpawnArea: {fileID: 925036648}
@@ -767,6 +767,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  slowMoveDuration: 6
+  fastMoveDuration: 1.5
 --- !u!4 &106628085
 Transform:
   m_ObjectHideFlags: 0
@@ -2207,8 +2209,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.42239562, b: 0.2509321, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42239714, b: 0.25093362, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.42239434, b: 0.25093082, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42239475, b: 0.25093123, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
