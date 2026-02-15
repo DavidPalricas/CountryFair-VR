@@ -49,6 +49,8 @@ public class AudioManager: MonoBehaviour
         /// <summary>Dog footsteps sound effect.</summary>
         DOG_FOOTSTEPS,
 
+        DOG_HAPPY_WHINE,
+
         /* Archery Game Sound Effects */
         ///<summary>Balloon popping sound effect.</summary>
         BALLOON_POP,

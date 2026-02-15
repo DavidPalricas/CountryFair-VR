@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{2012f149-71e8-4f0c-a267-952704e5d098}">
+		<property name="assetPath">
+			<value>dogHappyWhine.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.746</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{af4a6e97-14d7-49e8-aae4-8e30a0f18222}</destination>
+		</relationship>
+	</object>
+</objects>

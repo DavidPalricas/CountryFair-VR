@@ -25,12 +25,22 @@ public class ArcheryGameManager : MiniGameManager
     [SerializeField] 
     private AnimationCurve transparencyRatioCurve;
 
+    [Header("Speed Progression")]
+    [Tooltip("Movement duration in lowest difficulty (Bigger is slower). Ex: 4s")]
+    [SerializeField] 
+    private float slowMoveDuration = 6.0f;
+
+    [Tooltip("Movement duration in highest difficulty (Smaller is faster). Ex: 1s" )]
+    [SerializeField] 
+    private float fastMoveDuration = 1.5f;
+
     private Dictionary<GameObject, int> balloonTypesCount;
     private GameObject _balloonPrefabToScore;
     
     // Variáveis de Controlo
     private float _currentMovingRatio;
     private float _currentTransparencyRatio;
+    private float _currentMoveDuration; 
 
 
     protected override void Awake()
@@ -80,7 +90,7 @@ public class ArcheryGameManager : MiniGameManager
     public override void ChangeDifficulty(bool isToIncreaseDiff)
     {
         difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
-        Debug.Log($"<color=orange>ARCHERY DDA:</color> Nível {difficultyLevel}");
+        Debug.Log($"<color=orange>ARCHERY DDA:</color> Level {difficultyLevel}");
         ApplyDifficultySettings();
     }
 
@@ -92,7 +102,9 @@ public class ArcheryGameManager : MiniGameManager
         _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
         _currentTransparencyRatio = transparencyRatioCurve.Evaluate(saturationFactor);
 
-        Debug.Log($"[Archery Stats] Total Ideal: {_currentDesiredCount} | Movimento: {_currentMovingRatio:P0}");
+        _currentMoveDuration = Mathf.Lerp(slowMoveDuration, fastMoveDuration, saturationFactor);
+        
+        Debug.Log($"[Archery Stats] Total Balloons: {_currentDesiredCount} | Movimento Ratio: {_currentMovingRatio:P0} | Move Duration: {_currentMoveDuration:F1}s");
         
         SetBalloonColorToScore();
         SyncTargets(_currentDesiredCount);
@@ -117,7 +129,6 @@ public class ArcheryGameManager : MiniGameManager
     {
         Vector3 pos = GetRandomTargetPosition();
         
-        // Se não forçado, deixa o algoritmo escolher o melhor para equilíbrio
         if (prefabToSpawn == null)
         {
             prefabToSpawn = GetBalloonType();
@@ -125,7 +136,6 @@ public class ArcheryGameManager : MiniGameManager
 
         GameObject newBalloon = Instantiate(prefabToSpawn, pos, Quaternion.identity);
 
-        // GetComponent simples (assumindo script na raiz ou filho)
         BalloonArcheryGame balloonComponent = newBalloon.GetComponentInChildren<BalloonArcheryGame>();
         
         balloonComponent.OriginalPrefab = prefabToSpawn;
@@ -159,7 +169,6 @@ public class ArcheryGameManager : MiniGameManager
 
         if (_spawnedTargets.Count < _currentDesiredCount)
         {
-            // Se não houver NENHUM da cor alvo, forçamos a cor alvo.
             if (balloonTypesCount[_balloonPrefabToScore] == 0)
             {
                 AddTarget(_balloonPrefabToScore);
@@ -184,6 +193,8 @@ public class ArcheryGameManager : MiniGameManager
         for (int i = 0; i < total; i++)
         {    
             BalloonArcheryGame balloonComponent = shuffled[i].GetComponentInChildren<BalloonArcheryGame>();
+
+            balloonComponent.SetMoveDuration(_currentMoveDuration);
 
             balloonComponent.AdjustMovement(i < targetMovingCount);
             balloonComponent.AdjustTransparency(i < targetTransparentCount);

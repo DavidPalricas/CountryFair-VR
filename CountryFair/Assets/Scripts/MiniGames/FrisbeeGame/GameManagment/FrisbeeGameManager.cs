@@ -164,11 +164,11 @@ public class FrisbeeGameManager : MiniGameManager
         float scoreAreaDistance = currentDogDist * Random.Range(MIN_OFFSET, MAX_OFFSET);
 
         Vector3 scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
-        
+
         scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
 
         int layerMask = LayerMask.GetMask("ScoreArea");
-
+        
         bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, layerMask);
 
         if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || collidesWithOtherAreas)

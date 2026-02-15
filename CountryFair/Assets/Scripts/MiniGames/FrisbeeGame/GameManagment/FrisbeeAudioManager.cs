@@ -13,6 +13,12 @@ public class FrisbeeAudioManager : AudioManager
     /// </summary>
     [SerializeField]
     private EventReference dogBarkSound;
+    
+    /// <summary>
+    /// FMOD event reference for the dog happy whine sound effect.
+    /// </summary>
+    [SerializeField]
+    private EventReference dogHappyWhineSound;
 
     /// <summary>
     /// FMOD event reference for the frisbee throw sound effect.
@@ -89,6 +95,10 @@ public class FrisbeeAudioManager : AudioManager
 
             case GameSoundEffects.DOG_BARK:
                 eventToPlay = dogBarkSound;
+                break;
+
+            case GameSoundEffects.DOG_HAPPY_WHINE:
+                eventToPlay = dogHappyWhineSound;
                 break;
                 
             case GameSoundEffects.FRISBEE_THROW:

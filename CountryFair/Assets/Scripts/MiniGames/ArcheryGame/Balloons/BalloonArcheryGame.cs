@@ -267,6 +267,18 @@ public class BalloonArcheryGame : MonoBehaviour
         return _colorName;
     }
 
+
+    public void SetMoveDuration(float duration)
+    {
+        moveDuration = duration;
+        
+        if (DOTween.IsTweening(_moveId))
+        {
+            StopMovement();
+            StartMovement();
+        }
+    }
+
     private void OnDestroy()
     {
         transform.DOKill();

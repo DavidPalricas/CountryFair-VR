@@ -37,15 +37,6 @@ public class OnMovement : FrisbeeState
     private float liftStrength = 0.15f;
     
     /// <summary>
-    /// Base drag coefficient when the frisbee cuts through air in knife-edge orientation.
-    /// Represents minimal air resistance during stable, flat flight.
-    /// Currently not actively used in the simplified aerodynamic model.
-    /// </summary>
-    [Tooltip("Drag coefficient when the disc cuts through air (knife-edge orientation).")]
-    [SerializeField]
-    private float baseDrag = 0.05f;
-    
-    /// <summary>
     /// Unity event invoked when the frisbee exits the play area bounds.
     /// Listeners can use this to trigger game logic such as score penalties or UI updates.
     /// </summary>
@@ -65,6 +56,9 @@ public class OnMovement : FrisbeeState
     /// Stored to restore default physics behavior when exiting this state.
     /// </summary>
     private float _defaultAngularDrag;
+
+
+    private const float STOP_THRESHOLD = 0.1f;
 
 
     /// <summary>
@@ -172,11 +166,14 @@ public class OnMovement : FrisbeeState
     {
         Vector3 velocity = _rigidbody.linearVelocity; 
         float speed = velocity.magnitude;
-        const float STOP_THRESHOLD = 0.1f;
-
+       
         if (speed < STOP_THRESHOLD)
         {
-            if (_touchedGround) fSM.ChangeState("StoppedOnGround");
+            if (_touchedGround)
+            {
+                fSM.ChangeState("StoppedOnGround");
+            } 
+
             return;
         }
 
@@ -215,14 +212,26 @@ public class OnMovement : FrisbeeState
     /// Only processes collisions when this state is currently active.
     /// </remarks>
     private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.CompareTag("Ground") && fSM.CurrentState == this)
+    {  
+        if (fSM.CurrentState == this)
         {
-            _touchedGround = true;
-            _rigidbody.angularDamping = 10.0f;
-        }
+            _rigidbody.constraints = RigidbodyConstraints.None;
 
-        _rigidbody.constraints = RigidbodyConstraints.None;
+            if (other.gameObject.CompareTag("Ground"))
+            {
+                _touchedGround = true;
+                _rigidbody.angularDamping = 10.0f;
+
+                return;
+            }
+
+            if (other.gameObject.CompareTag("OutOfBounds") && !_touchedGround)
+            {   
+                playerMissed.Invoke();
+            
+                fSM.ChangeState("FrisbeeOutOfBounds");
+            }
+        }
     }
 
     /// <summary>
@@ -245,28 +254,6 @@ public class OnMovement : FrisbeeState
         {
             _touchedGround = false;
             _rigidbody.angularDamping = 0.1f;
-        }
-    }
-
-    /// <summary>
-    /// Unity trigger callback invoked when the frisbee exits a trigger collider.
-    /// Handles out-of-bounds detection and triggers appropriate game events.
-    /// </summary>
-    /// <param name="other">The collider that the frisbee has exited.</param>
-    /// <remarks>
-    /// When exiting triggers tagged "OutOfBounds":
-    /// <list type="bullet">
-    /// <item><description>Invokes <see cref="playerMissed"/> event for game logic (score updates, UI feedback)</description></item>
-    /// <item><description>Transitions to "FrisbeeOutOfBounds" state for proper cleanup and reset</description></item>
-    /// </list>
-    /// Only processes trigger exits when this state is currently active.
-    /// </remarks>
-    private void OnTriggerExit(Collider other)
-    {
-          if (other.gameObject.CompareTag("OutOfBounds") && fSM.CurrentState == this)
-        {   
-            playerMissed.Invoke();
-            fSM.ChangeState("FrisbeeOutOfBounds");
         }
     }
 }

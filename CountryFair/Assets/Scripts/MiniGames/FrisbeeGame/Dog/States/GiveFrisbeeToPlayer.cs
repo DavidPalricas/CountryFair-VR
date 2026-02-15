@@ -19,14 +19,22 @@ public class GiveFrisbeeToPlayer : DogState
    /// </summary>
    [SerializeField]
     private GameObject frisbeeInDogMouth;
-
+    
+    [Header("Events")]
     /// <summary>
     /// Event invoked when the dog successfully returns the frisbee to the player.
     /// This event is used to trigger the <see cref="Landed.FrisbeeGivenByDog"/> method to notify that the frisbee has been given back.
     /// </summary>
     [SerializeField]
     private UnityEvent frisbeeGivenToPlayer;
-   
+
+    [SerializeField]
+    private UnityEvent<AudioManager.GameSoundEffects, GameObject> happyWhine;
+
+
+
+    private readonly AudioManager.GameSoundEffects _happyWhineSoundEffect = AudioManager.GameSoundEffects.DOG_HAPPY_WHINE;
+
     /// <summary>
     /// Initializes the GiveFrisbeeToPlayer state and validates the frisbee reference.
     /// </summary>
@@ -108,6 +116,8 @@ public class GiveFrisbeeToPlayer : DogState
          if (DogStoped())
          {  
             frisbeeGivenToPlayer.Invoke();
+
+            happyWhine.Invoke(_happyWhineSoundEffect, gameObject);
 
             fSM.ChangeState("FrisbeeGiven");
          }
