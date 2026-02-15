@@ -46,8 +46,6 @@ public class AnimalState: State
     {
         base.Enter();
 
-        Debug.Log("Animal Current State: " + GetType().Name + " | Hunger: " + _animalUtility.stats.hunger + " | Boredom: " + _animalUtility.stats.boredom + " | Fatigue: " + _animalUtility.stats.fatigue);
-
         IncreaseStats();
     }
 
@@ -74,5 +72,7 @@ public class AnimalState: State
         _animalUtility.stats.hunger = _hungerStat;
         _animalUtility.stats.boredom = _boredomStat; 
         _animalUtility.stats.fatigue = _fatigueStat;
+
+        Debug.Log("Animal Current State: " + GetType().Name + " | Hunger: " + _animalUtility.stats.hunger + " | Boredom: " + _animalUtility.stats.boredom + " | Fatigue: " + _animalUtility.stats.fatigue);
     }
 }
