@@ -22,16 +22,16 @@ public class AnimalIdle: AnimalState
         base.Enter();
 
         _timeIdle = Utils.RandomValueInRange(minTimeToIdle, maxTimeToIdle) + Time.time;
+
+        _fatigueStat = Mathf.Max(_fatigueStat - fatigueRecoveryRate, 0f);
+
+        UpdateStats();
     }
 
 
     public override void Execute()
     {
         base.Execute();
-
-        _fatigueStat = Mathf.Max(_fatigueStat - fatigueRecoveryRate, 0f);
-
-        UpdateStats();
 
         if (Time.time >= _timeIdle)
         {

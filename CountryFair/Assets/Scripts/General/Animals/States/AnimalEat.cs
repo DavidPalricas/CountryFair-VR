@@ -22,6 +22,10 @@ public class AnimalEat: AnimalState
         base.Enter();
 
         _timeToEat = Utils.RandomValueInRange(minTimeToEat, maxTimeToEat) + Time.time;
+
+        _hungerStat = Mathf.Max(_hungerStat - hungerRecoveryRate, 0f);
+
+        UpdateStats();
     }
 
 
@@ -29,10 +33,6 @@ public class AnimalEat: AnimalState
     {
         base.Execute();
 
-        _hungerStat = Mathf.Max(_hungerStat - hungerRecoveryRate, 0f);
-
-        UpdateStats();
- 
         if (Time.time >= _timeToEat)
         {
             string transitionName = _animalUtility.DecideNextAction();

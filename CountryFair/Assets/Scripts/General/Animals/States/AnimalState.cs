@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(AnimalUtility))]
 
 public class AnimalState: State
@@ -30,9 +29,9 @@ public class AnimalState: State
 
     protected virtual void Awake()
     {
-        _animator = GetComponent<Animator>();
-
         _animalUtility = GetComponent<AnimalUtility>();
+
+        _animator = _animalUtility.Animator;
 
         AnimalUtility.Stats animalStats = _animalUtility.stats;
 
@@ -46,15 +45,15 @@ public class AnimalState: State
     public override void Enter()
     {
         base.Enter();
+
+        Debug.Log("Animal Current State: " + GetType().Name + " | Hunger: " + _animalUtility.stats.hunger + " | Boredom: " + _animalUtility.stats.boredom + " | Fatigue: " + _animalUtility.stats.fatigue);
+
+        IncreaseStats();
     }
 
     public override void Execute()
     {
         base.Execute(); 
-
-        IncreaseStats();
-
-        Debug.Log("Animal Current State: " + GetType().Name + " | Hunger: " + _animalUtility.stats.hunger + " | Boredom: " + _animalUtility.stats.boredom + " | Fatigue: " + _animalUtility.stats.fatigue);
     }
 
     public override void Exit()

@@ -1,5 +1,8 @@
 using UnityEngine;
+using System.Linq;
+using System.Collections.Generic;
 
+[RequireComponent(typeof(Animator))]
 public class AnimalUtility: MonoBehaviour
 {
     public struct Stats
@@ -12,11 +15,14 @@ public class AnimalUtility: MonoBehaviour
     public Stats stats;
 
 
+    public Animator Animator { get; private set; }
+
+
     private void Awake()
     {
        InitializeStats();
+        Animator = GetComponent<Animator>();
     }
-
 
     private void InitializeStats()
     {
@@ -30,23 +36,18 @@ public class AnimalUtility: MonoBehaviour
 
 
     public string DecideNextAction()
-    {
-        float hunger = stats.hunger;
-
-        float boredom = stats.boredom;
-
-        float fatigue = stats.fatigue;
-
-        if (hunger >= boredom && hunger >= fatigue)
+    {   
+        Dictionary<string, float> actions = new()
         {
-            return "GoEat";
-        }
+            { "GoEat", stats.hunger },
+            { "GoIdle", stats.fatigue },
+            { "GoWalk", stats.boredom }
+        };
 
-        if (boredom >= fatigue)
-        {
-            return "GoWalk";
-        }
+        string actionChoosen = actions.OrderByDescending(x => x.Value).First().Key;
 
-        return "GoIdle";
+        Animator.SetTrigger(actionChoosen);
+
+        return actionChoosen;
     }
 }

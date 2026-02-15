@@ -24,15 +24,16 @@ public class AnimalWalk: AnimalState
         _agent.isStopped = false;
 
         SetRandomDestination();
+
+        _boredomStat = Mathf.Max(_boredomStat - boredomRecoveryRate, 0f);
+
+        UpdateStats();
+
     }
 
     public override void Execute()
     {
         base.Execute();
-
-        _boredomStat = Mathf.Max(_boredomStat - boredomRecoveryRate, 0f);
-
-        UpdateStats();
 
         if (AnimalStoped())
         {
