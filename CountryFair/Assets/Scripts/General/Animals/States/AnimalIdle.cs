@@ -1,7 +1,14 @@
+using System;
 using UnityEngine;
 
 public class AnimalIdle: AnimalState
-{
+{   
+    [Header("Recovery Stats Rates")]
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float fatigueRecoveryRate = 0.01f;
+
+    [Header("Idle Time Settings")]
     [SerializeField]
     private float minTimeToIdle = 30f;
 
@@ -22,9 +29,14 @@ public class AnimalIdle: AnimalState
     {
         base.Execute();
 
+        _fatigueStat = Mathf.Max(_fatigueStat - fatigueRecoveryRate, 0f);
+
+        UpdateStats();
+
         if (Time.time >= _timeIdle)
         {
-            fSM.ChangeState("StartMoving");
+            string transitionName = _animalUtility.DecideNextAction();
+            fSM.ChangeState(transitionName);
         }
     }
 
