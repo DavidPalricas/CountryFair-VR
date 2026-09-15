@@ -6,24 +6,32 @@ using UnityEngine.Events;
 
 /// <summary>
 /// Orchestrates placeholder visibility and element positioning during drag-and-drop rearrangement.
-/// Maintains a map of each <see cref="OrderableElement"/> to the <see cref="PlaceHolder"/> it currently occupies,
+/// Maintains a map of each <see cref="OrderableTentElement"/> to the <see cref="TentPlaceHolder"/> it currently occupies,
 /// and swaps entries when the player drops an element into a slot already taken by another element.
+/// One instance manages the world tents and a twin instance manages the wrist-menu panels; they mirror
+/// each other's order via <see cref="_updateOtherManagers"/> / <see cref="OnOtherManagerUpdate"/>.
 /// </summary>
-public class PlaceHolderManager : MonoBehaviour
+public class TentPlaceHolderManager : MonoBehaviour
 {
+    /// <summary>Broadcasts this manager's current element order so the twin manager on the other surface can mirror it.</summary>
     [SerializeField]
-    private UnityEvent<Dictionary<string, string>> updateOtherManagers;
+    private UnityEvent<Dictionary<string, string>> _updateOtherManagers;
 
+    /// <summary>Parent transform whose children are scanned for <see cref="OrderableTentElement"/> components to register.</summary>
     [SerializeField]
-    private Transform elementsTransform = null;
+    private Transform _elementsTransform = null;
 
 
     /// <summary>Tracks which placeholder each element currently occupies.</summary>
-    private readonly Dictionary<OrderableTentElement, PlaceHolder> _elementsMap = new ();
-     
+    private readonly Dictionary<OrderableTentElement, TentPlaceHolder> _elementsMap = new ();
+
+     /// <summary>
+     /// Discovers all scene tents/panels by tag, seeds <see cref="_elementsMap"/> with their starting slots,
+     /// and hides all placeholders until a grab begins.
+     /// </summary>
      private void Awake()
      {
-        if (elementsTransform == null)
+        if (_elementsTransform == null)
         {
             Debug.LogError("Elements Transform reference is null in PlaceHolderManager");
 
@@ -46,29 +54,27 @@ public class PlaceHolderManager : MonoBehaviour
         TogglePlaceHolders(false);
      }
 
-    /// <summary>
-    /// Discovers all scene tents by tag, seeds <see cref="_elementsMap"/> with their starting slots,
-    /// and hides all placeholders until a grab begins.
-    /// </summary>
+    /// <summary>Broadcasts the starting element order to the twin manager so both surfaces begin in sync.</summary>
     private void Start()
-    {   
+    {
         Dictionary<string, string> fairState = GetFairState();
 
-        updateOtherManagers.Invoke(fairState);
+        _updateOtherManagers.Invoke(fairState);
     }
 
 
+    /// <summary>Collects every <see cref="OrderableTentElement"/> registered under <see cref="_elementsTransform"/>.</summary>
     private OrderableTentElement[] GetOrderableElements()
     {
-        return elementsTransform.GetComponentsInChildren<OrderableTentElement>();
+        return _elementsTransform.GetComponentsInChildren<OrderableTentElement>();
     }
 
     /// <summary>Shows or hides all registered placeholder GameObjects.</summary>
     private void TogglePlaceHolders(bool isActive)
     {
-        PlaceHolder[] placeHolders = _elementsMap.Values.ToArray();
+        TentPlaceHolder[] placeHolders = _elementsMap.Values.ToArray();
 
-        foreach (PlaceHolder placeHolder in placeHolders)
+        foreach (TentPlaceHolder placeHolder in placeHolders)
         {
             placeHolder.gameObject.SetActive(isActive);
         }
@@ -129,10 +135,10 @@ public class PlaceHolderManager : MonoBehaviour
 
         Dictionary<string, string> fairState = GetFairState();
 
-        updateOtherManagers.Invoke(fairState);
+        _updateOtherManagers.Invoke(fairState);
     }
 
-
+    /// <summary>Builds a mini-game-name-to-slot-number map describing the current fair layout, for the webapp.</summary>
     private Dictionary<string, string> GetFairState()
     {
         Dictionary<string, string> fairState = new();
@@ -140,7 +146,7 @@ public class PlaceHolderManager : MonoBehaviour
         foreach (var kvp in _elementsMap)
         {
             OrderableTentElement element = kvp.Key;
-            PlaceHolder placeHolder = kvp.Value;
+            TentPlaceHolder placeHolder = kvp.Value;
 
             fairState[element.miniGame.ToString()] = placeHolder.number.ToString();
         }
@@ -154,9 +160,9 @@ public class PlaceHolderManager : MonoBehaviour
     /// </summary>
     private void UpdateElementPosition(OrderableTentElement unselectedElement)
     {
-       PlaceHolder previousUnselectedTentPlaceHolder = _elementsMap[unselectedElement];
+       TentPlaceHolder previousUnselectedTentPlaceHolder = _elementsMap[unselectedElement];
 
-       PlaceHolder currentUnselectedTentPlaceHolder = unselectedElement.GetCurrentPlaceHolder();
+       TentPlaceHolder currentUnselectedTentPlaceHolder = unselectedElement.GetCurrentPlaceHolder();
 
        foreach (OrderableTentElement tent in _elementsMap.Keys)
        {
@@ -174,14 +180,13 @@ public class PlaceHolderManager : MonoBehaviour
        }
     }
 
-
     /// <summary>
-    /// Entry point called by <see cref="OrderableElement.OnElementSelectionChanged"/>.
+    /// Entry point called by <see cref="OrderableTentElement.OnElementSelectionChanged"/>.
     /// Routes to <see cref="ElementSelected"/> or <see cref="ElementUnselected"/> based on <paramref name="isTentSelected"/>.
     /// </summary>
     /// <param name="isTentSelected">True when the tent was grabbed; false when released.</param>
     /// <param name="element">The tent that changed state.</param>
-    /// <remarks>Invocado via Inspector no UnityEvent <c>OnTentSelectionChanged</c> de cada <see cref="OrderableElement"/>.</remarks>
+    /// <remarks>Invoked via the Inspector in the <c>OnTentSelectionChanged</c> UnityEvent of each <see cref="OrderableTentElement"/>.</remarks>
     public void HandleTentSelection(bool isTentSelected, OrderableTentElement element)
     {
         if (isTentSelected)
@@ -194,13 +199,19 @@ public class PlaceHolderManager : MonoBehaviour
         ElementUnselected(element);
     }
 
-
+    /// <summary>
+    /// Mirrors the twin manager's element order onto this one: for each incoming element, finds the
+    /// matching local element by <see cref="OrderableTentElement.miniGame"/>, moves it to the placeholder
+    /// with the same slot <see cref="TentPlaceHolder.number"/>, and snaps it there.
+    /// </summary>
+    /// <param name="fairState">Mini-game-name-to-slot-number map describing the twin manager's current layout.</param>
+    /// <remarks>Invoked via the Inspector in the <c>_updateOtherManagers</c> UnityEvent of the <see cref="TentPlaceHolderManager"/> on the other surface.</remarks>
     public void OnOtherManagerUpdate(Dictionary<string, string> fairState)
-    {   
-        foreach(var miniGame in fairState.Keys)
-        {  
+    {
+        foreach (var miniGame in fairState.Keys)
+        {
             OrderableTentElement element = _elementsMap.Keys.FirstOrDefault(e => e.miniGame.ToString().ToLower() == miniGame.ToLower());
-            
+
             if (element == null)
             {
                 Debug.LogError($"Element with miniGame '{miniGame}' not found in this manager.");
@@ -210,7 +221,7 @@ public class PlaceHolderManager : MonoBehaviour
 
             int placeHolderNumber = int.Parse(fairState[miniGame]);
 
-            PlaceHolder updatedPlaceHolder = _elementsMap.Values.FirstOrDefault(ph => ph.number == placeHolderNumber);
+            TentPlaceHolder updatedPlaceHolder = _elementsMap.Values.FirstOrDefault(ph => ph.number == placeHolderNumber);
 
             element.UpdateTentPlaceHolder(updatedPlaceHolder);
 
@@ -218,33 +229,5 @@ public class PlaceHolderManager : MonoBehaviour
 
             element.SnapToCurrentPlaceHolder();
         }
-
-        /*
-        OrderableTentElement[] elements = _elementsMap.Keys.ToArray();
-
-        PlaceHolder[] placeHolders = _elementsMap.Values.ToArray();
-
-        foreach (OrderableTentElement other in otherElements)
-        {  
-            OrderableTentElement element = elements.FirstOrDefault(e => e.miniGame == other.miniGame);
-
-            if (element == null)
-            {
-               Debug.LogError($"Element with miniGame '{other.miniGame}' not found in this manager.");
-
-                return;
-            }
-
-            int otherPlaceHolderNumber = other.GetCurrentPlaceHolder().number;
-
-            PlaceHolder updatedPlaceHolder = placeHolders.FirstOrDefault(ph => ph.number == otherPlaceHolderNumber);
-
-            element.UpdateTentPlaceHolder(updatedPlaceHolder);
-
-            UpdateElementPosition(element);
-
-            element.SnapToCurrentPlaceHolder();
-        }
-        */
     }
 }

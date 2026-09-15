@@ -47,12 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b6b9a508b68a0b469388f09af455c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentPlaceHolder
+  number: 1
   miniGameButtonPlaceHolderTransform: {fileID: 8145341606757159156}
-  modelTransform: {fileID: 6159350111726134523}
-  bounceHeight: 0.15
-  bounceDuration: 1.2
-  squashAmount: 0.12
-  tentNumber: 1
+  _modelTransform: {fileID: 6159350111726134523}
+  _bounceHeight: 0.15
+  _bounceDuration: 1.2
+  _squashAmount: 0.12
 --- !u!65 &8111496423141831807
 BoxCollider:
   m_ObjectHideFlags: 0
