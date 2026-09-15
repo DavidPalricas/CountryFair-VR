@@ -17,41 +17,42 @@ public class MiniGameTent : OrderableTentElement
     [Header("Text elements")]
     /// <summary>Displays the tent's descriptive text label.</summary>
     [SerializeField]
-    private TextMeshProUGUI tentText;
+    private TextMeshProUGUI _tentText;
 
-    /// <summary>Displays the numbered ribbon badge assigned by <see cref="TentPlaceHolder.tentNumber"/>.</summary>
+    /// <summary>Displays the numbered ribbon badge assigned by <see cref="TentPlaceHolder.number"/>.</summary>
     [SerializeField]
-    private TextMeshProUGUI tentNumber;
+    private TextMeshProUGUI _tentNumber;
 
+    /// <summary>Dropdown entry representing this tent, hidden while it is grabbed.</summary>
     [SerializeField]
-    private GameObject dropdownItem;
+    private GameObject _dropdownItem;
 
     [Header("PlaceHolders")]
-    
-    /// <summary>Anchor used when spawning <see cref="miniGamePropPrefab"/> above the tent.</summary>
+
+    /// <summary>Anchor used when spawning <see cref="_miniGamePropPrefab"/> above the tent.</summary>
     [SerializeField]
-    private Transform miniGamePropPlaceHolderTransform;
+    private Transform _miniGamePropPlaceHolderTransform;
 
     [Header("Tent Objects")]
     /// <summary>Prefab for the decorative mini-game prop spawned above this tent on Start.</summary>
     [SerializeField]
-    private GameObject miniGamePropPrefab;
+    private GameObject _miniGamePropPrefab;
 
     /// <summary>Play button shown when the player's ray targets this tent.</summary>
     [SerializeField]
-    private GameObject buttonToPlayMiniGame;
+    private GameObject _buttonToPlayMiniGame;
 
     /// <summary>Ribbon decoration that hosts the tent number badge.</summary>
     [SerializeField]
-    private GameObject ribbon;
+    private GameObject _ribbon;
 
-    [Header("Data")]
-    /// <summary>Text displayed on the tent panel; applied to <see cref="tentText"/> on Awake.</summary>
-    [SerializeField]
-    private string textToShow = string.Empty;
+    /// <summary>Text displayed on the tent panel; derived from <see cref="OrderableTentElement.miniGame"/> and applied to <see cref="_tentText"/> on Awake.</summary>
+    private string _textToShow = string.Empty;
 
+    /// <summary>The decorative mini-game prop instance spawned above this tent.</summary>
     private GameObject _miniGameProp;
 
+     /// <summary>True while the player is currently grabbing this tent; suppresses the ray check while grabbed.</summary>
      private bool _isSelected = false;
 
     /// <summary>
@@ -59,31 +60,33 @@ public class MiniGameTent : OrderableTentElement
     /// and hides the play button until the player aims at the tent.
     /// </summary>
     protected override void Awake()
-    {   
+    {
         base.Awake();
-        tentText.text = textToShow;
 
-        if (buttonToPlayMiniGame == null)
+        _textToShow = GetTextToShow(miniGame);
+        _tentText.text = _textToShow;
+
+        if (_buttonToPlayMiniGame == null)
         {
             Debug.LogError("Red Button is not assigned in MiniGameTent script.");
             return;
         }
 
-        buttonToPlayMiniGame.SetActive(false);
+        _buttonToPlayMiniGame.SetActive(false);
 
-        if (miniGamePropPrefab == null)
+        if (_miniGamePropPrefab == null)
         {
             Debug.LogError("Mini Game Object is not assigned in MiniGameTent script.");
             return;
         }
 
-        if (tentNumber == null)
+        if (_tentNumber == null)
         {
             Debug.LogError("Ribbon Number Text is not assigned in MiniGameTent script.");
             return;
         }
 
-        if (miniGamePropPlaceHolderTransform == null)
+        if (_miniGamePropPlaceHolderTransform == null)
         {
             Debug.LogError("One or more required transforms are not assigned in MiniGameTent script.");
 
@@ -98,7 +101,7 @@ public class MiniGameTent : OrderableTentElement
     }
 
     /// <summary>
-    /// Casts a Meta Quest ray each frame and shows or hides <see cref="buttonToPlayMiniGame"/>
+    /// Casts a Meta Quest ray each frame and shows or hides <see cref="_buttonToPlayMiniGame"/>
     /// based on whether the ray hits this tent. Skipped while the tent is grabbed.
     /// </summary>
     private void LateUpdate()
@@ -109,6 +112,7 @@ public class MiniGameTent : OrderableTentElement
         }
     }
 
+    /// <summary>Shows the play button only when the player's gaze/pointer ray is currently hitting this tent's collider.</summary>
     private void CheckIfPlayerWantsToGoToMiniGame()
     {
         Ray ray = Utils.CastRayMetaQuest();
@@ -117,24 +121,24 @@ public class MiniGameTent : OrderableTentElement
         {
             bool isToShowData = hitInfo.collider == _collider;
 
-            buttonToPlayMiniGame.SetActive(isToShowData);
+            _buttonToPlayMiniGame.SetActive(isToShowData);
         }
     }
 
-    /// <summary>Instantiates <see cref="miniGamePropPrefab"/> slightly above the placeholder anchor and parents it to this tent.</summary>
+    /// <summary>Instantiates <see cref="_miniGamePropPrefab"/> slightly above the placeholder anchor and parents it to this tent.</summary>
     private void AddMiniGameObject()
     {
         _miniGameProp = Instantiate(
-            miniGamePropPrefab,
-            miniGamePropPlaceHolderTransform.position + miniGamePropPlaceHolderTransform.up * 0.1f,
-            miniGamePropPrefab.transform.rotation
+            _miniGamePropPrefab,
+            _miniGamePropPlaceHolderTransform.position + _miniGamePropPlaceHolderTransform.up * 0.1f,
+            _miniGamePropPrefab.transform.rotation
         );
 
         _miniGameProp.transform.parent = transform;
     }
 
     /// <summary>Loads the mini-game scene assigned to this tent.</summary>
-    /// <remarks>Invocado via Inspector no botão <c>buttonToPlayMiniGame</c> (OnClick).</remarks>
+    /// <remarks>Invocado via Inspector no botão <c>_buttonToPlayMiniGame</c> (OnClick).</remarks>
     public void GoToMiniGame()
     {
         switch (miniGame)
@@ -153,19 +157,43 @@ public class MiniGameTent : OrderableTentElement
         }
     }
 
-    private void SetTentNumber(int number)
+    /// <summary>Returns the tent panel text for the given mini-game.</summary>
+    private static string GetTextToShow(MINI_GAMES miniGame)
     {
-        tentNumber.text = number.ToString();
+        switch (miniGame)
+        {
+            case MINI_GAMES.ARCHERY:
+                return "Carregue no botao para jogar arco e flecha";
+
+            case MINI_GAMES.DUCKGAME:
+                return "Carregue no botao para jogar o jogo do pato";
+
+            case MINI_GAMES.FISHING:
+                return "Carregue no botao para pescar";
+
+            case MINI_GAMES.FRISBEE:
+                return "Carregue no botao para jogar frisbee";
+
+            default:
+                Debug.LogWarning($"MiniGame '{miniGame}' has no tent text assigned.");
+                return string.Empty;
+        }
     }
 
-    /// <summary>Hides UI elements and notifies <see cref="PlaceHolderManager"/> that this tent was picked up.</summary>
+    /// <summary>Updates the ribbon badge text to the given slot number.</summary>
+    private void SetTentNumber(int number)
+    {
+        _tentNumber.text = number.ToString();
+    }
+
+    /// <summary>Hides UI elements and notifies <see cref="TentPlaceHolderManager"/> that this tent was picked up.</summary>
     private void TentSelected()
     {
-        buttonToPlayMiniGame.SetActive(false);
+        _buttonToPlayMiniGame.SetActive(false);
 
-        tentText.gameObject.SetActive(false);
-        tentNumber.gameObject.SetActive(false);
-        dropdownItem.SetActive(false);
+        _tentText.gameObject.SetActive(false);
+        _tentNumber.gameObject.SetActive(false);
+        _dropdownItem.SetActive(false);
 
         ToggleRibbonStuff(false);
 
@@ -178,27 +206,31 @@ public class MiniGameTent : OrderableTentElement
     private void TentUnselected()
     {
         Debug.Log("Tent Unselected");
-        buttonToPlayMiniGame.SetActive(true);
+        _buttonToPlayMiniGame.SetActive(true);
 
-        tentText.gameObject.SetActive(true);
-        tentNumber.gameObject.SetActive(true);
-        dropdownItem.SetActive(true);
+        _tentText.gameObject.SetActive(true);
+        _tentNumber.gameObject.SetActive(true);
+        _dropdownItem.SetActive(true);
 
         ToggleRibbonStuff(true);
 
         StartCoroutine(SnapToPlaceHolderNextFixedUpdate());
     }
 
+    /// <summary>Shows or hides the ribbon decoration and its text together.</summary>
     private void ToggleRibbonStuff(bool isActive)
     {
-        ribbon.SetActive(isActive);
-        tentText.gameObject.SetActive(isActive);
+        _ribbon.SetActive(isActive);
+        _tentText.gameObject.SetActive(isActive);
     }
 
+    /// <summary>Toggles between the selected (grabbed) and unselected visual states.</summary>
+    /// <param name="isGrabbed">True when the grab begins; false when the player releases the tent.</param>
+    /// <remarks>Invocado via Inspector nos eventos OnSelectEntered/OnSelectExited do componente XR Grab Interactable deste tent.</remarks>
     public override void HandleGrab(bool isGrabbed)
-    {    
+    {
        _isSelected = isGrabbed;
-    
+
         if (isGrabbed)
         {
             TentSelected();
@@ -216,7 +248,7 @@ public class MiniGameTent : OrderableTentElement
     {
         base.SnapToCurrentPlaceHolder();
 
-        TentPlaceHolder currentTentPlaceHolder = currentPlaceHolder as TentPlaceHolder;
+        MiniGameTentPlaceHolder currentTentPlaceHolder = currentPlaceHolder as MiniGameTentPlaceHolder;
 
         if (currentTentPlaceHolder == null)
         {
@@ -226,7 +258,7 @@ public class MiniGameTent : OrderableTentElement
 
         Transform buttonToPlayMiniGamePlaceHolderTransform = currentTentPlaceHolder.miniGameButtonPlaceHolderTransform;
 
-        buttonToPlayMiniGame.transform.SetPositionAndRotation(buttonToPlayMiniGamePlaceHolderTransform.position, buttonToPlayMiniGamePlaceHolderTransform.rotation);
+        _buttonToPlayMiniGame.transform.SetPositionAndRotation(buttonToPlayMiniGamePlaceHolderTransform.position, buttonToPlayMiniGamePlaceHolderTransform.rotation);
 
         SetTentNumber(currentPlaceHolder.number);
         _previousPlaceHolder = currentPlaceHolder;

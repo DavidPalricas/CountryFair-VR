@@ -1,6 +1,11 @@
 using UnityEngine;
 
-public class PlaceHolder: MonoBehaviour
+/// <summary>
+/// Marks a slot that an <see cref="OrderableTentElement"/> can occupy, on either surface
+/// (a physical tent in the world or a panel in the wrist menu). Trigger collider callbacks
+/// notify the entering/exiting element so it knows where to snap on release.
+/// </summary>
+public class TentPlaceHolder: MonoBehaviour
 {
     /// <summary>Slot number displayed on the tent ribbon when a tent occupies this placeholder.</summary>
     public int number = 1;

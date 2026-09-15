@@ -79,7 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351628c25339d5c4284b6f5a75b38970, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentPersonalizationMenu
-  menu: {fileID: 6164811303617022347}
+  _menu: {fileID: 6164811303617022347}
 --- !u!114 &7295901922328504591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,10 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 665744dfab678ef4f8c76601304e8b24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlaceHolderManager
-  updateOtherManagers:
+  _updateOtherManagers:
     m_PersistentCalls:
       m_Calls: []
-  elementsTransform: {fileID: 4702036808029770243}
+  _elementsTransform: {fileID: 6697999117929262443}
 --- !u!1 &1355028144821946509
 GameObject:
   m_ObjectHideFlags: 0
