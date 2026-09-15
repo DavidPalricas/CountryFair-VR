@@ -162,6 +162,10 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 
 > **Note (testing):** For testing purposes, the emotion-recognition server address in `ServerListener` was set to a static IP.
 
+### Web App Connection
+
+`ConnectToWebApp.cs` connects the game to a companion web app (`CountryFairWebApp/ServerSide`, a Colyseus server) that lets a healthcare professional view/reorder the fair state live. The connection is plain `ws://`, no TLS — a deliberate choice, since the server is meant to run on the same PC whose Mobile Hotspot the headset joins, not on an untrusted network. See **`CLAUDE.md` → "Web App Connection & Cleartext Networking"** for the full setup (required Android/Player Settings, common device-build pitfalls) and the deployment caveat.
+
 ---
 
 # 🚀 Getting Started
