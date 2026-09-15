@@ -504,6 +504,40 @@ overrides `PlaySoundEffect` to map them to FMOD events (`scale_to_giant.wav` / `
 
 ---
 
+### 13. Web App Connection & Cleartext Networking (Deployment Note)
+
+**Location:** `General/Others/ConnectToWebApp.cs`, `CountryFairWebApp/ServerSide/` (Colyseus server)
+
+The game talks to a companion web app (used by the healthcare professional to see/reorder the fair state
+live) over a Colyseus room, `fairsceneroom`. `ConnectToWebApp.GetEndpoint()` builds `ws://{serverHost}:{serverPort}`
+— **plain WebSocket, no TLS** — and in the Editor swaps to `localhost` when `useLocalhostInEditor` is set.
+`ConnectLoop()` retries on failure (`retryDelaySeconds`) instead of failing silently.
+
+**This is a deliberate deployment choice, not an oversight:** the server (`CountryFairWebApp/ServerSide`)
+is meant to run on the same PC whose Mobile Hotspot the Quest headset joins — a closed, local network with
+no public exposure. Setting up TLS for a server that only ever exists on a LAN was judged out of scope for
+this thesis. **If this project is ever deployed where the server is reachable over an untrusted network,
+this cleartext setup must be replaced with `wss://` + a real certificate before shipping.**
+
+Making a plain `ws://`/`http://` connection to a **non-localhost** host work in an Android build requires
+three separate settings to agree — each one only bites in a device build, never in the Editor (where the
+endpoint is `localhost`, which every one of these checks exempts). All three failing gives the exact same
+symptom ("works in the Editor, silently doesn't in the build"), which is why they're easy to chase one at
+a time without making progress:
+
+| # | Setting | What breaks without it |
+|---|---------|------------------------|
+| 1 | `ConnectToWebApp.serverHost` set to the server PC's **Mobile Hotspot IP** (default `192.168.137.1`), not `localhost` | On the Quest, `localhost` is the headset itself, which runs no server |
+| 2 | `Assets/Plugins/Android/NetworkSecurityConfig.androidlib/` present and non-empty (`AndroidManifest.xml` + `project.properties` + `res/xml/network_security_config.xml` with `cleartextTrafficPermitted="true"`) | Android ≥ 9 (project targets SDK 32) blocks cleartext traffic by default. **This androidlib exists because the Meta XR SDK regenerates `Assets/Plugins/Android/AndroidManifest.xml` on every build** — any cleartext config edited directly into that file is silently lost on the next build. An empty/incomplete androidlib also breaks the Gradle build outright (`Could not find a part of the path ...aapt_friendly_merged_manifests...AndroidManifest.xml`) |
+| 3 | `insecureHttpOption` = **Always allowed** (Player Settings → Other Settings → Configuration → Allow downloads over HTTP) | `UnityWebRequest` (used internally for the Colyseus matchmaking HTTP request before the socket upgrade) refuses non-TLS URLs otherwise. **This setting is duplicated**: once in `ProjectSettings/ProjectSettings.asset` (global) and once as a full Player Settings snapshot inside `Assets/Settings/Build Profiles/Meta Quest.asset` (`m_PlayerSettingsYaml`). The build profile's copy wins whenever that profile is active — changing only the global value has no effect on the build |
+
+Quick verification of what actually shipped in a built APK:
+```bash
+aapt2 dump xmltree CountryFair.apk --file AndroidManifest.xml | grep -iE "cleartext|INTERNET"
+```
+
+---
+
 ## Component Interactions
 
 ### Scene Flow
