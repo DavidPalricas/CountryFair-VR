@@ -65,8 +65,9 @@ public class TentPlaceHolderManager : MonoBehaviour
 
     /// <summary>Collects every <see cref="OrderableTentElement"/> registered under <see cref="_elementsTransform"/>.</summary>
     private OrderableTentElement[] GetOrderableElements()
-    {
-        return _elementsTransform.GetComponentsInChildren<OrderableTentElement>();
+    {    
+        // The true parameter ensures that inactive elements are also included.
+        return _elementsTransform.GetComponentsInChildren<OrderableTentElement>(true);
     }
 
     /// <summary>Shows or hides all registered placeholder GameObjects.</summary>

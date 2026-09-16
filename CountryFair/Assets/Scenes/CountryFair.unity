@@ -5735,9 +5735,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a876be9c3033943aafdd064264e2b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerScale
-  _cameraRigTransform: {fileID: 985132962}
+  _cameraRigTransform: {fileID: 668768580}
   _headTransform: {fileID: 1207226851}
-  _giantScaleFactor: 4
+  _giantScaleFactor: 7
   _scaleUpDuration: 1
   _scaleDownDuration: 0.8
   _anticipationAmount: 0.04
@@ -6000,7 +6000,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1103408568793569215, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: m_Name
-      value: PersonalizeTentsMenu
+      value: WristMenu
       objectReference: {fileID: 0}
     - target: {fileID: 6120861548731670019, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9934,6 +9934,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 0c363f6c5c6532e40ba328d6dbafcedd, type: 3}
   m_PrefabInstance: {fileID: 664198330}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &668768580 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2483171112402263010, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1871689546}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &673243033
 GameObject:
@@ -14601,11 +14606,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
   m_PrefabInstance: {fileID: 982711559}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &985132962 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2514675399181695721, guid: f54012181eacade4ea242c65f804720f, type: 3}
-  m_PrefabInstance: {fileID: 1871689546}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &990722883 stripped
 Transform:
