@@ -1,0 +1,64 @@
+/*
+  A skybox vive no body em vez de ser uma textura da cena: o canvas do R3F e
+  transparente por defeito, por isso o fundo aparece por tras do plano 3D.
+*/
+body {
+  background-image: url("../assets/imgs/skybox.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/*
+  Stacking context for the canvas and the copyright text on top of it.
+*/
+.game-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/*
+  Sem isto, em tablet/telemovel o gesto de arrastar uma tenda e interpretado pelo
+  browser como scroll/zoom da pagina e o pointermove deixa de chegar ao canvas.
+*/
+.game-screen canvas {
+  touch-action: none;
+}
+
+/*
+  Aviso de copyright encostado ao canto inferior direito. Fora do fluxo
+  (position: absolute) para nao encolher o canvas, pointer-events: none para
+  nao roubar o arrasto das tendas.
+
+  O safe-area-inset entra na conta por causa da barra de gestos do iOS, que de
+  outra forma passaria por cima do texto em telemovel.
+*/
+.game-screen__copyright {
+  position: absolute;
+  right: calc(clamp(0.6rem, 2vw, 1.5rem) + env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(0.6rem, 2vh, 1.5rem) + env(safe-area-inset-bottom, 0px));
+  z-index: 1;
+  pointer-events: none;
+  margin: 0;
+  max-width: min(60%, 24rem);
+  text-align: right;
+  /*
+    Sobrepoe a Carnevalee Freakshow que vem do body: a fonte decorativa da feira e para
+    o conteudo do jogo, e num aviso legal deste tamanho perde-se a legibilidade. A fonte
+    do sistema tambem marca o rodape como algo fora do jogo.
+  */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+  line-height: 1.2;
+  /* A mesma cor do titulo e do texto 3D; a sombra escura descola o laranja do ceu. */
+  color: #ff9700;
+  opacity: 0.85;
+  letter-spacing: 0.01em;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.55),
+    0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
