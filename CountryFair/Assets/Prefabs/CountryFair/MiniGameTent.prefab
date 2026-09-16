@@ -2250,14 +2250,13 @@ MonoBehaviour:
       m_Calls: []
   currentPlaceHolder: {fileID: 0}
   miniGame: 0
-  tentText: {fileID: 3596917416150404703}
-  tentNumber: {fileID: 7352726266872265547}
-  dropdownItem: {fileID: 1000200}
-  miniGamePropPlaceHolderTransform: {fileID: 6839398699251963092}
-  miniGamePropPrefab: {fileID: 0}
-  buttonToPlayMiniGame: {fileID: 3600738284315101235}
-  ribbon: {fileID: 6632847624679459000}
-  textToShow: Carregue no botao para jogar arco e flecha
+  _tentText: {fileID: 3596917416150404703}
+  _tentNumber: {fileID: 7352726266872265547}
+  _dropdownItem: {fileID: 1000200}
+  _miniGamePropPlaceHolderTransform: {fileID: 6839398699251963092}
+  _miniGamePropPrefab: {fileID: 4425362018096994360, guid: 01569bf784932d64199a9ae3852be027, type: 3}
+  _buttonToPlayMiniGame: {fileID: 3600738284315101235}
+  _ribbon: {fileID: 6632847624679459000}
 --- !u!65 &7476629076389458384
 BoxCollider:
   m_ObjectHideFlags: 0

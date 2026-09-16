@@ -3113,6 +3113,81 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4673847769149175721, guid: b3144db7d8f36114b99463bbd18ab8ed, type: 3}
   m_PrefabInstance: {fileID: 241459157}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &241917811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 241917813}
+  - component: {fileID: 241917812}
+  m_Layer: 0
+  m_Name: ConnectToWebApp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &241917812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241917811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f562ac86a2078bd4183531fe9bc4b84e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConnectToWebApp
+  _serverHost: 192.168.137.1
+  _useLocalhostInEditor: 1
+  _serverPort: 2567
+  _retryDelaySeconds: 3
+  _updateGameFairState:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1728798950}
+        m_TargetAssemblyTypeName: TentPlaceHolderManager, Assembly-CSharp
+        m_MethodName: OnOtherManagerUpdate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 426961931}
+        m_TargetAssemblyTypeName: TentPlaceHolderManager, Assembly-CSharp
+        m_MethodName: OnOtherManagerUpdate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!4 &241917813
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241917811}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.91439, y: 3.29724, z: 13.71521}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &244532658
 GameObject:
   m_ObjectHideFlags: 0
@@ -3677,11 +3752,6 @@ Transform:
   - {fileID: 538966671}
   m_Father: {fileID: 1919292345}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &278979377 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2483171112402263010, guid: f54012181eacade4ea242c65f804720f, type: 3}
-  m_PrefabInstance: {fileID: 1871689546}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &279103473
 GameObject:
   m_ObjectHideFlags: 0
@@ -5665,9 +5735,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a876be9c3033943aafdd064264e2b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerScale
-  cameraRigTransform: {fileID: 278979377}
-  giantScaleFactor: 7
-  onScaleToGiant:
+  _cameraRigTransform: {fileID: 668768580}
+  _headTransform: {fileID: 1207226851}
+  _giantScaleFactor: 7
+  _scaleUpDuration: 1
+  _scaleDownDuration: 0.8
+  _anticipationAmount: 0.04
+  _anticipationDuration: 0.12
+  _onScaleToGiant:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1412586094}
@@ -5682,7 +5757,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onScaleToNormal:
+  _onScaleToNormal:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1412586094}
@@ -5925,7 +6000,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1103408568793569215, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: m_Name
-      value: PersonalizeTentsMenu
+      value: WristMenu
       objectReference: {fileID: 0}
     - target: {fileID: 6120861548731670019, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5969,7 +6044,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.size
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -5980,7 +6059,31 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 241917812}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1728798950}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 241917812}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
@@ -5988,11 +6091,47 @@ PrefabInstance:
       value: OnOtherManagerUpdate
       objectReference: {fileID: 0}
     - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateFairState
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnOtherManagerUpdate
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateFairState
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: ConnectToWebApp, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TentPlaceHolderManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: ConnectToWebApp, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295901922328504591, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
+      propertyPath: _updateOtherManagers.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6383,6 +6522,10 @@ PrefabInstance:
       value: Carregue no botao para pescar
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _textToShow
+      value: ' Carregue no botao para pescar'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGameName
       value: fish
       objectReference: {fileID: 0}
@@ -6396,6 +6539,10 @@ PrefabInstance:
       objectReference: {fileID: 1992457933}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGamePropPrefab
+      value: 
+      objectReference: {fileID: 8755715232111771409, guid: 7d5cee41b63170a4f8469f95112216ff, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _miniGamePropPrefab
       value: 
       objectReference: {fileID: 8755715232111771409, guid: 7d5cee41b63170a4f8469f95112216ff, type: 3}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -9787,6 +9934,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 0c363f6c5c6532e40ba328d6dbafcedd, type: 3}
   m_PrefabInstance: {fileID: 664198330}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &668768580 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2483171112402263010, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1871689546}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &673243033
 GameObject:
@@ -22400,6 +22552,10 @@ PrefabInstance:
       value: Carregue no botao para jogar frisbee
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _textToShow
+      value: 'Carregue no botao para jogar frisbee '
+      objectReference: {fileID: 0}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGameName
       value: frisbee
       objectReference: {fileID: 0}
@@ -22417,6 +22573,10 @@ PrefabInstance:
       objectReference: {fileID: 189216393}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGamePropPrefab
+      value: 
+      objectReference: {fileID: 495728589920066737, guid: 98b4112b4da0492458c36f58451ec24f, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _miniGamePropPrefab
       value: 
       objectReference: {fileID: 495728589920066737, guid: 98b4112b4da0492458c36f58451ec24f, type: 3}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -24463,11 +24623,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 665744dfab678ef4f8c76601304e8b24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentsPlaceHolderManager
-  updateOtherManagers:
+  _updateOtherManagers:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 426961931}
-        m_TargetAssemblyTypeName: PlaceHolderManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: TentPlaceHolderManager, Assembly-CSharp
         m_MethodName: OnOtherManagerUpdate
         m_Mode: 0
         m_Arguments:
@@ -24478,7 +24638,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  elementsTransform: {fileID: 1387632062}
+      - m_Target: {fileID: 241917812}
+        m_TargetAssemblyTypeName: ConnectToWebApp, Assembly-CSharp
+        m_MethodName: UpdateFairState
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _elementsTransform: {fileID: 1387632062}
 --- !u!1 &1731794204
 GameObject:
   m_ObjectHideFlags: 0
@@ -30070,6 +30242,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5319194762821552515, guid: 0283159d65e61fb4d90b109da1e592a0, type: 3}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _miniGamePropPrefab
+      value: 
+      objectReference: {fileID: 5319194762821552515, guid: 0283159d65e61fb4d90b109da1e592a0, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: buttonToPlayMiniGame
       value: 
       objectReference: {fileID: 2029425152}
@@ -32117,3 +32293,4 @@ SceneRoots:
   - {fileID: 1447463002}
   - {fileID: 441063977}
   - {fileID: 861099402}
+  - {fileID: 241917813}

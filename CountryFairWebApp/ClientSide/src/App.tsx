@@ -1,36 +1,48 @@
-import {Canvas} from '@react-three/fiber'
-import './App.css'
-import zecaImg from './assets/imgs/Zeca.png'
+import { useEffect, useState } from "react";
+import { getRoom } from "./network/client";
+import { WaitingScreen } from "./screens/WatingScreen";
+import { GameScreen } from "./screens/GameScreen";
 
+/**
+ * Root of the companion web client.
+ *
+ * Joins the Colyseus `fairsceneroom` on mount and waits for the server's `"gamejoined"`
+ * message, which the room only sends once the Unity headset has joined too — that is the
+ * signal to swap the waiting screen for the fair scene. If the headset later drops
+ * (`CountryFairRoom.onLeave` broadcasts `"gameDisconnected"`), the client falls back to the
+ * waiting screen until the game rejoins and sends `"gamejoined"` again.
+ */
 function App() {
+  const [phase, setPhase] = useState<"waiting" | "game">("waiting");
 
-  return (
-   <div className="App">
-      <Canvas>
-       {/* Game Stuff */}
-      </Canvas>
+  // Matchmaking runs once. `cancelled` guards against the connection resolving after the
+  // component is gone (StrictMode mounts twice in development).
+  useEffect(() => {
+    let cancelled = false;
 
-      <div className="info">
-        <div className="signboard">
-          <h1 className="signboard__title">Bem vindo ao Country Fair VR</h1>
+    getRoom()
+      .then((room) => {
+        if (cancelled) return;
+        console.log("Connected to room:", room.name);
+        room.onMessage("gamejoined", () => {
+          console.log("Received gamejoined message");
+          setPhase("game");
+        });
+        room.onMessage("gameDisconnected", () => {
+          console.log("Received gameDisconnected message");
+          setPhase("waiting");
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("Falha no matchmaking:", err);
+      });
 
-          <div className="signboard__body">
-            <img src={zecaImg} alt="ZecaBigodes" />
+    // No leave() on cleanup: the room is a module-level singleton and is meant to survive
+    // re-mounts. Leaving here would drop the seat the server reserved for this platform.
+    return () => { cancelled = true };
+  }, []);
 
-            <div className="signboard__status">
-              <h1>Esperando que ligue ao jogo</h1>
-
-              <div className="waiting-dots" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return phase === "waiting" ? <WaitingScreen /> : <GameScreen />;
 }
 
-export default App
+export default App;
