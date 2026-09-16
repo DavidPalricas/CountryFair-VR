@@ -38,6 +38,12 @@ public class CountryFairDialogue : UIDialog
 
     protected override void Awake()
     {   
+        if (zeca == null || carnyWise == null || characterNameText == null )
+        {
+            Debug.LogError("Characters missing.");
+            return;
+        }
+
         GameManager gameManager = GameManager.GetInstance();
 
         if (gameManager.IntroCompleted)
@@ -53,11 +59,6 @@ public class CountryFairDialogue : UIDialog
 
         base.Awake();
 
-        if (zeca == null || carnyWise == null || characterNameText == null )
-        {
-            Debug.LogError("Characters missing.");
-            return;
-        }
         carnyWise.SetActive(false);
     }
 
@@ -96,7 +97,10 @@ public class CountryFairDialogue : UIDialog
     /// <remarks>Invocado via Inspector no botão de avançar diálogo na cena CountryFair.</remarks>
     public override void NextStep()
     {
-        if (_data == null) return;
+        if (_data == null)
+        {
+            return;
+        }
 
         if (_currentDialogueState == DialogueState.INTRO_COMPLETED)
         {   
@@ -195,6 +199,7 @@ public class CountryFairDialogue : UIDialog
             gameManager.ArcherySessionCompleted = false;
             return;
         }
+
         Debug.LogError("No session completed to show.");
     }
 

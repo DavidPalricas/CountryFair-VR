@@ -21,7 +21,7 @@ public class PlayerScale : MonoBehaviour
    /// Multiplier applied to the rig's normal scale when in giant mode.
    /// </summary>
    [SerializeField]
-   private float _giantScaleFactor = 4f;
+   private float _giantScaleFactor = 7f;
 
 
    [Header("Scale Animation")]

@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 609547259719142669}
   - component: {fileID: 7295901922328504591}
   m_Layer: 0
-  m_Name: PersonalizeTentsMenu
+  m_Name: WristMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1115,6 +1115,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: d6889fff2822c044eb66a6d5d1d75d57, type: 3}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _miniGameSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d6889fff2822c044eb66a6d5d1d75d57, type: 3}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: placeHoldernumber
       value: 2
       objectReference: {fileID: 0}
@@ -1806,6 +1810,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 101bf5c3f66466143b7129c373fc5b13, type: 3}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _miniGameSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 101bf5c3f66466143b7129c373fc5b13, type: 3}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: placeHoldernumber
       value: 3
       objectReference: {fileID: 0}
@@ -1975,6 +1983,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: miniGameSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: dac4b1b1690ebe94097998a4c2a7798d, type: 3}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _miniGameSprite
       value: 
       objectReference: {fileID: 21300000, guid: dac4b1b1690ebe94097998a4c2a7798d, type: 3}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
