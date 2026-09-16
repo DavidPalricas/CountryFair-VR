@@ -19,6 +19,17 @@ export class FairSceneRoom extends CountryFairRoom {
       this.onMessage("updateFairState", (client, data) => {
             this.broadcast("updateFairState", data, { except: client })
       });
+
+      // Relayed from the game once a UIDialog (game intro, session-completed message, or
+      // later a per-mini-game cutscene) is dismissed — the tents on screen do not reflect the
+      // fair state while one is up, so the web client assumes a dialogue is playing by
+      // default as soon as it gets "gamejoined" (matching what the game shows right after
+      // connecting: the intro) and waits for this message to drop that assumption. No
+      // matching "started" message: the game is the source of truth for when a new dialogue
+      // begins, so it simply skips sending this until the next one finishes.
+      this.onMessage("playerFinishedDialogue", (client) => {
+            this.broadcast("playerFinishedDialogue", {}, { except: client })
+      });
     }
  /**
   * Admits a client and, once both platforms are present, hands the fair state to the web side.

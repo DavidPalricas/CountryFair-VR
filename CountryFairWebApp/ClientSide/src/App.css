@@ -10,15 +10,21 @@
    All contrast comes from the background and from text-shadow, never
    from touching the letter fill.
 
-   Stacking layers inside .App (which is the stacking context, since
-   it is position: relative):
-     z-index 0 -> react-three-fiber <canvas>
+   Stacking layers inside .app-root (the GameScreen's own canvas sits
+   at the bottom of the DOM, .App is appended after it and stacks on
+   top while the game hasn't joined):
+     .game-screen -> fair scene, mounted for the whole app lifetime
+     .App         -> waiting overlay, position: absolute + z-index so
+                     it covers the scene underneath instead of pushing
+                     it down the page
+   Inside .App itself:
+     z-index 0 -> react-three-fiber <canvas> (WatingScreen has none,
+                  kept here for when .App is used standalone)
      z-index 2 -> .App::before (bunting)
      z-index 3 -> .info (signboard and text)
-   The canvas comes later in the DOM, so it needs an explicit z-index
-   to avoid covering the bunting.
 
    File structure:
+     0. Layout root (.app-root)
      1. Scene (.App, bunting, canvas)
      2. Content (.info, .signboard and children)
      3. Typography and image
@@ -27,12 +33,29 @@
 ================================================================== */
 
 /* ------------------------------------------------------------------
+   0. LAYOUT ROOT
+------------------------------------------------------------------- */
+
+/*
+  Holds the always-mounted GameScreen and, on top of it, the waiting
+  overlay. Needs an explicit size because both children size themselves
+  as 100%/100dvh of their parent rather than of the viewport directly.
+*/
+.app-root {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------
    1. SCENE
 ------------------------------------------------------------------- */
 
 /*
-  Application root: paints the circus tent and acts as the stacking
-  context for the canvas and the content overlay.
+  Waiting overlay: paints the circus tent and covers the fair scene
+  mounted underneath it in .app-root.
   The custom properties live here (rather than in :root) to keep the
   theme scoped to the component.
 */
@@ -54,12 +77,9 @@
   */
   --stripe: 3deg;
 
-  position: relative;
-  width: 100%;
-  /* 100vh is the fallback for browsers without dvh; dvh avoids the
-     clipping caused by the mobile address bar. */
-  height: 100vh;
-  height: 100dvh;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
   overflow: hidden;
   /* Base colour in case repeating-conic-gradient is unsupported. */
   background-color: var(--fair-red-dark);

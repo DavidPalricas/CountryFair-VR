@@ -13,13 +13,18 @@ using UnityEngine.Events;
 public class CountryFairDialogue : UIDialog
 {
     [Header("Characters")]
-    [SerializeField] private GameObject zeca;
-    [SerializeField] private GameObject carnyWise;
-    [SerializeField] private TextMeshProUGUI characterNameText;
+    [SerializeField] 
+    private GameObject _zeca;
+
+    [SerializeField] 
+    private GameObject _carnyWise;
+
+    [SerializeField] 
+    private TextMeshProUGUI _characterNameText;
 
     [Header("Events")]
     [SerializeField]
-    private UnityEvent playerFinishedIntro;
+    private UnityEvent _finishedDialogue;
 
     private IntroData _introData;
     private SessionCompletedData _sessionCompleteData;
@@ -38,7 +43,7 @@ public class CountryFairDialogue : UIDialog
 
     protected override void Awake()
     {   
-        if (zeca == null || carnyWise == null || characterNameText == null )
+        if (_zeca == null || _carnyWise == null || _characterNameText == null )
         {
             Debug.LogError("Characters missing.");
             return;
@@ -59,7 +64,7 @@ public class CountryFairDialogue : UIDialog
 
         base.Awake();
 
-        carnyWise.SetActive(false);
+        _carnyWise.SetActive(false);
     }
 
     protected override void OnDataLoaded()
@@ -104,7 +109,7 @@ public class CountryFairDialogue : UIDialog
 
         if (_currentDialogueState == DialogueState.INTRO_COMPLETED)
         {   
-            playerFinishedIntro.Invoke();
+            _finishedDialogue.Invoke();
             Destroy(transform.parent.gameObject);
             return;
         }
@@ -124,26 +129,26 @@ public class CountryFairDialogue : UIDialog
         {
             case DialogueState.BEGIN_INTRO:
                 _currentDialogueLines = _introData.ZecaPart1;
-                characterNameText.text = "Zeca Bigodes";
+                _characterNameText.text = "Zeca Bigodes";
                 _currentDialogueState = DialogueState.ZECA_INTRO_PART1;
-                zeca.SetActive(true);
-                carnyWise.SetActive(false);
+                _zeca.SetActive(true);
+                _carnyWise.SetActive(false);
                 return;
 
             case DialogueState.ZECA_INTRO_PART1:
                 _currentDialogueLines = _introData.CarnyWise;
-                characterNameText.text = "Carny Wise";
+                _characterNameText.text = "Carny Wise";
                 _currentDialogueState = DialogueState.CARNY_WISE_INTRO;
-                zeca.SetActive(false);
-                carnyWise.SetActive(true);
+                _zeca.SetActive(false);
+                _carnyWise.SetActive(true);
                 return;
 
             case DialogueState.CARNY_WISE_INTRO:
                 _currentDialogueLines = _introData.ZecaPart2;
-                characterNameText.text = "Zeca Bigodes";
+                _characterNameText.text = "Zeca Bigodes";
                 _currentDialogueState = DialogueState.ZECA_INTRO_PART2;
-                zeca.SetActive(true);
-                carnyWise.SetActive(false);
+                _zeca.SetActive(true);
+                _carnyWise.SetActive(false);
                 return;
             case DialogueState.ZECA_INTRO_PART2:
                 _currentDialogueState = DialogueState.INTRO_COMPLETED;
@@ -162,7 +167,7 @@ public class CountryFairDialogue : UIDialog
     /// <remarks>Invocado via Inspector pelo botão final do diálogo de introdução.</remarks>
     public void IntroComplete()
     {   
-        playerFinishedIntro.Invoke();
+        _finishedDialogue.Invoke();
         GameManager.GetInstance().IntroCompleted = true;
 
         Destroy(transform.parent.gameObject);
@@ -214,7 +219,7 @@ public class CountryFairDialogue : UIDialog
 
     private void ShowSessionCompletedLine()
     {   
-        characterNameText.text = "Zeca Bigodes";
+        _characterNameText.text = "Zeca Bigodes";
 
         if(_sessionCompleteData != null && _sessionCompleteData.Congrats != null)
         {

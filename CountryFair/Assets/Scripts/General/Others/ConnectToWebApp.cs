@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 /// <summary>
 /// Joins the Colyseus <c>fairsceneroom</c> as the <c>"game"</c> platform, keeping the game and the
 /// companion web app (<c>CountryFairWebApp</c>) in sync on the mini-game tent order. Retries the join
-/// on failure, forwards local tent reorders to the room via <see cref="UpdateFairState"/>, and relays
-/// the room's <c>"updateFairState"</c> broadcasts (i.e. reorders made from the web app) to
+/// on failure and reconnects automatically if an already-established connection drops, forwards local
+/// tent reorders to the room via <see cref="UpdateFairState"/>, and relays the room's
+/// <c>"updateFairState"</c> broadcasts (i.e. reorders made from the web app) to
 /// <see cref="_updateGameFairState"/>.
 /// </summary>
 public class ConnectToWebApp : MonoBehaviour
@@ -103,10 +104,15 @@ public class ConnectToWebApp : MonoBehaviour
     }
 
     /// <summary>
-    /// Keeps trying to join the <c>fairsceneroom</c> as platform <c>"game"</c> until it succeeds or the
-    /// object is destroyed. On success, subscribes to the room's <c>"updateFairState"</c> broadcasts
-    /// (reorders made from the web app) and forwards them through <see cref="_updateGameFairState"/>,
-    /// gated on <see cref="GameManager.IntroCompleted"/> so the tent order can't change mid-intro.
+    /// Keeps the <c>fairsceneroom</c> connection (platform <c>"game"</c>) alive for as long as this
+    /// object is alive: joins, and once the join succeeds, waits for that specific connection to end
+    /// (<see cref="Room.OnLeave"/>) and immediately loops back to join again, applying the same
+    /// <see cref="_retryDelaySeconds"/> backoff whether the previous attempt failed to join or was an
+    /// established connection that dropped (e.g. a ping/pong timeout from the main thread stalling
+    /// too long). Without this, any drop after the first successful join was final: the room stayed
+    /// null forever and the web client was stuck on its waiting screen for the rest of the session.
+    /// While connected, subscribes to the room's <c>"updateFairState"</c> broadcasts (reorders made
+    /// from the web app) and forwards them through <see cref="_updateGameFairState"/>.
     /// The original version awaited JoinOrCreate inside an async void Start, so on device any
     /// failure (wrong host, server not up yet, headset on another network) was swallowed and the
     /// room stayed null forever with no feedback.
@@ -135,13 +141,26 @@ public class ConnectToWebApp : MonoBehaviour
 
                 _room.OnMessage<Dictionary<string, string>>("updateFairState", (fairState) =>
                 {
-                    if (GameManager.GetInstance().IntroCompleted)
-                    {
-                        _updateGameFairState.Invoke(fairState);
-                    }
+                    _updateGameFairState.Invoke(fairState);
                 });
 
-                return;
+                // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this
+                // is being awaited would otherwise race the callback and throw on a second completion.
+                var disconnected = new TaskCompletionSource<bool>();
+
+                _room.OnLeave += (code) =>
+                {
+                    Debug.LogWarning($"ConnectToWebApp: disconnected from {endpoint} (code {code}). Will retry in {_retryDelaySeconds} seconds.");
+                    _room = null;
+                    disconnected.TrySetResult(true);
+                };
+
+                await disconnected.Task;
+
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
             }
             catch (Exception exception)
             {
@@ -149,20 +168,20 @@ public class ConnectToWebApp : MonoBehaviour
 
                 Debug.LogWarning($"ConnectToWebApp: could not connect to {endpoint} ({exception.Message}). " +
                                  "Check that the server is running and that Server Host is the LAN IP of the server machine, not localhost.");
+            }
 
-                if (_retryDelaySeconds <= 0f)
-                {
-                    return;
-                }
+            if (_retryDelaySeconds <= 0f)
+            {
+                return;
+            }
 
-                try
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(_retryDelaySeconds), token);
-                }
-                catch (OperationCanceledException)
-                {
-                    return;
-                }
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(_retryDelaySeconds), token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
         }
     }
@@ -181,6 +200,21 @@ public class ConnectToWebApp : MonoBehaviour
             catch (Exception exception)
             {
                 Debug.LogWarning($"ConnectToWebApp: failed to send fair state ({exception.Message}).");
+            }
+        }
+    }
+
+    public async void PlayerFinishedDialogue()
+    {
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("playerFinishedDialogue");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send playerFinishedDialogue ({exception.Message}).");
             }
         }
     }

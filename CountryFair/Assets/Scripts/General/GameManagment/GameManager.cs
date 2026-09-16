@@ -1,10 +1,13 @@
+using UnityEngine.SceneManagement;
+using UnityEngine;
+
 /// <summary>
 /// Singleton that stores cross-scene session state flags for the current play session.
 /// All flags default to false and are never persisted to disk; they reset when the process restarts.
 /// </summary>
-public class GameManager
+public class GameManager 
 {
-    private static GameManager instance;
+    private static GameManager s_instance;
 
     /// <summary>True once the hub-world intro dialogue sequence has been completed.</summary>
     public bool IntroCompleted { get; set; } = false;
@@ -22,8 +25,27 @@ public class GameManager
     /// <summary>Returns the singleton instance, creating it on first call.</summary>
     public static GameManager GetInstance()
     {
-        instance ??= new GameManager();
+        s_instance ??= new GameManager();
 
-        return instance;
+        return s_instance;
+    }
+
+
+    public void GoToMiniGame(OrderableTentElement.MINI_GAMES miniGame)
+    {
+        switch (miniGame)
+        {
+            case OrderableTentElement.MINI_GAMES.ARCHERY:
+                SceneManager.LoadScene("ArcheryGame");
+                return;
+
+            case OrderableTentElement.MINI_GAMES.FRISBEE:
+                SceneManager.LoadScene("FrisbeeGame");
+                return;
+
+            default:
+                Debug.LogWarning($"MiniGame '{miniGame}' is not implemented yet.");
+                return;
+        }
     }
 }
