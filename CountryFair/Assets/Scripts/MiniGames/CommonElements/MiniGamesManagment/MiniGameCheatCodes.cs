@@ -143,7 +143,7 @@ public class MiniGameCheatCodes : CheatCodes
                 _playerInput = string.Empty;
 
                 // Every cheat code except the  skp tutorial one ("tutorial") requires the tutorial to be completed, to avoid errors this statment is added"
-                if (!_tutorialCompleted && code != "tutorial" && !_cheatCodesOnTutorial.Contains(code))
+                if (!_tutorialCompleted && !_cheatCodesOnTutorial.Contains(code))
                 {
                     Debug.LogWarning($"Cheat code '{code}' entered but tutorial not completed. Cheat ignored.");
 
