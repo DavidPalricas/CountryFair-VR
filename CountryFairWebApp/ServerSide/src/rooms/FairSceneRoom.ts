@@ -22,6 +22,14 @@ export class FairSceneRoom extends CountryFairRoom {
             this.broadcast("updateTentsOrder", data, { except: client })
       });
 
+      // Sent by the web client when the therapist types a cheat code there. Relayed to the
+      // game client only (the web sender is excluded via `except`, and it's a two-client room),
+      // which feeds it into `CheatCodes.OnWebCheatCode()` — the same `CheckCheatCode()` gating
+      // used for keyboard-typed cheats (see `ConnectToWebApp.receiveCheatCode` in Unity).
+      this.onMessage<string>("cheatCode", (client, code) => {
+            this.broadcast("cheatCode", code, { except: client })
+      });
+
       // Relayed from the game once a UIDialog (game intro or session-completed message) is
       // dismissed — the tents on screen do not reflect the fair state while one is up, so the
       // web client assumes a dialogue is playing by default as soon as it gets "gamejoined"

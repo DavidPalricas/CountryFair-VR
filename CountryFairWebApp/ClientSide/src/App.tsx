@@ -4,6 +4,7 @@ import { getRoom } from "./network/client";
 import { WaitingScreen, type MiniGameProgress } from "./screens/WatingScreen";
 import { GameScreen } from "./screens/GameScreen";
 import { classifyScene, MINI_GAME_LABELS } from "./screens/miniGameScene";
+import { CheatCodePanel } from "./components/CheatCodePanel";
 
 /** Status line shown while the survivor is on the hub's own dialogue (intro, session-completed
  * message, or a future per-mini-game cutscene) instead of looking at the fair — the tents on
@@ -151,6 +152,7 @@ function App() {
   return (
     <div className="app-root">
       <GameScreen />
+      <CheatCodePanel />
       {showHubOverlay && (
         <WaitingScreen statusText={phase === "waiting" ? undefined : DIALOGUE_STATUS_TEXT} />
       )}
