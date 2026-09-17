@@ -230,28 +230,39 @@ public class ArcheryGameManager : MiniGameManager
     protected override Vector3 GetRandomTargetPosition()
     {
         Bounds bounds = balloonSpawnArea.bounds;
-        
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
-        float z = Random.Range(bounds.min.z, bounds.max.z);
-
-        Vector3 candidatePos = new (x, y, z);
 
         const float SAFETEY_RADIUS = 0.3f;
-            
-        Collider[] hitColliders = Physics.OverlapSphere(candidatePos, SAFETEY_RADIUS);
-        bool hitBalloon = false;
+        const int MAX_ATTEMPTS = 30; // Prevents a stack overflow when the spawn area is crowded (e.g. a high difficulty carried over from a previous session)
 
-        foreach(Collider hit in hitColliders)
+        Vector3 candidatePos = Vector3.zero;
+
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
         {
-            if(hit.CompareTag("Balloon")) 
+            float x = Random.Range(bounds.min.x, bounds.max.x);
+            float y = Random.Range(bounds.min.y, bounds.max.y);
+            float z = Random.Range(bounds.min.z, bounds.max.z);
+
+            candidatePos = new (x, y, z);
+
+            Collider[] hitColliders = Physics.OverlapSphere(candidatePos, SAFETEY_RADIUS);
+            bool hitBalloon = false;
+
+            foreach (Collider hit in hitColliders)
             {
-                hitBalloon = true; 
-                break;
+                if (hit.CompareTag("Balloon"))
+                {
+                    hitBalloon = true;
+                    break;
+                }
+            }
+
+            if (!hitBalloon)
+            {
+                return candidatePos;
             }
         }
 
-        return !hitBalloon ? candidatePos : GetRandomTargetPosition();
+        return candidatePos;
     }
 
     private void SetBalloonColorToScore()

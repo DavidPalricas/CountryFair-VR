@@ -196,25 +196,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 267f550f57e9639498324c5081121e57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreAndSreakSystem
-  scoreText: {fileID: 4984518191379675620}
-  streakText: {fileID: 2142685994633069346}
-  sessionGoalText: {fileID: 5950785876994756128}
-  streakSymbol: {fileID: 4674808566178458540}
-  scorePunchScale: 1.2
-  scorePunchDuration: 0.3
-  streakPunchScale: 1.3
-  streakPunchDuration: 0.4
-  streakLoseShakeDuration: 0.5
-  streakLoseShakeStrength: 20
-  scoreFlashColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  streakLowColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  streakMidColor: {r: 1, g: 0.5, b: 0, a: 1}
-  streakHighColor: {r: 1, g: 0.3, b: 0, a: 1}
-  streakMissColor: {r: 1, g: 0, b: 0, a: 1}
-  streakResetColor: {r: 1, g: 1, b: 1, a: 1}
-  streakMidThreshold: 5
-  streakHighThreshold: 10
-  highStreaksNumber: 5
+  _scoreText: {fileID: 4984518191379675620}
+  _streakText: {fileID: 2142685994633069346}
+  _sessionGoalText: {fileID: 5950785876994756128}
+  _streakSymbol: {fileID: 4674808566178458540}
+  _scorePunchScale: 1.2
+  _scorePunchDuration: 0.3
+  _streakPunchScale: 1.3
+  _streakPunchDuration: 0.4
+  _streakLoseShakeDuration: 0.5
+  _streakLoseShakeStrength: 20
+  _scoreFlashColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _streakLowColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _streakMidColor: {r: 1, g: 0.5, b: 0, a: 1}
+  _streakHighColor: {r: 1, g: 0.3, b: 0, a: 1}
+  _streakMissColor: {r: 1, g: 0, b: 0, a: 1}
+  _streakResetColor: {r: 1, g: 1, b: 1, a: 1}
+  _streakMidThreshold: 5
+  _streakHighThreshold: 10
+  _highStreaksNumber: 5
   sessionGoalReached:
     m_PersistentCalls:
       m_Calls:
