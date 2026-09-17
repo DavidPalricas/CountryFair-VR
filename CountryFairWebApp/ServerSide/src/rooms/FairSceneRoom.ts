@@ -11,24 +11,58 @@ import {FairState } from "../schemas/FairSchema.js";
  * Its synced state is a {@link FairState}.
  */
 export class FairSceneRoom extends CountryFairRoom {
-
+  // Narrows `this.state` from `CountryFairRoom`'s untyped `object` down to `FairState`,
+  // without making the base class generic (which would break its own `broadcast()` typing).
+  declare state: FairState;
 
   onCreate() {
       this.state = new FairState();
 
-      this.onMessage("updateFairState", (client, data) => {
-            this.broadcast("updateFairState", data, { except: client })
+      this.onMessage("updateTentsOrder", (client, data) => {
+            this.broadcast("updateTentsOrder", data, { except: client })
       });
 
-      // Relayed from the game once a UIDialog (game intro, session-completed message, or
-      // later a per-mini-game cutscene) is dismissed — the tents on screen do not reflect the
-      // fair state while one is up, so the web client assumes a dialogue is playing by
-      // default as soon as it gets "gamejoined" (matching what the game shows right after
-      // connecting: the intro) and waits for this message to drop that assumption. No
-      // matching "started" message: the game is the source of truth for when a new dialogue
-      // begins, so it simply skips sending this until the next one finishes.
+      // Relayed from the game once a UIDialog (game intro or session-completed message) is
+      // dismissed — the tents on screen do not reflect the fair state while one is up, so the
+      // web client assumes a dialogue is playing by default as soon as it gets "gamejoined"
+      // (matching what the game shows right after connecting: the intro) and waits for this
+      // message to drop that assumption. No matching "started" message: the game is the
+      // source of truth for when a new dialogue begins, so it simply skips sending this until
+      // the next one finishes. The mini-game tutorial has its own, separate
+      // "playerFinishedTutorial" message below (Unity sends them distinctly).
       this.onMessage("playerFinishedDialogue", (client) => {
             this.broadcast("playerFinishedDialogue", {}, { except: client })
+      });
+
+      // Relayed once the mini-game tutorial is dismissed (skipped or completed) — the
+      // mini-game equivalent of "playerFinishedDialogue" above, kept separate because Unity
+      // sends them as distinct messages (`ConnectToWebApp.PlayerFinishedTutorial()`).
+      this.onMessage("playerFinishedTutorial", (client) => {
+            this.broadcast("playerFinishedTutorial", {}, { except: client })
+      });
+
+      // Sent by `ConnectToWebApp.UpdateScene()` on every scene load (hub or mini-game). This
+      // is what tells the web client which screen to show — and, for a mini-game scene, which
+      // one to name (see `classifyScene`/`MINI_GAME_LABELS` on the web client). Score/streak/
+      // goal are reset whenever the new scene isn't the hub, so a mini-game's tutorial never
+      // opens on the previous session's numbers.
+      this.onMessage<{ sceneName: string }>("updateScene", (client, data) => {
+            if (data.sceneName.toLowerCase() !== "countryfair") {
+                  this.state.score = 0;
+                  this.state.streak = 0;
+                  this.state.sessionGoal = 0;
+            }
+
+            this.broadcast("updateScene", data, { except: client })
+      });
+
+      // Score/streak/session goal while a mini-game is being played. Written to `state`
+      // (rather than just relayed) so a web client that (re)connects mid-session gets the
+      // current values immediately instead of waiting for the next change — see FairState.
+      this.onMessage("updatePlayerProgressOnMiniGame", (client, data) => {
+            this.state.score = data.score;
+            this.state.streak = data.streak;
+            this.state.sessionGoal = data.goal;
       });
     }
  /**

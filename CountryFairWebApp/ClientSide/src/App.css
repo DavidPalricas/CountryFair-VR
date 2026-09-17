@@ -5,10 +5,21 @@
    circus tent canvas, wooden signboards in the style of
    DialogueBox.png, and fairground bunting.
 
-   PROJECT CONSTRAINT: the text colour (#ff9700) and typeface
-   (Carnevalee Freakshow, declared in index.css) must not be changed.
+   PROJECT CONSTRAINT: the text colour (#ff9700) must not be changed.
    All contrast comes from the background and from text-shadow, never
    from touching the letter fill.
+
+   Typeface: 'Luckiest Guy' (declared in index.css), swapped in for the
+   original 'Carnevalee Freakshow'. That font had real cmap entries for
+   accented Latin characters (á, ã, ç, õ, ...) but empty (0-contour)
+   glyph outlines behind them, so Portuguese text silently lost every
+   accented letter instead of falling back to another font (CSS
+   font-family fallback only kicks in when a glyph is *missing* from
+   cmap, not when it exists but is blank) — verified with fontTools by
+   inspecting glyf.numberOfContours for those glyphs. 'Luckiest Guy' was
+   picked from Google Fonts after confirming (same method) it has real
+   outlines for the full set of Portuguese accented characters. Same
+   swap applies to the 3D signage font (`Text3D.tsx`, same .ttf file).
 
    Stacking layers inside .app-root (the GameScreen's own canvas sits
    at the bottom of the DOM, .App is appended after it and stacks on
@@ -278,6 +289,44 @@
   animation: zeca-bob 3.6s ease-in-out infinite;
 }
 
+/*
+  Mini-game live progress (score/streak/session goal), shown instead of the waiting dots
+  when WaitingScreen receives a `progress` prop (see section 4). Wood-and-orange palette
+  reused from the rest of the signboard; rows get their own dark plate so the numbers read
+  clearly against the striped tent canvas behind the signboard.
+*/
+.minigame-progress {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.35rem, 1.4vh, 0.7rem);
+  width: 100%;
+}
+
+.minigame-progress__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: clamp(0.6rem, 2vw, 1.2rem);
+  padding: clamp(0.35rem, 1.2vh, 0.6rem) clamp(0.7rem, 2.4vw, 1.1rem);
+  border-radius: clamp(6px, 1.2vw, 10px);
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.minigame-progress__label {
+  font-size: clamp(0.9rem, 2.4vw, 1.2rem);
+  color: var(--fair-cream);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.minigame-progress__value {
+  font-size: clamp(1.05rem, 3vw, 1.5rem);
+  color: #ff9700;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.55),
+    0 3px 6px rgba(0, 0, 0, 0.45);
+}
+
 /* ------------------------------------------------------------------
    4. WAITING INDICATOR
 ------------------------------------------------------------------- */
@@ -310,7 +359,7 @@
   animation-delay: 0.4s;
 }
 
-/* Gentle vertical bobbing for Zeca. */
+/* Gentle vertical bobbing for the host character (Zeca or Carny Wise). */
 @keyframes zeca-bob {
   0%,
   100% {

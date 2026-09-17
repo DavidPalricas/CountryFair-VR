@@ -32,29 +32,30 @@ public class ScoreAndStreakSystem : MonoBehaviour
 {   
     /// <summary>
     /// TextMeshProUGUI component displaying the current score value.
-    /// Shows text in format: "Pontos: {value}".
+    /// Shows text in format: "Pontos Atuais: {value}".
     /// </summary>
     [Header("UI Elements")]
     [SerializeField]
-    private TextMeshProUGUI scoreText;
-    
+    private TextMeshProUGUI _scoreText;
+
     /// <summary>
     /// TextMeshProUGUI component displaying the current streak value.
     /// Shows text in format: "Sequencia: {value}".
     /// Color changes dynamically based on streak thresholds.
     /// </summary>
     [SerializeField]
-    private TextMeshProUGUI streakText;
+    private TextMeshProUGUI _streakText;
 
+    /// <summary>TextMeshProUGUI component displaying the session's score goal, read once from <see cref="PlayerPrefs"/> in <see cref="Start"/>.</summary>
     [SerializeField]
-    private TextMeshProUGUI sessionGoalText;
+    private TextMeshProUGUI _sessionGoalText;
 
     /// <summary>
     /// GameObject representing the streak indicator symbol.
     /// Activated when a streak begins and deactivated when the streak is broken.
     /// </summary>
     [SerializeField]
-    private GameObject streakSymbol;
+    private GameObject _streakSymbol;
     
     /// <summary>
     /// Scale multiplier for the score text punch animation.
@@ -62,39 +63,39 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </summary>
     [Header("Animation Settings")]
     [SerializeField]
-    private float scorePunchScale = 1.2f;
+    private float _scorePunchScale = 1.2f;
     
     /// <summary>
     /// Duration in seconds of the score punch animation.
     /// </summary>
     [SerializeField]
-    private float scorePunchDuration = 0.3f;
+    private float _scorePunchDuration = 0.3f;
     
     /// <summary>
     /// Scale multiplier for the streak text punch animation.
     /// Typically larger than score punch to emphasize streak importance.
     /// </summary>
     [SerializeField]
-    private float streakPunchScale = 1.3f;
+    private float _streakPunchScale = 1.3f;
     
     /// <summary>
     /// Duration in seconds of the streak punch animation.
     /// </summary>
     [SerializeField]
-    private float streakPunchDuration = 0.4f;
+    private float _streakPunchDuration = 0.4f;
     
     /// <summary>
     /// Duration in seconds of the streak loss shake animation.
     /// </summary>
     [SerializeField]
-    private float streakLoseShakeDuration = 0.5f;
+    private float _streakLoseShakeDuration = 0.5f;
     
     /// <summary>
     /// Strength/intensity of the shake effect when losing a streak.
     /// Higher values create more pronounced shaking.
     /// </summary>
     [SerializeField]
-    private float streakLoseShakeStrength = 20f;
+    private float _streakLoseShakeStrength = 20f;
     
     /// <summary>
     /// Color used for the score text flash animation when the player scores.
@@ -102,64 +103,70 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </summary>
     [Header("Color Settings")]
     [SerializeField]
-    private Color scoreFlashColor = Color.yellow;
+    private Color _scoreFlashColor = Color.yellow;
     
     /// <summary>
-    /// Color for low streak values (below <see cref="streakMidThreshold"/>).
+    /// Color for low streak values (below <see cref="_streakMidThreshold"/>).
     /// Default is yellow, indicating a starting streak.
     /// </summary>
     [SerializeField]
-    private Color streakLowColor = Color.yellow;
+    private Color _streakLowColor = Color.yellow;
     
     /// <summary>
-    /// Color for medium streak values (at or above <see cref="streakMidThreshold"/> but below <see cref="streakHighThreshold"/>).
+    /// Color for medium streak values (at or above <see cref="_streakMidThreshold"/> but below <see cref="_streakHighThreshold"/>).
     /// Default is orange, indicating a growing streak.
     /// </summary>
     [SerializeField]
-    private Color streakMidColor = new (1f, 0.5f, 0f); // Orange
+    private Color _streakMidColor = new (1f, 0.5f, 0f); // Orange
     
     /// <summary>
-    /// Color for high streak values (at or above <see cref="streakHighThreshold"/>).
+    /// Color for high streak values (at or above <see cref="_streakHighThreshold"/>).
     /// Default is bright orange/red, indicating an impressive streak.
     /// </summary>
     [SerializeField]
-    private Color streakHighColor = new (1f, 0.3f, 0f); // Bright orange
+    private Color _streakHighColor = new (1f, 0.3f, 0f); // Bright orange
     
     /// <summary>
     /// Color flashed when the player misses and loses their streak.
     /// Default is red, providing strong negative feedback.
     /// </summary>
     [SerializeField]
-    private Color streakMissColor = Color.red;
+    private Color _streakMissColor = Color.red;
     
     /// <summary>
     /// Default color to reset the streak text to after animations complete.
     /// Used when the streak is reset to zero.
     /// </summary>
     [SerializeField]
-    private Color streakResetColor = Color.white;
+    private Color _streakResetColor = Color.white;
     
     /// <summary>
     /// Streak value threshold for transitioning to medium streak color.
-    /// When streak reaches this value, the color changes from <see cref="streakLowColor"/> to <see cref="streakMidColor"/>.
+    /// When streak reaches this value, the color changes from <see cref="_streakLowColor"/> to <see cref="_streakMidColor"/>.
     /// </summary>
     [Header("Other Settings")]
     [SerializeField]
-    private int streakMidThreshold = 5;
+    private int _streakMidThreshold = 5;
     
     /// <summary>
     /// Streak value threshold for transitioning to high streak color.
-    /// When streak reaches this value, the color changes to <see cref="streakHighColor"/>.
+    /// When streak reaches this value, the color changes to <see cref="_streakHighColor"/>.
     /// </summary>
     [SerializeField]
-    private int streakHighThreshold = 10;
+    private int _streakHighThreshold = 10;
     
     /// <summary>
     /// Minimum streak value required to trigger bonus animations (rotation effect).
     /// High streaks receive additional visual emphasis.
     /// </summary>
     [SerializeField]
-    private int highStreaksNumber = 5;
+    private int _highStreaksNumber = 5;
+
+    /// <summary>
+    /// Event invoked to check if the session score goal has been reached.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent _sessionGoalReached;
     
     /// <summary>
     /// Current score value tracking total successful actions.
@@ -173,12 +180,8 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </summary>
     private int _streakValue = 0;
 
+    /// <summary>Score goal for the current session, read from the <c>SessionGoal</c> <see cref="PlayerPrefs"/> key in <see cref="Start"/>.</summary>
     private int _sessionGoal = 0;
-    
-    /// <summary>
-    /// Event invoked to check if the session score goal has been reached.
-    /// </summary>
-    public UnityEvent sessionGoalReached;
 
     /// <summary>
     /// Initializes the score and streak system by validating references and setting initial UI state.
@@ -199,35 +202,38 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     private void Awake()
     {
-        if (scoreText == null)
+        if (_scoreText == null)
         {
             Debug.LogError("Score TextMeshProUGUI reference is not assigned.");
             return;
         }
 
-        if (streakText == null)
+        if (_streakText == null)
         {
             Debug.LogError("Streak TextMeshProUGUI reference is not assigned.");
             return;
         }
 
-        if (streakSymbol == null)
+        if (_streakSymbol == null)
         {
             Debug.LogError("Streak Symbol GameObject reference is not assigned.");
 
             return;
         }
 
-        streakSymbol.SetActive(false);
+        _streakSymbol.SetActive(false);
 
         UpdateScoreText();
         UpdateStreakText();
     }
 
+    /// <summary>Reads the session score goal from <see cref="PlayerPrefs"/>, displays it, and reports the initial (zeroed) progress to <see cref="ConnectToWebApp"/>.</summary>
     private void Start()
-    {   
+    {
         _sessionGoal = PlayerPrefs.GetInt("SessionGoal", 0);
-        sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
+        _sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
+         
+         ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
     }
 
     /// <summary>
@@ -244,7 +250,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// <item><description>Updates the score and streak text displays</description></item>
     /// <item><description>Animates score text with punch scale effect and yellow color flash</description></item>
     /// <item><description>Animates streak text with punch scale effect and dynamic color based on streak value</description></item>
-    /// <item><description>If streak >= <see cref="highStreaksNumber"/>, adds bonus rotation animation</description></item>
+    /// <item><description>If streak >= <see cref="_highStreaksNumber"/>, adds bonus rotation animation</description></item>
     /// </list>
     /// </para>
     /// <para>
@@ -252,42 +258,45 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// to prevent conflicts.
     /// </para>
     /// </remarks>
+    /// <remarks>Invoked via Inspector by the scoring UnityEvents of the mini-games' score areas/targets (e.g. Frisbee's ScoreArea, Archery's balloon targets).</remarks>
     public void PlayerScored(int points = 1)
     {
         _scoreValue += points;
         _streakValue += 1;
-        streakSymbol.SetActive(true);
-        
+        _streakSymbol.SetActive(true);
+
+        ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+
         // Update text
         UpdateScoreText();
         UpdateStreakText();
         
         // Animate score with punch effect
-        scoreText.transform.DOKill();
-        scoreText.transform.DOPunchScale(Vector3.one * scorePunchScale, scorePunchDuration, 5, 0.5f);
+        _scoreText.transform.DOKill();
+        _scoreText.transform.DOPunchScale(Vector3.one * _scorePunchScale, _scorePunchDuration, 5, 0.5f);
         
         // Animate color flash for score
-        scoreText.DOKill();
-        scoreText.DOColor(scoreFlashColor, 0.1f).SetLoops(2, LoopType.Yoyo);
+        _scoreText.DOKill();
+        _scoreText.DOColor(_scoreFlashColor, 0.1f).SetLoops(2, LoopType.Yoyo);
         
         // Animate streak with bigger punch effect
-        streakText.transform.DOKill();
-        streakText.transform.DOPunchScale(Vector3.one * streakPunchScale, streakPunchDuration, 6, 0.5f);
+        _streakText.transform.DOKill();
+        _streakText.transform.DOPunchScale(Vector3.one * _streakPunchScale, _streakPunchDuration, 6, 0.5f);
         
         // Animate color based on streak value
         Color streakColor = GetStreakColor(_streakValue);
-        streakText.DOKill();
-        streakText.DOColor(streakColor, 0.2f).SetLoops(2, LoopType.Yoyo);
+        _streakText.DOKill();
+        _streakText.DOColor(streakColor, 0.2f).SetLoops(2, LoopType.Yoyo);
         
         // Add rotation for high streaks
-        if (_streakValue >= highStreaksNumber)
+        if (_streakValue >= _highStreaksNumber)
         {
-            streakText.transform.DOPunchRotation(new Vector3(0, 0, 15), streakPunchDuration, 8, 0.5f);
+            _streakText.transform.DOPunchRotation(new Vector3(0, 0, 15), _streakPunchDuration, 8, 0.5f);
         }
 
         if (_scoreValue >= _sessionGoal)
         {
-            sessionGoalReached.Invoke();
+            _sessionGoalReached.Invoke();
         }
     }
     
@@ -307,7 +316,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// <item><description>Resets <see cref="_streakValue"/> to 0</description></item>
     /// <item><description>Updates the streak text display</description></item>
     /// <item><description>Animates streak text with shake effect (position shake)</description></item>
-    /// <item><description>Flashes red color 4 times, then resets to <see cref="streakResetColor"/></description></item>
+    /// <item><description>Flashes red color 4 times, then resets to <see cref="_streakResetColor"/></description></item>
     /// <item><description>Scales down to 0.7x then back to normal (emphasizes loss)</description></item>
     /// </list>
     /// </para>
@@ -316,26 +325,30 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// All animations use DOTween and automatically kill any existing animations to prevent conflicts.
     /// </para>
     /// </remarks>
+    /// <remarks>Invoked via Inspector by the missing UnityEvents of the mini-games' miss triggers (e.g. Archery's <c>Arrow</c> hitting the ground/out-of-bounds).</remarks>
     public void PlayerMissed()
     {    
-        if (_streakValue > 0 && !DOTween.IsTweening(streakText.transform)){
-            streakSymbol.SetActive(false);
+        if (_streakValue > 0 && !DOTween.IsTweening(_streakText.transform)){
+            _streakSymbol.SetActive(false);
             _streakValue = 0;
+
+            ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+
             UpdateStreakText();
             
             // Shake animation for losing streak
-            streakText.transform.DOKill();
-            streakText.transform.DOShakePosition(streakLoseShakeDuration, streakLoseShakeStrength, 20, 90, false, true);
+            _streakText.transform.DOKill();
+            _streakText.transform.DOShakePosition(_streakLoseShakeDuration, _streakLoseShakeStrength, 20, 90, false, true);
             
             // Flash red color
-            streakText.DOKill();
-            streakText.DOColor(streakMissColor, 0.15f).SetLoops(4, LoopType.Yoyo).OnComplete(() =>
+            _streakText.DOKill();
+            _streakText.DOColor(_streakMissColor, 0.15f).SetLoops(4, LoopType.Yoyo).OnComplete(() =>
             {
-                streakText.color = streakResetColor;
+                _streakText.color = _streakResetColor;
             });
             
             // Scale down effect
-            streakText.transform.DOScale(0.7f, 0.2f).SetLoops(2, LoopType.Yoyo);
+            _streakText.transform.DOScale(0.7f, 0.2f).SetLoops(2, LoopType.Yoyo);
         }
     }
     
@@ -343,12 +356,12 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// Updates the score text UI to display the current score value.
     /// </summary>
     /// <remarks>
-    /// Formats the text as "Pontos: {value}" in Portuguese.
+    /// Formats the text as "Pontos Atuais: {value}" in Portuguese.
     /// Called automatically by <see cref="PlayerScored"/> and during initialization.
     /// </remarks>
     private void UpdateScoreText()
     {
-        scoreText.text = $"Pontos Atuais: {_scoreValue}";
+        _scoreText.text = $"Pontos Atuais: {_scoreValue}";
     }
     
     /// <summary>
@@ -360,7 +373,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     private void UpdateStreakText()
     {   
-        streakText.text = $"Sequencia: {_streakValue}";
+        _streakText.text = $"Sequencia: {_streakValue}";
     }
     
     /// <summary>
@@ -369,9 +382,9 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// <param name="streak">The current streak value to evaluate.</param>
     /// <returns>
     /// <list type="bullet">
-    /// <item><description><see cref="streakHighColor"/> if streak >= <see cref="streakHighThreshold"/></description></item>
-    /// <item><description><see cref="streakMidColor"/> if streak >= <see cref="streakMidThreshold"/></description></item>
-    /// <item><description><see cref="streakLowColor"/> for all other values</description></item>
+    /// <item><description><see cref="_streakHighColor"/> if streak >= <see cref="_streakHighThreshold"/></description></item>
+    /// <item><description><see cref="_streakMidColor"/> if streak >= <see cref="_streakMidThreshold"/></description></item>
+    /// <item><description><see cref="_streakLowColor"/> for all other values</description></item>
     /// </list>
     /// </returns>
     /// <remarks>
@@ -380,13 +393,17 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     private Color GetStreakColor(int streak)
     {
-        if (streak >= streakHighThreshold)
-            return streakHighColor;
-        
-        if (streak >= streakMidThreshold)
-            return streakMidColor;
-        
-        return streakLowColor;
+        if (streak >= _streakHighThreshold)
+        {
+            return _streakHighColor;
+        }
+                   
+        if (streak >= _streakMidThreshold)
+        {
+             return _streakMidColor;
+        }
+           
+        return _streakLowColor;
     }
     
     /// <summary>
@@ -411,9 +428,9 @@ public class ScoreAndStreakSystem : MonoBehaviour
     private void OnDestroy()
     {
         // Clean up tweens when object is destroyed
-        scoreText.transform.DOKill();
-        scoreText.DOKill();
-        streakText.transform.DOKill();
-        streakText.DOKill();
+        _scoreText.transform.DOKill();
+        _scoreText.DOKill();
+        _streakText.transform.DOKill();
+        _streakText.DOKill();
     }
 }

@@ -122,11 +122,11 @@ public class CarnyWiseDiffFeedback : UIDialog
 
         if (feedbackTexts != null && feedbackTexts.Count > 0)
         {
-            dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
+            _dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
         }
         else
         {
-            dialogueBoxText.text = "...";
+            _dialogueBoxText.text = "...";
             Debug.LogError("List of feedback texts is null or empty.");
         }
 

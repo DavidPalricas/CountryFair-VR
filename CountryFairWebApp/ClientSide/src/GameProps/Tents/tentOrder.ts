@@ -54,7 +54,7 @@ export function swapIntoSlot(order: TentOrder, tent: MiniGameType, targetSlot: n
 
 /**
  * Inverse of the tent id -> 1-based slot map `GameScreen.sendFairState` builds: rebuilds a
- * `TentOrder` from the `"updateFairState"` payload Unity's `PlaceHolderManager.GetFairState()`
+ * `TentOrder` from the `"updateTentsOrder"` payload Unity's `PlaceHolderManager.GetFairState()`
  * broadcasts. Slots absent from `fairState` keep whatever tent `current` already has there.
  *
  * Unity's `MINI_GAMES` enum serialises as SCREAMING_SNAKE_CASE (`element.miniGame.ToString()`),

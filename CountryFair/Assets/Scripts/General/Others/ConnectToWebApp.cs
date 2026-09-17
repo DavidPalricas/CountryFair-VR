@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 /// Joins the Colyseus <c>fairsceneroom</c> as the <c>"game"</c> platform, keeping the game and the
 /// companion web app (<c>CountryFairWebApp</c>) in sync on the mini-game tent order. Retries the join
 /// on failure and reconnects automatically if an already-established connection drops, forwards local
-/// tent reorders to the room via <see cref="UpdateFairState"/>, and relays the room's
-/// <c>"updateFairState"</c> broadcasts (i.e. reorders made from the web app) to
-/// <see cref="_updateGameFairState"/>.
+/// tent reorders to the room via <see cref="UpdateTentsOrder"/>, and relays the room's
+/// <c>"updateTentsOrder"</c> broadcasts (i.e. reorders made from the web app) through
+/// <see cref="updateTentsOrder"/>.
 /// </summary>
 public class ConnectToWebApp : MonoBehaviour
 {
@@ -41,10 +41,6 @@ public class ConnectToWebApp : MonoBehaviour
     [Tooltip("Seconds to wait before retrying after a failed connection attempt. 0 disables retrying.")]
     private float _retryDelaySeconds = 3f;
 
-    /// <summary>Raised with the mini-game-name-to-slot-number map whenever the room broadcasts an <c>"updateFairState"</c> message (i.e. the tent order changed on the web app side), but only once the intro has finished.</summary>
-    [SerializeField]
-    private UnityEvent<Dictionary<string, string>> _updateGameFairState;
-
     /// <summary>Enforces the singleton: the first instance survives scene loads, later ones self-destroy.</summary>
     private static ConnectToWebApp s_instance = null;
 
@@ -56,6 +52,23 @@ public class ConnectToWebApp : MonoBehaviour
 
     /// <summary>Cancels the pending <see cref="ConnectLoop"/> retry delay and stops further retries on <see cref="OnDestroy"/>.</summary>
     private CancellationTokenSource _cancellation;
+
+
+    /// <summary>
+    /// Raised with the mini-game-name-to-slot-number map whenever the room broadcasts an
+    /// <c>"updateTentsOrder"</c> message, i.e. the tent order changed on the web app side.
+    /// Public and <c>[HideInInspector]</c> rather than an Inspector-wired <c>[SerializeField]</c>:
+    /// this object is <c>DontDestroyOnLoad</c> but <c>TentPlaceHolderManager</c> is not, so a listener
+    /// baked into the scene would keep pointing at the <c>TentPlaceHolderManager</c> instance destroyed
+    /// on the previous <c>CountryFair</c> load once the player returns from a mini-game. Listeners must
+    /// instead call <c>AddListener</c> at runtime (see <c>TentPlaceHolderManager.Start()</c>), which
+    /// re-registers on every scene load instead of going stale.
+    /// </summary>
+    [HideInInspector]
+    public UnityEvent<Dictionary<string, string>> updateTentsOrder;
+
+    /// <summary>Global accessor for the singleton established in <see cref="Awake"/>; null until the first <see cref="ConnectToWebApp"/> instance in the scene has run its Awake.</summary>
+    public static ConnectToWebApp Instance => s_instance;
 
     /// <summary>Establishes the singleton and marks this object to persist across the hub/mini-game scene loads, so the web app connection survives scene transitions.</summary>
     private void Awake()
@@ -111,8 +124,8 @@ public class ConnectToWebApp : MonoBehaviour
     /// established connection that dropped (e.g. a ping/pong timeout from the main thread stalling
     /// too long). Without this, any drop after the first successful join was final: the room stayed
     /// null forever and the web client was stuck on its waiting screen for the rest of the session.
-    /// While connected, subscribes to the room's <c>"updateFairState"</c> broadcasts (reorders made
-    /// from the web app) and forwards them through <see cref="_updateGameFairState"/>.
+    /// While connected, subscribes to the room's <c>"updateTentsOrder"</c> broadcasts (reorders made
+    /// from the web app) and forwards them through <see cref="updateTentsOrder"/>.
     /// The original version awaited JoinOrCreate inside an async void Start, so on device any
     /// failure (wrong host, server not up yet, headset on another network) was swallowed and the
     /// room stayed null forever with no feedback.
@@ -139,9 +152,9 @@ public class ConnectToWebApp : MonoBehaviour
 
                 Debug.Log($"ConnectToWebApp: connected to {endpoint} (room {_room.RoomId})");
 
-                _room.OnMessage<Dictionary<string, string>>("updateFairState", (fairState) =>
+                _room.OnMessage<Dictionary<string, string>>("updateTentsOrder", (fairState) =>
                 {
-                    _updateGameFairState.Invoke(fairState);
+                    updateTentsOrder.Invoke(fairState);
                 });
 
                 // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this
@@ -188,22 +201,23 @@ public class ConnectToWebApp : MonoBehaviour
 
     /// <summary>Sends the current mini-game-name-to-slot-number map to the room so the web app mirrors the game's tent order.</summary>
     /// <param name="fairState">Mini-game name to placeholder slot number, as built by <c>TentPlaceHolderManager.GetFairState()</c>.</param>
-    /// <remarks>Invoked via the Inspector in the <c>_updateOtherManagers</c> UnityEvent of the world-side <c>TentPlaceHolderManager</c> (<c>TentsPlaceHolderManager</c> GameObject) in the CountryFair scene.</remarks>
-    public async void UpdateFairState(Dictionary<string, string> fairState)
+    /// <remarks>Registered at runtime as a listener on <c>_updateOtherManagers</c> in <c>TentPlaceHolderManager.Start()</c> — called by both the world and wrist-menu instances — rather than wired via the Inspector, so the registration happens again on every <c>CountryFair</c> scene load instead of going stale.</remarks>
+    public async void UpdateTentsOrder(Dictionary<string, string> fairState)
     {
         if (_room != null)
         {
             try
             {
-                await _room.Send("updateFairState", fairState);
+                await _room.Send("updateTentsOrder", fairState);
             }
             catch (Exception exception)
             {
-                Debug.LogWarning($"ConnectToWebApp: failed to send fair state ({exception.Message}).");
+                Debug.LogWarning($"ConnectToWebApp: failed to send tents order ({exception.Message}).");
             }
         }
     }
 
+    /// <summary>Notifies the room that the current dialogue (intro or session-completed) has finished, so the web app can advance its own state.</summary>
     public async void PlayerFinishedDialogue()
     {
         if (_room != null)
@@ -215,6 +229,60 @@ public class ConnectToWebApp : MonoBehaviour
             catch (Exception exception)
             {
                 Debug.LogWarning($"ConnectToWebApp: failed to send playerFinishedDialogue ({exception.Message}).");
+            }
+        }
+    }
+
+    /// <summary>Notifies the room that the mini-game tutorial has finished, so the web app can advance its own state.</summary>
+    public async void PlayerFinishedTutorial()
+    {
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("playerFinishedTutorial");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send playerFinishedTutorial ({exception.Message}).");
+            }
+        }
+    }
+
+
+    /// <summary>Notifies the room which Unity scene is now active, so the web app can mirror the player's location in the fair/mini-games.</summary>
+    /// <param name="sceneName">Lower-case scene name (e.g. <c>"archerygame"</c>, <c>"frisbeegame"</c>).</param>
+    public async void UpdateScene(string sceneName)
+    {
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("updateScene", new { sceneName });
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send updateScene ({exception.Message}).");
+            }
+        }
+    }
+
+
+    /// <summary>Sends the player's current mini-game progress to the room, so the web app can mirror score/goal/streak live.</summary>
+    /// <param name="score">Current score, as tracked by <c>ScoreAndStreakSystem</c>.</param>
+    /// <param name="goal">Session score goal (<c>PlayerPrefs</c> key <c>SessionGoal</c>).</param>
+    /// <param name="streak">Current consecutive-success streak, as tracked by <c>ScoreAndStreakSystem</c>.</param>
+    public async void UpdatePlayerProgessOnMiniGame(int score, int goal, int streak){
+       
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("updatePlayerProgressOnMiniGame", new { score, goal, streak });
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send updatePlayerProgressOnMiniGame ({exception.Message}).");
             }
         }
     }

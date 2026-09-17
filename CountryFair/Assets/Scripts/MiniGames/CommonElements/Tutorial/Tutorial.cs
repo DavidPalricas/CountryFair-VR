@@ -12,83 +12,100 @@ public class Tutorial : UIDialog
 {
     /// <summary>Fired when the tutorial ends — wired to <see cref="MiniGameManager.TutorialCompleted"/>.</summary>
     [SerializeField]
-    private UnityEvent tutorialCompleted;
+    private UnityEvent _tutorialCompleted;
 
     [Header("Practise Elements")]
     /// <summary>Video screen container shown during the practice phase.</summary>
     [SerializeField]
-    private GameObject videoScreen;
+    private GameObject _videoScreen;
 
     /// <summary>Video player object shown on the screen during practice.</summary>
     [SerializeField]
-    private GameObject  miniGameVideo;
+    private GameObject  _miniGameVideo;
 
     /// <summary>Mini-game prop (bow or frisbee) revealed at the start of the practice phase.</summary>
     [SerializeField]
-    private GameObject miniGameProp;
+    private GameObject _miniGameProp;
 
     /// <summary>Root container that holds all interactive practice score areas.</summary>
     [SerializeField]
-    private GameObject practiceElements;
+    private GameObject _practiceElements;
 
     [Header("Game Elements")]
     /// <summary>Button the player presses to advance through rule slides and to confirm practice completion.</summary>
     [SerializeField]
-    private GameObject tutorialButton;
+    private GameObject _tutorialButton;
 
     /// <summary>UI elements activated after the tutorial completes (e.g. score display).</summary>
     [SerializeField]
-    private GameObject postTutorialElements;
+    private GameObject _postTutorialElements;
 
+    /// <summary>Number of practice score areas found under <see cref="_practiceElements"/>; the practice phase ends once this many tasks are completed.</summary>
     private int _numberOfTasks;
+
+    /// <summary>Parsed tutorial content (rules, practice guide, end message), set once <see cref="OnDataLoaded"/> deserializes the mini-game's tutorial JSON.</summary>
     private TutorialData _tutorialData;
+
+    /// <summary>Number of practice tasks completed so far in the current session.</summary>
     private int _currentTasksCompleted = 0;
+
+    /// <summary>True once all practice tasks are done and the "ready to play" confirmation is showing.</summary>
     private bool _finishedPracticing = false;
+
+    /// <summary>True when the active scene is the Frisbee mini-game, false for Archery; set by <see cref="CheckCurrenMiniGame"/>.</summary>
     private bool _isFromFrisbeGame = false;
 
+    /// <summary>Validates the practice/UI references, counts practice tasks from <see cref="_practiceElements"/>, and hides all practice/post-tutorial elements until they are needed.</summary>
     protected override void Awake()
     {
-        if (TutorialWasCompleted())
-        {
-            tutorialCompleted.Invoke();
-            Destroy(gameObject);
-            return;
-        }
-
         base.Awake();
 
-        if (practiceElements == null || postTutorialElements == null)
+        if (_practiceElements == null || _postTutorialElements == null)
         {
             Debug.LogError("Practice or Post elements are not assigned in the inspector.");
             return;
         }
 
-        if (tutorialButton == null)
+        if (_tutorialButton == null)
         {
             Debug.LogError("Tutorial button is not assigned in the inspector.");
             return;
         }
 
-        if (miniGameProp == null)
+        if (_miniGameProp == null)
         {
             Debug.LogError("Mini game prop is not assigned in the inspector.");
             return;
         }
 
-        if (videoScreen == null || miniGameVideo == null)
+        if (_videoScreen == null || _miniGameVideo == null)
         {
             Debug.LogError("Video screen or mini game video is not assigned in the inspector.");
             return;
         }
 
-        _numberOfTasks = Utils.GetChildren(practiceElements.transform).Length;
+        _numberOfTasks = Utils.GetChildren(_practiceElements.transform).Length;
 
-        practiceElements.SetActive(false);
-        miniGameProp.SetActive(false);
-        postTutorialElements.SetActive(false);
-        videoScreen.SetActive(false);
+        _practiceElements.SetActive(false);
+        _miniGameProp.SetActive(false);
+        _postTutorialElements.SetActive(false);
+        _videoScreen.SetActive(false);
     }
 
+    /// <summary>Wires <see cref="_tutorialCompleted"/> to <see cref="ConnectToWebApp"/>, then skips the tutorial immediately if <see cref="TutorialWasCompleted"/> reports it was already done.</summary>
+    private void Start()
+    {
+        _tutorialCompleted.AddListener(ConnectToWebApp.Instance.PlayerFinishedTutorial);
+
+         if (TutorialWasCompleted())
+        {
+            ActivatePostTutorialElements();
+            _tutorialCompleted.Invoke();
+            Destroy(gameObject);
+        }
+    }
+
+    /// <summary>Casts the loaded JSON to <see cref="TutorialData"/> and shows the first rule slide.</summary>
     protected override void OnDataLoaded()
     {
         if (_data is not TutorialData tutorialData)
@@ -102,6 +119,7 @@ public class Tutorial : UIDialog
         ShowGameRule();
     }
 
+    /// <summary>Sets <see cref="_isFromFrisbeGame"/> by inspecting the active scene's name.</summary>
     private void CheckCurrenMiniGame()
     {
         string sceneName = SceneManager.GetActiveScene().name.ToLower();
@@ -121,6 +139,9 @@ public class Tutorial : UIDialog
         Debug.LogError("Invalid scene for tutorial detection.");
     }
 
+    /// <summary>
+    /// Determines <see cref="_isFromFrisbeGame"/> and returns whether the matching mini-game's tutorial was already completed this session.
+    /// </summary>
     private bool TutorialWasCompleted()
     {
         CheckCurrenMiniGame();
@@ -143,21 +164,23 @@ public class Tutorial : UIDialog
         return false;
     }
 
+    /// <summary>Always deserializes the tutorial JSON into <see cref="TutorialData"/>.</summary>
     protected override System.Type GetJSONDataType()
     {
         return typeof(TutorialData);
     }
 
+    /// <summary>Picks the Frisbee or Archery tutorial JSON based on <see cref="_isFromFrisbeGame"/>.</summary>
     protected override void SetJSONFileName()
     {
-        // Usa o bool definido no CheckCurrenMiniGame (chamado no início do Awake)
+        // _isFromFrisbeGame is determined by CheckCurrenMiniGame(), called from TutorialWasCompleted() in Start().
         _jsonFileName = _isFromFrisbeGame ? "frisbee_tutorial.json" : "archery_tutorial.json";
     }
 
     /// <summary>
     /// Advances to the next rule slide; transitions to the "ready to play" confirmation once practice ends.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo botão de avanço no ecrã de tutorial.</remarks>
+    /// <remarks>Invoked via Inspector by the advance button on the tutorial screen.</remarks>
     public override void NextStep()
     {
         if (_tutorialData == null){
@@ -177,12 +200,11 @@ public class Tutorial : UIDialog
     /// Activates the mini-game prop and post-tutorial UI, fires <c>tutorialCompleted</c>, marks the tutorial
     /// complete in <see cref="GameManager"/>, and destroys this tutorial object.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo botão "Estou Pronto" no final do tutorial.</remarks>
+    /// <remarks>Invoked via Inspector by the "Estou Pronto" ("I'm ready") button at the end of the tutorial.</remarks>
     public void ReadyToPlay()
     {
-        miniGameProp.SetActive(true);
-        postTutorialElements.SetActive(true);
-        tutorialCompleted.Invoke();
+        ActivatePostTutorialElements();
+        _tutorialCompleted.Invoke();
 
         if (_isFromFrisbeGame)
         {
@@ -196,6 +218,14 @@ public class Tutorial : UIDialog
         Destroy(gameObject);
     }
 
+    /// <summary>Activates the mini-game prop and post-tutorial UI (e.g. score display) before <see cref="_tutorialCompleted"/> fires, so listeners that depend on them (e.g. <see cref="MiniGameManager.TutorialCompleted"/> finding tag-based references) run after they exist in the scene.</summary>
+    private void ActivatePostTutorialElements()
+    {
+        _miniGameProp.SetActive(true);
+        _postTutorialElements.SetActive(true);
+    }
+
+    /// <summary>Displays and consumes the next rule slide, or starts the practice phase once all rules are shown.</summary>
     private void ShowGameRule()
     {
         List<string> rules = _tutorialData.Rules;
@@ -206,35 +236,37 @@ public class Tutorial : UIDialog
             return;
         }
 
-        dialogueBoxText.text = rules[0];
+        _dialogueBoxText.text = rules[0];
         _tutorialData.Rules.RemoveAt(0);
     }
 
+    /// <summary>Hides the rule dialogue button and reveals the practice score areas, prop, and instructional video.</summary>
     private void StartPractice()
     {
-        tutorialButton.SetActive(false);
-        practiceElements.SetActive(true);
-        miniGameProp.SetActive(true);
-        videoScreen.SetActive(true);
-        miniGameVideo.SetActive(true);
+        _tutorialButton.SetActive(false);
+        _practiceElements.SetActive(true);
+        _miniGameProp.SetActive(true);
+        _videoScreen.SetActive(true);
+        _miniGameVideo.SetActive(true);
 
-        dialogueBoxText.text = _tutorialData.Guide;
+        _dialogueBoxText.text = _tutorialData.Guide;
     }
 
+    /// <summary>Shows the tutorial's end message and switches back to the dialogue button, hiding the practice prop and video.</summary>
     private void PractiseCompleted()
     {
-        dialogueBoxText.text = _tutorialData.End;
+        _dialogueBoxText.text = _tutorialData.End;
 
-        tutorialButton.SetActive(true);
-        miniGameProp.SetActive(false);
-        videoScreen.SetActive(false);
+        _tutorialButton.SetActive(true);
+        _miniGameProp.SetActive(false);
+        _videoScreen.SetActive(false);
         _finishedPracticing = true;
     }
 
     /// <summary>
     /// Records one completed practice task; starts the end-of-practice dialogue when all tasks are done.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelos eventos taskCompleted das score areas de prática.</remarks>
+    /// <remarks>Invoked via Inspector by the taskCompleted events of the practice score areas.</remarks>
     public void TaskCompleted()
     {
         _currentTasksCompleted++;

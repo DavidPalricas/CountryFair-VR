@@ -31,21 +31,34 @@ public class GameManager
     }
 
 
+    /// <summary>
+    /// Loads the scene for <paramref name="miniGame"/> and notifies <see cref="ConnectToWebApp"/> of the scene
+    /// change. Only <see cref="OrderableTentElement.MINI_GAMES.ARCHERY"/> and
+    /// <see cref="OrderableTentElement.MINI_GAMES.FRISBEE"/> have a scene implemented; other values log a warning
+    /// and are ignored.
+    /// </summary>
+    /// <param name="miniGame">The mini-game to load.</param>
     public void GoToMiniGame(OrderableTentElement.MINI_GAMES miniGame)
     {
+
+        string sceneName;
+
         switch (miniGame)
         {
             case OrderableTentElement.MINI_GAMES.ARCHERY:
-                SceneManager.LoadScene("ArcheryGame");
-                return;
+               sceneName = "ArcheryGame";
+                break;
 
             case OrderableTentElement.MINI_GAMES.FRISBEE:
-                SceneManager.LoadScene("FrisbeeGame");
-                return;
+                sceneName = "FrisbeeGame";
+                break;
 
             default:
                 Debug.LogWarning($"MiniGame '{miniGame}' is not implemented yet.");
                 return;
         }
+
+        SceneManager.LoadScene(sceneName);
+        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
     }
 }

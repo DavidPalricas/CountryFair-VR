@@ -16,4 +16,18 @@
     * game client to read it, matching how `FairSceneRoom` prompts the web side to pick the order.
     */
    @type({ map: "string" }) tentOrders: MapSchema<string> = new MapSchema<string>();
+
+   /**
+    * Live progress of the mini-game currently being played, written by
+    * `FairSceneRoom`'s `"updatePlayerProgressOnMiniGame"` handler. Using synced fields
+    * (instead of a plain broadcast message, like `updateTentsOrder`) means a web client that
+    * (re)connects mid-session receives the current values immediately on join instead of
+    * waiting for the next score/streak change.
+    *
+    * Reset to 0 whenever `"updateScene"` reports a non-hub scene, so a new mini-game never
+    * opens on the previous one's numbers while its tutorial is still playing.
+    */
+   @type("number") score: number = 0;
+   @type("number") streak: number = 0;
+   @type("number") sessionGoal: number = 0;
   }
