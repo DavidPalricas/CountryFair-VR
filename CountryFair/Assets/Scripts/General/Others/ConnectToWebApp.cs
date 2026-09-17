@@ -67,6 +67,17 @@ public class ConnectToWebApp : MonoBehaviour
     [HideInInspector]
     public UnityEvent<Dictionary<string, string>> updateTentsOrder;
 
+    /// <summary>
+    /// Raised with the raw cheat code string whenever the room broadcasts a <c>"cheatCode"</c>
+    /// message, i.e. the therapist entered a cheat code on the web app. Public and
+    /// <c>[HideInInspector]</c> for the same reason as <see cref="updateTentsOrder"/>: this
+    /// object is <c>DontDestroyOnLoad</c> but every <c>CheatCodes</c> instance lives in a scene
+    /// and is destroyed on scene load, so listeners must call <c>AddListener</c> at runtime
+    /// (see <c>CheatCodes.Start()</c>) instead of being wired once in the Inspector.
+    /// </summary>
+    [HideInInspector]
+    public UnityEvent<string> receiveCheatCode;
+
     /// <summary>Global accessor for the singleton established in <see cref="Awake"/>; null until the first <see cref="ConnectToWebApp"/> instance in the scene has run its Awake.</summary>
     public static ConnectToWebApp Instance => s_instance;
 
@@ -155,6 +166,11 @@ public class ConnectToWebApp : MonoBehaviour
                 _room.OnMessage<Dictionary<string, string>>("updateTentsOrder", (fairState) =>
                 {
                     updateTentsOrder.Invoke(fairState);
+                });
+
+                _room.OnMessage<string>("cheatCode", (code) =>
+                {
+                    receiveCheatCode.Invoke(code);
                 });
 
                 // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this
