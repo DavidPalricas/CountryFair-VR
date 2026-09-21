@@ -1,5 +1,4 @@
 using UnityEngine;
-using DG.Tweening;
 
 /// <summary>
 /// Dog FSM state that performs a DOTween jump animation, then transitions to <c>CatchFrisbee</c>
@@ -33,30 +32,22 @@ public class Jump: DogState
     public override void Enter()
     {
         base.Enter();
-
-        PerformJump();
     }
 
     public override void Execute()
     {
         base.Execute();
-
+        
         if (IsPlayingNewAnimation())
-        {
+        {   
+            animator.SetFloat("Speed", 1f);
             fSM.ChangeState("CatchFrisbee");
 
             return;
         }
     }
 
-    private void PerformJump()
-    {
-        transform.DOJump(transform.position, jumpPower, jumpNumbers, jumpDuration).OnComplete( () => 
-        {   
-            animator.SetBool("StopAnim", false);
-            animator.SetFloat("Speed", 1f);
-        });
-    }
+
 
     public override void Exit()
     {
