@@ -1,6 +1,7 @@
 /*
   Floating cheat-code panel. Sits above the waiting overlay (.App is z-index 10) so it stays
-  usable regardless of which screen is showing.
+  usable regardless of which screen is showing, except the initial "waiting for game" screen
+  (see .cheat-panel--disabled), where there is no game client to relay a cheat code to.
 */
 .cheat-panel {
   position: absolute;
@@ -12,18 +13,9 @@
   gap: 0.5rem;
 }
 
-.cheat-panel__toggle {
-  width: 2.4rem;
-  height: 2.4rem;
-  flex-shrink: 0;
-  border: none;
-  border-radius: 50%;
-  background: #3a2413;
-  color: #ff9700;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+.cheat-panel--disabled {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .cheat-panel__form {

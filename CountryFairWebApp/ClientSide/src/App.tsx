@@ -152,7 +152,7 @@ function App() {
   return (
     <div className="app-root">
       <GameScreen />
-      <CheatCodePanel />
+      <CheatCodePanel disabled={phase === "waiting"} />
       {showHubOverlay && (
         <WaitingScreen statusText={phase === "waiting" ? undefined : DIALOGUE_STATUS_TEXT} />
       )}
