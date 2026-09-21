@@ -5,6 +5,9 @@ import '../App.css'
 /** Default text: shown while the headset has not joined the room yet. */
 const DEFAULT_STATUS_TEXT = "Esperando que ligue ao jogo";
 
+/** Default signboard title, used everywhere except the mini-game overlays (see `title` below). */
+const DEFAULT_TITLE = "Bem vindo ao Country Fair VR";
+
 /** Which host character illustrates the overlay. Zeca hosts the fair hub, Carny Wise hosts everything mini-game-related (tutorial, live progress) — matching who greets the patient on each screen in the headset. */
 type Character = "zeca" | "carnyWise";
 
@@ -36,6 +39,11 @@ type WaitingScreenProps = {
     /** Host character shown next to the status text/progress. Defaults to Zeca (fair hub). */
     character?: Character;
     /**
+     * Overrides the signboard title, e.g. "Mini Jogo: Frisbee" — lets the mini-game overlay
+     * name which game is loaded in place of the generic hub greeting.
+     */
+    title?: string;
+    /**
      * When set, replaces the waiting dots with the current mini-game score/streak/session
      * goal — this is how the overlay doubles as the "player is playing" screen instead of
      * navigating to a separate page (and paying its model-loading cost) just to show numbers.
@@ -51,12 +59,12 @@ type WaitingScreenProps = {
  * characters that appear in the VR game itself, so the patient and therapist see a consistent
  * guide on both devices: Zeca for the fair hub, Carny Wise for anything mini-game-related.
  */
-export function WaitingScreen({ statusText = DEFAULT_STATUS_TEXT, character = "zeca", progress }: WaitingScreenProps) {
+export function WaitingScreen({ statusText = DEFAULT_STATUS_TEXT, character = "zeca", title = DEFAULT_TITLE, progress }: WaitingScreenProps) {
    return (
      <div className="App">
         <div className="info">
             <div className="signboard">
-            <h1 className="signboard__title">Bem vindo ao Country Fair VR</h1>
+            <h1 className="signboard__title">{title}</h1>
 
             <div className="signboard__body">
                 <img src={CHARACTER_IMAGES[character]} alt={CHARACTER_ALT[character]} />

@@ -14,8 +14,17 @@ import { CheatCodePanel } from "./components/CheatCodePanel";
  */
 const DIALOGUE_STATUS_TEXT = "O sobrevivente está a interagir com um diálogo do jogo";
 
-/** Status line shown while `tutorialActive` is assumed true for the mini-game in `miniGame` — spells out that it's specifically the tutorial, not just which mini-game is loaded. */
-const tutorialStatusText = (miniGame: string) => `O sobrevivente está a fazer o tutorial de ${miniGame}`;
+/** Status line shown while `tutorialActive` is assumed true — the mini-game name itself lives
+ * in the overlay's title ("Mini Jogo: X"), so this stays generic. */
+const TUTORIAL_STATUS_TEXT = "O sobrevivente está a fazer o tutorial";
+
+/** Status line shown above the live score/streak/session-goal panel, once the tutorial ends
+ * — the mini-game name itself lives in the overlay's title, so this just names what the
+ * numbers below it are. */
+const PROGRESS_STATUS_TEXT = "Progresso da sessão";
+
+/** Signboard title for the mini-game overlays, naming which game is loaded. */
+const miniGameTitle = (miniGame: string) => `Mini Jogo: ${miniGame}`;
 
 /** Which top-level screen the fair state is in. Drives which overlay (if any) covers `GameScreen`. */
 type Phase = "waiting" | "hub" | "miniGame";
@@ -157,10 +166,19 @@ function App() {
         <WaitingScreen statusText={phase === "waiting" ? undefined : DIALOGUE_STATUS_TEXT} />
       )}
       {showTutorialOverlay && (
-        <WaitingScreen character="carnyWise" statusText={miniGame ? tutorialStatusText(miniGame) : undefined} />
+        <WaitingScreen
+          character="carnyWise"
+          statusText={TUTORIAL_STATUS_TEXT}
+          title={miniGame ? miniGameTitle(miniGame) : undefined}
+        />
       )}
       {showProgressOverlay && (
-        <WaitingScreen character="carnyWise" statusText={miniGame ?? undefined} progress={progress} />
+        <WaitingScreen
+          character="carnyWise"
+          statusText={PROGRESS_STATUS_TEXT}
+          title={miniGame ? miniGameTitle(miniGame) : undefined}
+          progress={progress}
+        />
       )}
     </div>
   );
