@@ -2,6 +2,15 @@ import { useState, type FormEvent } from "react";
 import { getRoom } from "../network/client";
 import "./CheatCodePanel.css";
 
+type CheatCodePanelProps = {
+    /**
+     * True while there is no game client connected to the room yet (the initial waiting
+     * screen), so a cheat code would have nowhere to go. The panel stays mounted (keeping its
+     * `code` state) but is hidden and non-interactive instead of being unmounted.
+     */
+    disabled?: boolean;
+};
+
 /**
  * Floating panel that lets the therapist send a cheat code from the web app, mirroring what
  * typing the same code on the headset's keyboard does.
@@ -11,16 +20,20 @@ import "./CheatCodePanel.css";
  * `CheatCodes.OnWebCheatCode()` — the exact same `CheckCheatCode()` verification and gating
  * (tutorial/intro requirements, etc.) used for keyboard-entered codes.
  *
- * Collapsed by default (a small toggle button) so it does not compete with the fair scene for
- * attention; it is not tied to `phase` in `App.tsx` because a cheat code can be relevant in the
- * hub, a mini-game's tutorial or a mini-game session alike.
+ * The input field is always visible (no toggle button to reveal it first) so it does not
+ * compete with the fair scene for attention; it is not tied to `phase` in `App.tsx` beyond
+ * `disabled` because a cheat code can be relevant in the hub, a mini-game's tutorial or a
+ * mini-game session alike.
  */
-export function CheatCodePanel() {
+export function CheatCodePanel({ disabled = false }: CheatCodePanelProps) {
     const [code, setCode] = useState("");
-    const [open, setOpen] = useState(false);
 
     const sendCode = (event: FormEvent) => {
         event.preventDefault();
+
+        if (disabled) {
+            return;
+        }
 
         const trimmed = code.trim();
 
@@ -36,31 +49,23 @@ export function CheatCodePanel() {
     };
 
     return (
-        <div className="cheat-panel">
-            <button
-                type="button"
-                className="cheat-panel__toggle"
-                onClick={() => setOpen((current) => !current)}
-                aria-expanded={open}
-                aria-label={open ? "Fechar painel de cheat codes" : "Abrir painel de cheat codes"}
-            >
-                {open ? "×" : "⚙"}
-            </button>
-
-            {open && (
-                <form className="cheat-panel__form" onSubmit={sendCode}>
-                    <input
-                        type="text"
-                        className="cheat-panel__input"
-                        placeholder="cheat code"
-                        value={code}
-                        onChange={(event) => setCode(event.target.value)}
-                        autoComplete="off"
-                        spellCheck={false}
-                    />
-                    <button type="submit" className="cheat-panel__send">Enviar</button>
-                </form>
-            )}
+        <div className={`cheat-panel${disabled ? " cheat-panel--disabled" : ""}`} aria-hidden={disabled}>
+            <form className="cheat-panel__form" onSubmit={sendCode}>
+                <input
+                    type="text"
+                    className="cheat-panel__input"
+                    placeholder="cheat code"
+                    value={code}
+                    onChange={(event) => setCode(event.target.value)}
+                    autoComplete="off"
+                    spellCheck={false}
+                    disabled={disabled}
+                    tabIndex={disabled ? -1 : undefined}
+                />
+                <button type="submit" className="cheat-panel__send" disabled={disabled} tabIndex={disabled ? -1 : undefined}>
+                    Enviar
+                </button>
+            </form>
         </div>
     );
 }
