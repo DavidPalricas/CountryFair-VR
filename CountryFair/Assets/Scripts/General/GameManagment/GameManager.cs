@@ -1,10 +1,13 @@
+using UnityEngine.SceneManagement;
+using UnityEngine;
+
 /// <summary>
 /// Singleton that stores cross-scene session state flags for the current play session.
 /// All flags default to false and are never persisted to disk; they reset when the process restarts.
 /// </summary>
-public class GameManager
+public class GameManager 
 {
-    private static GameManager instance;
+    private static GameManager s_instance;
 
     /// <summary>True once the hub-world intro dialogue sequence has been completed.</summary>
     public bool IntroCompleted { get; set; } = false;
@@ -22,8 +25,40 @@ public class GameManager
     /// <summary>Returns the singleton instance, creating it on first call.</summary>
     public static GameManager GetInstance()
     {
-        instance ??= new GameManager();
+        s_instance ??= new GameManager();
 
-        return instance;
+        return s_instance;
+    }
+
+
+    /// <summary>
+    /// Loads the scene for <paramref name="miniGame"/> and notifies <see cref="ConnectToWebApp"/> of the scene
+    /// change. Only <see cref="OrderableTentElement.MINI_GAMES.ARCHERY"/> and
+    /// <see cref="OrderableTentElement.MINI_GAMES.FRISBEE"/> have a scene implemented; other values log a warning
+    /// and are ignored.
+    /// </summary>
+    /// <param name="miniGame">The mini-game to load.</param>
+    public void GoToMiniGame(OrderableTentElement.MINI_GAMES miniGame)
+    {
+
+        string sceneName;
+
+        switch (miniGame)
+        {
+            case OrderableTentElement.MINI_GAMES.ARCHERY:
+               sceneName = "ArcheryGame";
+                break;
+
+            case OrderableTentElement.MINI_GAMES.FRISBEE:
+                sceneName = "FrisbeeGame";
+                break;
+
+            default:
+                Debug.LogWarning($"MiniGame '{miniGame}' is not implemented yet.");
+                return;
+        }
+
+        SceneManager.LoadScene(sceneName);
+        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
     }
 }

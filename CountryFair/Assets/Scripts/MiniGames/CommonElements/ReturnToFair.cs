@@ -11,6 +11,9 @@ public class ReturnToFair : MonoBehaviour
     /// <remarks>Invocado via Inspector em botões de retorno nas cenas de mini-jogo.</remarks>
     public void Return()
     {
-        SceneManager.LoadScene("CountryFair");
+        const string sceneName = "CountryFair";
+
+        SceneManager.LoadScene(sceneName);
+        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
     }
 }

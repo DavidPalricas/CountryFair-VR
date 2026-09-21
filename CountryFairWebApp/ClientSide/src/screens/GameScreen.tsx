@@ -51,11 +51,11 @@ const COPYRIGHT = "© 2026 David Palricas";
  * This screen plays the role of Unity's `PlaceHolderManager` — it owns the tent order and
  * knows which tent is being dragged. Unity's `Dictionary<element, placeholder>` is just the
  * `order` array here, where the array index *is* the slot index. It also plays the role of
- * `ConnectToWebApp.UpdateFairState()`: every time the order changes (and once on mount, like
- * `PlaceHolderManager.Start()`), it sends the same `"updateFairState"` message to the room.
+ * `ConnectToWebApp.UpdateTentsOrder()`: every time the order changes (and once on mount, like
+ * `PlaceHolderManager.Start()`), it sends the same `"updateTentsOrder"` message to the room.
  *
  * The reverse direction mirrors `PlaceHolderManager.OnOtherManagerUpdate()`: the same
- * `"updateFairState"` message, broadcast by the server when the patient reorders the tents in
+ * `"updateTentsOrder"` message, broadcast by the server when the patient reorders the tents in
  * the headset, is applied here to keep this screen's `order` in sync.
  */
 export function GameScreen() {
@@ -76,7 +76,7 @@ export function GameScreen() {
         });
 
         getRoom()
-            .then((room) => room.send("updateFairState", fairState))
+            .then((room) => room.send("updateTentsOrder", fairState))
             .catch((err) => console.error("Falha ao enviar a ordem das tendas:", err));
     }, []);
 
@@ -97,7 +97,7 @@ export function GameScreen() {
             .then((room) => {
                 if (cancelled) return;
 
-                room.onMessage("updateFairState", (fairState: Record<string, string>) => {
+                room.onMessage("updateTentsOrder", (fairState: Record<string, string>) => {
                     setOrder((current) => orderFromFairState(fairState, current));
                 });
             })

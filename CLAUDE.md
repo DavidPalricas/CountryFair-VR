@@ -392,6 +392,18 @@ and is what the cheat codes invoke through the `changeEmotionDisplay` UnityEvent
 - Buffer with rolling window (`_maxCheatLength`)
 - Dictionary-based command registration
 
+**Web Input Channel:** cheat codes can also be sent from the companion web app instead of typed on a keyboard —
+useful on the Quest, where a keyboard is rarely attached. `CheatCodes.Start()` subscribes to
+`ConnectToWebApp.Instance.receiveCheatCode` (`AddListener`), which fires whenever the Colyseus room relays a
+`"cheatCode"` message sent by the web client (`FairSceneRoom.ts` `onMessage("cheatCode", ...)`, broadcast to
+the game client only). The handler, `OnWebCheatCode(string)`, rebuilds `_playerInput` from the received string
+using the exact same character filter/lowercasing as `OnTextInput()` and then calls `CheckCheatCode()` — so a
+web-sent code runs through the identical per-subclass verification/gating logic (tutorial/intro checks, etc.)
+as a keyboard-typed one, with no duplicated logic. `OnDisable()` unsubscribes (`RemoveListener`) alongside the
+existing keyboard cleanup. On the web side, `CountryFairWebApp/ClientSide/src/components/CheatCodePanel.tsx`
+is a small floating panel (mounted unconditionally in `App.tsx`) where the therapist types a code and sends it
+via `room.send("cheatCode", code)`.
+
 **Gating:** in mini-games every cheat except `return` and `tutorial` is ignored until the tutorial is completed.
 In the hub, every `CountryFairCheatCodes` cheat except `intro` requires the intro to be completed.
 
@@ -509,7 +521,11 @@ overrides `PlaySoundEffect` to map them to FMOD events (`scale_to_giant.wav` / `
 **Location:** `General/Others/ConnectToWebApp.cs`, `CountryFairWebApp/ServerSide/` (Colyseus server)
 
 The game talks to a companion web app (used by the healthcare professional to see/reorder the fair state
-live) over a Colyseus room, `fairsceneroom`. `ConnectToWebApp.GetEndpoint()` builds `ws://{serverHost}:{serverPort}`
+live, and to send cheat codes — see section 10) over a Colyseus room, `fairsceneroom`. Besides
+`updateTentsOrder`, `playerFinishedDialogue`, `playerFinishedTutorial`, `updateScene` and
+`updatePlayerProgressOnMiniGame`, the room also relays a `cheatCode` message (plain string payload) from the
+web client to the game client only — see `ConnectToWebApp.receiveCheatCode` / `CheatCodes.OnWebCheatCode()`.
+`ConnectToWebApp.GetEndpoint()` builds `ws://{serverHost}:{serverPort}`
 — **plain WebSocket, no TLS** — and in the Editor swaps to `localhost` when `useLocalhostInEditor` is set.
 `ConnectLoop()` retries on failure (`retryDelaySeconds`) instead of failing silently.
 
