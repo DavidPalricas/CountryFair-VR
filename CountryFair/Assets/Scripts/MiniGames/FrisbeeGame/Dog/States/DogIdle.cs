@@ -24,6 +24,11 @@ public class DogIdle : DogState
     [SerializeField]
     private GameObject scoreArea;
 
+    
+    [SerializeField]
+    private GameObject _name;
+    
+    [Header("Impatient Timer Settings")]
     [SerializeField]
     private float minImpatientTime = 10f;
     
@@ -61,8 +66,23 @@ public class DogIdle : DogState
     protected override void Awake()
     {   
         base.Awake();
-        
+
+        if (scoreArea == null)
+        {
+            Debug.LogError("DogIdle: Score Area GameObject reference is not assigned in the inspector.");
+
+            return;
+        }
+
+        if(name == null)
+        {
+            Debug.LogError("DogIdle: Name GameObject reference is not assigned in the inspector.");
+
+            return;
+        }
+ 
         scoreArea.SetActive(false);
+        _name.SetActive(false);
     }
 
     /// <summary>
@@ -101,6 +121,7 @@ public class DogIdle : DogState
         RestImpatientTimer();
 
         scoreArea.SetActive(true);
+        _name.SetActive(true);
 
         positionReached.Invoke();
  
@@ -177,6 +198,7 @@ public class DogIdle : DogState
     {
         base.Exit();
 
+        _name.SetActive(false);
         scoreArea.SetActive(false);
 
         removeScoreAreas.Invoke();
