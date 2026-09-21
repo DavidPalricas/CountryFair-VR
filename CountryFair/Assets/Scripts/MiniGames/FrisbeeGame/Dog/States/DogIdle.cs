@@ -142,14 +142,14 @@ public class DogIdle : DogState
         
         if (IsPlayingNewAnimation())
         {    
-            if (animator.GetBool("StopAnim"))
+            if (animator.GetFloat("Speed") > 0f)
             {
-                fSM.ChangeState("FrisbeeLanded");
+                fSM.ChangeState("DiffcultyHasDecreased");   
 
                 return;
             }
-
-            fSM.ChangeState("DiffcultyHasDecreased");          
+            
+            fSM.ChangeState("FrisbeeLanded");      
             return;
         }
 
@@ -173,7 +173,7 @@ public class DogIdle : DogState
     {   
         if (fSM.CurrentState == this)
         {
-            animator.SetBool("StopAnim", true);
+            animator.SetTrigger("Jump");
             animator.SetFloat("Speed", 0f);
         }
     }
