@@ -64,6 +64,8 @@ using DG.Tweening;
     public override void Enter()
     {
         base.Enter();
+
+        Debug.Log($"DogState: Entering state {GetType().Name}");
     }
 
     public override void Execute()
