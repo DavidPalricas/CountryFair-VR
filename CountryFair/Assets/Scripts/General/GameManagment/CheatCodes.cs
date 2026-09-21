@@ -39,7 +39,20 @@ public class CheatCodes : MonoBehaviour
         {
              Keyboard.current.onTextInput -= OnTextInput;
         }
-           
+
+        ConnectToWebApp.Instance.receiveCheatCode.RemoveListener(OnWebCheatCode);
+    }
+
+    /// <summary>
+    /// Subscribes to <see cref="ConnectToWebApp.receiveCheatCode"/> so cheat codes typed on the
+    /// web app are processed the same way as keyboard input. Done in Start() (rather than
+    /// OnEnable(), like the keyboard) because <see cref="ConnectToWebApp.Instance"/> is only
+    /// guaranteed to exist once every object's Awake() has run, matching the pattern already
+    /// used for this event in <c>TentPlaceHolderManager.Start()</c>.
+    /// </summary>
+    private void Start()
+    {
+        ConnectToWebApp.Instance.receiveCheatCode.AddListener(OnWebCheatCode);
     }
 
     /// <summary>
@@ -95,6 +108,28 @@ public class CheatCodes : MonoBehaviour
             _playerInput = _playerInput[^_maxCheatLength..];
         }
         
+        CheckCheatCode();
+    }
+
+    /// <summary>
+    /// Handles a cheat code received from the web app (<see cref="ConnectToWebApp.receiveCheatCode"/>).
+    /// Rebuilds <see cref="_playerInput"/> from <paramref name="rawCode"/> using the exact same
+    /// character filtering/lowercasing as <see cref="OnTextInput"/>, then runs it through
+    /// <see cref="CheckCheatCode"/> so web-entered codes go through the same verification and
+    /// gating logic (tutorial/intro checks, etc.) as keyboard-entered ones.
+    /// </summary>
+    private void OnWebCheatCode(string rawCode)
+    {
+        _playerInput = "";
+
+        foreach (char c in rawCode)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                _playerInput += c.ToString().ToLower();
+            }
+        }
+
         CheckCheatCode();
     }
 

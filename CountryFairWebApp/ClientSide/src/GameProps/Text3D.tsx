@@ -1,6 +1,6 @@
 import { Text } from "@react-three/drei";
 // Same font as the 2D UI (declared in index.css); troika takes the .ttf directly.
-import fontUrl from "../assets/font/Carnevalee Freakshow.ttf";
+import fontUrl from "../assets/font/Luckiest Guy.ttf";
 
 type Text3DProps = {
     children: string;

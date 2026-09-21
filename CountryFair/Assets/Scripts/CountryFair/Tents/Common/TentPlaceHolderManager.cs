@@ -9,7 +9,13 @@ using UnityEngine.Events;
 /// Maintains a map of each <see cref="OrderableTentElement"/> to the <see cref="TentPlaceHolder"/> it currently occupies,
 /// and swaps entries when the player drops an element into a slot already taken by another element.
 /// One instance manages the world tents and a twin instance manages the wrist-menu panels; they mirror
-/// each other's order via <see cref="_updateOtherManagers"/> / <see cref="OnOtherManagerUpdate"/>.
+/// each other's order via <see cref="_updateOtherManagers"/> / <see cref="OnOtherManagerUpdate"/> (wired
+/// in the Inspector, safe because both scene-local instances are destroyed and recreated together on
+/// every scene load). Both instances also two-way sync with the companion web app through
+/// <see cref="ConnectToWebApp"/>, wired at runtime in <see cref="Start"/> instead of the Inspector,
+/// because <c>ConnectToWebApp</c> is <c>DontDestroyOnLoad</c> and a baked Inspector reference would
+/// otherwise end up pointing at a <c>TentPlaceHolderManager</c> instance destroyed on the previous
+/// <c>CountryFair</c> load.
 /// </summary>
 public class TentPlaceHolderManager : MonoBehaviour
 {
@@ -54,9 +60,17 @@ public class TentPlaceHolderManager : MonoBehaviour
         TogglePlaceHolders(false);
      }
 
-    /// <summary>Broadcasts the starting element order to the twin manager so both surfaces begin in sync.</summary>
+    /// <summary>
+    /// Registers this manager with its twin surface and with <see cref="ConnectToWebApp"/> — both
+    /// re-subscribed here on every scene load, since (unlike <c>ConnectToWebApp</c>) this object is
+    /// not <c>DontDestroyOnLoad</c> and gets a fresh instance each time — then broadcasts the starting
+    /// element order so all three sides begin in sync.
+    /// </summary>
     private void Start()
     {
+        _updateOtherManagers.AddListener(ConnectToWebApp.Instance.UpdateTentsOrder);
+        ConnectToWebApp.Instance.updateTentsOrder.AddListener(OnOtherManagerUpdate);
+
         Dictionary<string, string> fairState = GetFairState();
 
         _updateOtherManagers.Invoke(fairState);
@@ -206,7 +220,12 @@ public class TentPlaceHolderManager : MonoBehaviour
     /// with the same slot <see cref="TentPlaceHolder.number"/>, and snaps it there.
     /// </summary>
     /// <param name="fairState">Mini-game-name-to-slot-number map describing the twin manager's current layout.</param>
-    /// <remarks>Invoked via the Inspector in the <c>_updateOtherManagers</c> UnityEvent of the <see cref="TentPlaceHolderManager"/> on the other surface.</remarks>
+    /// <remarks>
+    /// Invoked two ways: via the Inspector in the <c>_updateOtherManagers</c> UnityEvent of the
+    /// <see cref="TentPlaceHolderManager"/> on the other surface (twin sync), and via a runtime
+    /// <c>AddListener</c> on <see cref="ConnectToWebApp.updateTentsOrder"/> registered in
+    /// <see cref="Start"/> (reorders made from the web app).
+    /// </remarks>
     public void OnOtherManagerUpdate(Dictionary<string, string> fairState)
     {
         foreach (var miniGame in fairState.Keys)

@@ -251,7 +251,11 @@ public class CarnyWise : MonoBehaviour
             gameManager.ArcherySessionCompleted = true;
         }
 
-        SceneManager.LoadScene("CountryFair");
+        string sceneName = "CountryFair";
+
+        SceneManager.LoadScene(sceneName);
+
+        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
     }
      
 

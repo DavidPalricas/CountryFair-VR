@@ -1,6 +1,6 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 /// <summary>
 /// Manages the display and interaction of tent information in the Country Fair VR game.
@@ -137,26 +137,6 @@ public class MiniGameTent : OrderableTentElement
         _miniGameProp.transform.parent = transform;
     }
 
-    /// <summary>Loads the mini-game scene assigned to this tent.</summary>
-    /// <remarks>Invocado via Inspector no botão <c>_buttonToPlayMiniGame</c> (OnClick).</remarks>
-    public void GoToMiniGame()
-    {
-        switch (miniGame)
-        {
-            case MINI_GAMES.ARCHERY:
-                SceneManager.LoadScene("ArcheryGame");
-                return;
-
-            case MINI_GAMES.FRISBEE:
-                SceneManager.LoadScene("FrisbeeGame");
-                return;
-
-            default:
-                Debug.LogWarning($"MiniGame '{miniGame}' is not implemented yet.");
-                return;
-        }
-    }
-
     /// <summary>Returns the tent panel text for the given mini-game.</summary>
     private static string GetTextToShow(MINI_GAMES miniGame)
     {
@@ -240,6 +220,13 @@ public class MiniGameTent : OrderableTentElement
         TentUnselected();
     }
 
+
+    /// <summary>Inspector-wired entry point for the play button; loads this tent's mini-game scene via <see cref="GameManager.GoToMiniGame"/>.</summary>
+    public void PlayerWantsToGoToMiniGame()
+    {
+        GameManager.GetInstance().GoToMiniGame(miniGame);
+    }
+
         /// <summary>
     /// Teleports this tent and its play button to the current placeholder's position and rotation,
     /// and refreshes the ribbon number.
@@ -263,6 +250,5 @@ public class MiniGameTent : OrderableTentElement
         SetTentNumber(currentPlaceHolder.number);
         _previousPlaceHolder = currentPlaceHolder;
 
-        
     }
 }
