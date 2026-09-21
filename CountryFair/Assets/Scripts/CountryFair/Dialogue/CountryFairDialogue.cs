@@ -190,10 +190,12 @@ public class CountryFairDialogue : UIDialog
                 _zeca.SetActive(true);
                 _carnyWise.SetActive(false);
                 return;
+
             case DialogueState.ZECA_INTRO_PART2:
                 _currentDialogueState = DialogueState.INTRO_COMPLETED;
                 IntroComplete();
                 return;
+                
             default:
                 Debug.LogError("Invalid dialogue state.");
                 return;
