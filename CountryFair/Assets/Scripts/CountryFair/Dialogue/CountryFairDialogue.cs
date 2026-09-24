@@ -58,12 +58,18 @@ public class CountryFairDialogue : UIDialog
     /// <summary>Tracks progress through the intro sequence, or <see cref="DialogueState.INTRO_COMPLETED"/> when showing a session-completed message instead.</summary>
     private DialogueState _currentDialogueState = DialogueState.BEGIN_INTRO;
 
+    /// <summary>Set in <see cref="Awake"/> when the intro was already completed and there is no session to congratulate; <see cref="Start"/> then skips the dialogue entirely.</summary>
+    private bool _nothingToShow = false;
+
     /// <summary>
-    /// Validates character references, wires <see cref="_finishedDialogue"/> to <see cref="ConnectToWebApp.PlayerFinishedDialogue"/>,
-    /// and short-circuits (skipping the dialogue entirely) when the intro was already completed and there is no
-    /// mini-game session to congratulate the player for. Otherwise defers to <see cref="UIDialog.Awake"/> to load
-    /// the appropriate JSON.
+    /// Validates character references and flags <see cref="_nothingToShow"/> when the intro was already completed
+    /// and there is no mini-game session to congratulate the player for. Otherwise defers to
+    /// <see cref="UIDialog.Awake"/> to load the appropriate JSON.
     /// </summary>
+    /// <remarks>
+    /// Must not touch <see cref="ConnectToWebApp.Instance"/>: Awake order between GameObjects is not guaranteed,
+    /// and on the Quest build this can run before <see cref="ConnectToWebApp"/>'s Awake (Instance still null).
+    /// </remarks>
     protected override void Awake()
     {
         if (_zeca == null || _carnyWise == null || _characterNameText == null )
@@ -72,24 +78,15 @@ public class CountryFairDialogue : UIDialog
             return;
         }
 
-        _finishedDialogue.AddListener(ConnectToWebApp.Instance.PlayerFinishedDialogue);
-
         GameManager gameManager = GameManager.GetInstance();
 
         if (gameManager.IntroCompleted)
-        {   
+        {
             _currentDialogueState = DialogueState.INTRO_COMPLETED;
-            
+
             if (!gameManager.FrisbeeSessionCompleted && !gameManager.ArcherySessionCompleted)
             {
-                // The web app assumes a dialogue is up as soon as it sees "updateScene" land on
-                // the hub (a session-completed dialogue may be about to play here). When there
-                // is nothing to show, as here, tell it right away instead of leaving it waiting.
-                ConnectToWebApp.Instance.PlayerFinishedDialogue();
-
-                _finishedDialogue.Invoke();
-
-                Destroy(transform.parent.gameObject);
+                _nothingToShow = true;
                 return;
             }
         }
@@ -97,6 +94,30 @@ public class CountryFairDialogue : UIDialog
         base.Awake();
 
         _carnyWise.SetActive(false);
+    }
+
+    /// <summary>
+    /// Wires <see cref="_finishedDialogue"/> to <see cref="ConnectToWebApp.PlayerFinishedDialogue"/> (done here, after
+    /// every Awake has run, so <see cref="ConnectToWebApp.Instance"/> exists) and, when <see cref="_nothingToShow"/>,
+    /// finishes the dialogue right away and destroys the canvas.
+    /// </summary>
+    private void Start()
+    {
+        ConnectToWebApp webApp = ConnectToWebApp.Instance;
+ 
+         _finishedDialogue.AddListener(webApp.PlayerFinishedDialogue);
+        
+        if (_nothingToShow)
+        {
+            // The web app assumes a dialogue is up as soon as it sees "updateScene" land on
+            // the hub (a session-completed dialogue may be about to play here). When there
+            // is nothing to show, as here, tell it right away instead of leaving it waiting.
+            webApp.PlayerFinishedDialogue();
+
+            _finishedDialogue.Invoke();
+
+            Destroy(transform.parent.gameObject);
+        }
     }
 
     /// <summary>

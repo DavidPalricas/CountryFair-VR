@@ -1,10 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
+using UnityEngine.Events;
 using System;
 
 public class CheatCodes : MonoBehaviour
-{
+{   
+
+    /// <summary>
+    /// Fired by the "skip" cheat. Wired in the Inspector (CountryFair.unity) to
+    /// <see cref="CountryFairDialogue.NextStep"/>, advancing the intro by a single step.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent _skipDialogue;
+
+
     protected string _playerInput = "";
 
     /// <summary>
@@ -140,7 +150,7 @@ public class CheatCodes : MonoBehaviour
 
     protected virtual void RegisterBaseCheats()
     {
-        Debug.LogError("RegisterBaseCheats should be overridden in derived classes.");
+        RegisterCheat("skip", () => _skipDialogue.Invoke());
     }
 
     /// <summary>

@@ -1418,6 +1418,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56047993f8964cd45b82823ed3a2f4c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryCheatCodes
+  _skipDialogue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1246274070}
+        m_TargetAssemblyTypeName: Tutorial, Assembly-CSharp
+        m_MethodName: NextStep
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   returnToFair: {fileID: 309234832}
   carnyWise: {fileID: 719487115}
   tutorial: {fileID: 1246274070}
@@ -4080,8 +4095,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.42002937, b: 0.24856585, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.4200302, b: 0.24856669, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.42002866, b: 0.24856514, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42002934, b: 0.24856582, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

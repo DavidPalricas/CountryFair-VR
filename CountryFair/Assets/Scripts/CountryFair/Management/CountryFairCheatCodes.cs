@@ -15,14 +15,7 @@ public class CountryFairCheatCodes : CheatCodes
     /// </summary>
     [SerializeField]
     private UnityEvent _completeIntro;
-
-    /// <summary>
-    /// Fired by the "skip" cheat. Wired in the Inspector (CountryFair.unity) to
-    /// <see cref="CountryFairDialogue.NextStep"/>, advancing the intro by a single step.
-    /// </summary>
-    [SerializeField]
-    private UnityEvent _skipDialogue;
-
+    
     /// <summary>
     /// Fired by the "giant" cheat. Wired in the Inspector (CountryFair.unity) to
     /// <see cref="PlayerScale.ToggleScale"/>.
@@ -51,9 +44,11 @@ public class CountryFairCheatCodes : CheatCodes
     /// jumping into a mini-game scene and toggling giant mode.
     /// </summary>
     protected override void RegisterBaseCheats()
-    {
+    {   
+        base.RegisterBaseCheats();
+        
         RegisterCheat("intro", () => _completeIntro.Invoke());
-        RegisterCheat("skip", () => _skipDialogue.Invoke());
+   
         RegisterCheat("frisbee", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.FRISBEE));
         RegisterCheat("archery", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.ARCHERY));
         RegisterCheat("duck", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.DUCKGAME));

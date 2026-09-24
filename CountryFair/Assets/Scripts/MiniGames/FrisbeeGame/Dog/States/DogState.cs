@@ -33,7 +33,6 @@ using DG.Tweening;
 
     protected static Vector3 _currentTargetPos;
     
-
     private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
 
     /// <summary>
@@ -64,8 +63,6 @@ using DG.Tweening;
     public override void Enter()
     {
         base.Enter();
-
-        Debug.Log($"DogState: Entering state {GetType().Name}");
     }
 
     public override void Execute()

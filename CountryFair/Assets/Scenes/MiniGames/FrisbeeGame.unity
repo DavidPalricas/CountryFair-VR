@@ -1890,6 +1890,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee4d432b9d3e0d4f98fe23c09200b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeCheatCodes
+  _skipDialogue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1312361772106625693}
+        m_TargetAssemblyTypeName: Tutorial, Assembly-CSharp
+        m_MethodName: NextStep
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   returnToFair: {fileID: 9022235213021595669}
   carnyWise: {fileID: 4786872874757885023}
   tutorial: {fileID: 1312361772106625693}
