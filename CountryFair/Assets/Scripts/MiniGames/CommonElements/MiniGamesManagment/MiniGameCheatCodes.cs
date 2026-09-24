@@ -36,7 +36,7 @@ public class MiniGameCheatCodes : CheatCodes
 
     protected bool _tutorialCompleted = false;
 
-    private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "tutorial"};
+    private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial"};
 
     protected virtual void Awake()
     {
@@ -78,7 +78,9 @@ public class MiniGameCheatCodes : CheatCodes
     /// Called during Start() before subclass cheats are added.
     /// </summary>
     protected override void RegisterBaseCheats()
-    {
+    {   
+        base.RegisterBaseCheats();
+        
         RegisterCheat("return", () => returnToFair.Return());
 
         RegisterCheat("tutorial", () => SkipTutorial());
