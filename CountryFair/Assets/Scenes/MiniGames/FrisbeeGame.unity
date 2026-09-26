@@ -1696,7 +1696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeGameManager
   targetsCount: 3
   targetsPerLevel: 0.2
-  sessionScoreGoal: 50
+  sessionScoreGoal: 30
   difficultyLevel: 0
   distanceIncrement: 2
   maxDogDistance: 14
