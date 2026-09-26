@@ -35,21 +35,23 @@ public class BalloonArcheryGame : MonoBehaviour
     [SerializeField] private float stayTranslucentDuration = 1f;
     [SerializeField] private float minAlpha = 0.3f;
 
-    private int _scoreValue = 1;
+    private const int _BASE_SCORE = 1;
+    private const int _MOVING_MULTIPLIER = 2;
+    private const int _TRANSPARENT_MULTIPLIER = 3;
 
-    // Estado Interno
+    private bool _isMoving = false;
+    private bool _isTransparent = false;
+
     private Renderer _renderer;
     private Collider _collider;
     private Color _originalColor;
-    private Vector3 _initialPosition; // CRÍTICO: Para evitar drift
+    private Vector3 _initialPosition;
     private string _colorName;
 
-    // IDs para DOTween (Evita conflitos)
     private string _moveId;
     private string _fadeId;
     private const int _INFINITE_LOOPS = -1;
 
-    // Referências externas
     private ArcheryAudioManager _archeryAudioManager;
 
     private ArcheryGameManager _archeryGameManager;
@@ -61,13 +63,11 @@ public class BalloonArcheryGame : MonoBehaviour
     {
         _renderer = GetComponent<Renderer>();
         _collider = GetComponent<Collider>();
-        _initialPosition = transform.position; // Guarda onde nasceu
-        
-        // IDs únicos
+        _initialPosition = transform.position;
+
         _moveId = "move_" + GetInstanceID();
         _fadeId = "fade_" + GetInstanceID();
 
-        // Setup Cores
         _colorName = color.ToString().ToLower();
 
         if (_renderer.material.HasProperty("_Color"))
@@ -79,7 +79,6 @@ public class BalloonArcheryGame : MonoBehaviour
             _originalColor = _renderer.material.GetColor("_BaseColor");
         } 
 
-        // Setup Referências
         GameObject spawner = GameObject.FindGameObjectWithTag("BalloonSpawn");
 
         if (spawner == null)
@@ -121,9 +120,10 @@ public class BalloonArcheryGame : MonoBehaviour
     /// <param name="shouldMove">True to begin movement; false to return to the initial spawn position.</param>
     public void AdjustMovement(bool shouldMove)
     {
+        _isMoving = shouldMove;
+
         if (shouldMove)
         {   
-            _scoreValue *=  2; 
             StartMovement();
 
             return;
@@ -139,10 +139,10 @@ public class BalloonArcheryGame : MonoBehaviour
     /// <param name="shouldFade">True to start blinking; false to restore full opacity.</param>
     public void AdjustTransparency(bool shouldFade)
     {
+        _isTransparent = shouldFade;
+
         if (shouldFade)
         {   
-            _scoreValue *= 3;
-
             StartTranslucency();
             return;
         }
@@ -158,38 +158,37 @@ public class BalloonArcheryGame : MonoBehaviour
             return;
         }
 
-        transform.DOKill(false); 
+        transform.DOKill(false);
 
+        MoveToNextWanderPoint();
+    }
+
+    /// <summary>
+    /// Moves the balloon to a new random point inside the spawn area and, on arrival, picks another one,
+    /// so each balloon wanders around the whole area instead of bouncing between two fixed points.
+    /// </summary>
+    private void MoveToNextWanderPoint()
+    {
+        transform.DOMove(GetRandomPointInSpawnArea(), moveDuration)
+            .SetId(_moveId)
+            .SetEase(Ease.InOutSine)
+            .OnComplete(MoveToNextWanderPoint);
+    }
+
+    private Vector3 GetRandomPointInSpawnArea()
+    {
         Bounds area = _spawnArea.bounds;
         Vector3 extents = _collider.bounds.extents;
 
-       
-        bool moveVertical = Utils.RandomValueInRange(0f, 1f) > 0.5f;
+        // Clamp the margins so a balloon bigger than the area on some axis doesn't produce an inverted range
+        Vector3 min = Vector3.Min(area.min + extents, area.center);
+        Vector3 max = Vector3.Max(area.max - extents, area.center);
 
-        if (moveVertical)
-        {
-            float minY = area.min.y + extents.y;
-            float maxY = area.max.y - extents.y;
-            float targetY = Utils.RandomValueInRange(minY, maxY);
-
-            transform.DOMoveY(targetY, moveDuration)
-                .SetId(_moveId)
-                .SetEase(Ease.InOutSine)
-                .SetLoops(_INFINITE_LOOPS, LoopType.Yoyo);
-
-            return;
-        }
-
-        Vector3 targetPos = new (
-            Utils.RandomValueInRange(area.min.x + extents.x, area.max.x - extents.x),
-            Utils.RandomValueInRange(area.min.y + extents.y, area.max.y - extents.y),
-            Utils.RandomValueInRange(area.min.z + extents.z, area.max.z - extents.z)
+        return new Vector3(
+            Random.Range(min.x, max.x),
+            Random.Range(min.y, max.y),
+            Random.Range(min.z, max.z)
         );
-
-        transform.DOMove(targetPos, moveDuration)
-            .SetId(_moveId)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(_INFINITE_LOOPS, LoopType.Yoyo);        
     }
 
     private void StopMovement()
@@ -200,11 +199,8 @@ public class BalloonArcheryGame : MonoBehaviour
         } 
         
         DOTween.Kill(_moveId);
-        // Volta suavemente à posição inicial para organizar
         transform.DOMove(_initialPosition, 1f).SetEase(Ease.OutQuad);
     }
-
-    // --- LÓGICA DE TRANSPARÊNCIA ---
 
     private void StartTranslucency()
     {
@@ -233,13 +229,10 @@ public class BalloonArcheryGame : MonoBehaviour
         }
 
         DOTween.Kill(_fadeId);
-        
-        // Garante que volta ao estado normal
+
         _renderer.material.DOFade(1f, 0.5f);
         _collider.enabled = true;
     }
-
-    // --- LÓGICA DE JOGO ---
 
     /// <summary>
     /// Kills all running tweens, spawns the pop particle effect tinted in the balloon color, plays the pop sound,
@@ -248,7 +241,6 @@ public class BalloonArcheryGame : MonoBehaviour
     /// </summary>
     public void Pop()
     {
-        // Mata todos os tweens deste objeto específico
         transform.DOKill();
         _renderer.material.DOKill();
 
@@ -284,7 +276,25 @@ public class BalloonArcheryGame : MonoBehaviour
     {
         string colorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
 
-        return _colorName == colorToScore ? _scoreValue : 0;
+        if (_colorName != colorToScore)
+        {
+            return 0;
+        }
+
+        // Normal = 1, moving = 2, transparent = 3, moving + transparent = 6
+        int scoreValue = _BASE_SCORE;
+
+        if (_isMoving)
+        {
+            scoreValue *= _MOVING_MULTIPLIER;
+        }
+
+        if (_isTransparent)
+        {
+            scoreValue *= _TRANSPARENT_MULTIPLIER;
+        }
+
+        return scoreValue;
     }
 
     /// <summary>Returns the lowercase color name of this balloon (e.g. <c>"red"</c>, <c>"blue"</c>, <c>"yellow"</c>).</summary>
