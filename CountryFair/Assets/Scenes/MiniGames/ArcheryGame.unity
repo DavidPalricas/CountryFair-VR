@@ -1251,7 +1251,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryGameManager
   targetsCount: 5
   targetsPerLevel: 0.5
-  sessionScoreGoal: 20
+  sessionScoreGoal: 24
   difficultyLevel: 0
   balloonColorToScoreText: {fileID: 1694698409}
   balloonSpawnArea: {fileID: 925036648}
