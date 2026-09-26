@@ -1905,6 +1905,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _defaultUpdateGoalValue: 10
   returnToFair: {fileID: 9022235213021595669}
   carnyWise: {fileID: 4786872874757885023}
   tutorial: {fileID: 1312361772106625693}
@@ -1917,6 +1918,21 @@ MonoBehaviour:
       - m_Target: {fileID: 1929974899}
         m_TargetAssemblyTypeName: ServerListener, Assembly-CSharp
         m_MethodName: UpdateDisplayMode
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _newGoal:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 187110039}
+        m_TargetAssemblyTypeName: ScoreAndStreakSystem, Assembly-CSharp
+        m_MethodName: UpdateSessionGoalText
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
