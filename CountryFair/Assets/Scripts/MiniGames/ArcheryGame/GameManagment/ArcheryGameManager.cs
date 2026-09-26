@@ -117,7 +117,14 @@ public class ArcheryGameManager : MiniGameManager
 
     public override void ChangeDifficulty(bool isToIncreaseDiff)
     {
-        difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
+        // Already at the easiest level and asked to go lower: nothing actually changes,
+        // so skip ApplyDifficultySettings() to avoid re-rolling the scoring balloon color for no reason.
+        if (!isToIncreaseDiff && difficultyLevel == 0)
+        {
+            return;
+        }
+
+        difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : difficultyLevel - 1;
         // Debug.Log($"<color=orange>ARCHERY DDA:</color> Level {difficultyLevel}");
         ApplyDifficultySettings();
     }
