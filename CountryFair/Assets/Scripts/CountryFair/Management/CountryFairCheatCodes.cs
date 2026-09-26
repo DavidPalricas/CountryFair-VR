@@ -29,14 +29,9 @@ public class CountryFairCheatCodes : CheatCodes
     /// </summary>
     private readonly string[] _cheatCodesOnIntro = new string[] {"intro", "skip"};
 
-    /// <summary>
-    /// Registers every cheat and sizes the input buffer to the longest registered code.
-    /// </summary>
     private void Awake()
     {
         RegisterBaseCheats();
-
-       _maxCheatLength = _cheatCommands.Keys.Max(code => code.Length);
     }
 
     /// <summary>

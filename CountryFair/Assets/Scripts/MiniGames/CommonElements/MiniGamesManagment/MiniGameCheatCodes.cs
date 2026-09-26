@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Linq;
 using System;
 using UnityEngine.Events;
-using System.Text.RegularExpressions;
 
 
 [RequireComponent(typeof(MiniGameManager))]
@@ -46,8 +45,7 @@ public class MiniGameCheatCodes : CheatCodes
     protected bool _tutorialCompleted = false;
 
     private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial"};
-     
-    private const string GoalPattern = @"^goal\d*$";
+
     protected virtual void Awake()
     {
         if (carnyWise == null)
@@ -123,6 +121,8 @@ public class MiniGameCheatCodes : CheatCodes
 
         RegisterCheat("positive", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.POSITIVE));
         RegisterCheat("negative", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.NEGATIVE));
+
+        RegisterNumericCheat("goal", _defaultUpdateGoalValue, newGoal => _newGoal.Invoke(newGoal));
     }
 
  
@@ -147,10 +147,9 @@ public class MiniGameCheatCodes : CheatCodes
     /// Checks if the current input buffer contains any valid cheat code and executes it.
     /// </summary>
     protected override void CheckCheatCode()
-    {   
-        if (Regex.IsMatch(_playerInput.ToLower(), GoalPattern))
+    {
+        if (TryMatchNumericCheat())
         {
-            UpdateSessionGoal();
             return;
         }
 
@@ -239,25 +238,4 @@ public class MiniGameCheatCodes : CheatCodes
         sliderDisplay.UpdateSlider(category);
     }
 
-    private void UpdateSessionGoal()
-    {   
-        int cheatCodeLength = _playerInput.Length;
-
-        if (cheatCodeLength <= 4)
-        {
-            _newGoal.Invoke(_defaultUpdateGoalValue);
-            return;
-        }
-
-        const int GoalWordLength = 4; 
-
-        int newGoal = int.Parse(_playerInput.Substring(GoalWordLength, cheatCodeLength - GoalWordLength));
-
-        if (newGoal <= 0)
-        {
-            newGoal = _defaultUpdateGoalValue;
-        }
-
-        _newGoal.Invoke(newGoal);
-    }
 }
