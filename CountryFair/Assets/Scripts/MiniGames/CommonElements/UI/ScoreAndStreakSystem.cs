@@ -231,9 +231,10 @@ public class ScoreAndStreakSystem : MonoBehaviour
     private void Start()
     {
         _sessionGoal = PlayerPrefs.GetInt("SessionGoal", 0);
-        _sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
-         
-         ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+
+        UpdateSessionGoalText();
+       
+        ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
     }
 
     /// <summary>
@@ -432,5 +433,18 @@ public class ScoreAndStreakSystem : MonoBehaviour
         _scoreText.DOKill();
         _streakText.transform.DOKill();
         _streakText.DOKill();
+    }
+
+
+    public void UpdateSessionGoalText(int newGoal = -1)
+    {   
+        if (newGoal >= 0)
+        {
+            _sessionGoal = newGoal;
+        }
+
+        _sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
+
+        ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
     }
 }

@@ -43,7 +43,7 @@ public class BalloonArcheryGame : MonoBehaviour
     private bool _isTransparent = false;
 
     private Renderer _renderer;
-    private Collider _collider;
+    public Collider Collider { get; private set; }
     private Color _originalColor;
     private Vector3 _initialPosition;
     private string _colorName;
@@ -62,7 +62,7 @@ public class BalloonArcheryGame : MonoBehaviour
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
-        _collider = GetComponent<Collider>();
+        Collider = GetComponent<Collider>();
         _initialPosition = transform.position;
 
         _moveId = "move_" + GetInstanceID();
@@ -178,7 +178,7 @@ public class BalloonArcheryGame : MonoBehaviour
     private Vector3 GetRandomPointInSpawnArea()
     {
         Bounds area = _spawnArea.bounds;
-        Vector3 extents = _collider.bounds.extents;
+        Vector3 extents = Collider.bounds.extents;
 
         // Clamp the margins so a balloon bigger than the area on some axis doesn't produce an inverted range
         Vector3 min = Vector3.Min(area.min + extents, area.center);
@@ -213,10 +213,10 @@ public class BalloonArcheryGame : MonoBehaviour
         seq.SetId(_fadeId);
 
         seq.Append(_renderer.material.DOFade(minAlpha, fadeDuration).SetEase(Ease.InOutSine));
-        seq.AppendCallback(() => _collider.enabled = false);
+        seq.AppendCallback(() => Collider.enabled = false);
         seq.AppendInterval(stayTranslucentDuration);
         seq.Append(_renderer.material.DOFade(1f, fadeDuration).SetEase(Ease.InOutSine));
-        seq.AppendCallback(() => _collider.enabled = true); 
+        seq.AppendCallback(() => Collider.enabled = true); 
 
         seq.SetLoops(_INFINITE_LOOPS);
     }
@@ -231,7 +231,7 @@ public class BalloonArcheryGame : MonoBehaviour
         DOTween.Kill(_fadeId);
 
         _renderer.material.DOFade(1f, 0.5f);
-        _collider.enabled = true;
+        Collider.enabled = true;
     }
 
     /// <summary>

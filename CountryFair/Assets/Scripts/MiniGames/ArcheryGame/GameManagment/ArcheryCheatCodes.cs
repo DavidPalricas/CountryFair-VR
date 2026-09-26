@@ -63,16 +63,19 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     private Vector3 GetCorrectBalloonPosition()
     {
         string balloonColorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
+        
+        BalloonArcheryGame balloon = FindObjectsByType<BalloonArcheryGame>(FindObjectsSortMode.None)
+            .FirstOrDefault(candidate => candidate.GetBalloonColorName().ToLower() == balloonColorToScore);
 
-        Transform targetBalloonTransform = GameObject.FindGameObjectsWithTag("Balloon")
-            .FirstOrDefault(balloon => balloon.GetComponent<BalloonArcheryGame>().GetBalloonColorName().ToLower() == balloonColorToScore)
-            .transform;
-
-        if (targetBalloonTransform == null)
+        if (balloon == null)
         {
-            Debug.LogError("Correct balloon color not found!");
+            Debug.LogError($"No balloon found with color '{balloonColorToScore}'");
             return Vector3.zero;
         }
+
+        Transform targetBalloonTransform = balloon.transform;
+
+        balloon.Collider.enabled = true;
 
         return targetBalloonTransform.position;
     }
