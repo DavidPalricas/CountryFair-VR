@@ -81,8 +81,6 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
         RegisterCheat("dog", () => ForceScorePoint(true));
 
         _tutorialCompleted = GameManager.GetInstance().FrisbeeTutorialCompleted;
-
-        _maxCheatLength = _cheatCommands.Keys.Max(c => c.Length);
     }
 
     /// <summary>

@@ -6,7 +6,10 @@ using UnityEngine.Events;
 
 [RequireComponent(typeof(MiniGameManager))]
 public class MiniGameCheatCodes : CheatCodes
-{
+{   
+    [SerializeField]
+    private int _defaultUpdateGoalValue = 10;
+
     [Header("Mini Game Dependencies")]
 
     [SerializeField]
@@ -28,9 +31,14 @@ public class MiniGameCheatCodes : CheatCodes
     [SerializeField]
     private SliderDisplay sliderDisplay;
    
+
+   [Header("Cheat Code Events")]
    [SerializeField]
     private UnityEvent <ServerListener.DISPLAYMODE> changeEmotionDisplay;
 
+
+    [SerializeField]
+    private UnityEvent <int> _newGoal;
 
     private MiniGameManager _miniGameManager;
 
@@ -113,6 +121,8 @@ public class MiniGameCheatCodes : CheatCodes
 
         RegisterCheat("positive", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.POSITIVE));
         RegisterCheat("negative", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.NEGATIVE));
+
+        RegisterNumericCheat("goal", _defaultUpdateGoalValue, newGoal => _newGoal.Invoke(newGoal));
     }
 
  
@@ -138,6 +148,11 @@ public class MiniGameCheatCodes : CheatCodes
     /// </summary>
     protected override void CheckCheatCode()
     {
+        if (TryMatchNumericCheat())
+        {
+            return;
+        }
+
         foreach (var (code, command) in _cheatCommands)
         {
             if (_playerInput.Contains(code))
@@ -222,4 +237,5 @@ public class MiniGameCheatCodes : CheatCodes
 
         sliderDisplay.UpdateSlider(category);
     }
+
 }
