@@ -185,6 +185,15 @@ public class BowHandTracking : MonoBehaviour
             return;
         }
 
+        // Hand left the headset's tracking range mid-pull: cancel instead of letting the controller fallback
+        // read "open" and fire the arrow with an invalid hand pose.
+        if (arrow.readyToLaunch && !HasValidHandInput())
+        {
+            CancelPull();
+            UpdateBowString();
+            return;
+        }
+
         bool handClosed = IsHandClosed();
         bool handOpen = IsHandOpen();
 
@@ -224,6 +233,12 @@ public class BowHandTracking : MonoBehaviour
     private void UpdatePull()
     {
         Vector3 handPos = _handSource.position;
+
+        if (!IsFinite(handPos))
+        {
+            CancelPull();
+            return;
+        }
 
         // SEMPRE recalcular posição inicial da corda
         _stringMidStartWorldPos = bowRoot.TransformPoint(_stringMidStartLocalPos);
@@ -268,6 +283,27 @@ public class BowHandTracking : MonoBehaviour
         
         stringMidPoint.localPosition = _stringMidStartLocalPos;
         _currentPull = 0f;
+    }
+
+    /// <summary>True if the pulling hand is tracked or the right controller is connected.</summary>
+    private bool HasValidHandInput()
+    {
+        return pullingHand.IsTracked || OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
+    }
+
+    private static bool IsFinite(Vector3 v)
+    {
+        return float.IsFinite(v.x) && float.IsFinite(v.y) && float.IsFinite(v.z);
+    }
+
+    /// <summary>Aborts the current pull without firing: resets the string and puts the arrow back on the bow.</summary>
+    private void CancelPull()
+    {
+        arrow.readyToLaunch = false;
+        _currentPull = 0f;
+
+        stringMidPoint.localPosition = _stringMidStartLocalPos;
+        arrow.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
     // STRING -----------------------------------------
