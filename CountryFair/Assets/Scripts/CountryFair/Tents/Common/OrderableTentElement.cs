@@ -45,7 +45,7 @@ public class OrderableTentElement : MonoBehaviour
     {
         if (currentPlaceHolder == null)
         {
-            Debug.LogError("Current Tent PlaceHolder reference is null in OrderableElement");
+            Debug.LogError("Current Tent PlaceHolder reference is null in OrderableTentElement");
 
             return;
         }

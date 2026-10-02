@@ -41,14 +41,17 @@ CountryFair/
 │   │   │   ├── DataManagment/        # DataFileManager + DataFileStructure/ (DataFileRoot, MiniGameData, SessionData)
 │   │   │   ├── Animals/              # Animal AI system (AnimalUtility + States/: AnimalState, AnimalWalk, AnimalEat, AnimalIdle)
 │   │   │   ├── Balloons/             # BalloonsSpawner, PopBalloon
-│   │   │   ├── Others/               # Utility behaviors (WanderingPerson, AnimatableState, TextAnim, ButtonPressed)
+│   │   │   ├── FerrisWheel/          # CabinScript, RotateWheel
+│   │   │   ├── Others/               # Utility behaviors (WanderingPerson, AnimatableState, TextAnim, ButtonPressed, ConnectToWebApp)
 │   │   │   └── UIDialog/             # JSON-driven dialogue system base class (UIDialog, JSONData)
 │   │   ├── CountryFair/              # Hub world (central fair area)
 │   │   │   ├── Management/           # CountryFairAudioManager, CountryFairCheatCodes
 │   │   │   ├── Dialogue/             # CountryFairDialogue, JSONData/ (IntroData, SessionCompletedData)
 │   │   │   ├── Tents/                # Tent personalization system (see section 11)
-│   │   │   └── Other/                # Ambient elements (CabinScript, RotateWheel, SheepAnim,
-│   │   │                             #   CountryFairBalloonSpawner) + PlayerScale (giant mode, section 12)
+│   │   │   │                         #   Common/ (OrderableTentElement, TentPlaceHolder, TentPlaceHolderManager),
+│   │   │   │                         #   MiniGameTents/, WristMenu/ (WristMenu, TentPanel), FairState
+│   │   │   └── Other/                # Ambient elements (SheepAnim, CountryFairBalloonSpawner)
+│   │   │                             #   + PlayerScale (giant mode, section 12)
 │   │   ├── MiniGames/                # Mini-game modules
 │   │   │   ├── CommonElements/       # Shared between all mini-games
 │   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameAudioManager, MiniGameCheatCodes
@@ -195,7 +198,7 @@ enum DialogueState {
 
 **Post-intro hand-off:** `CountryFairDialogue` no longer holds a direct `postIntroElements` GameObject reference.
 When the intro finishes it invokes the `playerFinishedIntro` UnityEvent (wired in the Inspector), which is what
-enables the wrist-menu button (`TentPersonalizationMenu.IntroCompleted()`) and the other post-intro elements.
+enables the wrist-menu button (`WristMenu.IntroCompleted()`) and the other post-intro elements.
 
 ---
 
@@ -439,7 +442,7 @@ or by **dragging panels inside a wrist menu**. Both surfaces are kept in sync.
 
 **Class Hierarchy:**
 ```
-OrderableTentElement : MonoBehaviour        (OrderableElement.cs — [RequireComponent(typeof(Collider))])
+OrderableTentElement : MonoBehaviour        (OrderableTentElement.cs — [RequireComponent(typeof(Collider))])
 ├── miniGame : MINI_GAMES { ARCHERY, DUCK, FISHING, FRISBEE }   ← identity used to pair world ↔ menu
 ├── currentPlaceHolder / _previousPlaceHolder
 ├── OnElementSelectionChanged : UnityEvent<bool, OrderableTentElement>
@@ -450,43 +453,43 @@ OrderableTentElement : MonoBehaviour        (OrderableElement.cs — [RequireCom
 ├── MiniGameTent                            the 3D tent in the hub world
 └── TentPanel                               the 2D card inside the wrist menu
 
-PlaceHolder : MonoBehaviour                 slot marker; `number` drives the ribbon badge
+TentPlaceHolder : MonoBehaviour             slot marker; `number` drives the ribbon badge
 ├── OnTriggerEnter/Exit → element.UpdateTentPlaceHolder(this / null)   ← tag "TentElement"
-└── TentPlaceHolder                         world slot; adds miniGameButtonPlaceHolderTransform
+└── MiniGameTentPlaceHolder                 world slot; adds miniGameButtonPlaceHolderTransform
                                             + looping DOTween squash-and-stretch bounce
 ```
 
-**PlaceHolderManager** (one per surface: one for the world tents, one for the menu panels)
+**TentPlaceHolderManager** (one per surface: one for the world tents, one for the menu panels)
 | Member | Purpose |
 |--------|---------|
-| `_elementsMap : Dictionary<OrderableTentElement, PlaceHolder>` | Which slot each element occupies |
+| `_elementsMap : Dictionary<OrderableTentElement, TentPlaceHolder>` | Which slot each element occupies |
 | `HandleTentSelection(bool, element)` | Inspector entry point for `OnElementSelectionChanged` |
 | `ElementSelected` | Hides every *other* element, shows all placeholders except the occupied one |
 | `ElementUnselected` | Swaps map entries if the drop slot was taken, restores visibility, hides placeholders |
 | `UpdateElementPosition` | Performs the actual swap and teleports the displaced element |
 | `updateOtherManagers : UnityEvent<OrderableTentElement[]>` | Broadcasts the new order to the twin manager |
-| `OnOtherManagerUpdate(elements[])` | Receives the twin's order and mirrors it, matching by `miniGame` and `PlaceHolder.number` |
+| `OnOtherManagerUpdate(elements[])` | Receives the twin's order and mirrors it, matching by `miniGame` and `TentPlaceHolder.number` |
 
 **Sync flow (menu ↔ world):**
 ```
 Player drags a TentPanel in the wrist menu
   → TentPanel.HandleGrab(false) → SnapToPlaceHolderNextFixedUpdate()
-  → OnElementSelectionChanged(false, panel) → PlaceHolderManager.HandleTentSelection
+  → OnElementSelectionChanged(false, panel) → TentPlaceHolderManager.HandleTentSelection
   → ElementUnselected() → UpdateElementPosition() (swap)
   → updateOtherManagers.Invoke(order)
-  → world PlaceHolderManager.OnOtherManagerUpdate() → MiniGameTent snaps to the matching slot
+  → world TentPlaceHolderManager.OnOtherManagerUpdate() → MiniGameTent snaps to the matching slot
 ```
 
 **Other tent scripts:**
 | Class | Purpose |
 |-------|---------|
-| `TentPersonalizationMenu` | Wrist-menu root. Starts disabled; `IntroCompleted()` enables it (wired to `playerFinishedIntro`), `ButtonClicked()` toggles the panel |
+| `WristMenu` | Wrist-menu root. Starts disabled; `IntroCompleted()` enables it (wired to `playerFinishedIntro`), `ButtonClicked()` toggles the panel |
 | `MiniGameTent` | Raycasts every `LateUpdate` (`Utils.CastRayMetaQuest`) to show/hide the play button; `GoToMiniGame()` loads `ArcheryGame` / `FrisbeeGame` |
 | `TentPanel` | Sets the card sprite, slot number and Portuguese tent name from `miniGame` |
 | `TentFishAnim` | Decorative fish animation on the fishing tent |
 
 **Tag:** grabbable tent elements must carry the **`TentElement`** tag (renamed from `Tent`) and an
-`OrderableTentElement` component — `PlaceHolder` trigger callbacks log an error otherwise.
+`OrderableTentElement` component — `TentPlaceHolder` trigger callbacks log an error otherwise.
 
 **Mini-game availability:** `MINI_GAMES` already declares `DUCK` and `FISHING`, but `MiniGameTent.GoToMiniGame()`
 only loads scenes for `ARCHERY` and `FRISBEE`; the others log a "not implemented yet" warning.
@@ -559,10 +562,10 @@ aapt2 dump xmltree CountryFair.apk --file AndroidManifest.xml | grep -iE "cleart
 ### Scene Flow
 ```
 CountryFair (Hub)
-├── CountryFairDialogue (intro) ──playerFinishedIntro──> TentPersonalizationMenu + post-intro elements
+├── CountryFairDialogue (intro) ──playerFinishedIntro──> WristMenu + post-intro elements
 ├── Animal AI (wandering NPCs)
 ├── PlayerScale (giant mode toggle)
-├── Tent personalization (world PlaceHolderManager <──> wrist-menu PlaceHolderManager)
+├── Tent personalization (world TentPlaceHolderManager <──> wrist-menu TentPlaceHolderManager)
 └── MiniGameTent.GoToMiniGame() → Load "ArcheryGame" / "FrisbeeGame"
 
 ArcheryGame / FrisbeeGame
