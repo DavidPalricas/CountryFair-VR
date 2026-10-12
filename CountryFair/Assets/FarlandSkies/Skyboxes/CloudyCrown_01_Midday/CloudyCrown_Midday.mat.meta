@@ -1,11 +1,5 @@
 fileFormatVersion: 2
 guid: 617d9be015db68348a623b01ea51a8c5
-timeCreated: 1459544900
-licenseType: Store
-NativeFormatImporter:
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
   productId: 60004
@@ -13,3 +7,9 @@ AssetOrigin:
   packageVersion: 1.0
   assetPath: Assets/FarlandSkies/Skyboxes/CloudyCrown_01_Midday/CloudyCrown_Midday.mat
   uploadId: 111526
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

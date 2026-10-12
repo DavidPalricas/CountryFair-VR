@@ -11,18 +11,18 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
 
     /// <summary>Minimum time interval between balloon spawns in seconds.</summary>
     [SerializeField]
-    private float minSpawnInterval = 0.5f;
+    private float _minSpawnInterval = 0.5f;
 
     /// <summary>Maximum time interval between balloon spawns in seconds.</summary>
     [SerializeField]
-    private float maxSpawnInterval = 1f;
+    private float _maxSpawnInterval = 1f;
 
     /// <summary>Initial spawn height for new balloons.</summary>
     [SerializeField]
-    private float balloonsInitialHeight = 2f;
+    private float _balloonsInitialHeight = 2f;
 
     /// <summary>Collider component defining the spawn area bounds.</summary>
-    private Collider areaCollider;
+    private Collider _areaCollider;
 
     /// <summary>
     /// Initializes the spawner by retrieving the collider component.
@@ -32,9 +32,9 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     {   
         base.Awake();
 
-        areaCollider = GetComponent<Collider>();
+        _areaCollider = GetComponent<Collider>();
 
-        if (areaCollider == null)
+        if (_areaCollider == null)
         {
             Debug.LogError("Spawn area GameObject must have a Collider component!");
         }
@@ -42,14 +42,14 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
 
     /// <summary>
     /// Called every frame. While below <c>maxBalloons</c>, schedules a <see cref="SpawnBalloon"/> after a random
-    /// delay in [<see cref="minSpawnInterval"/>, <see cref="maxSpawnInterval"/>].
+    /// delay in [<see cref="_minSpawnInterval"/>, <see cref="_maxSpawnInterval"/>].
     /// <c>currentBalloons</c> is only incremented when a scheduled spawn fires, so several spawns can be pending at once.
     /// </summary>
     private void Update()
     {
         if (currentBalloons < maxBalloons)
         {
-            Invoke(nameof(SpawnBalloon), Utils.RandomValueInRange(minSpawnInterval, maxSpawnInterval));
+            Invoke(nameof(SpawnBalloon), Utils.RandomValueInRange(_minSpawnInterval, _maxSpawnInterval));
         }
     }
 
@@ -63,7 +63,7 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
 
         GameObject balloon = Instantiate(balloonType, GetRandomPositionInBounds(), Quaternion.identity);
 
-        MoveBalloon(balloon, balloonsInitialHeight);
+        MoveBalloon(balloon, _balloonsInitialHeight);
 
         currentBalloons++;
     }
@@ -74,11 +74,11 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     /// <returns>A random Vector3 position within the spawn area.</returns>
     private Vector3 GetRandomPositionInBounds()
     {
-        Bounds bounds = areaCollider.bounds;
+        Bounds bounds = _areaCollider.bounds;
 
         float randomX = Random.Range(bounds.min.x, bounds.max.x);
         float randomZ = Random.Range(bounds.min.z, bounds.max.z);
 
-        return new Vector3(randomX, balloonsInitialHeight, randomZ);
+        return new Vector3(randomX, _balloonsInitialHeight, randomZ);
     }
 }

@@ -2245,11 +2245,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f4a250fe0b9a1b44aa7fe700e594b2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopText
-  OnElementSelectionChanged:
+  _onElementSelectionChanged:
     m_PersistentCalls:
       m_Calls: []
-  currentPlaceHolder: {fileID: 0}
-  miniGame: 0
+  _currentPlaceHolder: {fileID: 0}
+  MiniGame: 0
   _tentText: {fileID: 3596917416150404703}
   _tentNumber: {fileID: 7352726266872265547}
   _dropdownItem: {fileID: 1000200}

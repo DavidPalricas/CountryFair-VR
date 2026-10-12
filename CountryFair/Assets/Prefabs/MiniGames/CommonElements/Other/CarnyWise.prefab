@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e757538c941480c4eb456f9dd6f6e573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarnyWiseDiffFeedback
-  dialogueBoxGameObject: {fileID: 0}
-  dialogueBoxText: {fileID: 0}
+  _dialogueBoxGameObject: {fileID: 0}
+  _dialogueBoxText: {fileID: 0}
   displayDuration: 6
   increaseDiffExpression: {fileID: 0}
   decreaseDiffExpression: {fileID: 0}

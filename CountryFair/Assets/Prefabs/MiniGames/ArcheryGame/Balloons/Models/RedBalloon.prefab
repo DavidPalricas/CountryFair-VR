@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BalloonScript
   color: 0
-  balloonPrefab: {fileID: 3396820265375727783}
+  popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
   isFromTutorial: 0
   taskCompleted:
     m_PersistentCalls:
@@ -197,8 +197,6 @@ MonoBehaviour:
   fadeDuration: 1
   stayTranslucentDuration: 1
   minAlpha: 0.3
-  popEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
-  scoreValue: 0
 --- !u!4 &8949716481711875156 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 41917267eb4a54aea890f701336a36f5, type: 3}

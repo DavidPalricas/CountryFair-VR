@@ -8,7 +8,7 @@ using UnityEngine;
 public class TentPlaceHolder: MonoBehaviour
 {
     /// <summary>Slot number displayed on the tent ribbon when a tent occupies this placeholder.</summary>
-    public int number = 1;
+    public int Number = 1;
 
 
         /// <summary>

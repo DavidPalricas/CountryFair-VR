@@ -68,7 +68,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f30a25afec5845e40802e1ba32e6fe55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdlePerson
-  animator: {fileID: 2731896469100735689}
+  jumpPower: 2
+  jumpDuration: 0.5
 --- !u!1001 &4026367431611792568
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -130,11 +131,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: -3199799093341109342, guid: fc5c9313e37bbae4b80c3b8d6fdf3933, type: 3}
---- !u!95 &2731896469100735689 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: -7923764110535651215, guid: fc5c9313e37bbae4b80c3b8d6fdf3933, type: 3}
-  m_PrefabInstance: {fileID: 4026367431611792568}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8902120626956437872 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3717114202187975224, guid: fc5c9313e37bbae4b80c3b8d6fdf3933, type: 3}

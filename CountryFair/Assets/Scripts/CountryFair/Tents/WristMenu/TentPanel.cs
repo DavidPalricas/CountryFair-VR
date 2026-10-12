@@ -8,9 +8,9 @@ using UnityEngine.UI;
 /// </summary>
 public class TentPanel : OrderableTentElement
 {
-    /// <summary>Displays the mini-game's Portuguese name, set from <see cref="OrderableTentElement.miniGame"/> on Awake.</summary>
+    /// <summary>Displays the mini-game's Portuguese name, set from <see cref="OrderableTentElement.MiniGame"/> on Awake.</summary>
     [SerializeField]
-    public TextMeshProUGUI tentNameText = null;
+    public TextMeshProUGUI TentNameText = null;
 
     /// <summary>Displays the numbered ribbon badge matching this panel's current placeholder slot.</summary>
     [SerializeField]
@@ -29,7 +29,7 @@ public class TentPanel : OrderableTentElement
     {
         base.Awake();
 
-        if (tentNameText == null || _tentNumberText == null)
+        if (TentNameText == null || _tentNumberText == null)
         {
             Debug.LogError("One or more Texts Components are null in TentPanel");
 
@@ -52,18 +52,18 @@ public class TentPanel : OrderableTentElement
 
         _tentImage.sprite = _miniGameSprite;
 
-        _tentNumberText.text = currentPlaceHolder.number.ToString();
+        _tentNumberText.text = _currentPlaceHolder.Number.ToString();
 
         SetTentName();
     }
 
 
-    /// <summary>Sets <see cref="tentNameText"/> to the Portuguese display name for <see cref="OrderableTentElement.miniGame"/>.</summary>
+    /// <summary>Sets <see cref="TentNameText"/> to the Portuguese display name for <see cref="OrderableTentElement.MiniGame"/>.</summary>
     private void SetTentName()
     {
         string tentName = "Tenda de ";
 
-        switch (miniGame)
+        switch (MiniGame)
         {   
             case MINI_GAMES.FISHING:
                 tentName += " pesca";
@@ -86,7 +86,7 @@ public class TentPanel : OrderableTentElement
                 return;
         }
 
-        tentNameText.text = tentName;
+        TentNameText.text = tentName;
     }
 
      /// <summary>Teleports this panel to its placeholder slot and refreshes the ribbon number to match.</summary>
@@ -94,7 +94,7 @@ public class TentPanel : OrderableTentElement
     {
         base.SnapToCurrentPlaceHolder();
 
-        _tentNumberText.text = currentPlaceHolder.number.ToString();
+        _tentNumberText.text = _currentPlaceHolder.Number.ToString();
     }
 
     /// <summary>Raises the selection event on grab; schedules a snap back to the placeholder slot on release.</summary>
@@ -109,6 +109,6 @@ public class TentPanel : OrderableTentElement
             return;
         }
 
-       OnElementSelectionChanged.Invoke(true, this);
+       _onElementSelectionChanged.Invoke(true, this);
   }
 }

@@ -175,6 +175,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 855b41b9e58fed44faa81dda3bc7da05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
+  readyToLaunch: 0
+  playerScored:
+    m_PersistentCalls:
+      m_Calls: []
+  playerMissed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!136 &1404480283054584083
 CapsuleCollider:
   m_ObjectHideFlags: 0

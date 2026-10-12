@@ -1127,11 +1127,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1824670821160065494}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 1824670821160065494}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7295901922328504591}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7295901922328504591}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
@@ -1143,11 +1155,27 @@ PrefabInstance:
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: HandleTentSelection
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlaceHolderManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1273,6 +1301,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: MiniGame
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: miniGame
       value: 2
       objectReference: {fileID: 0}
@@ -1285,11 +1317,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 50678296597417718}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 50678296597417718}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7295901922328504591}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7295901922328504591}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
@@ -1301,11 +1345,27 @@ PrefabInstance:
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: HandleTentSelection
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlaceHolderManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1409,6 +1469,10 @@ PrefabInstance:
     - target: {fileID: 4271515862529947072, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: m_Name
       value: ThirdPlaceHolder
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091585969429589370, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: Number
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9091585969429589370, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: number
@@ -1532,6 +1596,10 @@ PrefabInstance:
       value: FourthPlaceHolder
       objectReference: {fileID: 0}
     - target: {fileID: 9091585969429589370, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: Number
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091585969429589370, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: number
       value: 4
       objectReference: {fileID: 0}
@@ -1651,6 +1719,10 @@ PrefabInstance:
     - target: {fileID: 4271515862529947072, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: m_Name
       value: SecondPlaceHolder
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091585969429589370, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: Number
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9091585969429589370, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: number
@@ -1798,6 +1870,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: MiniGame
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: miniGame
       value: 3
       objectReference: {fileID: 0}
@@ -1822,11 +1898,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6449448469779526771}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 6449448469779526771}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7295901922328504591}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7295901922328504591}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
@@ -1838,11 +1926,27 @@ PrefabInstance:
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: HandleTentSelection
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlaceHolderManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1974,6 +2078,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: MiniGame
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: miniGame
       value: 1
       objectReference: {fileID: 0}
@@ -1998,11 +2106,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2699326650386835301}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 2699326650386835301}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7295901922328504591}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7295901922328504591}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
@@ -2014,11 +2134,27 @@ PrefabInstance:
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: HandleTentSelection
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlaceHolderManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651973950674407146, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
