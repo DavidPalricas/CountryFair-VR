@@ -93,7 +93,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e579e54d9c96394aa80c8c01d0efe93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SheepAnimation
-  bounceHeight: 0.5
-  bounceDuration: 1
-  squashAmount: 0.3
-  bounceEase: 6
+  _bounceHeight: 0.5
+  _bounceDuration: 1
+  _squashAmount: 0.3

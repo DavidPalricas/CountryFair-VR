@@ -9,7 +9,7 @@ using UnityEngine;
 public class MiniGameTentPlaceHolder : TentPlaceHolder
 {
     /// <summary>Transform used to position the tent's play button when a tent snaps to this slot.</summary>
-    public Transform miniGameButtonPlaceHolderTransform;
+    public Transform MiniGameButtonPlaceHolderTransform;
 
     [Header("Squash & Stretch")]
     /// <summary>Child transform that carries the visual model being animated.</summary>
@@ -56,7 +56,7 @@ public class MiniGameTentPlaceHolder : TentPlaceHolder
     /// <summary>Caches the model's original scale and local position as the animation baseline.</summary>
     private void Awake()
     {
-        if (miniGameButtonPlaceHolderTransform == null || _modelTransform == null)
+        if (MiniGameButtonPlaceHolderTransform == null || _modelTransform == null)
         {
             Debug.LogError("One or more required transforms are not assigned in TentPlaceHolder script.");
 

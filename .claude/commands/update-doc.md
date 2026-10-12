@@ -3,6 +3,8 @@ Act as a senior engineer working on a hybrid project made of a Unity VR game (Me
 ## Task
 Update and complete the in-code documentation of the project's source files, **using the documentation conventions of the language and stack of each file** — never apply C#/Unity conventions to TypeScript files, or vice-versa.
 
+In `.cs` files, also fix naming violations (see "C# / Unity — naming fix"), adding a temporary `[FormerlySerializedAs]` so no value stored in scenes/prefabs is lost.
+
 ## Arguments
 
 The argument is matched case-insensitively, in this order:
@@ -18,6 +20,7 @@ The argument is matched case-insensitively, in this order:
 **Rules when a codebase is selected:**
 
 - Read and edit **only** the files of the selected codebase. Never modify a file outside it, not even to keep a comment in sync.
+- **Single exception:** when a C# field is renamed (see "naming fix"), update every reference to it in other `.cs` files, even outside the requested files or folder, otherwise the project stops compiling. Those edits are limited to the renamed identifier.
 - Apply **only** the conventions of that codebase: with `game`, use the C#/Unity rules and ignore the TypeScript ones entirely; with `web`, use the ClientSide and ServerSide rules and ignore the C#/Unity ones.
 - With `web`, both `ClientSide/` and `ServerSide/` are in scope — they are one deliverable.
 - Cross-checking is still allowed to *understand* a contract (e.g. reading Unity's `ConnectionManager`/`ServerListener` while documenting a Colyseus message), but the file you read for context is never edited.
@@ -38,7 +41,8 @@ The argument is matched case-insensitively, in this order:
   - `CountryFairWebApp/ClientSide/src/**/*.{ts,tsx}` (web client)
   - `CountryFairWebApp/ServerSide/src/**/*.ts` (Colyseus server)
 - Never touch `node_modules/`, `dist/`, `build/`, `Library/`, `Temp/`, `Assets/Plugins/`, or any generated/third-party code
-- Do not refactor logic, do not rename variables, do not reorder members (naming problems are only reported, see "C# / Unity — naming audit")
+- Never edit scenes, prefabs, ScriptableObject assets or any other Unity asset (`.unity`, `.prefab`, `.asset`, `.meta`)
+- Do not refactor logic and do not reorder members. The only renames allowed are the ones defined in "C# / Unity — naming fix". TypeScript files are never renamed
 - If existing documentation is correct, leave it unchanged
 
 ## Step 1 — Detect the target for each file
@@ -69,45 +73,57 @@ Before writing, **read a couple of already-documented files in the same target**
 - Inspector-driven members:
   - Add `/// <remarks>Invoked via Inspector in [PrefabName/Scene]</remarks>` on public methods with no direct call in code
   - Identify these by looking for public signatures with no internal references (typical `UnityEvent`, UI Button and XR Interactable callbacks)
+- When a field is renamed, keep its `/// <summary>` and place the `[FormerlySerializedAs]` attribute between the summary and the field (see "naming fix")
 
-### C# / Unity — naming audit (report only, never rename)
+### C# / Unity — naming fix
 
-While documenting each `.cs` file, check every member name against the table below. **Do not rename anything** — not fields, not methods, not locals, not even to keep the code consistent. Only record the violations in the naming report (see "Naming report file" below).
+While documenting each `.cs` file, check every member name against the table below and **rename the clear violations**.
 
 | Member | Expected format | Notes |
 |--------|-----------------|-------|
 | Private and protected fields (including `[SerializeField]`) | `_camelCase` | The `_` prefix removes ambiguity with local variables and parameters. Do **not** treat `[SerializeField]` fields as an exception: dropping the underscore for them splits the class into two naming schemes for no benefit. The "ugly name in the Inspector" argument is obsolete — Unity strips the `_` and formats the label cleanly. |
-| Public fields | `PascalCase` | All exposed public members start with a capital letter. Also flag every public field as a candidate to become a property (`public T Name { get; private set; }`), since public fields should be avoided in favour of properties. |
+| Public fields | `PascalCase` | All exposed public members start with a capital letter. |
 | Local variables and parameters | `camelCase` | Official standard. |
 | Methods, properties and constants | `PascalCase` | Official standard. |
 
-Audit rules:
+Rename rules:
 
-- Report only clear violations (e.g. `[SerializeField] private float speed;` → `_speed`; `public int score;` → `Score`). Do not report names that already follow the table
-- Never report Unity message methods (`Awake`, `Start`, `OnTriggerEnter`, ...) or members whose name is imposed by an interface, base class or third-party SDK
-- In the suggestion column, write a safe-rename warning when it applies:
-  - Renaming a `[SerializeField]` or public serialized field **loses the value already stored in scenes/prefabs** unless `[FormerlySerializedAs("oldName")]` is added
-  - Renaming a public method used as a `UnityEvent`/Button/XR callback **breaks the binding in the Inspector**
-- If a file has no violations, it does not appear in the report
+- Rename every clear violation to its expected name and update **all** references: same class, `this.x`, other classes (`obj.x`), subclasses (for `protected` fields), `nameof(...)`, and every other `.cs` file in `Assets/Scripts/`. Search by whole word across the whole scripts folder, not only the requested files
+- Before renaming, check that the new name does not collide with an existing member, local variable or parameter in scope. If it does, do **not** rename, and list it in the report as `Not renamed` with the reason
+- **Serialized fields** — `[SerializeField]` private/protected fields and public fields that Unity serializes: add `[FormerlySerializedAs("oldName")]` on the line directly above the field (below its `/// <summary>` and any other attributes of the same field), and add `using UnityEngine.Serialization;` if the file does not have it
+  - If the field already has a `[FormerlySerializedAs]`, keep it and add a second one with the name being replaced. Never remove or edit an existing `[FormerlySerializedAs]`
+  - Public fields marked `[NonSerialized]`, `static`, `const` or `readonly` are not serialized: rename only, no attribute
+- **Non-serialized private/protected fields**: rename only, no attribute
+- **Public fields**: rename to `PascalCase` and keep them as fields. Do **not** convert them to properties
+- **Local variables and parameters**: rename only when the violation is clear; never add attributes. A rename of a parameter must not change named arguments used by callers (check `name:` arguments)
+- **Methods used as callbacks** (`UnityEvent`, UI Button, XR interactable, Animation Events, `SendMessage`/`Invoke`/`StartCoroutine("...")` by string): **do not rename**. Renaming breaks the Inspector or string binding. Report them as `Not renamed`
+- Never rename Unity message methods (`Awake`, `Start`, `OnTriggerEnter`, ...) or members whose name is imposed by an interface, base class or third-party SDK
+- Do not rename names that already follow the table
+- If a rename touches a string reference to a field (e.g. `nameof` is not used, but the name appears in a string used for reflection or `FindProperty`), update the string too and mention it in the report note
+- The `[FormerlySerializedAs]` attributes are **temporary**: they are removed by the developer later, after reserializing the assets. Never remove them in this skill
 
 #### Naming report file
 
-- Create (or, for a full `game`/no-argument run, fully regenerate) a single Markdown file named `NamingReport.md` at the **project root** (the repository root, the folder that contains `CountryFair/` and `CountryFairWebApp/`) — outside `Assets/`, so Unity does not generate a `.meta` for it
-- For **each script with at least one violation**, add a section whose heading is an **H1** (one `#`) with the script's class/file name, e.g. `# PlayerController`
-- Under each H1, list the badly named members in a table:
+- Create (if missing) a single Markdown file named `NamingReport.md` at the **project root** (the repository root, the folder that contains `CountryFair/` and `CountryFairWebApp/`) — outside `Assets/`, so Unity does not generate a `.meta` for it
+- The file is a **cumulative log** of renames. Never delete or regenerate sections from previous runs: the developer needs the old names to check the assets before removing the attributes, and deletes the file manually when finished
+- For **each script where this run renamed or skipped at least one member**, add a section whose heading is an **H1** (one `#`) with the script's class/file name, e.g. `# PlayerController`. If the section already exists, append the new rows to its table
+- Under each H1, list the members in a table:
 
 ```markdown
 # PlayerController
 
-| Line | Member | Kind | Current | Expected | Note |
-|------|--------|------|---------|----------|------|
-| 12 | speed | `[SerializeField]` private field | `speed` | `_speed` | Add `[FormerlySerializedAs("speed")]` when renaming |
-| 20 | score | public field | `score` | `Score` | Consider a property |
+| Line | Member | Kind | Old | New | Status | Note |
+|------|--------|------|-----|-----|--------|------|
+| 12 | speed | `[SerializeField]` private field | `speed` | `_speed` | Renamed | `[FormerlySerializedAs("speed")]` added |
+| 20 | score | public field | `Score` | `Score` | Renamed | `[FormerlySerializedAs("score")]` added |
+| 40 | OnButtonPressed | public method | `OnButtonPressed` | `OnButtonPressed` | Not renamed | Bound via UnityEvent; renaming breaks the Inspector binding |
 ```
 
+- `Line` is the line of the member declaration **after** the edits
+- `Old` and `New` hold the names before and after the rename. For `Not renamed` rows, `New` holds the name that would be expected
 - Scripts are ordered alphabetically; the file contains nothing else (no intro, no summary)
-- Generate this file only when `.cs` files are in scope (`game`, no argument, `.cs` file paths, or a folder containing `.cs` files). With `web`, non-C# paths, or a folder without `.cs` files, do not create or touch it
-- Partial scope (file paths or a folder): do **not** regenerate the whole file. Replace only the H1 sections of the scripts processed in this run (add the section if the script now has violations, remove it if it no longer has any) and leave every other section untouched
+- Generate or update this file only when `.cs` files are in scope (`game`, no argument, `.cs` file paths, or a folder containing `.cs` files). With `web`, non-C# paths, or a folder without `.cs` files, do not create or touch it
+- If a run finds no violation at all, do not create the file and do not modify an existing one
 
 ### TypeScript — React / React Three Fiber components (`ClientSide`)
 
@@ -132,7 +148,7 @@ Audit rules:
 - Do not document the obvious — the comment must add context, not restate the identifier name
 - Prefer explaining **why** and **what invariant holds** over **what the line does**
 - Keep the language of comments consistent with the file being edited (existing comments in this project are in English; leave any Portuguese user-facing strings untouched)
-- Never change behaviour, formatting of code, or imports — only add/adjust comments
+- Never change behaviour, formatting of code, or imports — only add/adjust comments. The only allowed exceptions are the renames, `[FormerlySerializedAs]` attributes and the `using UnityEngine.Serialization;` import defined in "naming fix"
 
 ### Portuguese comments — remove or translate
 
@@ -159,6 +175,7 @@ When in doubt between deleting and translating, translate — losing real contex
 - Report the Portuguese-comment pass: how many comments were **deleted** as redundant, and list the ones that were **translated** (file + what knowledge they carried), so the decision can be reviewed
 - Then list, grouped by target (omitting any group outside the selected scope):
   - **Unity/C#** — public methods that appear to be Inspector-driven and need confirmation
-  - **Unity/C#** — path to `NamingReport.md` (project root) and the number of scripts and members flagged (nothing was renamed)
+  - **Unity/C#** — path to `NamingReport.md` (project root), the number of members renamed, the number of members not renamed (with reason), and the list of files edited **outside** the requested scope only to update references
+  - **Unity/C#** — reminder: the `[FormerlySerializedAs]` attributes are temporary; before removing them, run Force Reserialize Assets in Unity, commit the assets, and search the assets for each `Old` name in `NamingReport.md`
   - **ClientSide** — components whose props or asset paths could not be inferred with confidence
   - **ServerSide** — messages/broadcasts whose payload shape could not be inferred from the code alone (cross-check against the client and the Unity `ConnectionManager`/`ServerListener` if needed)

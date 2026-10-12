@@ -10403,9 +10403,9 @@ MonoBehaviour:
   maxHeightToBalloonExplode: 10
   minflyDuration: 1
   maxflyDuration: 2
-  minSpawnInterval: 0.5
-  maxSpawnInterval: 1
-  balloonsInitialHeight: 7
+  _minSpawnInterval: 0.5
+  _maxSpawnInterval: 1
+  _balloonsInitialHeight: 7
 --- !u!1 &698807743
 GameObject:
   m_ObjectHideFlags: 0
@@ -20518,21 +20518,21 @@ MonoBehaviour:
       Data3: -385448515
       Data4: 192746226
     Path: event:/ButtonPressed
-  crowdNoise:
+  _crowdNoise:
     Guid:
       Data1: 377214808
       Data2: 1163688712
       Data3: -2130074490
       Data4: -1533081903
     Path: event:/CountryFair/CrowdNoise
-  scaleToGiantSound:
+  _scaleToGiantSound:
     Guid:
       Data1: 1912123297
       Data2: 1208730113
       Data3: -1825054302
       Data4: 2143859148
     Path: event:/CountryFair/ScaleToGiant
-  scaleToNormalSound:
+  _scaleToNormalSound:
     Guid:
       Data1: -1467014453
       Data2: 1278789446
@@ -20565,12 +20565,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12fafd6e809b1444e8ecff10e9af978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CountryFairCheatCodes
-  _completeIntro:
+  _skipDialogue:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1289485912}
         m_TargetAssemblyTypeName: CountryFairDialogue, Assembly-CSharp
-        m_MethodName: IntroComplete
+        m_MethodName: NextStep
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -20580,12 +20580,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _skipDialogue:
+  _completeIntro:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1289485912}
         m_TargetAssemblyTypeName: CountryFairDialogue, Assembly-CSharp
-        m_MethodName: NextStep
+        m_MethodName: IntroComplete
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -26019,9 +26019,9 @@ MonoBehaviour:
   maxHeightToBalloonExplode: 10
   minflyDuration: 1
   maxflyDuration: 2
-  minSpawnInterval: 0.5
-  maxSpawnInterval: 1
-  balloonsInitialHeight: 7
+  _minSpawnInterval: 0.5
+  _maxSpawnInterval: 1
+  _balloonsInitialHeight: 7
 --- !u!1 &1780520572
 GameObject:
   m_ObjectHideFlags: 0
@@ -28056,9 +28056,9 @@ MonoBehaviour:
   maxHeightToBalloonExplode: 10
   minflyDuration: 1
   maxflyDuration: 2
-  minSpawnInterval: 0.5
-  maxSpawnInterval: 1
-  balloonsInitialHeight: 7
+  _minSpawnInterval: 0.5
+  _maxSpawnInterval: 1
+  _balloonsInitialHeight: 7
 --- !u!1 &1891773328
 GameObject:
   m_ObjectHideFlags: 0
@@ -28585,9 +28585,9 @@ MonoBehaviour:
   maxHeightToBalloonExplode: 10
   minflyDuration: 1
   maxflyDuration: 2
-  minSpawnInterval: 0.5
-  maxSpawnInterval: 1
-  balloonsInitialHeight: 7
+  _minSpawnInterval: 0.5
+  _maxSpawnInterval: 1
+  _balloonsInitialHeight: 7
 --- !u!1001 &1918023589
 PrefabInstance:
   m_ObjectHideFlags: 0

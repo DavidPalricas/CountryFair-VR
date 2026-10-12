@@ -20444,6 +20444,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1312361772106625692}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _miniGameVideo
+      value: 
+      objectReference: {fileID: 1312361772106625692}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: practiceElements
       value: 
       objectReference: {fileID: 1676481960}

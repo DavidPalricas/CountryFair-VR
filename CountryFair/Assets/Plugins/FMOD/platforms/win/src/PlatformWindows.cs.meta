@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 9660e62d6232af242877f0cc2b90c63d
+AssetOrigin:
+  serializedVersion: 1
+  productId: 161631
+  packageName: FMOD for Unity (2.02)
+  packageVersion: 2.02.32
+  assetPath: Assets/Plugins/FMOD/platforms/win/src/PlatformWindows.cs
+  uploadId: 821718
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -9,10 +16,3 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 161631
-  packageName: FMOD for Unity (2.02)
-  packageVersion: 2.02.32
-  assetPath: Assets/Plugins/FMOD/platforms/win/src/PlatformWindows.cs
-  uploadId: 821718

@@ -1,10 +1,5 @@
 fileFormatVersion: 2
 guid: e04ece3da327f0c4a836299cc1742fd1
-TextScriptImporter:
-  externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
   productId: 161631
@@ -12,3 +7,8 @@ AssetOrigin:
   packageVersion: 2.02.32
   assetPath: Assets/Plugins/FMOD/LICENSE.txt
   uploadId: 821718
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

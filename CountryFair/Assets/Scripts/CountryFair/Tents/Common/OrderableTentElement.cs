@@ -16,11 +16,11 @@ public class OrderableTentElement : MonoBehaviour
     /// Passes <c>true</c> when grabbed, <c>false</c> when released, along with this tent instance.
     /// </summary>
     [SerializeField]
-    protected UnityEvent<bool, OrderableTentElement> OnElementSelectionChanged;
+    protected UnityEvent<bool, OrderableTentElement> _onElementSelectionChanged;
 
     /// <summary>The placeholder slot this tent currently occupies; determines snap position and badge number.</summary>
     [SerializeField]
-    protected TentPlaceHolder currentPlaceHolder;
+    protected TentPlaceHolder _currentPlaceHolder;
 
     /// <summary>Cached collider used to identify this element as the ray/hover target (e.g. in <see cref="MiniGameTent"/>).</summary>
     protected Collider _collider  = null;
@@ -29,7 +29,7 @@ public class OrderableTentElement : MonoBehaviour
     protected TentPlaceHolder _previousPlaceHolder;
 
     /// <summary>Which mini-game this element represents; drives the tent's scene target and the wrist-menu panel's label/sprite.</summary>
-    public MINI_GAMES miniGame = MINI_GAMES.ARCHERY;
+    public MINI_GAMES MiniGame = MINI_GAMES.ARCHERY;
 
     /// <summary>Mini-games available for personalization. Only <see cref="ARCHERY"/> and <see cref="FRISBEE"/> currently have a scene wired up in <see cref="GameManager.GoToMiniGame"/>.
     /// Names are matched case-insensitively against the web app's mini-game keys in <see cref="TentPlaceHolderManager.OnOtherManagerUpdate"/>, so renaming a member breaks the sync.</summary>
@@ -44,7 +44,7 @@ public class OrderableTentElement : MonoBehaviour
     /// <summary>Validates the starting placeholder reference, caches this element's collider, and records the starting placeholder as the initial fallback for reverts.</summary>
     protected virtual void Awake()
     {
-        if (currentPlaceHolder == null)
+        if (_currentPlaceHolder == null)
         {
             Debug.LogError("Current Tent PlaceHolder reference is null in OrderableTentElement");
 
@@ -53,7 +53,7 @@ public class OrderableTentElement : MonoBehaviour
 
         _collider = GetComponent<Collider>();
 
-        _previousPlaceHolder = currentPlaceHolder;
+        _previousPlaceHolder = _currentPlaceHolder;
     }
 
 
@@ -69,14 +69,14 @@ public class OrderableTentElement : MonoBehaviour
 
         SnapToCurrentPlaceHolder();
 
-        OnElementSelectionChanged.Invoke(false, this);
+        _onElementSelectionChanged.Invoke(false, this);
     }
 
     
     /// <summary>Returns the placeholder slot this tent currently occupies.</summary>
     public TentPlaceHolder GetCurrentPlaceHolder()
     {
-        return currentPlaceHolder;
+        return _currentPlaceHolder;
     }
 
     
@@ -89,12 +89,12 @@ public class OrderableTentElement : MonoBehaviour
     public void UpdateTentPlaceHolder(TentPlaceHolder newPlaceHolder)
     {
         if (newPlaceHolder == null){
-            currentPlaceHolder = _previousPlaceHolder;
+            _currentPlaceHolder = _previousPlaceHolder;
 
             return;
         }
 
-        currentPlaceHolder = newPlaceHolder;
+        _currentPlaceHolder = newPlaceHolder;
     }
 
         /// <summary>
@@ -114,8 +114,8 @@ public class OrderableTentElement : MonoBehaviour
     /// </summary>
     public virtual void SnapToCurrentPlaceHolder()
     {
-        Transform PlaceHolderTransform = currentPlaceHolder.transform;
+        Transform placeHolderTransform = _currentPlaceHolder.transform;
 
-        transform.SetPositionAndRotation(PlaceHolderTransform.position, PlaceHolderTransform.rotation);
+        transform.SetPositionAndRotation(placeHolderTransform.position, placeHolderTransform.rotation);
     }
 }

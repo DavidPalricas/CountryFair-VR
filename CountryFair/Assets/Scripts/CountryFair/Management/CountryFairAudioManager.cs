@@ -12,15 +12,15 @@ public class CountryFairAudioManager : AudioManager
    [Header("Country Fair Sound Effects")]
     /// <summary>FMOD event reference for the crowd ambience loop spatialized to the fair area.</summary>
    [SerializeField]
-   private EventReference crowdNoise;
+   private EventReference _crowdNoise;
 
    /// <summary>FMOD one-shot played when the player grows to giant scale (<see cref="AudioManager.GameSoundEffects.SCALE_TO_GIANT"/>).</summary>
    [SerializeField]
-   private EventReference scaleToGiantSound;
+   private EventReference _scaleToGiantSound;
   
    /// <summary>FMOD one-shot played when the player shrinks back to normal scale (<see cref="AudioManager.GameSoundEffects.SCALE_TO_NORMAL"/>).</summary>
    [SerializeField]
-   private EventReference scaleToNormalSound;
+   private EventReference _scaleToNormalSound;
 
     /// <summary>Running instance of the crowd loop, kept so it can be stopped and released in <see cref="OnDestroy"/>.</summary>
     private EventInstance  _crowdNoiseInstance;
@@ -30,14 +30,14 @@ public class CountryFairAudioManager : AudioManager
    {  
       base.Awake();
 
-      if (crowdNoise.IsNull)
+      if (_crowdNoise.IsNull)
         {
             Debug.LogError("Crowd noise EventReference is not assigned in CountryFairAudioManager.");
 
             return;
         }
 
-      if (scaleToGiantSound.IsNull || scaleToNormalSound.IsNull)
+      if (_scaleToGiantSound.IsNull || _scaleToNormalSound.IsNull)
         {
             Debug.LogError("One or more scale sound EventReferences are not assigned in CountryFairAudioManager.");
         }
@@ -55,7 +55,7 @@ public class CountryFairAudioManager : AudioManager
    /// <summary>Creates the crowd loop instance, attaches it to this GameObject so it is spatialized, and starts it.</summary>
    private void PlayCrowdSound()
     {   
-        _crowdNoiseInstance = RuntimeManager.CreateInstance(crowdNoise);
+        _crowdNoiseInstance = RuntimeManager.CreateInstance(_crowdNoise);
         RuntimeManager.AttachInstanceToGameObject(_crowdNoiseInstance, transform);
         _crowdNoiseInstance.start();
     }
@@ -70,12 +70,12 @@ public class CountryFairAudioManager : AudioManager
         switch (soundEffect)
         {  
            case GameSoundEffects.SCALE_TO_GIANT:
-                eventToPlay = scaleToGiantSound;
+                eventToPlay = _scaleToGiantSound;
                 break;
 
 
             case GameSoundEffects.SCALE_TO_NORMAL:
-                eventToPlay = scaleToNormalSound;
+                eventToPlay = _scaleToNormalSound;
                 break;
                 
             default:

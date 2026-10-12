@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DuckSwim
   wanderRadius: 3
+  minMoveDistance: 1
   bobAmplitude: 0.02
   bobFrequency: 1.5
   wobbleAmplitude: 3

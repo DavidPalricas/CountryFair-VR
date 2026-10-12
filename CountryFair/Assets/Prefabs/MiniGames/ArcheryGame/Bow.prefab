@@ -191,9 +191,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93e07390a1a4d34aaf24571d46bd693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BowHandTracking
-  rightHand: {fileID: 0}
-  arrowSpawn: {fileID: 6720099744375800213}
-  arrowPrefab: {fileID: 3591316953578440869, guid: 571136f6eed984e4ca4d01b59d1e855a, type: 3}
+  playerStartedPulling:
+    m_PersistentCalls:
+      m_Calls: []
+  bowRoot: {fileID: 0}
+  bowModel: {fileID: 0}
+  arrow: {fileID: 0}
+  trajectoryLine: {fileID: 0}
+  pullingHand: {fileID: 0}
+  bowString: {fileID: 0}
+  stringMidPoint: {fileID: 0}
+  topLocalPos: {x: 0, y: 0.15, z: 0}
+  bottomLocalPos: {x: 0, y: -0.15, z: 0}
+  maxPullDistance: 0.35
+  maxStringBackward: 0.25
+  pullSmooth: 0.2
+  minForce: 5
+  maxForce: 60
+  closeThreshold: 0.25
+  openThreshold: 0.1
+  arrowGrabPoint: {fileID: 0}
+  grabRadius: 0.05
+  arrowShot:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5340199777835297182
 GameObject:
   m_ObjectHideFlags: 0

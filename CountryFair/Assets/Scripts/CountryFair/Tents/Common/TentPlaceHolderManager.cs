@@ -163,7 +163,7 @@ public class TentPlaceHolderManager : MonoBehaviour
             OrderableTentElement element = kvp.Key;
             TentPlaceHolder placeHolder = kvp.Value;
 
-            fairState[element.miniGame.ToString()] = placeHolder.number.ToString();
+            fairState[element.MiniGame.ToString()] = placeHolder.Number.ToString();
         }
 
         return fairState;
@@ -196,12 +196,12 @@ public class TentPlaceHolderManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Entry point called by <see cref="OrderableTentElement.OnElementSelectionChanged"/>.
+    /// Entry point called by <see cref="OrderableTentElement._onElementSelectionChanged"/>.
     /// Routes to <see cref="ElementSelected"/> or <see cref="ElementUnselected"/> based on <paramref name="isTentSelected"/>.
     /// </summary>
     /// <param name="isTentSelected">True when the tent was grabbed; false when released.</param>
     /// <param name="element">The tent that changed state.</param>
-    /// <remarks>Invoked via the Inspector in the <c>OnTentSelectionChanged</c> UnityEvent of each <see cref="OrderableTentElement"/>.</remarks>
+    /// <remarks>Invoked via the Inspector in the <c>_onElementSelectionChanged</c> UnityEvent of each <see cref="OrderableTentElement"/>.</remarks>
     public void HandleTentSelection(bool isTentSelected, OrderableTentElement element)
     {
         if (isTentSelected)
@@ -216,8 +216,8 @@ public class TentPlaceHolderManager : MonoBehaviour
 
     /// <summary>
     /// Mirrors the twin manager's element order onto this one: for each incoming element, finds the
-    /// matching local element by <see cref="OrderableTentElement.miniGame"/>, moves it to the placeholder
-    /// with the same slot <see cref="TentPlaceHolder.number"/>, and snaps it there.
+    /// matching local element by <see cref="OrderableTentElement.MiniGame"/>, moves it to the placeholder
+    /// with the same slot <see cref="TentPlaceHolder.Number"/>, and snaps it there.
     /// </summary>
     /// <param name="fairState">Mini-game-name-to-slot-number map describing the twin manager's current layout.</param>
     /// <remarks>
@@ -230,7 +230,7 @@ public class TentPlaceHolderManager : MonoBehaviour
     {
         foreach (var miniGame in fairState.Keys)
         {
-            OrderableTentElement element = _elementsMap.Keys.FirstOrDefault(e => e.miniGame.ToString().ToLower() == miniGame.ToLower());
+            OrderableTentElement element = _elementsMap.Keys.FirstOrDefault(e => e.MiniGame.ToString().ToLower() == miniGame.ToLower());
 
             if (element == null)
             {
@@ -241,7 +241,7 @@ public class TentPlaceHolderManager : MonoBehaviour
 
             int placeHolderNumber = int.Parse(fairState[miniGame]);
 
-            TentPlaceHolder updatedPlaceHolder = _elementsMap.Values.FirstOrDefault(ph => ph.number == placeHolderNumber);
+            TentPlaceHolder updatedPlaceHolder = _elementsMap.Values.FirstOrDefault(ph => ph.Number == placeHolderNumber);
 
             element.UpdateTentPlaceHolder(updatedPlaceHolder);
 

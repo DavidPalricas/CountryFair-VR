@@ -19,7 +19,7 @@ public class MiniGameTent : OrderableTentElement
     [SerializeField]
     private TextMeshProUGUI _tentText;
 
-    /// <summary>Displays the numbered ribbon badge assigned by <see cref="TentPlaceHolder.number"/>.</summary>
+    /// <summary>Displays the numbered ribbon badge assigned by <see cref="TentPlaceHolder.Number"/>.</summary>
     [SerializeField]
     private TextMeshProUGUI _tentNumber;
 
@@ -46,7 +46,7 @@ public class MiniGameTent : OrderableTentElement
     [SerializeField]
     private GameObject _ribbon;
 
-    /// <summary>Text displayed on the tent panel; derived from <see cref="OrderableTentElement.miniGame"/> and applied to <see cref="_tentText"/> on Awake.</summary>
+    /// <summary>Text displayed on the tent panel; derived from <see cref="OrderableTentElement.MiniGame"/> and applied to <see cref="_tentText"/> on Awake.</summary>
     private string _textToShow = string.Empty;
 
     /// <summary>The decorative mini-game prop instance spawned above this tent.</summary>
@@ -63,7 +63,7 @@ public class MiniGameTent : OrderableTentElement
     {
         base.Awake();
 
-        _textToShow = GetTextToShow(miniGame);
+        _textToShow = GetTextToShow(MiniGame);
         _tentText.text = _textToShow;
 
         if (_buttonToPlayMiniGame == null)
@@ -93,7 +93,7 @@ public class MiniGameTent : OrderableTentElement
             return;
         }
 
-        SetTentNumber(currentPlaceHolder.number);
+        SetTentNumber(_currentPlaceHolder.Number);
 
         SnapToCurrentPlaceHolder();
 
@@ -177,7 +177,7 @@ public class MiniGameTent : OrderableTentElement
 
         ToggleRibbonStuff(false);
 
-        OnElementSelectionChanged.Invoke(true, this);
+        _onElementSelectionChanged.Invoke(true, this);
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public class MiniGameTent : OrderableTentElement
     /// <remarks>Invoked via Inspector by the play button's OnClick event on the tent prefab.</remarks>
     public void PlayerWantsToGoToMiniGame()
     {
-        GameManager.GetInstance().GoToMiniGame(miniGame);
+        GameManager.GetInstance().GoToMiniGame(MiniGame);
     }
 
         /// <summary>
@@ -236,20 +236,20 @@ public class MiniGameTent : OrderableTentElement
     {
         base.SnapToCurrentPlaceHolder();
 
-        MiniGameTentPlaceHolder currentTentPlaceHolder = currentPlaceHolder as MiniGameTentPlaceHolder;
+        MiniGameTentPlaceHolder currentTentPlaceHolder = _currentPlaceHolder as MiniGameTentPlaceHolder;
 
         if (currentTentPlaceHolder == null)
         {
-            Debug.LogError($"Current PlaceHolder '{currentPlaceHolder.name}' is not a TentPlaceHolder.");
+            Debug.LogError($"Current PlaceHolder '{_currentPlaceHolder.name}' is not a TentPlaceHolder.");
             return;
         }
 
-        Transform buttonToPlayMiniGamePlaceHolderTransform = currentTentPlaceHolder.miniGameButtonPlaceHolderTransform;
+        Transform buttonToPlayMiniGamePlaceHolderTransform = currentTentPlaceHolder.MiniGameButtonPlaceHolderTransform;
 
         _buttonToPlayMiniGame.transform.SetPositionAndRotation(buttonToPlayMiniGamePlaceHolderTransform.position, buttonToPlayMiniGamePlaceHolderTransform.rotation);
 
-        SetTentNumber(currentPlaceHolder.number);
-        _previousPlaceHolder = currentPlaceHolder;
+        SetTentNumber(_currentPlaceHolder.Number);
+        _previousPlaceHolder = _currentPlaceHolder;
 
     }
 }

@@ -69,7 +69,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Walk
   walkRadius: 10
-  stuckThreshold: 5
   animator: {fileID: 306413359821226005}
 --- !u!1001 &1606021270755643492
 PrefabInstance:
