@@ -206,7 +206,7 @@ public class MiniGameTent : OrderableTentElement
 
     /// <summary>Toggles between the selected (grabbed) and unselected visual states.</summary>
     /// <param name="isGrabbed">True when the grab begins; false when the player releases the tent.</param>
-    /// <remarks>Invocado via Inspector nos eventos OnSelectEntered/OnSelectExited do componente XR Grab Interactable deste tent.</remarks>
+    /// <remarks>Invoked via Inspector by the OnSelectEntered/OnSelectExited events of this tent's XR Grab Interactable component.</remarks>
     public override void HandleGrab(bool isGrabbed)
     {
        _isSelected = isGrabbed;
@@ -221,7 +221,8 @@ public class MiniGameTent : OrderableTentElement
     }
 
 
-    /// <summary>Inspector-wired entry point for the play button; loads this tent's mini-game scene via <see cref="GameManager.GoToMiniGame"/>.</summary>
+    /// <summary>Loads this tent's mini-game scene via <see cref="GameManager.GoToMiniGame"/> (a warning is logged for mini-games without a scene).</summary>
+    /// <remarks>Invoked via Inspector by the play button's OnClick event on the tent prefab.</remarks>
     public void PlayerWantsToGoToMiniGame()
     {
         GameManager.GetInstance().GoToMiniGame(miniGame);

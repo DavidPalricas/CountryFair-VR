@@ -41,7 +41,9 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     }
 
     /// <summary>
-    /// Called every frame. Spawns balloons at random intervals while below maximum count.
+    /// Called every frame. While below <c>maxBalloons</c>, schedules a <see cref="SpawnBalloon"/> after a random
+    /// delay in [<see cref="minSpawnInterval"/>, <see cref="maxSpawnInterval"/>].
+    /// <c>currentBalloons</c> is only incremented when a scheduled spawn fires, so several spawns can be pending at once.
     /// </summary>
     private void Update()
     {
@@ -53,7 +55,7 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
 
     /// <summary>
     /// Spawns a single balloon at a random position within the collider bounds.
-    /// Assigns this spawner as a reference to the balloon.
+    /// Delegates the balloon's movement/pop bookkeeping to <c>MoveBalloon</c>, which decrements <c>currentBalloons</c> when it is destroyed.
     /// </summary>
     private void SpawnBalloon()
     {  

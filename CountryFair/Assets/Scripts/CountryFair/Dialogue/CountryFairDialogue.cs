@@ -154,7 +154,9 @@ public class CountryFairDialogue : UIDialog
 
     /// <summary>
     /// Advances the dialogue to the next line or section.
-    /// When all lines are consumed, reveals post-intro elements and destroys the dialogue canvas.
+    /// While in the intro, moves to the next character section once the current one runs out of lines
+    /// (the last section ends the intro via <see cref="IntroComplete"/>). In session-completed mode a single
+    /// press ends the dialogue: fires <see cref="_finishedDialogue"/> and destroys the dialogue canvas.
     /// </summary>
     /// <remarks>Invoked via Inspector by the advance-dialogue button in the CountryFair scene.</remarks>
     public override void NextStep()
@@ -224,10 +226,10 @@ public class CountryFairDialogue : UIDialog
     }
 
     /// <summary>
-    /// Marks the intro as completed in <see cref="GameManager"/>, reveals post-intro elements,
-    /// and destroys this dialogue canvas.
+    /// Fires <see cref="_finishedDialogue"/> (enabling the wrist menu and other post-intro elements via the Inspector),
+    /// marks the intro as completed in <see cref="GameManager"/> and destroys this dialogue canvas.
     /// </summary>
-    /// <remarks>Invoked via Inspector by the final button of the intro dialogue.</remarks>
+    /// <remarks>Also invoked by the "intro" cheat via <see cref="CountryFairCheatCodes"/>. Invoked via Inspector by the final button of the intro dialogue.</remarks>
     public void IntroComplete()
     {   
         _finishedDialogue.Invoke();

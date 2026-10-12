@@ -13,6 +13,7 @@ The argument is matched case-insensitively, in this order:
 | `game` | Unity VR game only — `CountryFair/Assets/Scripts/**/*.cs` |
 | `web` (also accepts `webapp`) | Web platform only — `CountryFairWebApp/ClientSide/src/**/*.{ts,tsx}` **and** `CountryFairWebApp/ServerSide/src/**/*.ts` |
 | One or more file paths | Only those files, whichever codebase they belong to |
+| One or more folder paths | Every in-scope source file under that folder, recursively (see "Rules when a folder is given") |
 
 **Rules when a codebase is selected:**
 
@@ -21,7 +22,14 @@ The argument is matched case-insensitively, in this order:
 - With `web`, both `ClientSide/` and `ServerSide/` are in scope — they are one deliverable.
 - Cross-checking is still allowed to *understand* a contract (e.g. reading Unity's `ConnectionManager`/`ServerListener` while documenting a Colyseus message), but the file you read for context is never edited.
 - In the final output, list only the sections for the selected codebase.
-- If the argument is not recognized as `game`, `web`/`webapp`, or an existing file path, stop and ask instead of guessing.
+- If the argument is not recognized as `game`, `web`/`webapp`, an existing file path or an existing folder path, stop and ask instead of guessing.
+
+**Rules when a folder is given:**
+
+- Collect the files under the folder (recursively) that match the Scope globs: `.cs` under `CountryFair/Assets/Scripts/`, `.ts`/`.tsx` under `ClientSide/src/`, `.ts` under `ServerSide/src/`. Apply the usual exclusions (`node_modules/`, `dist/`, `build/`, `Library/`, `Temp/`, `Assets/Plugins/`, generated/third-party code)
+- Resolve the target and convention **per file** (Step 1), exactly as with explicit file paths; a folder may therefore mix codebases
+- If the folder exists but contains **no** in-scope file (empty, only assets/`.meta`/JSON, only excluded directories, or outside the Scope globs), **do nothing**: edit no file, create or change no `NamingReport.md`, and reply with a single line saying the folder has no files to document
+- A folder that does not exist is an unrecognized argument: stop and ask
 
 ## Scope
 
@@ -30,7 +38,7 @@ The argument is matched case-insensitively, in this order:
   - `CountryFairWebApp/ClientSide/src/**/*.{ts,tsx}` (web client)
   - `CountryFairWebApp/ServerSide/src/**/*.ts` (Colyseus server)
 - Never touch `node_modules/`, `dist/`, `build/`, `Library/`, `Temp/`, `Assets/Plugins/`, or any generated/third-party code
-- Do not refactor logic, do not rename variables, do not reorder members
+- Do not refactor logic, do not rename variables, do not reorder members (naming problems are only reported, see "C# / Unity — naming audit")
 - If existing documentation is correct, leave it unchanged
 
 ## Step 1 — Detect the target for each file
@@ -61,6 +69,45 @@ Before writing, **read a couple of already-documented files in the same target**
 - Inspector-driven members:
   - Add `/// <remarks>Invoked via Inspector in [PrefabName/Scene]</remarks>` on public methods with no direct call in code
   - Identify these by looking for public signatures with no internal references (typical `UnityEvent`, UI Button and XR Interactable callbacks)
+
+### C# / Unity — naming audit (report only, never rename)
+
+While documenting each `.cs` file, check every member name against the table below. **Do not rename anything** — not fields, not methods, not locals, not even to keep the code consistent. Only record the violations in the naming report (see "Naming report file" below).
+
+| Member | Expected format | Notes |
+|--------|-----------------|-------|
+| Private and protected fields (including `[SerializeField]`) | `_camelCase` | The `_` prefix removes ambiguity with local variables and parameters. Do **not** treat `[SerializeField]` fields as an exception: dropping the underscore for them splits the class into two naming schemes for no benefit. The "ugly name in the Inspector" argument is obsolete — Unity strips the `_` and formats the label cleanly. |
+| Public fields | `PascalCase` | All exposed public members start with a capital letter. Also flag every public field as a candidate to become a property (`public T Name { get; private set; }`), since public fields should be avoided in favour of properties. |
+| Local variables and parameters | `camelCase` | Official standard. |
+| Methods, properties and constants | `PascalCase` | Official standard. |
+
+Audit rules:
+
+- Report only clear violations (e.g. `[SerializeField] private float speed;` → `_speed`; `public int score;` → `Score`). Do not report names that already follow the table
+- Never report Unity message methods (`Awake`, `Start`, `OnTriggerEnter`, ...) or members whose name is imposed by an interface, base class or third-party SDK
+- In the suggestion column, write a safe-rename warning when it applies:
+  - Renaming a `[SerializeField]` or public serialized field **loses the value already stored in scenes/prefabs** unless `[FormerlySerializedAs("oldName")]` is added
+  - Renaming a public method used as a `UnityEvent`/Button/XR callback **breaks the binding in the Inspector**
+- If a file has no violations, it does not appear in the report
+
+#### Naming report file
+
+- Create (or, for a full `game`/no-argument run, fully regenerate) a single Markdown file named `NamingReport.md` at the **project root** (the repository root, the folder that contains `CountryFair/` and `CountryFairWebApp/`) — outside `Assets/`, so Unity does not generate a `.meta` for it
+- For **each script with at least one violation**, add a section whose heading is an **H1** (one `#`) with the script's class/file name, e.g. `# PlayerController`
+- Under each H1, list the badly named members in a table:
+
+```markdown
+# PlayerController
+
+| Line | Member | Kind | Current | Expected | Note |
+|------|--------|------|---------|----------|------|
+| 12 | speed | `[SerializeField]` private field | `speed` | `_speed` | Add `[FormerlySerializedAs("speed")]` when renaming |
+| 20 | score | public field | `score` | `Score` | Consider a property |
+```
+
+- Scripts are ordered alphabetically; the file contains nothing else (no intro, no summary)
+- Generate this file only when `.cs` files are in scope (`game`, no argument, `.cs` file paths, or a folder containing `.cs` files). With `web`, non-C# paths, or a folder without `.cs` files, do not create or touch it
+- Partial scope (file paths or a folder): do **not** regenerate the whole file. Replace only the H1 sections of the scripts processed in this run (add the section if the script now has violations, remove it if it no longer has any) and leave every other section untouched
 
 ### TypeScript — React / React Three Fiber components (`ClientSide`)
 
@@ -112,5 +159,6 @@ When in doubt between deleting and translating, translate — losing real contex
 - Report the Portuguese-comment pass: how many comments were **deleted** as redundant, and list the ones that were **translated** (file + what knowledge they carried), so the decision can be reviewed
 - Then list, grouped by target (omitting any group outside the selected scope):
   - **Unity/C#** — public methods that appear to be Inspector-driven and need confirmation
+  - **Unity/C#** — path to `NamingReport.md` (project root) and the number of scripts and members flagged (nothing was renamed)
   - **ClientSide** — components whose props or asset paths could not be inferred with confidence
   - **ServerSide** — messages/broadcasts whose payload shape could not be inferred from the code alone (cross-check against the client and the Unity `ConnectionManager`/`ServerListener` if needed)
