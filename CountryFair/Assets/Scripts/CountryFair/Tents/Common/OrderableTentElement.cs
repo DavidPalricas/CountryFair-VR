@@ -31,7 +31,8 @@ public class OrderableTentElement : MonoBehaviour
     /// <summary>Which mini-game this element represents; drives the tent's scene target and the wrist-menu panel's label/sprite.</summary>
     public MINI_GAMES miniGame = MINI_GAMES.ARCHERY;
 
-    /// <summary>Mini-games available for personalization. Only <see cref="ARCHERY"/> and <see cref="FRISBEE"/> currently have a scene wired up.</summary>
+    /// <summary>Mini-games available for personalization. Only <see cref="ARCHERY"/> and <see cref="FRISBEE"/> currently have a scene wired up in <see cref="GameManager.GoToMiniGame"/>.
+    /// Names are matched case-insensitively against the web app's mini-game keys in <see cref="TentPlaceHolderManager.OnOtherManagerUpdate"/>, so renaming a member breaks the sync.</summary>
     public enum MINI_GAMES
     {
         ARCHERY,
@@ -100,7 +101,7 @@ public class OrderableTentElement : MonoBehaviour
     /// Responds to a grab start or release event, toggling between selected and unselected states.
     /// </summary>
     /// <param name="isGrabbed">True when the grab begins; false when the player releases the tent.</param>
-    /// <remarks>Invocado via Inspector nos eventos OnSelectEntered/OnSelectExited do componente XR Grab Interactable.</remarks>
+    /// <remarks>Invoked via Inspector by the OnSelectEntered/OnSelectExited events of the XR Grab Interactable component.</remarks>
     public virtual void HandleGrab(bool isGrabbed)
     {
         Debug.LogError("HandleGrab method must be implemented in a derived class.");

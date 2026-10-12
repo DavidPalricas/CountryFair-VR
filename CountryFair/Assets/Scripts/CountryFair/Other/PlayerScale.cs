@@ -2,6 +2,11 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Toggles the XR camera rig between its normal scale and a giant scale (<see cref="_giantScaleFactor"/>) with a
+/// comfort-oriented grow/shrink animation. See <see cref="AnimateScale"/> for the comfort rules.
+/// Raises <see cref="_onScaleToGiant"/> / <see cref="_onScaleToNormal"/> with the matching sound effect.
+/// </summary>
 public class PlayerScale : MonoBehaviour
 {
    /// <summary>
@@ -100,7 +105,8 @@ public class PlayerScale : MonoBehaviour
 
 
   /// <summary>
-  /// Caches the rig's starting scale.
+  /// Caches the rig's starting uniform scale as the "normal" scale and forces this object's own scale to match it
+  /// (not the rig's), keeping every axis uniform.
   /// </summary>
   private void Awake()
    {
@@ -146,11 +152,14 @@ public class PlayerScale : MonoBehaviour
    /// Plays a Mario like grow/shrink animation on the camera rig.
    /// Comfort rules applied here:
    /// - the scale is interpolated in logarithmic space, so the world grows at a constant *relative* rate.
-   ///   A linear interpolation from 1x to 4x sweeps the world across the eyes very fast at the beginning
+   ///   A linear interpolation from normal to giant scale sweeps the world across the eyes very fast at the beginning
    ///   (when everything is still close) and slowly at the end, and that initial burst is what makes the player dizzy;
    /// - the scale is anchored on the player's head, so only the eye height changes (no sideways swoop);
    /// - the easing is smooth and has no overshoot/bounce, so there are no direction changes at the end.
+   /// The sequence ignores <c>Time.timeScale</c> (<c>SetUpdate(..., true)</c>) and is linked to this GameObject's lifetime.
    /// </summary>
+   /// <param name="targetScale">Final uniform scale of the rig.</param>
+   /// <param name="duration">Duration, in seconds, of the main grow/shrink tween (excludes the anticipation squash).</param>
    private void AnimateScale(float targetScale, float duration)
    {
        _scaleSequence?.Kill();
