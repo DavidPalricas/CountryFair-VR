@@ -3260,11 +3260,11 @@ PrefabInstance:
       value: Sheep (3)
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceHeight
+      propertyPath: _bounceHeight
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceDuration
+      propertyPath: _bounceDuration
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6472,7 +6472,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: miniGame
+      propertyPath: MiniGame
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -6492,7 +6492,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: currentPlaceHolder
+      propertyPath: _currentPlaceHolder
       value: 
       objectReference: {fileID: 1992457933}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -6516,7 +6516,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1992457933}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -6524,23 +6524,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5781190689584395527, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -9725,11 +9725,11 @@ PrefabInstance:
       value: Sheep
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceHeight
+      propertyPath: _bounceHeight
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceDuration
+      propertyPath: _bounceDuration
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -11420,7 +11420,7 @@ PrefabInstance:
       value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 7537874573107614311, guid: 61502b20ecced114294d7d87f4c67d9b, type: 3}
-      propertyPath: number
+      propertyPath: Number
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7537874573107614311, guid: 61502b20ecced114294d7d87f4c67d9b, type: 3}
@@ -19719,11 +19719,11 @@ PrefabInstance:
       value: Sheep (2)
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceHeight
+      propertyPath: _bounceHeight
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceDuration
+      propertyPath: _bounceDuration
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -22678,7 +22678,7 @@ PrefabInstance:
       value: FrisbeeGame
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: miniGame
+      propertyPath: MiniGame
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -22706,7 +22706,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: currentPlaceHolder
+      propertyPath: _currentPlaceHolder
       value: 
       objectReference: {fileID: 189216393}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -22730,7 +22730,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 189216393}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -22738,23 +22738,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5781190689584395527, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -25162,11 +25162,11 @@ PrefabInstance:
       value: Sheep (1)
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceHeight
+      propertyPath: _bounceHeight
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5649658791401315216, guid: 1c51f23fe9b90cd41b9981af568a10a6, type: 3}
-      propertyPath: bounceDuration
+      propertyPath: _bounceDuration
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -29195,7 +29195,7 @@ PrefabInstance:
       value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 7537874573107614311, guid: 61502b20ecced114294d7d87f4c67d9b, type: 3}
-      propertyPath: number
+      propertyPath: Number
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7537874573107614311, guid: 61502b20ecced114294d7d87f4c67d9b, type: 3}
@@ -30334,7 +30334,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: miniGame
+      propertyPath: MiniGame
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -30354,7 +30354,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2029425154}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: currentPlaceHolder
+      propertyPath: _currentPlaceHolder
       value: 
       objectReference: {fileID: 747718444}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -30378,7 +30378,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2029425153}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -30386,23 +30386,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5781190689584395527, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -31914,7 +31914,7 @@ PrefabInstance:
       value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 7537874573107614311, guid: 61502b20ecced114294d7d87f4c67d9b, type: 3}
-      propertyPath: number
+      propertyPath: Number
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7537874573107614311, guid: 61502b20ecced114294d7d87f4c67d9b, type: 3}
@@ -32410,7 +32410,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: currentPlaceHolder
+      propertyPath: _currentPlaceHolder
       value: 
       objectReference: {fileID: 1456664939}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -32422,7 +32422,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1456664939}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
@@ -32430,23 +32430,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1728798950}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: HandleTentSelection
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlaceHolderManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: OnElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      propertyPath: _onElementSelectionChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5781190689584395527, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
