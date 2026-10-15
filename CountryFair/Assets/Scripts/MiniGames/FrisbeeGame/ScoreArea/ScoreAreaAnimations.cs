@@ -2,7 +2,6 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Handles the animation of the score area including floating, rotating, and pulsing effects, and the balloon burst
@@ -19,28 +18,24 @@ public class ScoreAreaAnimations : BalloonsSpawner
     /// <remarks>The float height is currently 0 (see <see cref="StartRotationAnimation"/>), so this tween has no visible effect.</remarks>
     [Header("Rotate Animation Settings")]
     [SerializeField]
-     [FormerlySerializedAs("floatDuration")]
      private float _floatDuration = 2f;
 
     /// <summary>
     /// Duration of one full rotation cycle.
     /// </summary>
     [SerializeField]
-     [FormerlySerializedAs("rotationDuration")]
      private float _rotationDuration = 3f;
 
     /// <summary>
     /// Duration of one cycle of the pulse scaling animation.
     /// </summary>
     [SerializeField]
-     [FormerlySerializedAs("pulseDuration")]
      private float _pulseDuration = 1.5f;
 
     /// <summary>
     /// Maximum scale multiplier for the pulse animation.
     /// </summary>
     [SerializeField]
-     [FormerlySerializedAs("pulseScale")]
      private float _pulseScale = 1.2f;
 
     /// <summary>
@@ -68,7 +63,6 @@ public class ScoreAreaAnimations : BalloonsSpawner
     /// </summary>
     [Header("Score Animation Settings")]
     [SerializeField]
-    [FormerlySerializedAs("balloonsPlaceHoldersGroup")]
     private Transform _balloonsPlaceHoldersGroup = null;
 
     /// <summary>

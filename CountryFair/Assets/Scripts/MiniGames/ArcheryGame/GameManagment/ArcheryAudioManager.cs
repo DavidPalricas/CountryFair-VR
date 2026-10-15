@@ -1,6 +1,5 @@
 using UnityEngine;
 using FMODUnity;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Archery-scene audio manager. Handles spatial balloon-pop and arrow-shot sounds in addition to
@@ -10,12 +9,10 @@ public class ArcheryAudioManager :MiniGameAudioManager
 {
     /// <summary>FMOD event played when a balloon is popped by an arrow.</summary>
     [SerializeField]
-    [FormerlySerializedAs("balloonPopSound")]
     private EventReference _balloonPopSound;
 
     /// <summary>FMOD event played when the player releases the arrow.</summary>
     [SerializeField]
-    [FormerlySerializedAs("arrowShotSound")]
     private EventReference _arrowShotSound;
 
     /// <summary>Validates the base references and the two archery FMOD events.</summary>

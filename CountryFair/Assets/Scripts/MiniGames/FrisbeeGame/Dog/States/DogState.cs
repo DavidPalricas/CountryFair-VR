@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Abstract base class for all dog behavior states in the Frisbee mini-game.
@@ -18,7 +17,6 @@ using UnityEngine.Serialization;
 {   
     /// <summary>Wired to <see cref="FrisbeeAudioManager"/> to play the bark attached to the dog; raised by <see cref="Bark"/>.</summary>
     [SerializeField]
-    [FormerlySerializedAs("barkEvent")]
     protected UnityEvent<AudioManager.GameSoundEffects, GameObject> _barkEvent;
 
     /// <summary>
@@ -26,7 +24,6 @@ using UnityEngine.Serialization;
     /// Assigned in the Inspector and used for navigation and positioning relative to the player.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("playerTransform")]
     protected Transform _playerTransform;
 
     /// <summary>

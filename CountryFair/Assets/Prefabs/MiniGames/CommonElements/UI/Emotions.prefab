@@ -744,12 +744,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c64cbcb4a0fce548b2b6cfa8b5a9475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ServerListener
-  serverIP: 172.20.10.2
-  serverPort: 50050
-  emojiDisplay: {fileID: 7624742657988348168}
-  sliderDisplay: {fileID: 8132782977344325314}
-  faceDisplay: {fileID: 2186083304696299180}
-  pollIntervalSeconds: 0.5
+  _serverIP: 172.20.10.2
+  _serverPort: 50050
+  _emojiDisplay: {fileID: 7624742657988348168}
+  _sliderDisplay: {fileID: 8132782977344325314}
+  _faceDisplay: {fileID: 2186083304696299180}
+  _pollIntervalSeconds: 0.5
 --- !u!114 &1286438263502714331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1677,18 +1677,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SliderDisplay
   ShowTopMostFoldoutHeaderGroup: 1
-  slider: {fileID: 2784237063678350770}
-  fillImage: {fileID: 5127633523717957103}
-  handleImage: {fileID: 4252140553249384436}
-  positiveColor: {r: 0.69803923, g: 0.90588236, b: 0.14117648, a: 1}
-  neutralColor: {r: 1, g: 0.78039217, b: 0.16862746, a: 1}
-  negativeColor: {r: 0.9019608, g: 0.29803923, b: 0.07450981, a: 1}
-  neutralEmoji: {fileID: 21300000, guid: 716d5b13415180b4a9a385f7276a0849, type: 3}
-  happyEmoji: {fileID: 21300000, guid: 94dc620dc0eb95045a366b28232ac409, type: 3}
-  angryEmoji: {fileID: 21300000, guid: 883becc6bff3e6d42a6e35ebe4b2988a, type: 3}
-  positiveThreshold: 0.6
-  negativeThreshold: 0.4
-  sliderChangeAmountThreshold: 0.05
+  _slider: {fileID: 2784237063678350770}
+  _fillImage: {fileID: 5127633523717957103}
+  _handleImage: {fileID: 4252140553249384436}
+  _positiveColor: {r: 0.69803923, g: 0.90588236, b: 0.14117648, a: 1}
+  _neutralColor: {r: 1, g: 0.78039217, b: 0.16862746, a: 1}
+  _negativeColor: {r: 0.9019608, g: 0.29803923, b: 0.07450981, a: 1}
+  _neutralEmoji: {fileID: 21300000, guid: 716d5b13415180b4a9a385f7276a0849, type: 3}
+  _happyEmoji: {fileID: 21300000, guid: 94dc620dc0eb95045a366b28232ac409, type: 3}
+  _angryEmoji: {fileID: 21300000, guid: 883becc6bff3e6d42a6e35ebe4b2988a, type: 3}
+  _positiveThreshold: 0.6
+  _negativeThreshold: 0.4
+  _sliderChangeAmountThreshold: 0.05
 --- !u!1 &7337941272630620816
 GameObject:
   m_ObjectHideFlags: 0

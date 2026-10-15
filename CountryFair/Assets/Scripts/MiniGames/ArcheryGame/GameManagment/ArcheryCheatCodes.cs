@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Linq;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Archery-specific cheat code handler. Extends <see cref="MiniGameCheatCodes"/> with miss/score
@@ -12,12 +11,10 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     /// <summary>Transform used to reposition the arrow during the score cheat.</summary>
     [Header("Arrow Dependencies")]
     [SerializeField]
-    [FormerlySerializedAs("arrowTransform")]
     private Transform _arrowTransform = null;
 
     /// <summary>Arrow component used to trigger launches via cheat commands.</summary>
     [SerializeField]
-    [FormerlySerializedAs("arrowComponent")]
     private Arrow _arrowComponent = null;
 
     /// <summary>

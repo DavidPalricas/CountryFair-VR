@@ -5,7 +5,6 @@ using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages the Archery mini-game: spawns colored balloons inside the spawn area, applies DDA difficulty
@@ -16,10 +15,8 @@ public class ArcheryGameManager : MiniGameManager
 {
     /// <summary>TMP text displaying the balloon color that scores; its text and color are set to match the target balloon.</summary>
     [Header("Game Specific References")]
-    [FormerlySerializedAs("balloonColorToScoreText")]
     [SerializeField] private TextMeshProUGUI _balloonColorToScoreText;
     /// <summary>Collider whose world bounds define the volume where balloons are spawned (separate from the <c>BalloonSpawn</c> box balloons wander in).</summary>
-    [FormerlySerializedAs("balloonSpawnArea")]
     [SerializeField] private Collider _balloonSpawnArea;
 
     /// <summary>
@@ -28,21 +25,18 @@ public class ArcheryGameManager : MiniGameManager
     /// </summary>
     [Header("Balloons Prefabs")]
     [SerializeField]
-     [FormerlySerializedAs("blueBalloonPrefab")]
      private GameObject _blueBalloonPrefab;
     /// <summary>
     /// Prefab of the red balloon. Its root is what gets spawned and destroyed; a child must hold a <see cref="BalloonArcheryGame"/>
     /// whose color is <c>RED</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("redBalloonPrefab")]
     private GameObject _redBalloonPrefab;
     /// <summary>
     /// Prefab of the yellow balloon. Its root is what gets spawned and destroyed; a child must hold a <see cref="BalloonArcheryGame"/>
     /// whose color is <c>YELLOW</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("yellowBalloonPrefab")]
     private GameObject _yellowBalloonPrefab;
 
     /// <summary>
@@ -51,14 +45,12 @@ public class ArcheryGameManager : MiniGameManager
     /// </summary>
     [Header("Complexity Curves")]
     [SerializeField]
-    [FormerlySerializedAs("movingRatioCurve")]
     private AnimationCurve _movingRatioCurve;
     /// <summary>
     /// Fraction of balloons (Y, 0–1) with the fade cycle on, as a function of the difficulty saturation factor (X, 0–1).
     /// Must have at least one key. Moving and transparent balloons are chosen independently, so one balloon can be both.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("transparencyRatioCurve")]
     private AnimationCurve _transparencyRatioCurve;
 
     /// <summary>
@@ -68,23 +60,19 @@ public class ArcheryGameManager : MiniGameManager
     [Header("Speed Progression")]
     [Tooltip("Movement duration in lowest difficulty (Bigger is slower). Ex: 4s")]
     [SerializeField]
-    [FormerlySerializedAs("slowMoveDuration")]
     private float _slowMoveDuration = 6.0f;
 
     /// <summary>Seconds between two wander points that the duration approaches at very high levels (smaller is faster).</summary>
     [Tooltip("Movement duration in highest difficulty (Smaller is faster). Ex: 1s" )]
     [SerializeField]
-    [FormerlySerializedAs("fastMoveDuration")]
     private float _fastMoveDuration = 1.5f;
 
     /// <summary>Punch strength of the scoring-color text animation, added to its scale on every axis (1.2 → grows to 2.2× at the peak).</summary>
     [Header("Color to Score Animation Settings")]
     [SerializeField]
-    [FormerlySerializedAs("punchScale")]
     private float _punchScale = 1.2f;
     /// <summary>Duration in seconds of the DOPunchScale animation on the balloon-color text.</summary>
     [SerializeField]
-    [FormerlySerializedAs("punchDuration")]
     private float _punchDuration = 0.5f;
 
     /// <summary>Live balloons per prefab, used by <see cref="GetBalloonType"/> to keep the colors balanced.</summary>

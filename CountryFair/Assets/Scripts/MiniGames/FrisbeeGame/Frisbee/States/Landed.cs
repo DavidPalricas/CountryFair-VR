@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// State representing the frisbee after it has landed and stopped on the ground.
@@ -11,7 +10,6 @@ public class Landed: FrisbeeState
 {    
     /// <summary>Frisbee mesh; its bounds give the radius used to detect an overlapping score area.</summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbeeMeshRenderer")]
     private MeshRenderer _frisbeeMeshRenderer;
 
     /// <summary>While true (tutorial practice), landing in a score area returns the frisbee without raising scoring events.</summary>
@@ -26,17 +24,14 @@ public class Landed: FrisbeeState
     [Header("Landed Events")]
 
     [SerializeField]
-    [FormerlySerializedAs("playerScored")]
     private UnityEvent <int> _playerScored;
     
     /// <summary>Wired to the audio manager to play the point-scored sound.</summary>
     [SerializeField]
-    [FormerlySerializedAs("scoreSoundEffectEvent")]
     private UnityEvent <AudioManager.GameSoundEffects> _scoreSoundEffectEvent;
 
     /// <summary>Raised when the frisbee lands outside every score area.</summary>
     [SerializeField]
-    [FormerlySerializedAs("playerMissed")]
     private UnityEvent _playerMissed;
 
     /// <summary>

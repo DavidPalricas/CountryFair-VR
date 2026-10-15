@@ -191,28 +191,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93e07390a1a4d34aaf24571d46bd693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BowHandTracking
-  playerStartedPulling:
+  _playerStartedPulling:
     m_PersistentCalls:
       m_Calls: []
-  bowRoot: {fileID: 0}
-  bowModel: {fileID: 0}
-  arrow: {fileID: 0}
-  trajectoryLine: {fileID: 0}
-  pullingHand: {fileID: 0}
-  bowString: {fileID: 0}
-  stringMidPoint: {fileID: 0}
-  topLocalPos: {x: 0, y: 0.15, z: 0}
-  bottomLocalPos: {x: 0, y: -0.15, z: 0}
-  maxPullDistance: 0.35
-  maxStringBackward: 0.25
-  pullSmooth: 0.2
-  minForce: 5
-  maxForce: 60
-  closeThreshold: 0.25
-  openThreshold: 0.1
-  arrowGrabPoint: {fileID: 0}
-  grabRadius: 0.05
-  arrowShot:
+  _bowRoot: {fileID: 0}
+  _bowModel: {fileID: 0}
+  _arrow: {fileID: 0}
+  _trajectoryLine: {fileID: 0}
+  _pullingHand: {fileID: 0}
+  _bowString: {fileID: 0}
+  _stringMidPoint: {fileID: 0}
+  _topLocalPos: {x: 0, y: 0.15, z: 0}
+  _bottomLocalPos: {x: 0, y: -0.15, z: 0}
+  _maxPullDistance: 0.35
+  _maxStringBackward: 0.25
+  _pullSmooth: 0.2
+  _minForce: 5
+  _maxForce: 60
+  _closeThreshold: 0.25
+  _openThreshold: 0.1
+  _arrowGrabPoint: {fileID: 0}
+  _grabRadius: 0.05
+  ArrowShot:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &5340199777835297182

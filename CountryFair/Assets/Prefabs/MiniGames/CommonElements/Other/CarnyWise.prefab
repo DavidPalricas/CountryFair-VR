@@ -47,11 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarnyWiseDiffFeedback
   _dialogueBoxGameObject: {fileID: 0}
   _dialogueBoxText: {fileID: 0}
-  displayDuration: 6
-  increaseDiffExpression: {fileID: 0}
-  decreaseDiffExpression: {fileID: 0}
-  carnyUI: {fileID: 0}
-  soundFeedback:
+  _displayDuration: 6
+  _increaseDiffExpression: {fileID: 0}
+  _decreaseDiffExpression: {fileID: 0}
+  _carnyUI: {fileID: 0}
+  _soundFeedback:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 561676bcf7a1edb4dbe02673e70077fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarnyWise
-  changeDifficulty:
+  _changeDifficulty:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -93,7 +93,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  precisionThresholdToIncreaseDiff: 0.6
-  precisionThresholdToDecreaseDiff: 0.4
-  thresholdToChangeDiff: 3
-  failingConsecutiveThreshold: 4
+  _precisionThresholdToIncreaseDiff: 0.6
+  _precisionThresholdToDecreaseDiff: 0.4
+  _thresholdToChangeDiff: 3
+  _failingConsecutiveThreshold: 4

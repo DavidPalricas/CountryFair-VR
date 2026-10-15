@@ -12,7 +12,7 @@ The argument is matched case-insensitively, in this order:
 | Argument | Files documented |
 |----------|------------------|
 | *(none)* | All source files of **both** codebases (see Scope) |
-| `game` | Unity VR game only — `CountryFair/Assets/Scripts/**/*.cs` |
+| `game` | Unity VR game only — `CountryFair/Assets/Scripts/**/*.cs` and `CountryFair/Assets/Editor/**/*.cs` |
 | `web` (also accepts `webapp`) | Web platform only — `CountryFairWebApp/ClientSide/src/**/*.{ts,tsx}` **and** `CountryFairWebApp/ServerSide/src/**/*.ts` |
 | One or more file paths | Only those files, whichever codebase they belong to |
 | One or more folder paths | Every in-scope source file under that folder, recursively (see "Rules when a folder is given") |
@@ -29,7 +29,7 @@ The argument is matched case-insensitively, in this order:
 
 **Rules when a folder is given:**
 
-- Collect the files under the folder (recursively) that match the Scope globs: `.cs` under `CountryFair/Assets/Scripts/`, `.ts`/`.tsx` under `ClientSide/src/`, `.ts` under `ServerSide/src/`. Apply the usual exclusions (`node_modules/`, `dist/`, `build/`, `Library/`, `Temp/`, `Assets/Plugins/`, generated/third-party code)
+- Collect the files under the folder (recursively) that match the Scope globs: `.cs` under `CountryFair/Assets/Scripts/` or `CountryFair/Assets/Editor/`, `.ts`/`.tsx` under `ClientSide/src/`, `.ts` under `ServerSide/src/`. Apply the usual exclusions (`node_modules/`, `dist/`, `build/`, `Library/`, `Temp/`, `Assets/Plugins/`, generated/third-party code)
 - Resolve the target and convention **per file** (Step 1), exactly as with explicit file paths; a folder may therefore mix codebases
 - If the folder exists but contains **no** in-scope file (empty, only assets/`.meta`/JSON, only excluded directories, or outside the Scope globs), **do nothing**: edit no file, create or change no `NamingReport.md`, and reply with a single line saying the folder has no files to document
 - A folder that does not exist is an unrecognized argument: stop and ask
@@ -37,7 +37,8 @@ The argument is matched case-insensitively, in this order:
 ## Scope
 
 - Source files of the project, filtered by the argument above:
-  - `CountryFair/Assets/Scripts/**/*.cs` (Unity game)
+  - `CountryFair/Assets/Scripts/**/*.cs` (Unity game, runtime)
+  - `CountryFair/Assets/Editor/**/*.cs` (Unity game, editor-only tooling — e.g. `ReserializeAll`)
   - `CountryFairWebApp/ClientSide/src/**/*.{ts,tsx}` (web client)
   - `CountryFairWebApp/ServerSide/src/**/*.ts` (Colyseus server)
 - Never touch `node_modules/`, `dist/`, `build/`, `Library/`, `Temp/`, `Assets/Plugins/`, or any generated/third-party code
@@ -52,6 +53,7 @@ Resolve the target **per file**, from its extension and path:
 | File | Target | Convention |
 |------|--------|------------|
 | `.cs` under `CountryFair/Assets/Scripts/` | Unity / C# | XML doc comments (`///`) |
+| `.cs` under `CountryFair/Assets/Editor/` | Unity / C# editor tool | XML doc comments (`///`); document what the menu item/tool does for the developer (when/why to run it), not gameplay behaviour |
 | `.tsx` under `ClientSide/src/GameProps/` or `ClientSide/src/screens/` | React + React Three Fiber component | JSDoc (`/** */`) |
 | `.ts`/`.tsx` elsewhere under `ClientSide/src/` | TypeScript module (network, hooks, utils, entry points) | JSDoc (`/** */`) |
 | `.ts` under `ServerSide/src/rooms/` | Colyseus Room | JSDoc (`/** */`) |
@@ -88,7 +90,7 @@ While documenting each `.cs` file, check every member name against the table bel
 
 Rename rules:
 
-- Rename every clear violation to its expected name and update **all** references: same class, `this.x`, other classes (`obj.x`), subclasses (for `protected` fields), `nameof(...)`, and every other `.cs` file in `Assets/Scripts/`. Search by whole word across the whole scripts folder, not only the requested files
+- Rename every clear violation to its expected name and update **all** references: same class, `this.x`, other classes (`obj.x`), subclasses (for `protected` fields), `nameof(...)`, and every other `.cs` file in `Assets/Scripts/` or `Assets/Editor/`. Search by whole word across both folders, not only the requested files
 - Before renaming, check that the new name does not collide with an existing member, local variable or parameter in scope. If it does, do **not** rename, and list it in the report as `Not renamed` with the reason
 - **Serialized fields** — `[SerializeField]` private/protected fields and public fields that Unity serializes: add `[FormerlySerializedAs("oldName")]` on the line directly above the field (below its `/// <summary>` and any other attributes of the same field), and add `using UnityEngine.Serialization;` if the file does not have it
   - If the field already has a `[FormerlySerializedAs]`, keep it and add a second one with the name being replaced. Never remove or edit an existing `[FormerlySerializedAs]`
@@ -105,7 +107,8 @@ Rename rules:
 #### Naming report file
 
 - Create (if missing) a single Markdown file named `NamingReport.md` at the **project root** (the repository root, the folder that contains `CountryFair/` and `CountryFairWebApp/`) — outside `Assets/`, so Unity does not generate a `.meta` for it
-- The file is a **cumulative log** of renames. Never delete or regenerate sections from previous runs: the developer needs the old names to check the assets before removing the attributes, and deletes the file manually when finished
+- The file is a **cumulative log** of renames. Never delete or regenerate sections from previous runs on your own initiative while a rename could still be pending: the developer needs the old names to check the assets before removing the attributes
+- This skill (and `/remove-serializeAs`) may delete `NamingReport.md`, or remove rows/sections from it, when the user explicitly asks for that cleanup — e.g. once every `[FormerlySerializedAs]` attribute it tracked has been removed from the codebase and the report is no longer needed. Never do this without an explicit request
 - For **each script where this run renamed or skipped at least one member**, add a section whose heading is an **H1** (one `#`) with the script's class/file name, e.g. `# PlayerController`. If the section already exists, append the new rows to its table
 - Under each H1, list the members in a table:
 

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Renders a parabolic arrow trajectory preview using a <see cref="LineRenderer"/>.
@@ -10,13 +9,10 @@ public class TrajectoryLine : MonoBehaviour
     /// <summary>LineRenderer used to draw the trajectory arc.</summary>
     public LineRenderer lineRenderer;
     /// <summary>Number of sample points along the predicted trajectory.</summary>
-    [FormerlySerializedAs("points")]
     public int Points = 50;
     /// <summary>Time interval in seconds between consecutive trajectory samples.</summary>
-    [FormerlySerializedAs("timeStep")]
     public float TimeStep = 0.05f;
     /// <summary>Multiplier applied to <see cref="Physics.gravity"/> when computing the arc (1 = real gravity).</summary>
-    [FormerlySerializedAs("gravityScale")]
     public float GravityScale = 1f;
 
     /// <summary>

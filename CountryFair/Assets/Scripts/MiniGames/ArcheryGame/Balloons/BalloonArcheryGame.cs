@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -21,36 +20,28 @@ public class BalloonArcheryGame : MonoBehaviour
     public GameObject OriginalPrefab { get; set; }
 
     /// <summary>Color of this balloon prefab; decides whether hitting it scores.</summary>
-    [FormerlySerializedAs("color")]
     [SerializeField] private Colors _color = Colors.RED;
     /// <summary>Particle effect spawned on pop; its start color is tinted with the balloon color.</summary>
-    [FormerlySerializedAs("popEffect")]
     [SerializeField] private GameObject _popEffect;
 
 
 
     /// <summary>Tutorial balloons raise <see cref="_taskCompleted"/> and destroy themselves instead of going through <see cref="ArcheryGameManager"/>.</summary>
     [Header("Settings")]
-    [FormerlySerializedAs("isFromTutorial")]
     [SerializeField] private bool _isFromTutorial = false;
     /// <summary>Raised when a tutorial balloon is popped, to advance the tutorial step.</summary>
-    [FormerlySerializedAs("taskCompleted")]
     [SerializeField] private UnityEvent _taskCompleted;
 
     /// <summary>Seconds to travel between two wander points; overwritten by <see cref="SetMoveDuration"/> as difficulty changes.</summary>
     [Header("Movement Settings")]
-    [FormerlySerializedAs("moveDuration")]
     [SerializeField] private float _moveDuration = 2f;
 
     /// <summary>Seconds for each fade out / fade in of the transparency cycle.</summary>
     [Header("Visual Settings")]
-    [FormerlySerializedAs("fadeDuration")]
     [SerializeField] private float _fadeDuration = 1f;
     /// <summary>Seconds the balloon stays faded (and unhittable, collider off) before fading back in.</summary>
-    [FormerlySerializedAs("stayTranslucentDuration")]
     [SerializeField] private float _stayTranslucentDuration = 1f;
     /// <summary>Alpha reached at the faded end of the cycle (0–1).</summary>
-    [FormerlySerializedAs("minAlpha")]
     [SerializeField] private float _minAlpha = 0.3f;
 
     /// <summary>Points for a hit on a static, opaque balloon of the scoring color.</summary>

@@ -115,31 +115,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100d6ad97e373fb4eafdf406bd7d249a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSM
-  states:
+  _states:
   - {fileID: 1080295073776879282}
   - {fileID: 7572416769146546949}
   - {fileID: 3607899206716178632}
   - {fileID: 2793601278903920947}
   - {fileID: 6158268702081495465}
-  transitions:
-  - name: FrisbeeCaught
-    from: {fileID: 2793601278903920947}
-    to: {fileID: 6158268702081495465}
-  - name: FrisbeeGiven
-    from: {fileID: 6158268702081495465}
-    to: {fileID: 1080295073776879282}
-  - name: PositionReached
-    from: {fileID: 1080295073776879282}
-    to: {fileID: 7572416769146546949}
-  - name: FrisbeeLanded
-    from: {fileID: 7572416769146546949}
-    to: {fileID: 3607899206716178632}
-  - name: CatchFrisbee
-    from: {fileID: 3607899206716178632}
-    to: {fileID: 2793601278903920947}
-  - name: DiffcultyHasDecreased
-    from: {fileID: 7572416769146546949}
-    to: {fileID: 1080295073776879282}
+  _transitions:
+  - Name: FrisbeeCaught
+    From: {fileID: 2793601278903920947}
+    To: {fileID: 6158268702081495465}
+  - Name: FrisbeeGiven
+    From: {fileID: 6158268702081495465}
+    To: {fileID: 1080295073776879282}
+  - Name: PositionReached
+    From: {fileID: 1080295073776879282}
+    To: {fileID: 7572416769146546949}
+  - Name: FrisbeeLanded
+    From: {fileID: 7572416769146546949}
+    To: {fileID: 3607899206716178632}
+  - Name: CatchFrisbee
+    From: {fileID: 3607899206716178632}
+    To: {fileID: 2793601278903920947}
+  - Name: DiffcultyHasDecreased
+    From: {fileID: 7572416769146546949}
+    To: {fileID: 1080295073776879282}
 --- !u!114 &7572416769146546949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DogIdle
   animator: {fileID: 6007434224156982788}
-  barkEvent:
+  _barkEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -168,12 +168,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  playerTransform: {fileID: 0}
-  scoreArea: {fileID: 7121292979934276580}
+  _playerTransform: {fileID: 0}
+  _scoreArea: {fileID: 7121292979934276580}
   _name: {fileID: 2814527935009574332}
-  minImpatientTime: 10
-  maxImpatientTime: 15
-  spawnScoreAreas:
+  _minImpatientTime: 10
+  _maxImpatientTime: 15
+  _spawnScoreAreas:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -188,7 +188,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  removeScoreAreas:
+  _removeScoreAreas:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -203,7 +203,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  positionReached:
+  _positionReached:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Jump
   animator: {fileID: 6007434224156982788}
-  barkEvent:
+  _barkEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -246,10 +246,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  playerTransform: {fileID: 0}
-  jumpDuration: 1.6
-  jumpPower: 0.3
-  jumpNumbers: 2
+  _playerTransform: {fileID: 0}
 --- !u!114 &6158268702081495465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GiveFrisbeeToPlayer
   animator: {fileID: 6007434224156982788}
-  barkEvent:
+  _barkEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -278,10 +275,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  playerTransform: {fileID: 0}
-  frisbeeInDogMouth: {fileID: 3370855587031195982}
-  frisbee: {fileID: 0}
-  frisbeeGivenToPlayer:
+  _playerTransform: {fileID: 0}
+  _frisbeeInDogMouth: {fileID: 3370855587031195982}
+  _frisbee: {fileID: 0}
+  _frisbeeGivenToPlayer:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -296,7 +293,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  happyWhine:
+  _happyWhine:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -324,7 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoToNewPosition
   animator: {fileID: 6007434224156982788}
-  barkEvent:
+  _barkEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -339,7 +336,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  playerTransform: {fileID: 0}
+  _playerTransform: {fileID: 0}
 --- !u!114 &2793601278903920947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,7 +350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CatchFrisbee
   animator: {fileID: 6007434224156982788}
-  barkEvent:
+  _barkEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -368,8 +365,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  playerTransform: {fileID: 0}
-  catchFrisbee:
+  _playerTransform: {fileID: 0}
+  _catchFrisbee:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -384,7 +381,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  frisbeeTransform: {fileID: 0}
+  _frisbeeTransform: {fileID: 0}
 --- !u!195 &5521536511310003017
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -477,21 +474,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51351e18249b814428ff637281598f24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DogFootSteps
-  playDogFootSteps:
+  _playDogFootSteps:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: FrisbeeAudioManager, Assembly-CSharp
-        m_MethodName: PlaySpatialSoundEffect
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &834395495910692244
 GameObject:
   m_ObjectHideFlags: 0
@@ -1744,11 +1729,11 @@ MonoBehaviour:
   _maxHeightToBalloonExplode: 5
   _minFlyDuration: 1
   _maxFlyDuration: 2
-  floatDuration: 2
-  rotationDuration: 3
-  pulseDuration: 0.8
-  pulseScale: 1.05
-  balloonsPlaceHoldersGroup: {fileID: 9222134171519325348}
+  _floatDuration: 2
+  _rotationDuration: 3
+  _pulseDuration: 0.8
+  _pulseScale: 1.05
+  _balloonsPlaceHoldersGroup: {fileID: 9222134171519325348}
 --- !u!114 &3645055419549594703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1761,14 +1746,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 565f27c2467a56f489237bb182dae115, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreAreaProperties
-  areaType: 1
-  tutorialTaskCompleted:
+  _areaType: 1
+  _tutorialTaskCompleted:
     m_PersistentCalls:
       m_Calls: []
-  moveSpeed: 2
-  radius: 0.5
-  timeVisible: 3
-  timeInvisible: 2
+  _moveSpeed: 2
+  _radius: 0.5
+  _timeVisible: 3
+  _timeInvisible: 2
 --- !u!1 &7531028331903754322
 GameObject:
   m_ObjectHideFlags: 0

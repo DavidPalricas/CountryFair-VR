@@ -1956,8 +1956,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3410f8c1092b5f241857687e373c1976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeTrajectory
-  trajectoryColor: {r: 0.16093048, g: 0.14070843, b: 0.9622642, a: 0.5882353}
-  trajectoryWidth: 0.2
+  _trajectoryColor: {r: 0.16093048, g: 0.14070843, b: 0.9622642, a: 0.5882353}
+  _trajectoryWidth: 0.2
 --- !u!114 &5851958143279242667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1970,26 +1970,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100d6ad97e373fb4eafdf406bd7d249a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSM
-  states:
+  _states:
   - {fileID: 2593594801695590028}
   - {fileID: 7903582697595146957}
   - {fileID: 8529546117364615329}
-  transitions:
-  - name: FrisbeeThrown
-    from: {fileID: 2593594801695590028}
-    to: {fileID: 7903582697595146957}
-  - name: StoppedOnGround
-    from: {fileID: 7903582697595146957}
-    to: {fileID: 8529546117364615329}
-  - name: ReturnToPlayer
-    from: {fileID: 8529546117364615329}
-    to: {fileID: 2593594801695590028}
-  - name: RetrievedByDog
-    from: {fileID: 8529546117364615329}
-    to: {fileID: 2593594801695590028}
-  - name: ForcedPoint
-    from: {fileID: 2593594801695590028}
-    to: {fileID: 8529546117364615329}
+  _transitions:
+  - Name: FrisbeeThrown
+    From: {fileID: 2593594801695590028}
+    To: {fileID: 7903582697595146957}
+  - Name: StoppedOnGround
+    From: {fileID: 7903582697595146957}
+    To: {fileID: 8529546117364615329}
+  - Name: ReturnToPlayer
+    From: {fileID: 8529546117364615329}
+    To: {fileID: 2593594801695590028}
+  - Name: RetrievedByDog
+    From: {fileID: 8529546117364615329}
+    To: {fileID: 2593594801695590028}
+  - Name: ForcedPoint
+    From: {fileID: 2593594801695590028}
+    To: {fileID: 8529546117364615329}
 --- !u!114 &2593594801695590028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2002,8 +2002,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce163281d2533744a529ad928af18de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OnPlayerHand
-  frisbeeGrabbable: {fileID: 5177196153182804015}
-  throwSoundEffectEvent:
+  _frisbeeGrabbable: {fileID: 5177196153182804015}
+  _throwSoundEffectEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -2018,8 +2018,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  cannotThrowAlpha: 0.5
-  frisbeeRenderer: {fileID: 3501213554523069254}
+  _cannotThrowAlpha: 0.5
+  _frisbeeRenderer: {fileID: 3501213554523069254}
 --- !u!114 &7903582697595146957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2032,8 +2032,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 115b6dc8a166bbf4297fb617a31b13a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OnAir
-  liftStrength: 0.2
-  playerMissed:
+  _liftStrength: 0.2
+  _playerMissed:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -2060,8 +2060,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed7e65aa88686849a4715c2e4ccf8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Landed
-  frisbeeMeshRenderer: {fileID: 3501213554523069254}
-  playerScored:
+  _frisbeeMeshRenderer: {fileID: 3501213554523069254}
+  _playerScored:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -2112,7 +2112,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  scoreSoundEffectEvent:
+  _scoreSoundEffectEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -2127,7 +2127,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  playerMissed:
+  _playerMissed:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -2211,10 +2211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28a23b169318f99489043e9c141cb86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FollowPlayerHead
-  centerEyeTransform: {fileID: 0}
-  distanceFromPlayer: 0.8
-  heightOffset: -0.4
-  horizontalOffset: 0
+  _centerEyeTransform: {fileID: 0}
+  _distanceFromPlayer: 0.8
+  _heightOffset: -0.4
+  _horizontalOffset: 0
 --- !u!1 &9028720230274754852
 GameObject:
   m_ObjectHideFlags: 0

@@ -68,13 +68,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c514cc6c122b7e048bd49f0ac506a193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DuckSwim
-  wanderRadius: 3
-  minMoveDistance: 1
-  bobAmplitude: 0.02
-  bobFrequency: 1.5
-  wobbleAmplitude: 3
-  wobbleFrequency: 0.8
-  rotationSpeed: 5
+  _wanderRadius: 3
+  _minMoveDistance: 1
+  _bobAmplitude: 0.02
+  _bobFrequency: 1.5
+  _wobbleAmplitude: 3
+  _wobbleFrequency: 0.8
+  _rotationSpeed: 5
 --- !u!1001 &3953578097780265884
 PrefabInstance:
   m_ObjectHideFlags: 0

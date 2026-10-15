@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Represents a Finite State Machine (FSM) component used to manage state-based behavior for NPCs and other game entities.
@@ -19,7 +18,6 @@ public class FSM : MonoBehaviour
     /// </summary>
     /// <remarks>A transition whose <see cref="Transition.To"/> is not in this list is rejected by <see cref="ChangeState"/>.</remarks>
     [SerializeField]
-    [FormerlySerializedAs("states")]
     private List<State> _states;
 
     /// <summary>
@@ -33,7 +31,6 @@ public class FSM : MonoBehaviour
     /// shadows it.
     /// </remarks>
     [SerializeField]
-    [FormerlySerializedAs("transitions")]
     private List<Transition> _transitions = new();
 
     /// <summary>

@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Implements hand-tracking bow mechanics for the Archery mini-game.
@@ -18,7 +17,6 @@ public class BowHandTracking : MonoBehaviour
     /// <summary>Fired every time the player grabs the string at the grab point; wired to <c>CarnyWise.StartTaskTimer</c>.</summary>
     /// <remarks>Also fires again after a cancelled pull; this is harmless because the timer ignores calls while it is already running.</remarks>
     [SerializeField]
-    [FormerlySerializedAs("playerStartedPulling")]
     private UnityEvent _playerStartedPulling;
 
     /// <summary>
@@ -27,22 +25,18 @@ public class BowHandTracking : MonoBehaviour
     /// </summary>
     [Header("References")]
     [SerializeField]
-    [FormerlySerializedAs("bowRoot")]
     private Transform _bowRoot;
 
     /// <summary>Bow mesh; its <see cref="MeshRenderer"/> is faded while aiming so the bow does not hide the target. Required.</summary>
     [SerializeField]
-    [FormerlySerializedAs("bowModel")]
     private Transform _bowModel;
 
     /// <summary>The single reusable arrow; its <see cref="Arrow.ReadyToLaunch"/>/<see cref="Arrow.InAir"/> flags gate the grab → pull → release cycle.</summary>
     [SerializeField]
-    [FormerlySerializedAs("arrow")]
     private Arrow _arrow;
 
     /// <summary>Trajectory visualizer shown when <see cref="Arrow.ReadyToLaunch"/> is true.</summary>
     [SerializeField]
-    [FormerlySerializedAs("trajectoryLine")]
     private TrajectoryLine _trajectoryLine;
 
     /// <summary>
@@ -51,13 +45,11 @@ public class BowHandTracking : MonoBehaviour
     /// </summary>
     [Header("Right Hand Override")]
     [SerializeField]
-    [FormerlySerializedAs("pullingHand")]
     private OVRHand _pullingHand;
 
     /// <summary>LineRenderer for the string; its point count is forced to 3 (top, mid, bottom) in <see cref="Start"/> and redrawn every frame.</summary>
     [Header("Line Renderer / String")]
     [SerializeField]
-    [FormerlySerializedAs("bowString")]
     private LineRenderer _bowString;
 
     /// <summary>
@@ -65,17 +57,14 @@ public class BowHandTracking : MonoBehaviour
     /// Optional: if empty, a <c>StringMidPoint_Runtime</c> child of <see cref="_bowRoot"/> is created in <see cref="Start"/>.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("stringMidPoint")]
     private Transform _stringMidPoint;
 
     /// <summary>Top end of the string, in <see cref="_bowRoot"/> local space (scaled by its transform).</summary>
     [SerializeField]
-    [FormerlySerializedAs("topLocalPos")]
     private Vector3 _topLocalPos = new (0f, 0.15f, 0f);
 
     /// <summary>Bottom end of the string, in <see cref="_bowRoot"/> local space. The string's rest midpoint is halfway between both anchors.</summary>
     [SerializeField]
-    [FormerlySerializedAs("bottomLocalPos")]
     private Vector3 _bottomLocalPos = new (0f, -0.15f, 0f);
 
     /// <summary>
@@ -84,7 +73,6 @@ public class BowHandTracking : MonoBehaviour
     /// </summary>
     [Header("Pull Settings")]
     [SerializeField]
-    [FormerlySerializedAs("maxPullDistance")]
     private float _maxPullDistance = 0.35f;
 
     /// <summary>
@@ -92,7 +80,6 @@ public class BowHandTracking : MonoBehaviour
     /// so it can be smaller than <see cref="_maxPullDistance"/>, in which case the string trails behind the hand.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("maxStringBackward")]
     private float _maxStringBackward = 0.25f;
 
     /// <summary>
@@ -102,7 +89,6 @@ public class BowHandTracking : MonoBehaviour
     /// </summary>
     [Range(0f, 1f)]
      [SerializeField]
-     [FormerlySerializedAs("pullSmooth")]
      private float _pullSmooth = 0.2f;
 
     /// <summary>
@@ -111,11 +97,9 @@ public class BowHandTracking : MonoBehaviour
     /// </summary>
     [Header("Force")]
     [SerializeField]
-    [FormerlySerializedAs("minForce")]
     private float _minForce = 5f;
     /// <summary>Arrow launch speed (m/s, via <see cref="ForceMode.VelocityChange"/>) at full pull.</summary>
     [SerializeField]
-    [FormerlySerializedAs("maxForce")]
     private float _maxForce = 60f;
 
     /// <summary>
@@ -124,7 +108,6 @@ public class BowHandTracking : MonoBehaviour
     /// </summary>
     [Header("Finger Detection")]
     [SerializeField]
-    [FormerlySerializedAs("closeThreshold")]
     private float _closeThreshold = 0.25f;
     /// <summary>
     /// Pinch strength (0–1) below which the hand counts as open and the arrow is released; <b>all three</b> pinches must be
@@ -132,13 +115,11 @@ public class BowHandTracking : MonoBehaviour
     /// Only used with hand tracking; the controller fallback has a fixed 0.1 threshold.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("openThreshold")]
     private float _openThreshold = 0.10f;
 
     /// <summary>Point on the bow the hand must be near, while closed, to start a pull. Required.</summary>
     [Header("Arrow Grab Detection")]
     [SerializeField]
-    [FormerlySerializedAs("arrowGrabPoint")]
     private Transform _arrowGrabPoint;
     /// <summary>
     /// Radius (metres, world space) around <see cref="_arrowGrabPoint"/> within which a closed hand starts a pull.
@@ -146,11 +127,9 @@ public class BowHandTracking : MonoBehaviour
     /// point with that offset in mind.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("grabRadius")]
     private float _grabRadius = 0.05f;
 
     /// <summary>Fired on arrow release with the shot sound effect and the bow GameObject as the spatial audio source.</summary>
-    [FormerlySerializedAs("arrowShot")]
     public UnityEvent<AudioManager.GameSoundEffects, GameObject> ArrowShot;
 
     /// <summary>Sound effect sent through <see cref="ArrowShot"/> on every release (fixed; not editable in the Inspector).</summary>

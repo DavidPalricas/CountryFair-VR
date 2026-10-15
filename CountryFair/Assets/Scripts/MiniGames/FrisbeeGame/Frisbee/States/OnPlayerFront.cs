@@ -1,7 +1,6 @@
 using Oculus.Interaction;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// State representing the frisbee floating in front of the player, ready to be grabbed and thrown.
@@ -26,12 +25,10 @@ public class OnPlayerFront : FrisbeeState
 {   
     /// <summary>Meta XR Grabbable on the frisbee; enabled while waiting in front of the player, disabled during flight.</summary>
     [SerializeField]
-   [FormerlySerializedAs("frisbeeGrabbable")]
    private Grabbable _frisbeeGrabbable;
    
     /// <summary>Wired to the audio manager to play the throw sound attached to the frisbee.</summary>
    [SerializeField]
-    [FormerlySerializedAs("throwSoundEffectEvent")]
     private UnityEvent <AudioManager.GameSoundEffects, GameObject> _throwSoundEffectEvent;
 
     /// <summary>
@@ -41,12 +38,10 @@ public class OnPlayerFront : FrisbeeState
     [Header("Rendering Parameters")]
     
     [SerializeField]  
-    [FormerlySerializedAs("cannotThrowAlpha")]
     private float _cannotThrowAlpha = 0.5f;
 
     /// <summary>Renderer whose material instances are switched to transparent mode and faded.</summary>
    [SerializeField]
-   [FormerlySerializedAs("frisbeeRenderer")]
    private Renderer _frisbeeRenderer;
 
     /// <summary>

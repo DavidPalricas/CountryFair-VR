@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages cheat code detection and activation for the Frisbee mini-game.
@@ -11,12 +10,10 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     /// <summary>The dog's catch area; target of the <c>dog</c> cheat and excluded when picking an extra score area.</summary>
     [Header ("Dog Dependencies")]
     [SerializeField]
-    [FormerlySerializedAs("dogScoreAreaTransform")]
     private Transform _dogScoreAreaTransform;
 
     /// <summary>Dog idle state; only validated here.</summary>
     [SerializeField]
-    [FormerlySerializedAs("dogIdleState")]
     private DogIdle _dogIdleState;
     
     /// <summary>
@@ -25,28 +22,24 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     [Header("Frisbee Dependencies")]
 
     [SerializeField]
-    [FormerlySerializedAs("frisbeePlayerFrontState")]
     private OnPlayerFront _frisbeePlayerFrontState;
     
     /// <summary>
     /// Reference to the frisbee's Landed state component.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbeeLandedState")]
     private Landed _frisbeeLandedState = null;
      
     /// <summary>
     /// Transform of the frisbee game object.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbeeTransform")]
     private Transform _frisbeeTransform = null;
     
     /// <summary>
     /// Finite State Machine component controlling the frisbee's behavior.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbeeFSM")]
     private FSM _frisbeeFSM = null;
 
     /// <summary>

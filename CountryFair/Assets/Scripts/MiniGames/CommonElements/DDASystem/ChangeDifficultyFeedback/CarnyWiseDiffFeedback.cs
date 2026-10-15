@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Displays a Carny Wise feedback message and expression when the difficulty changes.
@@ -13,30 +12,25 @@ public class CarnyWiseDiffFeedback : UIDialog
     /// <summary>Duration in seconds the feedback panel stays visible before auto-hiding.</summary>
     [Header("Display Configuration")]
     [SerializeField]
-    [FormerlySerializedAs("displayDuration")]
     private float _displayDuration = 6f;
 
     /// <summary>Carny Wise face shown when the difficulty goes up.</summary>
     [Header("Carny Wise Expressions")]
     [SerializeField]
-    [FormerlySerializedAs("increaseDiffExpression")]
     private GameObject _increaseDiffExpression;
     /// <summary>Carny Wise face shown when the difficulty goes down.</summary>
     [SerializeField]
-    [FormerlySerializedAs("decreaseDiffExpression")]
     private GameObject _decreaseDiffExpression;
 
 
     /// <summary>Root of the Carny Wise panel; hidden at start and after <see cref="_displayDuration"/>.</summary>
     [Header("CarnyWise UI")]
     [SerializeField]
-    [FormerlySerializedAs("carnyUI")]
     private GameObject _carnyUI;
 
     /// <summary>Wired to the scene audio manager's <c>PlaySoundEffect</c> to play the increase/decrease jingle.</summary>
     [Header("Sound Feedback")]
     [SerializeField]
-    [FormerlySerializedAs("soundFeedback")]
     private UnityEvent <AudioManager.GameSoundEffects> _soundFeedback;
 
     /// <summary>
@@ -47,9 +41,9 @@ public class CarnyWiseDiffFeedback : UIDialog
     private DiffcultyFeedBackData _feedbackData;
 
     /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes up (fixed; not editable in the Inspector).</summary>
-    private readonly AudioManager.GameSoundEffects _increaseDiffSound = AudioManager.GameSoundEffects.CARNYWISE_INCREASE_DIFF;
+    private readonly AudioManager.GameSoundEffects _increaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseIncreaseDiff;
     /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes down (fixed; not editable in the Inspector).</summary>
-    private readonly AudioManager.GameSoundEffects _decreaseDiffSound = AudioManager.GameSoundEffects.CARNYWISE_DECREASE_DIFF;
+    private readonly AudioManager.GameSoundEffects _decreaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseDecreaseDiff;
 
     /// <summary>Difficulty changes requested before the JSON finished loading (true = increase), replayed in <see cref="OnDataLoaded"/>.</summary>
     private Queue<bool> _pendingRequests = new ();

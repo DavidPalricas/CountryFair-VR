@@ -1,7 +1,6 @@
 
 using UnityEngine.AI;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Makes an NPC wander the NavMesh by repeatedly picking random destinations within a fixed radius.
@@ -16,7 +15,6 @@ public class WanderingPerson: MonoBehaviour
 
     /// <summary>NPC's Animator; only checked for assignment, the walk animation itself is driven by the Animator Controller.</summary>
     [SerializeField]
-    [FormerlySerializedAs("animator")]
     private Animator _animator;
 
 

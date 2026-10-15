@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Linq;
 using System;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -22,40 +21,33 @@ public class MiniGameCheatCodes : CheatCodes
 
     /// <summary>Used by the <c>return</c> cheat.</summary>
     [SerializeField]
-    [FormerlySerializedAs("returnToFair")]
     private ReturnToFair _returnToFair;
 
     /// <summary>DDA system driven by the <c>increase</c>, <c>decrease</c>, <c>reset</c> and <c>complete</c> cheats.</summary>
     [SerializeField]
-    [FormerlySerializedAs("carnyWise")]
     private CarnyWise _carnyWise;
 
     /// <summary>Tutorial skipped by the <c>tutorial</c> cheat.</summary>
     [SerializeField]
-    [FormerlySerializedAs("tutorial")]
     private Tutorial _tutorial;
 
     /// <summary>Emoji display (<see cref="ServerListener.DISPLAYMODE.Emoji"/>) set by the <c>e*</c> cheats (e.g. <c>ehappy</c>).</summary>
     [Header("Emotion Server Dependencies")]
     [SerializeField]
-    [FormerlySerializedAs("emojiDisplay")]
     private  ExpressionDisplay _emojiDisplay;
    
     /// <summary>Face display (<see cref="ServerListener.DISPLAYMODE.Face"/>) set by the <c>f*</c> cheats (e.g. <c>fhappy</c>).</summary>
    [SerializeField]
-    [FormerlySerializedAs("faceDisplay")]
     private ExpressionDisplay _faceDisplay;
     
     /// <summary>Mood bar (<see cref="ServerListener.DISPLAYMODE.Slider"/>) nudged by the <c>positive</c>/<c>negative</c> cheats.</summary>
     [SerializeField]
-    [FormerlySerializedAs("sliderDisplay")]
     private SliderDisplay _sliderDisplay;
    
 
     /// <summary>Wired to <see cref="ServerListener.UpdateDisplayMode"/> so a display cheat also switches to that display mode.</summary>
    [Header("Cheat Code Events")]
    [SerializeField]
-    [FormerlySerializedAs("changeEmotionDisplay")]
     private UnityEvent <ServerListener.DISPLAYMODE> _changeEmotionDisplay;
 
 

@@ -1,6 +1,5 @@
 using UnityEngine;
 using FMODUnity;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages audio playback for the Frisbee mini-game, including dog sounds, frisbee throws, and scoring effects.
@@ -13,35 +12,30 @@ public class FrisbeeAudioManager : MiniGameAudioManager
     /// </summary>
     [Header("Frisbee Game Sound Effects")]
     [SerializeField]
-    [FormerlySerializedAs("dogBarkSound")]
     private EventReference _dogBarkSound;
     
     /// <summary>
     /// FMOD event reference for the dog happy whine sound effect.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("dogHappyWhineSound")]
     private EventReference _dogHappyWhineSound;
 
     /// <summary>
     /// FMOD event reference for the frisbee throw sound effect.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbeeThrowSound")]
     private EventReference _frisbeeThrowSound;
 
     /// <summary>
     /// FMOD event reference for the point scored sound effect.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("pointScoredSound")]
     private EventReference _pointScoredSound;
 
     /// <summary>
     /// FMOD event reference for the dog footsteps sound effect.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("dogFootstepsSound")]
     private EventReference _dogFootstepsSound;
 
     /// <summary>Validates the inherited references and the Frisbee FMOD events.</summary>
