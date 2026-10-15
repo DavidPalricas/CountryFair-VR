@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Abstract base class for all mini-game managers.
@@ -14,21 +13,17 @@ public class MiniGameManager : MonoBehaviour
     /// <summary>Base number of targets present at difficulty level 0.</summary>
     [Header("Targets Configuration")]
     [SerializeField]
-    [FormerlySerializedAs("targetsCount")]
     protected int _targetsCount = 3;
 
     /// <summary>Fractional number of extra targets added per difficulty level.</summary>
     [SerializeField]
-    [FormerlySerializedAs("targetsPerLevel")]
     protected float _targetsPerLevel = 1.5f;
 
     /// <summary>Number of successful actions the player must complete to finish the session.</summary>
     [SerializeField]
-    [FormerlySerializedAs("sessionScoreGoal")]
     protected int _sessionScoreGoal = 3;
 
     /// <summary>Current difficulty level, persisted in PlayerPrefs under a game-specific key.</summary>
-    [FormerlySerializedAs("difficultyLevel")]
     public int DifficultyLevel = 0;
 
     /// <summary>Live target instances, oldest first.</summary>

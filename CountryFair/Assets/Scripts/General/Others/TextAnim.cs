@@ -1,6 +1,5 @@
 using UnityEngine;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Animates UI text with a continuous up-and-down floating motion.
@@ -10,7 +9,6 @@ public class TextAnim : MonoBehaviour
     /// <summary>Duration in seconds for the text to move up and then down.</summary>
     [Header("Animation Settings")]
     [SerializeField]
-    [FormerlySerializedAs("animationDuration")]
     private float _animationDuration = 0.5f;
 
     /// <summary>Distance the text moves vertically, in the parent's local units (canvas units for UI text, hence the large default).</summary>

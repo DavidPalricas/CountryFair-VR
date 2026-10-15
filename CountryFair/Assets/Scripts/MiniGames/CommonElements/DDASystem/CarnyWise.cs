@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Dynamic Difficulty Adjustment (DDA) system that monitors player performance and
@@ -21,28 +20,23 @@ public class CarnyWise : MonoBehaviour
 {
     /// <summary>Wired in Inspector to <see cref="MiniGameManager.ChangeDifficulty"/>.</summary>
     [SerializeField]
-    [FormerlySerializedAs("changeDifficulty")]
     private UnityEvent <bool> _changeDifficulty;
 
     /// <summary>Precision ratio at or above which a task counts as excelling (triggers potential increase).</summary>
     [Header("Adaptation Configuration")]
     [SerializeField, Range(0f, 1f)]
-    [FormerlySerializedAs("precisionThresholdToIncreaseDiff")]
     private float _precisionThresholdToIncreaseDiff = 0.7f;
 
     /// <summary>Precision ratio at or below which a task counts as struggling (triggers potential decrease).</summary>
     [SerializeField, Range(0f, 1f)]
-    [FormerlySerializedAs("precisionThresholdToDecreaseDiff")]
     private float _precisionThresholdToDecreaseDiff = 0.3f;
 
     /// <summary>Number of consecutive excelling or struggling tasks required to change difficulty.</summary>
     [SerializeField]
-    [FormerlySerializedAs("thresholdToChangeDiff")]
     private int _thresholdToChangeDiff = 3;
 
     /// <summary>Number of consecutive misses that immediately trigger a difficulty decrease.</summary>
     [SerializeField]
-    [FormerlySerializedAs("failingConsecutiveThreshold")]
     private int _failingConsecutiveThreshold = 4;
 
     /// <summary><see cref="Time.time"/> when the current task started; 0 means no task is running.</summary>

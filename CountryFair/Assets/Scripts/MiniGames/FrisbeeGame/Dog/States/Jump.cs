@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Dog FSM state for the mid-air catch. The jump itself is the Animator clip triggered by the previous state; this

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Score area target in the Frisbee mini-game. Supports three area types: NORMAL (can move and blink,
@@ -14,32 +13,26 @@ public class ScoreAreaProperties : MonoBehaviour
 {
     /// <summary>Determines behavior and base score value; only NORMAL areas support movement/blinking modifiers.</summary>
     [SerializeField]
-    [FormerlySerializedAs("areaType")]
     private AreaType _areaType = AreaType.Normal;
 
     /// <summary>Fired in tutorial mode when the player scores here — notifies <see cref="Tutorial"/> that a task completed.</summary>
     [SerializeField]
-    [FormerlySerializedAs("tutorialTaskCompleted")]
     private UnityEvent _tutorialTaskCompleted;
 
     /// <summary>Circular orbit speed expressed as seconds per full revolution.</summary>
     [Header("Movement Settings")]
     [SerializeField]
-    [FormerlySerializedAs("moveSpeed")]
     private float _moveSpeed = 2f;
     /// <summary>Radius of the circular orbit path.</summary>
     [SerializeField]
-    [FormerlySerializedAs("radius")]
     private float _radius = 0.5f;
 
     /// <summary>Time in seconds the area stays visible during each blink cycle.</summary>
     [Header("Visibility Settings")]
     [SerializeField]
-    [FormerlySerializedAs("timeVisible")]
     private float _timeVisible = 3f;
     /// <summary>Time in seconds the area stays invisible during each blink cycle.</summary>
     [SerializeField]
-    [FormerlySerializedAs("timeInvisible")]
     private float _timeInvisible = 2f;
 
     /// <summary>Spawn position; center reference of the orbit and target of <see cref="StopMoving"/>.</summary>

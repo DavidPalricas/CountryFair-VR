@@ -2,7 +2,6 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Base class for anything that releases decorative balloons: picks a color with a balanced
@@ -16,21 +15,18 @@ public class BalloonsSpawner : MonoBehaviour
     /// </summary>
     [Header("Balloons Prefabs")]
     [SerializeField]
-    [FormerlySerializedAs("blueBalloonPrefab")]
     private GameObject _blueBalloonPrefab = null;
 
     /// <summary>
     /// Prefab for the red balloon used in the score animation.
     /// </summary>
    [SerializeField]
-    [FormerlySerializedAs("redBalloonPrefab")]
     private GameObject _redBalloonPrefab = null;
 
     /// <summary>
     /// Prefab for the yellow balloon used in the score animation.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("yellowBalloonPrefab")]
     private GameObject _yellowBalloonPrefab = null;
 
     /// <summary>Upper bound of balloons alive at once; <c>ScoreAreaAnimations</c> overwrites it with its placeholder count.</summary>

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Keeps a world-space UI panel positioned in front of the player's center eye every LateUpdate.
@@ -11,23 +10,19 @@ public class FollowPlayerHead : MonoBehaviour
 {
     /// <summary>The VR center eye anchor transform (OVRCameraRig.centerEyeAnchor or equivalent).</summary>
     [SerializeField]
-    [FormerlySerializedAs("centerEyeTransform")]
     private Transform _centerEyeTransform;
 
     /// <summary>Distance in front of the player at which the panel is placed.</summary>
     [Header("Positioning Settings")]
     [SerializeField]
-     [FormerlySerializedAs("distanceFromPlayer")]
      private float _distanceFromPlayer = 2.0f;
 
     /// <summary>Vertical offset relative to eye height (negative = below eye level).</summary>
     [SerializeField]
-    [FormerlySerializedAs("heightOffset")]
     private float _heightOffset = -0.5f;
 
     /// <summary>Lateral offset relative to the eye's right direction.</summary>
     [SerializeField]
-    [FormerlySerializedAs("horizontalOffset")]
     private float _horizontalOffset = 0f;
     
     /// <summary>Validates the eye reference and snaps the panel to its target so it does not slide in on the first frame.</summary>

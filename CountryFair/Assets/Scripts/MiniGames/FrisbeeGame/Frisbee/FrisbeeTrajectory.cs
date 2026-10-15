@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Handles the visualization of the frisbee's trailing trajectory during flight.
@@ -20,12 +19,10 @@ public class FrisbeeTrajectory : MonoBehaviour
     /// <summary>Color of the trajectory line with alpha transparency.</summary>
     [Header("Trajectory Visualization")]
     [SerializeField]
-    [FormerlySerializedAs("trajectoryColor")]
     private Color _trajectoryColor = new(0f, 1f, 0f, 0.8f);
     
     /// <summary>Width of the trajectory line renderer in world units.</summary>
     [SerializeField]
-    [FormerlySerializedAs("trajectoryWidth")]
     private float _trajectoryWidth = 0.05f;
 
     /// <summary>Line renderer component that displays the frisbee trajectory.</summary>

@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f30a25afec5845e40802e1ba32e6fe55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdlePerson
-  jumpPower: 2
-  jumpDuration: 0.5
+  _jumpPower: 2
+  _jumpDuration: 0.5
 --- !u!1001 &3530034584361568779
 PrefabInstance:
   m_ObjectHideFlags: 0

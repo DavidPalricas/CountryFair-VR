@@ -50,20 +50,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100d6ad97e373fb4eafdf406bd7d249a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSM
-  states:
+  _states:
   - {fileID: 7423642381187640244}
   - {fileID: 8873384000573442767}
   - {fileID: 8877622317175251246}
-  transitions:
-  - name: GoEat
-    from: {fileID: 0}
-    to: {fileID: 8873384000573442767}
-  - name: GoWalk
-    from: {fileID: 0}
-    to: {fileID: 7423642381187640244}
-  - name: GoIdle
-    from: {fileID: 0}
-    to: {fileID: 8877622317175251246}
+  _transitions:
+  - Name: GoEat
+    From: {fileID: 0}
+    To: {fileID: 8873384000573442767}
+  - Name: GoWalk
+    From: {fileID: 0}
+    To: {fileID: 7423642381187640244}
+  - Name: GoIdle
+    From: {fileID: 0}
+    To: {fileID: 8877622317175251246}
 --- !u!114 &7423642381187640244
 MonoBehaviour:
   m_ObjectHideFlags: 0

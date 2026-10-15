@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -23,7 +22,6 @@ public class DogIdle : DogState
     /// The score area typically contains a collider or trigger that detects when the frisbee lands within the catchable zone.
     /// </remarks>
     [SerializeField]
-    [FormerlySerializedAs("scoreArea")]
     private GameObject _scoreArea;
 
     
@@ -34,23 +32,19 @@ public class DogIdle : DogState
     /// <summary>Minimum seconds between impatient barks while waiting for the throw.</summary>
     [Header("Impatient Timer Settings")]
     [SerializeField]
-    [FormerlySerializedAs("minImpatientTime")]
     private float _minImpatientTime = 10f;
     
     /// <summary>Maximum seconds between impatient barks while waiting for the throw.</summary>
     [SerializeField]
-    [FormerlySerializedAs("maxImpatientTime")]
     private float _maxImpatientTime = 15f;
 
     /// <summary>Raised on <see cref="Enter"/> to spawn the floating score areas around the dog.</summary>
     [Header("Idle Events")]
     [SerializeField]
-    [FormerlySerializedAs("spawnScoreAreas")]
     private UnityEvent _spawnScoreAreas;
 
     /// <summary>Raised on <see cref="Exit"/> to remove the floating score areas.</summary>
      [SerializeField]
-    [FormerlySerializedAs("removeScoreAreas")]
     private UnityEvent _removeScoreAreas;
 
     /// <summary>
@@ -58,7 +52,6 @@ public class DogIdle : DogState
     /// It notifies the frisbee that the dog is ready to catch (see <see cref="OnPlayerFront.DogReachedTarget"/>).
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("positionReached")]
     private UnityEvent _positionReached;
 
 

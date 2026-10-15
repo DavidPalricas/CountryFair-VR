@@ -2,7 +2,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -20,68 +19,56 @@ public class SliderDisplay: EmotionDisplay
     /// <summary>Slider component that visually represents cumulative mood (0 = most negative, 1 = most positive).</summary>
     [Header("Slider Configuration")]
     [SerializeField]
-    [FormerlySerializedAs("slider")]
     private Slider _slider = null;
 
     /// <summary>Fill image of the slider; color reflects the current mood category.</summary>
     [SerializeField]
-    [FormerlySerializedAs("fillImage")]
     private Image _fillImage = null;
 
     /// <summary>Handle image; sprite swaps between neutral/happy/angry emoji sprites based on mood.</summary>
     [SerializeField]
-    [FormerlySerializedAs("handleImage")]
     private Image _handleImage = null;
 
     /// <summary>Fill and handle color when mood is in the positive range.</summary>
     [Header("Slider Colors")]
     [SerializeField]
-    [FormerlySerializedAs("positiveColor")]
     private Color _positiveColor = Color.green;
 
     /// <summary>Fill and handle color when mood is in the neutral range.</summary>
     [SerializeField]
-    [FormerlySerializedAs("neutralColor")]
     private Color _neutralColor = Color.yellow;
 
     /// <summary>Fill and handle color when mood is in the negative range.</summary>
     [SerializeField]
-    [FormerlySerializedAs("negativeColor")]
     private Color _negativeColor = Color.red;
 
     /// <summary>Sprite shown on the handle when mood is neutral.</summary>
     [Header("Emoji Sprites")]
     [SerializeField]
-    [FormerlySerializedAs("neutralEmoji")]
     private Sprite _neutralEmoji = null;
 
     /// <summary>Sprite shown on the handle when mood is positive.</summary>
     [SerializeField]
-    [FormerlySerializedAs("happyEmoji")]
     private Sprite _happyEmoji = null;
 
     /// <summary>Sprite shown on the handle when mood is negative.</summary>
     [SerializeField]
-    [FormerlySerializedAs("angryEmoji")]
     private Sprite _angryEmoji = null;
 
     /// <summary>Slider value at or above which the mood is classified as positive.</summary>
     [Header("Emojis State Thresholds")]
     [SerializeField]
     [Range(0, 1)]
-    [FormerlySerializedAs("positiveThreshold")]
     private float _positiveThreshold = 0.6f;
 
     /// <summary>Slider value at or below which the mood is classified as negative.</summary>
     [SerializeField]
     [Range(0, 1)]
-    [FormerlySerializedAs("negativeThreshold")]
     private float _negativeThreshold = 0.4f;
 
     /// <summary>Step amount added to or subtracted from the slider value on each emotion update.</summary>
     [SerializeField]
     [Range(0, 1)]
-    [FormerlySerializedAs("sliderChangeAmountThreshold")]
     private float _sliderChangeAmountThreshold = 0.05f;
 
     /// <summary>Last mood category; written only by the server (clients go through <see cref="RequestDisplayChangeServerRpc"/>).</summary>

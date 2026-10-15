@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// State where the dog returns to the player with the frisbee in its mouth.
@@ -19,12 +18,10 @@ public class GiveFrisbeeToPlayer : DogState
    /// This GameObject is activated when entering the state and deactivated on exit.
    /// </summary>
    [SerializeField]
-    [FormerlySerializedAs("frisbeeInDogMouth")]
     private GameObject _frisbeeInDogMouth;
 
     /// <summary>The real frisbee, re-enabled in <see cref="Exit"/> after the hand-off.</summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbee")]
     private GameObject _frisbee;
 
     
@@ -34,12 +31,10 @@ public class GiveFrisbeeToPlayer : DogState
     /// </summary>
     [Header("Events")]
     [SerializeField]
-    [FormerlySerializedAs("frisbeeGivenToPlayer")]
     private UnityEvent _frisbeeGivenToPlayer;
 
     /// <summary>Wired to the audio manager to play the happy whine at the dog when the frisbee is returned.</summary>
     [SerializeField]
-    [FormerlySerializedAs("happyWhine")]
     private UnityEvent<AudioManager.GameSoundEffects, GameObject> _happyWhine;
 
     /// <summary>Sound sent through <see cref="_happyWhine"/> when the dog stops in front of the player and hands back the frisbee (fixed; not editable in the Inspector).</summary>

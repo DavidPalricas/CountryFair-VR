@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// State where the dog navigates to and catches the thrown frisbee.
@@ -15,12 +14,10 @@ public class CatchFrisbee : DogState
 {   
     /// <summary>Raised when the dog starts running to the frisbee (wired in the Inspector).</summary>
     [SerializeField]
-    [FormerlySerializedAs("catchFrisbee")]
     private UnityEvent _catchFrisbee;
     
     /// <summary>The thrown frisbee; its position is the destination and it is hidden once the dog reaches it.</summary>
     [SerializeField]
-    [FormerlySerializedAs("frisbeeTransform")]
     private Transform _frisbeeTransform;
     
     /// <summary>

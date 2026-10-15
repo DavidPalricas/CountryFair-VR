@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Drives autonomous duck behaviour on a NavMesh water surface:
@@ -12,35 +11,28 @@ public class DuckSwim : MonoBehaviour
 {
     /// <summary>Radius around the duck's current world position in which a new NavMesh destination is sampled.</summary>
     [Header("Wandering")]
-    [FormerlySerializedAs("wanderRadius")]
     [SerializeField] 
     private float _wanderRadius = 3f;
 
     /// <summary>Minimum distance the new destination must be from the previous one, preventing repeated visits to the same spot.</summary>
-    [FormerlySerializedAs("minMoveDistance")]
     [SerializeField] 
     private float _minMoveDistance = 1f;
 
     /// <summary>Peak vertical offset above the local rest position, in local units.</summary>
     [Header("Bobbing Animation")]
-    [FormerlySerializedAs("bobAmplitude")]
     [SerializeField] private float _bobAmplitude = 0.02f;
 
     /// <summary>Bobbing cycles per second.</summary>
-    [FormerlySerializedAs("bobFrequency")]
     [SerializeField] private float _bobFrequency = 1.5f;
 
     /// <summary>Maximum tilt angle in degrees applied to Z and X axes to simulate floating sway.</summary>
     [Header("Rotation Wobble")]
-    [FormerlySerializedAs("wobbleAmplitude")]
     [SerializeField] private float _wobbleAmplitude = 3f;
 
     /// <summary>Wobble cycles per second.</summary>
-    [FormerlySerializedAs("wobbleFrequency")]
     [SerializeField] private float _wobbleFrequency = 0.8f;
 
     /// <summary>How quickly the duck rotates to face its movement direction (lerp factor, degrees per second).</summary>
-    [FormerlySerializedAs("rotationSpeed")]
     [SerializeField] private float _rotationSpeed = 5f;
 
     /// <summary>Drives the wandering; its rotation updates are disabled so <see cref="ApplyWobble"/> owns the rotation.</summary>

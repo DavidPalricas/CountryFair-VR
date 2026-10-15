@@ -1,6 +1,5 @@
 using UnityEngine;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Crowd member that performs a DOTween jump with a full 360° Y-axis spin when <see cref="Jump"/> is called.
@@ -11,12 +10,10 @@ public class IdlePerson : MonoBehaviour
     /// <summary>Height of the jump arc.</summary>
     [Header("Jump Settings")]
     [SerializeField]
-     [FormerlySerializedAs("jumpPower")]
      private float _jumpPower = 2f;
     
     /// <summary>Total duration of the jump-and-spin sequence in seconds.</summary>
     [SerializeField]
-    [FormerlySerializedAs("jumpDuration")]
     private float _jumpDuration = 0.5f;
 
     /// <summary>Blocks a new jump until the current one completes.</summary>

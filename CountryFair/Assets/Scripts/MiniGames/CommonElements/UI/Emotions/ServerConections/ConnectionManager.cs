@@ -1,7 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Configures the Unity Transport IP and port, then auto-connects as a client on Start.
@@ -11,14 +10,11 @@ public class ConnectionManager : MonoBehaviour
 {
     /// <summary>Target server IP address injected into <see cref="UnityTransport"/> at startup.</summary>
     [SerializeField]
-    [FormerlySerializedAs("serverIp")]
     private string _serverIp = "172.20.10.2";
     /// <summary>Target server port injected into <see cref="UnityTransport"/> at startup.</summary>
     [SerializeField]
-    [FormerlySerializedAs("serverPort")]
     private ushort _serverPort = 50050;
     /// <summary>When true, <c>Start</c> automatically calls <see cref="NetworkManager.StartClient"/>.</summary>
-    [FormerlySerializedAs("autoConnectClient")]
     [SerializeField] private bool _autoConnectClient = true;
 
     /// <summary>Applies the IP/port to the transport and, if <see cref="_autoConnectClient"/> is set, joins as a Netcode client (the headset's role).</summary>

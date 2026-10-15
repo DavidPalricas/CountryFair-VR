@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages the Frisbee mini-game: spawns score areas around the player, applies DDA difficulty settings
@@ -14,47 +13,38 @@ public class FrisbeeGameManager : MiniGameManager
     /// <summary>Distance in meters added to the baseline dog distance per difficulty level.</summary>
     [Header("Dog Settings")]
     [SerializeField]
-    [FormerlySerializedAs("distanceIncrement")]
     private float _distanceIncrement = 2.5f;
 
     /// <summary>Maximum dog distance cap in meters, regardless of difficulty level.</summary>
     [SerializeField]
-    [FormerlySerializedAs("maxDogDistance")]
     private float _maxDogDistance = 20f;
 
     /// <summary>AnimationCurve controlling the fraction of score areas that move at a given difficulty saturation.</summary>
     [Header("Complexity Curves")]
     [SerializeField]
-    [FormerlySerializedAs("movingRatioCurve")]
     private AnimationCurve _movingRatioCurve;
     /// <summary>AnimationCurve controlling the fraction of score areas that blink at a given difficulty saturation.</summary>
     [SerializeField]
-    [FormerlySerializedAs("visibilityRatioCurve")]
     private AnimationCurve _visibilityRatioCurve;
 
     /// <summary>Prefab instantiated for each score area target.</summary>
     [Header("Game Specific References")]
     [SerializeField]
-    [FormerlySerializedAs("scoreAreaPrefab")]
     private GameObject _scoreAreaPrefab;
     /// <summary>Collider defining the valid spawn region for score areas around the player.</summary>
     [SerializeField]
-    [FormerlySerializedAs("dogAreaCollider")]
     private Collider _dogAreaCollider;
 
     /// <summary>Collider marking the elevated dog-score area; score area spawns are excluded from this zone.</summary>
     [SerializeField]
-    [FormerlySerializedAs("dogScoreAreaCollider")]
     private Collider _dogScoreAreaCollider;
 
     /// <summary>Player transform used to calculate dog distance and score-area placement relative to the player.</summary>
     [SerializeField]
-    [FormerlySerializedAs("playerTransform")]
     private Transform _playerTransform;
 
     /// <summary>Fired when difficulty changes (after the first level), signaling the dog AI to reposition.</summary>
     [SerializeField]
-    [FormerlySerializedAs("difficultyHasChanged")]
     private UnityEvent _difficultyHasChanged;
     
     /// <summary>Ratios derived from the difficulty in <see cref="ApplyDifficultySettings"/> and applied to the score areas.</summary>

@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 using System;
 using Unity.VisualScripting;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Connects to a TCP server to listen for emoji commands.
@@ -19,30 +18,24 @@ public class ServerListener : MonoBehaviour
     /// <summary>IP of the external emotion-recognition server.</summary>
     [Header("Server Connection Settings")]
     [SerializeField] 
-    [FormerlySerializedAs("serverIP")]
     private string _serverIP = "172.20.10.2";
     /// <summary>TCP port of the emotion-recognition server.</summary>
     [SerializeField]
-     [FormerlySerializedAs("serverPort")]
      private int _serverPort = 50050;
     /// <summary>Emoji-mode display.</summary>
     [SerializeField] 
-    [FormerlySerializedAs("emojiDisplay")]
     private ExpressionDisplay _emojiDisplay;
     /// <summary>Slider-mode (cumulative mood bar) display.</summary>
     [SerializeField] 
-    [FormerlySerializedAs("sliderDisplay")]
     private SliderDisplay _sliderDisplay;
 
     /// <summary>Face-mode display.</summary>
     [SerializeField]
-    [FormerlySerializedAs("faceDisplay")]
     private ExpressionDisplay _faceDisplay;
 
     /// <summary>Seconds between main-thread polls of the latest received message; messages arriving in between are dropped except the last.</summary>
     [Header("Update Rate")]
     [Tooltip("Interval in seconds between processing received messages")]
-    [FormerlySerializedAs("pollIntervalSeconds")]
     [SerializeField] private float _pollIntervalSeconds = 0.5f;
 
     /// <summary>

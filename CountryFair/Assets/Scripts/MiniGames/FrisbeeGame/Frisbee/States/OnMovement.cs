@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// State representing the frisbee during flight, applying realistic aerodynamic forces.
@@ -35,14 +34,12 @@ public class OnMovement : FrisbeeState
     [Header("Aerodynamic Settings")]
     [Tooltip("Lift force strength. Higher values make the disc rise more.")]
     [SerializeField]
-    [FormerlySerializedAs("liftStrength")]
     private float _liftStrength = 0.15f;
     
     /// <summary>
     /// Unity event invoked when the frisbee enters an <c>OutOfBounds</c> trigger during flight (counts as a miss).
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("playerMissed")]
     private UnityEvent _playerMissed;
 
     /// <summary>

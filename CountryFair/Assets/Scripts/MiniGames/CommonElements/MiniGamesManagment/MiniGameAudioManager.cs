@@ -1,6 +1,5 @@
 using UnityEngine;
 using FMODUnity;
-using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -12,12 +11,10 @@ public class MiniGameAudioManager : AudioManager
     /// <summary>FMOD event played when CarnyWise increases the difficulty.</summary>
     [Header("Carny Wise Feedback Sound Effects")]
     [SerializeField]
-    [FormerlySerializedAs("carnyWiseIncreaseDiffSound")]
     protected EventReference _carnyWiseIncreaseDiffSound;
 
     /// <summary>FMOD event played when CarnyWise decreases the difficulty.</summary>
     [SerializeField]
-    [FormerlySerializedAs("carnyWiseDecreaseDiffSound")]
     protected EventReference _carnyWiseDecreaseDiffSound;
 
 

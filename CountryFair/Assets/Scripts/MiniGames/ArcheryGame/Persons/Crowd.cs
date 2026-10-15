@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 /// <summary>
 /// Manages the archery spectator crowd, forwarding score celebrations to all <see cref="IdlePerson"/> children.
 /// </summary>
@@ -8,7 +7,6 @@ public class Crowd: MonoBehaviour
 {
     /// <summary>Intended to play the crowd cheer sound at the crowd's position; currently never invoked by <see cref="Cheer"/>.</summary>
     [SerializeField]
-    [FormerlySerializedAs("cheer")]
     private UnityEvent<AudioManager.GameSoundEffects, GameObject> _cheer;
 
     /// <summary>All crowd members under this GameObject, collected once in <see cref="Awake"/>.</summary>
