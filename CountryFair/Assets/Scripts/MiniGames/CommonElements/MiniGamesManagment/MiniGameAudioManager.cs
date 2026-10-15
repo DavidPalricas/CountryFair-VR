@@ -1,5 +1,6 @@
 using UnityEngine;
 using FMODUnity;
+using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -8,29 +9,32 @@ using FMODUnity;
 /// </summary>
 public class MiniGameAudioManager : AudioManager
 {
-    [Header("Carny Wise Feedback Sound Effects")]
     /// <summary>FMOD event played when CarnyWise increases the difficulty.</summary>
+    [Header("Carny Wise Feedback Sound Effects")]
     [SerializeField]
-    protected EventReference carnyWiseIncreaseDiffSound;
+    [FormerlySerializedAs("carnyWiseIncreaseDiffSound")]
+    protected EventReference _carnyWiseIncreaseDiffSound;
 
     /// <summary>FMOD event played when CarnyWise decreases the difficulty.</summary>
     [SerializeField]
-    protected EventReference carnyWiseDecreaseDiffSound;
+    [FormerlySerializedAs("carnyWiseDecreaseDiffSound")]
+    protected EventReference _carnyWiseDecreaseDiffSound;
 
 
+    /// <summary>Validates the base references and the two Carny Wise FMOD events.</summary>
     protected override void Awake()
     {
         base.Awake();
 
 
-        if (carnyWiseIncreaseDiffSound.IsNull)
+        if (_carnyWiseIncreaseDiffSound.IsNull)
         {
             Debug.LogError("Carny Wise increase difficulty sound EventReference is not assigned in MiniGameAudioManager.");
 
             return;
         }
 
-        if (carnyWiseDecreaseDiffSound.IsNull)
+        if (_carnyWiseDecreaseDiffSound.IsNull)
         {
             Debug.LogError("Carny Wise decrease difficulty sound EventReference is not assigned in MiniGameAudioManager.");
         }

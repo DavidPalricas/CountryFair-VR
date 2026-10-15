@@ -1,69 +1,76 @@
 using UnityEngine;
 using FMODUnity;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages audio playback for the Frisbee mini-game, including dog sounds, frisbee throws, and scoring effects.
-/// Inherits from AudioManager to provide game-specific audio functionality.
+/// Inherits the Carny Wise feedback sounds from <see cref="MiniGameAudioManager"/>.
 /// </summary>
 public class FrisbeeAudioManager : MiniGameAudioManager
 {   
-    [Header("Frisbee Game Sound Effects")]
     /// <summary>
     /// FMOD event reference for the dog bark sound effect.
     /// </summary>
+    [Header("Frisbee Game Sound Effects")]
     [SerializeField]
-    private EventReference dogBarkSound;
+    [FormerlySerializedAs("dogBarkSound")]
+    private EventReference _dogBarkSound;
     
     /// <summary>
     /// FMOD event reference for the dog happy whine sound effect.
     /// </summary>
     [SerializeField]
-    private EventReference dogHappyWhineSound;
+    [FormerlySerializedAs("dogHappyWhineSound")]
+    private EventReference _dogHappyWhineSound;
 
     /// <summary>
     /// FMOD event reference for the frisbee throw sound effect.
     /// </summary>
     [SerializeField]
-    private EventReference frisbeeThrowSound;
+    [FormerlySerializedAs("frisbeeThrowSound")]
+    private EventReference _frisbeeThrowSound;
 
     /// <summary>
     /// FMOD event reference for the point scored sound effect.
     /// </summary>
     [SerializeField]
-    private EventReference pointScoredSound;
+    [FormerlySerializedAs("pointScoredSound")]
+    private EventReference _pointScoredSound;
 
     /// <summary>
     /// FMOD event reference for the dog footsteps sound effect.
     /// </summary>
     [SerializeField]
-    private EventReference dogFootstepsSound;
+    [FormerlySerializedAs("dogFootstepsSound")]
+    private EventReference _dogFootstepsSound;
 
+    /// <summary>Validates the inherited references and the Frisbee FMOD events.</summary>
     protected override void Awake()
     {
         base.Awake();
 
-        if (dogBarkSound.IsNull)
+        if (_dogBarkSound.IsNull)
         {
             Debug.LogError("Dog bark sound EventReference is not assigned in FrisbeeAudioManager.");
 
             return;
         }
 
-        if (frisbeeThrowSound.IsNull)
+        if (_frisbeeThrowSound.IsNull)
         {
             Debug.LogError("Frisbee throw sound EventReference is not assigned in FrisbeeAudioManager.");
 
             return;
         }
 
-        if (pointScoredSound.IsNull)
+        if (_pointScoredSound.IsNull)
         {
             Debug.LogError("Point scored sound EventReference is not assigned in FrisbeeAudioManager.");
 
             return;
         }
 
-        if (dogFootstepsSound.IsNull)
+        if (_dogFootstepsSound.IsNull)
         {
             Debug.LogError("Dog footsteps sound EventReference is not assigned in FrisbeeAudioManager.");
         }
@@ -88,24 +95,24 @@ public class FrisbeeAudioManager : MiniGameAudioManager
 
         switch (soundEffect)
         {   
-            case GameSoundEffects.BUTTON_PRESSED:
-                eventToPlay = buttonPressedSound;
+            case GameSoundEffects.ButtonPressed:
+                eventToPlay = _buttonPressedSound;
                 break;
 
-            case GameSoundEffects.DOG_BARK:
-                eventToPlay = dogBarkSound;
+            case GameSoundEffects.DogBark:
+                eventToPlay = _dogBarkSound;
                 break;
 
-            case GameSoundEffects.DOG_HAPPY_WHINE:
-                eventToPlay = dogHappyWhineSound;
+            case GameSoundEffects.DogHappyWhine:
+                eventToPlay = _dogHappyWhineSound;
                 break;
                 
-            case GameSoundEffects.FRISBEE_THROW:
-                eventToPlay = frisbeeThrowSound;
+            case GameSoundEffects.FrisbeeThrow:
+                eventToPlay = _frisbeeThrowSound;
                 break;
 
-            case GameSoundEffects.DOG_FOOTSTEPS:
-                eventToPlay = dogFootstepsSound;
+            case GameSoundEffects.DogFootSteps:
+                eventToPlay = _dogFootstepsSound;
                 break;
    
             default:
@@ -126,16 +133,16 @@ public class FrisbeeAudioManager : MiniGameAudioManager
        
         switch (soundEffect)
         {   
-            case GameSoundEffects.CARNYWISE_INCREASE_DIFF:
-                eventToPlay = carnyWiseIncreaseDiffSound;
+            case GameSoundEffects.CarnyWiseIncreaseDiff:
+                eventToPlay = _carnyWiseIncreaseDiffSound;
                 break;
 
-            case GameSoundEffects.CARNYWISE_DECREASE_DIFF:
-                eventToPlay = carnyWiseDecreaseDiffSound;
+            case GameSoundEffects.CarnyWiseDecreaseDiff:
+                eventToPlay = _carnyWiseDecreaseDiffSound;
                 break;
 
-            case GameSoundEffects.POINT_SCORED:
-                eventToPlay = pointScoredSound;
+            case GameSoundEffects.PointScored:
+                eventToPlay = _pointScoredSound;
                 break;
                 
             default:

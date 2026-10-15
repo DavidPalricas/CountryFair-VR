@@ -1,48 +1,53 @@
 using Oculus.Interaction;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
-/// State representing the frisbee being held in the player's hand before throwing.
-/// Manages the ready-to-throw state, including throw parameters, input detection, material transparency effects,
-/// and resetting the frisbee to its held position when returned by the dog.
+/// State representing the frisbee floating in front of the player, ready to be grabbed and thrown.
+/// Keeps it in front of the head (<see cref="FollowPlayerHead"/>), lets the Meta XR <see cref="Grabbable"/> handle the
+/// grab, and hands it over to physics when the grab is released.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This state handles the complete lifecycle of the frisbee while held:
+/// This state handles the frisbee while it waits in front of the player:
 /// <list type="bullet">
-/// <item><description>Initializes throw parameters (velocity, spin, angle of attack)</description></item>
-/// <item><description>Manages visual feedback through material transparency (can/cannot throw)</description></item>
-/// <item><description>Detects player input (PrimaryIndexTrigger) to initiate throws</description></item>
-/// <item><description>Applies physics on throw: velocity, spin, and aerodynamic initialization</description></item>
-/// <item><description>Resets frisbee to hand when returned by the dog</description></item>
+/// <item><description>Resets it in front of the player when entered (game start or after the dog returns it)</description></item>
+/// <item><description>Shows it semi-transparent while the dog is not yet in position, fully opaque once it is</description></item>
+/// <item><description>On release (<see cref="ThrowFrisbee"/>, Inspector-wired), enables physics and the trajectory line and fires "FrisbeeThrown"</description></item>
 /// </list>
 /// </para>
 /// <para>
-/// The frisbee's visual opacity changes based on whether it can be thrown (full opacity when ready, reduced when not ready).
-/// This provides clear visual feedback to the player about the game state.
+/// The release velocity comes from the Grabbable's throw handling; this state does not set velocity or spin itself.
 /// </para>
 /// </remarks>
 [RequireComponent(typeof(FollowPlayerHead))]
 public class OnPlayerFront : FrisbeeState
 {   
+    /// <summary>Meta XR Grabbable on the frisbee; enabled while waiting in front of the player, disabled during flight.</summary>
     [SerializeField]
-   private Grabbable frisbeeGrabbable;
+   [FormerlySerializedAs("frisbeeGrabbable")]
+   private Grabbable _frisbeeGrabbable;
    
+    /// <summary>Wired to the audio manager to play the throw sound attached to the frisbee.</summary>
    [SerializeField]
-    private UnityEvent <AudioManager.GameSoundEffects, GameObject> throwSoundEffectEvent;
+    [FormerlySerializedAs("throwSoundEffectEvent")]
+    private UnityEvent <AudioManager.GameSoundEffects, GameObject> _throwSoundEffectEvent;
 
-    [Header("Rendering Parameters")]
     /// <summary>
     /// Alpha (opacity) value for the frisbee materials when the player cannot throw.
     /// Lower values make the frisbee more transparent, providing visual feedback that throwing is disabled.
     /// </summary>
+    [Header("Rendering Parameters")]
     
     [SerializeField]  
-    private float cannotThrowAlpha = 0.5f;
+    [FormerlySerializedAs("cannotThrowAlpha")]
+    private float _cannotThrowAlpha = 0.5f;
 
+    /// <summary>Renderer whose material instances are switched to transparent mode and faded.</summary>
    [SerializeField]
-   private Renderer frisbeeRenderer;
+   [FormerlySerializedAs("frisbeeRenderer")]
+   private Renderer _frisbeeRenderer;
 
     /// <summary>
     /// Array of materials from the frisbee's Renderer component.
@@ -50,56 +55,45 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     private Material[] _materials;
 
-    private readonly AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FRISBEE_THROW;
+    private readonly AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FrisbeeThrow;
 
+    /// <summary>Keeps the frisbee in front of the head while waiting; disabled for the flight.</summary>
     private FollowPlayerHead _followPlayerHead;
 
     /// <summary>
-    /// Flag indicating whether the dog has reached its target position.
-    /// Set to true when the dog reaches its target position via <see cref="DogReachedTarget"/>.
-    /// Its set to true becuase the dog starts in the target position at game start.
+    /// Whether the dog is in position to catch. Starts true because the dog begins the game at its target position.
     /// </summary>
-    /// <value>
-    /// True if the dog is in position to catch the frisbee, false otherwise.
-    /// </value>
-    /// <notes>>
-    /// This flag is changed via inspector when the dog will catch the frisbee (see <see cref="CatchFrisbee"/> state) and the dog game object.
-    /// </notes>>
+    /// <remarks>
+    /// Set to false via Inspector when the dog leaves to catch (<see cref="CatchFrisbee"/>) and back to true by
+    /// <see cref="DogReachedTarget"/>. It only drives the opacity feedback; <see cref="ThrowFrisbee"/> does not check it.
+    /// </remarks>
     public bool DogInTarget { get; set; } = true;
     
     /// <summary>
-    /// Fkag indicating if the frisbee is being grabbed by the right hand.
-    /// </summary> <summary>
-    /// Set to true if the frisbee is held by the right hand, false if held by the left hand.
+    /// True if the frisbee is currently held by the right hand, false for the left.
     /// </summary>
-    /// <value>
-    /// True if grabbed by right hand, false otherwise.
-    /// </value>
-    /// <notes>>
-    /// This flag is set externally via inspector by the grab interactables on the frisbee for each hand.
-    /// </notes>>
+    /// <remarks>
+    /// Set via Inspector by each hand's grab interactable. <see cref="ThrowFrisbee"/> only accepts the release from the
+    /// hand that is holding it, so releasing the other hand during a two-handed grab does not throw.
+    /// </remarks>
     public bool IsBeingGrabbedByRightHand {get; set;} = false;
 
     /// <summary>
-    /// Initializes the OnPlayerHand state by storing initial transform values and configuring material transparency.
+    /// Validates the references, caches <see cref="FollowPlayerHead"/> and switches the frisbee materials to
+    /// transparent mode so their alpha can be changed at runtime.
     /// </summary>
-    /// <remarks>
-    /// Unity lifecycle callback invoked when the script instance is being loaded.
-    /// Stores the original parent transform, position, and rotation for later reset operations,
-    /// and configures the frisbee's materials to support transparency effects for visual feedback.
-    /// </remarks>
     protected override void Awake()
     {  
         base.Awake();
     
-        if (frisbeeRenderer == null)
+        if (_frisbeeRenderer == null)
         {
             Debug.LogError("Component Renderer is not assigned in OnPlayerFront script.");
 
             return;
         }
 
-        if (frisbeeGrabbable == null)
+        if (_frisbeeGrabbable == null)
         {
             Debug.LogError("Component Grabbable is not assigned in OnPlayerFront script.");
 
@@ -114,8 +108,8 @@ public class OnPlayerFront : FrisbeeState
    
 
     /// <summary>
-    /// Called when entering the OnPlayerHand state.
-    /// Resets the frisbee to its held position and configures it for being held.
+    /// Called when entering the OnPlayerFront state.
+    /// Resets the frisbee in front of the player and configures it to be grabbed.
     /// </summary>
     /// <remarks>
     /// Updates the material opacity based on <see cref="DogInTarget"/> status and calls
@@ -132,59 +126,46 @@ public class OnPlayerFront : FrisbeeState
    }
 
     /// <summary>
-    /// Called every frame while in the OnPlayerHand state.
-    /// Monitors for throw input and initiates the throw sequence when conditions are met.
+    /// Called every frame while in the OnPlayerFront state. No per-frame logic: the throw is event-driven through
+    /// <see cref="ThrowFrisbee"/>.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Detects when the player presses the PrimaryIndexTrigger (VR controller trigger).
-    /// If <see cref="DogInTarget"/> is true, initiates the throw by:
-    /// <list type="number">
-    /// <item><description>Calling <see cref="ThrowFrisbee"/> to apply physics</description></item>
-    /// <item><description>Triggering the "FrisbeeThrown" transition to the <see cref="OnMovement"/> state</description></item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// If the dog hasn't reached its position yet, the throw is blocked (visual feedback via transparency).
-    /// </para>
-    /// </remarks>
     public override void Execute()
     {   
          base.Execute();
     }
 
     /// <summary>
-    /// Called when exiting the OnPlayerHand state.
+    /// Called when exiting the OnPlayerFront state. The throw setup has already been done in <see cref="ThrowFrisbee"/>.
     /// </summary>
-    /// <remarks>
-    /// Performs base cleanup for state exit. The throw has already been initiated in <see cref="Execute"/>.
-    /// </remarks>
     public override void Exit()
     {   
         base.Exit();
     }
 
      /// <summary>
-    /// Initiates the frisbee throw by configuring physics and applying initial forces.
+    /// Hands the released frisbee over to physics. Ignored unless this state is active and the release comes from the
+    /// hand that is holding it (<see cref="IsBeingGrabbedByRightHand"/>).
     /// </summary>
     /// <remarks>
     /// <para>
     /// The throw sequence:
     /// <list type="number">
-    /// <item><description>Detaches the frisbee from the player's hand (sets parent to null)</description></item>
+    /// <item><description>Stops following the head</description></item>
     /// <item><description>Enables physics simulation (non-kinematic, with gravity)</description></item>
     /// <item><description>Disables trigger mode on collider for physical interactions</description></item>
-    /// <item><description>Enables trajectory visualization line</description></item>
-    /// <item><description>Transitions to "FrisbeeThrown" state</description></item>
+    /// <item><description>Enables trajectory visualization line and disables the Grabbable</description></item>
+    /// <item><description>Plays the throw sound and transitions to "FrisbeeThrown" (<see cref="OnMovement"/>)</description></item>
     /// </list>
     /// </para>
+    /// <para>Invoked via Inspector by the grab interactables' release events (one per hand).</para>
     /// <para>
     /// Physics Reference: https://web.mit.edu/womens-ult/www/smite/frisbee_physics.pdf
     /// </para>
     /// </remarks>
+    /// <param name="thrownByRightHand">Which hand released the frisbee.</param>
     public void ThrowFrisbee(bool thrownByRightHand)
     {   
-        if (fSM.CurrentState == this && thrownByRightHand == IsBeingGrabbedByRightHand)
+        if (_fsm.CurrentState == this && thrownByRightHand == IsBeingGrabbedByRightHand)
         {   
             _followPlayerHead.enabled = false;
             
@@ -196,28 +177,27 @@ public class OnPlayerFront : FrisbeeState
 
             _trajectoryLine.enabled = true; 
 
-            frisbeeGrabbable.enabled = false;
+            _frisbeeGrabbable.enabled = false;
 
-            throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
+            _throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
 
-            fSM.ChangeState("FrisbeeThrown");
+            _fsm.ChangeState("FrisbeeThrown");
         }
     }
 
     /// <summary>
-    /// Resets the frisbee to its held state in the player's hand.
+    /// Puts the frisbee back in its waiting configuration in front of the player.
     /// </summary>
     /// <remarks>
     /// <para>
     /// Restoration sequence:
     /// <list type="bullet">
-    /// <item><description>Resets transform to original parent, position, and rotation</description></item>
-    /// <item><description>Ensures the GameObject is active (may have been deactivated by dog catch state)</description></item>
-    /// <item><description>Makes the Rigidbody kinematic to disable physics simulation</description></item>
-    /// <item><description>Disables gravity (will be handled manually when thrown)</description></item>
-    /// <item><description>Zeros out all velocities</description></item>
-    /// <item><description>Disables the collider to prevent interactions while held</description></item>
+    /// <item><description>Resets the local rotation</description></item>
+    /// <item><description>Keeps the Rigidbody non-kinematic but without gravity, zeroes its velocities and freezes X/Z rotation</description></item>
+    /// <item><description>Makes the collider a trigger so it does not push anything while waiting</description></item>
+    /// <item><description>Re-enables the Grabbable and <see cref="FollowPlayerHead"/></description></item>
     /// </list>
+    /// Activation of the GameObject itself is handled by <see cref="GiveFrisbeeToPlayer"/>, not here.
     /// </para>
     /// </remarks>
     private void InPlayerFront()
@@ -232,7 +212,7 @@ public class OnPlayerFront : FrisbeeState
 
         _collider.isTrigger = true;
 
-        frisbeeGrabbable.enabled = true;
+        _frisbeeGrabbable.enabled = true;
 
         _followPlayerHead.enabled = true;
     }
@@ -252,7 +232,7 @@ public class OnPlayerFront : FrisbeeState
     /// <para>
     /// When <see cref="DogInTarget"/> is false:
     /// <list type="bullet">
-    /// <item><description>Alpha is set to <see cref="cannotThrowAlpha"/> (semi-transparent)</description></item>
+    /// <item><description>Alpha is set to <see cref="_cannotThrowAlpha"/> (semi-transparent)</description></item>
     /// <item><description>Render queue is set to 3000 (transparent rendering)</description></item>
     /// <item><description>ZWrite is disabled for proper transparency sorting</description></item>
     /// </list>
@@ -269,16 +249,16 @@ public class OnPlayerFront : FrisbeeState
 
         if (DogInTarget)
         {   
-            const float MAX_ALPHA = 1f;
+            const float MaxAlpha = 1f;
 
-            alphaToChange = MAX_ALPHA;
+            alphaToChange = MaxAlpha;
             renderQueue = 2000;
             zWriteValue = 1;
         }
         else
         {
             
-            alphaToChange = cannotThrowAlpha;
+            alphaToChange = _cannotThrowAlpha;
             renderQueue = 3000;
             zWriteValue = 0;
         }
@@ -311,7 +291,7 @@ public class OnPlayerFront : FrisbeeState
     /// </remarks>
     private void SetUpMaterialsTransparency()
     {   
-        _materials = frisbeeRenderer.materials;
+        _materials = _frisbeeRenderer.materials;
         
         foreach (Material mat in _materials)
         {
@@ -331,12 +311,8 @@ public class OnPlayerFront : FrisbeeState
     }
   
     /// <summary>
-    /// Resets the frisbee's transform hierarchy to its original held configuration.
+    /// Resets the local rotation; the position is handled by <see cref="FollowPlayerHead"/>.
     /// </summary>
-    /// <remarks>
-    /// Reattaches the frisbee to its original parent (player's hand) and restores
-    /// the initial position and rotation stored during <see cref="Awake"/>.
-    /// </remarks>
     private void ResetTransform()
     {
         transform.localRotation = Quaternion.identity;
@@ -347,7 +323,7 @@ public class OnPlayerFront : FrisbeeState
     /// Enables throwing and updates the visual feedback, making the frisbee fully opaque.
     /// </summary>
     /// <remarks>
-    /// This method should be called by the dog's idle state (via UnityEvent) to signal that
+    /// Invoked via Inspector by <see cref="DogIdle"/>'s <c>_positionReached</c> event to signal that
     /// the game is ready for the next throw. Sets <see cref="DogInTarget"/> to true and updates
     /// material opacity to full visibility, indicating to the player that throwing is now allowed.
     /// </remarks>

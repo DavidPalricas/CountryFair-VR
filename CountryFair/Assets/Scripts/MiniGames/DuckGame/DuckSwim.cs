@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Drives autonomous duck behaviour on a NavMesh water surface:
@@ -9,30 +10,40 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class DuckSwim : MonoBehaviour
 {
-    [Header("Wandering")]
     /// <summary>Radius around the duck's current world position in which a new NavMesh destination is sampled.</summary>
-    [SerializeField] private float wanderRadius = 3f;
+    [Header("Wandering")]
+    [FormerlySerializedAs("wanderRadius")]
+    [SerializeField] 
+    private float _wanderRadius = 3f;
 
     /// <summary>Minimum distance the new destination must be from the previous one, preventing repeated visits to the same spot.</summary>
-    [SerializeField] private float minMoveDistance = 1f;
+    [FormerlySerializedAs("minMoveDistance")]
+    [SerializeField] 
+    private float _minMoveDistance = 1f;
 
-    [Header("Bobbing Animation")]
     /// <summary>Peak vertical offset above the local rest position, in local units.</summary>
-    [SerializeField] private float bobAmplitude = 0.02f;
+    [Header("Bobbing Animation")]
+    [FormerlySerializedAs("bobAmplitude")]
+    [SerializeField] private float _bobAmplitude = 0.02f;
 
     /// <summary>Bobbing cycles per second.</summary>
-    [SerializeField] private float bobFrequency = 1.5f;
+    [FormerlySerializedAs("bobFrequency")]
+    [SerializeField] private float _bobFrequency = 1.5f;
 
-    [Header("Rotation Wobble")]
     /// <summary>Maximum tilt angle in degrees applied to Z and X axes to simulate floating sway.</summary>
-    [SerializeField] private float wobbleAmplitude = 3f;
+    [Header("Rotation Wobble")]
+    [FormerlySerializedAs("wobbleAmplitude")]
+    [SerializeField] private float _wobbleAmplitude = 3f;
 
     /// <summary>Wobble cycles per second.</summary>
-    [SerializeField] private float wobbleFrequency = 0.8f;
+    [FormerlySerializedAs("wobbleFrequency")]
+    [SerializeField] private float _wobbleFrequency = 0.8f;
 
     /// <summary>How quickly the duck rotates to face its movement direction (lerp factor, degrees per second).</summary>
-    [SerializeField] private float rotationSpeed = 5f;
+    [FormerlySerializedAs("rotationSpeed")]
+    [SerializeField] private float _rotationSpeed = 5f;
 
+    /// <summary>Drives the wandering; its rotation updates are disabled so <see cref="ApplyWobble"/> owns the rotation.</summary>
     private NavMeshAgent _agent;
 
     /// <summary>Local Y at spawn; bobbing oscillates around this value so the effect stays relative to the parent.</summary>
@@ -41,6 +52,7 @@ public class DuckSwim : MonoBehaviour
     /// <summary>Per-instance sine phase so multiple ducks bob out of sync.</summary>
     private float _phaseOffset;
 
+    /// <summary>Previous destination, compared against <see cref="_minMoveDistance"/> when picking the next one.</summary>
     private Vector3 _lastDestination;
 
     /// <summary>
@@ -53,7 +65,6 @@ public class DuckSwim : MonoBehaviour
         _agent.updateRotation = false;
         _baseLocalY = transform.localPosition.y;
 
-        // Phase offset único por pato para dessincronizar o bobbing entre instâncias
         _phaseOffset = Utils.RandomValueInRange(0f, Mathf.PI * 2f);
         _lastDestination = transform.position;
     }
@@ -76,6 +87,7 @@ public class DuckSwim : MonoBehaviour
         }
     }
 
+    /// <summary>Sends the agent to a new random point; keeps the current destination if no valid point is found.</summary>
     private void SetNewDestination()
     {
         if (TryGetRandomPoint(out Vector3 target))
@@ -85,7 +97,7 @@ public class DuckSwim : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempts up to 15 times to find a valid NavMesh point within <see cref="wanderRadius"/> of the duck.
+    /// Attempts up to 15 times to find a valid NavMesh point within <see cref="_wanderRadius"/> of the duck.
     /// Uses a 2D circle sample (X/Z only) with a tight snap distance so off-surface candidates fail
     /// and retry rather than all converging on the same NavMesh edge.
     /// </summary>
@@ -93,17 +105,16 @@ public class DuckSwim : MonoBehaviour
     /// <returns>True if a suitable point was found; false if all attempts failed.</returns>
     private bool TryGetRandomPoint(out Vector3 result)
     {
-        const int MAX_TRIES = 15;
-        const float MAX_DISTANCE = 0.5f;
+        const int MaxTries = 15;
+        const float MaxDistance = 0.5f;
 
-        for (int i = 0; i < MAX_TRIES; i++)
+        for (int i = 0; i < MaxTries; i++)
         {
-            Vector2 circle = Random.insideUnitCircle * wanderRadius;
+            Vector2 circle = Random.insideUnitCircle * _wanderRadius;
             Vector3 candidate = transform.position + new Vector3(circle.x, 0f, circle.y);
 
-            // Snap distance pequeno: pontos fora do NavMesh falham e reentam em vez de convergirem na mesma borda
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, MAX_DISTANCE, _agent.areaMask)
-                && Vector3.Distance(hit.position, _lastDestination) >= minMoveDistance)
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, MaxDistance, _agent.areaMask)
+                && Vector3.Distance(hit.position, _lastDestination) >= _minMoveDistance)
             {
                 _lastDestination = hit.position;
                 result = hit.position;
@@ -123,7 +134,7 @@ public class DuckSwim : MonoBehaviour
     {
         float time = Time.time + _phaseOffset;
         Vector3 localPos = transform.localPosition;
-        localPos.y = _baseLocalY + Mathf.Sin(time * bobFrequency * Mathf.PI * 2f) * bobAmplitude;
+        localPos.y = _baseLocalY + Mathf.Sin(time * _bobFrequency * Mathf.PI * 2f) * _bobAmplitude;
         transform.localPosition = localPos;
     }
 
@@ -134,15 +145,15 @@ public class DuckSwim : MonoBehaviour
     private void ApplyWobble()
     {
         float time = Time.time + _phaseOffset;
-        float wobbleZ = Mathf.Sin(time * wobbleFrequency * Mathf.PI * 2f) * wobbleAmplitude;
-        float wobbleX = Mathf.Cos(time * wobbleFrequency * 0.7f * Mathf.PI * 2f) * wobbleAmplitude * 0.5f;
+        float wobbleZ = Mathf.Sin(time * _wobbleFrequency * Mathf.PI * 2f) * _wobbleAmplitude;
+        float wobbleX = Mathf.Cos(time * _wobbleFrequency * 0.7f * Mathf.PI * 2f) * _wobbleAmplitude * 0.5f;
 
         Vector3 euler = transform.localEulerAngles;
 
         if (_agent.velocity.sqrMagnitude > 0.01f)
         {
             float targetY = Quaternion.LookRotation(_agent.velocity.normalized).eulerAngles.y;
-            euler.y = Mathf.LerpAngle(euler.y, targetY, Time.deltaTime * rotationSpeed);
+            euler.y = Mathf.LerpAngle(euler.y, targetY, Time.deltaTime * _rotationSpeed);
         }
 
         euler.z = wobbleZ;

@@ -41,13 +41,13 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     }
 
     /// <summary>
-    /// Called every frame. While below <c>maxBalloons</c>, schedules a <see cref="SpawnBalloon"/> after a random
+    /// Called every frame. While below <c>_maxBalloons</c>, schedules a <see cref="SpawnBalloon"/> after a random
     /// delay in [<see cref="_minSpawnInterval"/>, <see cref="_maxSpawnInterval"/>].
-    /// <c>currentBalloons</c> is only incremented when a scheduled spawn fires, so several spawns can be pending at once.
+    /// <c>_currentBalloons</c> is only incremented when a scheduled spawn fires, so several spawns can be pending at once.
     /// </summary>
     private void Update()
     {
-        if (currentBalloons < maxBalloons)
+        if (_currentBalloons < _maxBalloons)
         {
             Invoke(nameof(SpawnBalloon), Utils.RandomValueInRange(_minSpawnInterval, _maxSpawnInterval));
         }
@@ -55,7 +55,7 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
 
     /// <summary>
     /// Spawns a single balloon at a random position within the collider bounds.
-    /// Delegates the balloon's movement/pop bookkeeping to <c>MoveBalloon</c>, which decrements <c>currentBalloons</c> when it is destroyed.
+    /// Delegates the balloon's movement/pop bookkeeping to <c>MoveBalloon</c>, which decrements <c>_currentBalloons</c> when it is destroyed.
     /// </summary>
     private void SpawnBalloon()
     {  
@@ -65,7 +65,7 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
 
         MoveBalloon(balloon, _balloonsInitialHeight);
 
-        currentBalloons++;
+        _currentBalloons++;
     }
 
     /// <summary>

@@ -13,7 +13,6 @@ public class MiniGameData
     /// <summary>Adaptive algorithm parameters stored as name-value string pairs for JSON flexibility.</summary>
     public Dictionary<string, string> AdadaptiveParameters { get; set; } = new();
 
-    // Construtor para inicializar os dicionários e evitar erros de null
     public MiniGameData()
     {
         SessionsData = new Dictionary<string, SessionData>();

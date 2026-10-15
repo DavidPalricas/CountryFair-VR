@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// State where the dog returns to the player with the frisbee in its mouth.
@@ -7,9 +8,9 @@ using UnityEngine.Events;
 /// </summary>
 /// <remarks>
 /// This state activates a visual representation of the frisbee in the dog's mouth.
-/// When the dog reaches the player, it invokes the <see cref="frisbeeGivenToPlayer"/> event
-/// and triggers the transition "PlayerScored" to the <see cref="GoToTarget"/> state  or the transition "PlayerMissed"  to the <see cref="GoToPreviousTarget"/> state
-/// based on the <see cref="_playerScored"/> flag.
+/// When the dog reaches the player, it invokes the <see cref="_frisbeeGivenToPlayer"/> event, whines happily and
+/// triggers the "FrisbeeGiven" transition (to <see cref="GoToTarget"/>). On <see cref="Exit"/> it re-enables the
+/// real frisbee, which is the only place where the frisbee is reactivated.
 /// </remarks>
 public class GiveFrisbeeToPlayer : DogState
 {  
@@ -18,60 +19,63 @@ public class GiveFrisbeeToPlayer : DogState
    /// This GameObject is activated when entering the state and deactivated on exit.
    /// </summary>
    [SerializeField]
-    private GameObject frisbeeInDogMouth;
+    [FormerlySerializedAs("frisbeeInDogMouth")]
+    private GameObject _frisbeeInDogMouth;
 
+    /// <summary>The real frisbee, re-enabled in <see cref="Exit"/> after the hand-off.</summary>
     [SerializeField]
-    private GameObject frisbee;
+    [FormerlySerializedAs("frisbee")]
+    private GameObject _frisbee;
 
     
-    [Header("Events")]
     /// <summary>
     /// Event invoked when the dog successfully returns the frisbee to the player.
     /// This event is used to trigger the <see cref="Landed.FrisbeeGivenByDog"/> method to notify that the frisbee has been given back.
     /// </summary>
+    [Header("Events")]
     [SerializeField]
-    private UnityEvent frisbeeGivenToPlayer;
+    [FormerlySerializedAs("frisbeeGivenToPlayer")]
+    private UnityEvent _frisbeeGivenToPlayer;
 
+    /// <summary>Wired to the audio manager to play the happy whine at the dog when the frisbee is returned.</summary>
     [SerializeField]
-    private UnityEvent<AudioManager.GameSoundEffects, GameObject> happyWhine;
+    [FormerlySerializedAs("happyWhine")]
+    private UnityEvent<AudioManager.GameSoundEffects, GameObject> _happyWhine;
 
-    private readonly AudioManager.GameSoundEffects _happyWhineSoundEffect = AudioManager.GameSoundEffects.DOG_HAPPY_WHINE;
+    /// <summary>Sound sent through <see cref="_happyWhine"/> when the dog stops in front of the player and hands back the frisbee (fixed; not editable in the Inspector).</summary>
+    private readonly AudioManager.GameSoundEffects _happyWhineSoundEffect = AudioManager.GameSoundEffects.DogHappyWhine;
 
     /// <summary>
     /// Initializes the GiveFrisbeeToPlayer state and validates the frisbee reference.
     /// </summary>
     /// <remarks>
-    /// Calls base initialization and ensures the frisbeeInDogMouth GameObject is assigned.
-    /// Deactivates the frisbee GameObject initially so it only appears when the state is entered.
+    /// Calls base initialization and ensures <see cref="_frisbeeInDogMouth"/> and <see cref="_frisbee"/> are assigned.
+    /// Deactivates the in-mouth frisbee so it only appears when the state is entered.
     /// Logs an error if the frisbee reference is not set in the Inspector.
     /// </remarks>
     protected override void Awake()
     {  
         base.Awake();
 
-        if(frisbeeInDogMouth == null)
+        if(_frisbeeInDogMouth == null)
         {
             Debug.LogError("Frisbee reference not set in ChooseNewPosition state.");
 
             return;
         }
 
-        if (frisbee == null)
+        if (_frisbee == null)
         {
             Debug.LogError("Frisbee reference not set in ChooseNewPosition state.");
             return;
         }
 
-        frisbeeInDogMouth.SetActive(false);    
+        _frisbeeInDogMouth.SetActive(false);    
     }
 
     /// <summary>
-    /// Initializes references to the player and game manager.
+    /// Adds nothing to <see cref="DogState.LateStart"/>.
     /// </summary>
-    /// <remarks>
-    /// Calls <see cref="DogState.LateStart"/> to set up player and game manager references
-    /// needed for navigation and game state checking.
-    /// </remarks>
     public override void LateStart()
     {    
         base.LateStart();
@@ -89,29 +93,24 @@ public class GiveFrisbeeToPlayer : DogState
    {
         base.Enter();
 
-        frisbeeInDogMouth.SetActive(true);
+        _frisbeeInDogMouth.SetActive(true);
 
-        _agent.SetDestination(playerTransform.position);
+        _agent.SetDestination(_playerTransform.position);
 
-        RotateDogTowardsTarget(playerTransform);
+        RotateDogTowardsTarget(_playerTransform);
    }
 
     /// <summary>
     /// Called every frame while in the GiveFrisbeeToPlayer state.
-    /// Rotates the dog toward the player and checks if the dog has reached them.
+    /// Checks whether the dog has reached the player.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Continuously rotates the dog to face the player while moving.
-    /// </para>
-    /// <para>
     /// When the dog reaches the player:
     /// <list type="number">
-    /// <item><description>Invokes the <see cref="frisbeeGivenToPlayer"/> event</description></item>
-    /// <item><description>Transitions to "PlayerScored" if <see cref="_playerScored"/> is true, otherwise "PlayerMissed"</description></item>
-    /// <item><description>Resets the <see cref="_playerScored"/> flag for the next round</description></item>
+    /// <item><description>Invokes the <see cref="_frisbeeGivenToPlayer"/> event</description></item>
+    /// <item><description>Plays the happy whine</description></item>
+    /// <item><description>Triggers the "FrisbeeGiven" transition</description></item>
     /// </list>
-    /// </para>
     /// </remarks>
     public override void Execute()
     {
@@ -119,26 +118,23 @@ public class GiveFrisbeeToPlayer : DogState
 
          if (DogStoped())
          {  
-            frisbeeGivenToPlayer.Invoke();
+            _frisbeeGivenToPlayer.Invoke();
 
-            happyWhine.Invoke(_happyWhineSoundEffect, gameObject);
+            _happyWhine.Invoke(_happyWhineSoundEffect, gameObject);
 
-            fSM.ChangeState("FrisbeeGiven");
+            _fsm.ChangeState("FrisbeeGiven");
          }
     }
 
     /// <summary>
     /// Called when exiting the GiveFrisbeeToPlayer state.
-    /// Deactivates the frisbee visual in the dog's mouth.
+    /// Hides the in-mouth frisbee and re-enables the real frisbee in front of the player.
     /// </summary>
-    /// <remarks>
-    /// Hides the frisbee GameObject that was visible in the dog's mouth during this state.
-    /// </remarks>
     public override void Exit()
     {
         base.Exit();
 
-        frisbeeInDogMouth.SetActive(false);
-        frisbee.SetActive(true);
+        _frisbeeInDogMouth.SetActive(false);
+        _frisbee.SetActive(true);
     }
 }

@@ -245,7 +245,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// <para>
     /// This method performs the following sequence:
     /// <list type="number">
-    /// <item><description>Increments <see cref="_scoreValue"/> by 1</description></item>
+    /// <item><description>Increments <see cref="_scoreValue"/> by <paramref name="points"/></description></item>
     /// <item><description>Increments <see cref="_streakValue"/> by 1</description></item>
     /// <item><description>Activates the streak symbol GameObject</description></item>
     /// <item><description>Updates the score and streak text displays</description></item>
@@ -258,8 +258,13 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// All animations use DOTween and automatically kill any existing animations on the same elements
     /// to prevent conflicts.
     /// </para>
+    /// <para>
+    /// Raises <see cref="_sessionGoalReached"/> once the score reaches the session goal; it keeps firing on every
+    /// later score until the scene changes.
+    /// </para>
+    /// <para>Invoked via Inspector by the scoring UnityEvents of the mini-games' score areas/targets (e.g. Frisbee's ScoreArea, Archery's balloon targets).</para>
     /// </remarks>
-    /// <remarks>Invoked via Inspector by the scoring UnityEvents of the mini-games' score areas/targets (e.g. Frisbee's ScoreArea, Archery's balloon targets).</remarks>
+    /// <param name="points">Points to add (Archery balloons award 1, 2, 3 or 6); the streak always grows by 1.</param>
     public void PlayerScored(int points = 1)
     {
         _scoreValue += points;
@@ -302,13 +307,14 @@ public class ScoreAndStreakSystem : MonoBehaviour
     }
     
     /// <summary>
-    /// Called when the player fails to score (e.g, the firsbbe thrown not landed in the score zone,
+    /// Called when the player fails to score (e.g. the frisbee did not land in a score zone,
     /// the arrow missed the target).
     /// Resets the streak to zero and triggers negative visual feedback if a streak was active.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method only performs actions if the player had an active streak (<see cref="_streakValue"/> > 0).
+    /// This method only performs actions if the player had an active streak (<see cref="_streakValue"/> > 0)
+    /// and the streak text is not already animating.
     /// </para>
     /// <para>
     /// Reset sequence:
@@ -325,8 +331,8 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// Note: The score value is NOT affected by missing - only the streak resets.
     /// All animations use DOTween and automatically kill any existing animations to prevent conflicts.
     /// </para>
+    /// <para>Invoked via Inspector by the miss UnityEvents of the mini-games (e.g. Archery's <c>Arrow</c> hitting the ground/out-of-bounds).</para>
     /// </remarks>
-    /// <remarks>Invoked via Inspector by the missing UnityEvents of the mini-games' miss triggers (e.g. Archery's <c>Arrow</c> hitting the ground/out-of-bounds).</remarks>
     public void PlayerMissed()
     {    
         if (_streakValue > 0 && !DOTween.IsTweening(_streakText.transform)){
@@ -435,7 +441,9 @@ public class ScoreAndStreakSystem : MonoBehaviour
         _streakText.DOKill();
     }
 
-
+    /// <summary>Refreshes the goal label and reports the progress to the web app, optionally replacing the goal first.</summary>
+    /// <param name="newGoal">New session goal; negative keeps the current one.</param>
+    /// <remarks>Invoked via Inspector by the <c>_newGoal</c> event of <see cref="MiniGameCheatCodes"/> (the <c>goal</c> cheat).</remarks>
     public void UpdateSessionGoalText(int newGoal = -1)
     {   
         if (newGoal >= 0)

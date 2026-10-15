@@ -8,12 +8,12 @@ public class ReturnToFair : MonoBehaviour
     /// <summary>
     /// Immediately loads the CountryFair hub scene, discarding the current mini-game scene.
     /// </summary>
-    /// <remarks>Invocado via Inspector em botões de retorno nas cenas de mini-jogo.</remarks>
+    /// <remarks>Invoked via Inspector by the return buttons in the mini-game scenes, and by the <c>return</c> cheat.</remarks>
     public void Return()
     {
-        const string sceneName = "CountryFair";
+        const string SceneName = "CountryFair";
 
-        SceneManager.LoadScene(sceneName);
-        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
+        SceneManager.LoadScene(SceneName);
+        ConnectToWebApp.Instance.UpdateScene(SceneName.ToLower());
     }
 }

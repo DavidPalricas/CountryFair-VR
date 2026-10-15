@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// State where the dog navigates to and catches the thrown frisbee.
@@ -7,33 +8,29 @@ using UnityEngine.Events;
 /// </summary>
 /// <remarks>
 /// This state is triggered when the frisbee is thrown and the dog needs to retrieve it.
-/// Upon successfully reaching the frisbee, this state deactivates the frisbee GameObject and  triggers the transition "FrisbeeCaught", 
+/// Upon successfully reaching the frisbee, this state deactivates the frisbee GameObject and triggers the transition "FrisbeeCaught"
 /// to the <see cref="GiveFrisbeeToPlayer"/> state.
 /// </remarks>
 public class CatchFrisbee : DogState
 {   
+    /// <summary>Raised when the dog starts running to the frisbee (wired in the Inspector).</summary>
     [SerializeField]
-    private UnityEvent catchFrisbee;
+    [FormerlySerializedAs("catchFrisbee")]
+    private UnityEvent _catchFrisbee;
     
+    /// <summary>The thrown frisbee; its position is the destination and it is hidden once the dog reaches it.</summary>
     [SerializeField]
-    private Transform frisbeeTransform;
+    [FormerlySerializedAs("frisbeeTransform")]
+    private Transform _frisbeeTransform;
     
     /// <summary>
-    /// Reference to the frisbee's transform component.
-    /// Found in the scene during <see cref="LateStart"/> using the "Frisbee" tag.
+    /// Runs the base dog setup and validates the frisbee reference.
     /// </summary>
-
-    /// <summary>
-    /// Initializes the CatchFrisbee state by calling the base DogState initialization.
-    /// </summary>
-    /// <remarks>
-    /// Calls <see cref="DogState.Awake"/> to set up state properties and NavMeshAgent configuration.
-    /// </remarks>
     protected override void Awake()
     {  
         base.Awake();
 
-        if (frisbeeTransform == null)
+        if (_frisbeeTransform == null)
         {
             Debug.LogError("Frisbee GameObject not found in the scene.");
 
@@ -41,15 +38,7 @@ public class CatchFrisbee : DogState
         }
     }
 
-    /// <summary>
-    /// Initializes the frisbee reference by finding it in the scene.
-    /// </summary>
-    /// <remarks>
-    /// Searches for a GameObject with the "Frisbee" tag and caches its transform.
-    /// Note: This override does not call base.LateStart() because this state doesn't require
-    /// the player transform or game manager references that the base class initializes.
-    /// Logs an error if the frisbee cannot be found.
-    /// </remarks>
+    /// <summary>Adds nothing to the base; the frisbee reference is assigned in the Inspector.</summary>
     public override void LateStart()
     {
         base.LateStart();     
@@ -57,40 +46,34 @@ public class CatchFrisbee : DogState
 
     /// <summary>
     /// Called when entering the CatchFrisbee state.
-    /// Sets the dog's navigation destination to the frisbee's current position.
+    /// Faces the frisbee, sends the agent to its current position, barks and raises <see cref="_catchFrisbee"/>.
     /// </summary>
-    /// <remarks>
-    /// Retrieves the frisbee's position and instructs the NavMeshAgent to navigate to that location.
-    /// The dog will begin moving toward the frisbee when this method completes.
-    /// </remarks>
     public override void Enter()
    {
         base.Enter();
 
-        RotateDogTowardsTarget(frisbeeTransform);
+        RotateDogTowardsTarget(_frisbeeTransform);
 
         SetFrisbeeDestination();
 
         Bark();
 
-        catchFrisbee.Invoke();
+        _catchFrisbee.Invoke();
    }
 
+    /// <summary>Sets the agent's destination to where the frisbee is now (it is not re-targeted if the frisbee moves).</summary>
    private void SetFrisbeeDestination()
     {
-        Vector3 frisbeePos = frisbeeTransform.position;
+        Vector3 frisbeePos = _frisbeeTransform.position;
 
         _agent.SetDestination(frisbeePos);
     }
 
     /// <summary>
     /// Called every frame while in the CatchFrisbee state.
-    /// Rotates the dog toward the frisbee and checks if the dog has reached it.
+    /// Checks whether the dog has reached the frisbee.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Continuously rotates the dog to face the frisbee while moving.
-    /// </para>
     /// <para>
     /// When the dog stops at the frisbee's location:
     /// <list type="number">
@@ -105,8 +88,8 @@ public class CatchFrisbee : DogState
 
          if (DogStoped())
          {  
-            frisbeeTransform.gameObject.SetActive(false);
-            fSM.ChangeState("FrisbeeCaught");
+            _frisbeeTransform.gameObject.SetActive(false);
+            _fsm.ChangeState("FrisbeeCaught");
          }
     }
 

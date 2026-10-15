@@ -83,12 +83,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalEat
   animator: {fileID: 5558986686422474479}
-  hungerIncreaseRate: 0
-  boredomIncreaseRate: 0
-  fatigueIncreaseRate: 0.1
-  hungerRecoveryRate: 0.1
-  minTimeToEat: 15
-  maxTimeToEat: 30
+  _hungerIncreaseRate: 0
+  _boredomIncreaseRate: 0
+  _fatigueIncreaseRate: 0.1
+  _hungerRecoveryRate: 0.1
+  _minTimeToEat: 15
+  _maxTimeToEat: 30
 --- !u!114 &2093738121744905447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,12 +102,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalIdle
   animator: {fileID: 5558986686422474479}
-  hungerIncreaseRate: 0.2
-  boredomIncreaseRate: 0
-  fatigueIncreaseRate: 0
-  fatigueRecoveryRate: 0.1
-  minTimeToIdle: 5
-  maxTimeToIdle: 10
+  _hungerIncreaseRate: 0.2
+  _boredomIncreaseRate: 0
+  _fatigueIncreaseRate: 0
+  _fatigueRecoveryRate: 0.1
+  _minTimeToIdle: 5
+  _maxTimeToIdle: 10
 --- !u!1001 &2040105727780381566
 PrefabInstance:
   m_ObjectHideFlags: 0

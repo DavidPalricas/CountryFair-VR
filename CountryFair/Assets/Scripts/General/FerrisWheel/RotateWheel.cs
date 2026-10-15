@@ -1,15 +1,17 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
-/// Continuously rotates the GameObject around the world X axis to simulate a Ferris wheel.
+/// Continuously rotates the GameObject around its local X axis to simulate a Ferris wheel.
 /// </summary>
 public class RotateWheel : MonoBehaviour
 {
     /// <summary>Rotation speed in degrees per second.</summary>
-    public float speed = 20f;
+    [FormerlySerializedAs("speed")]
+    public float Speed = 20f;
 
     void Update()
     {
-        transform.Rotate(Vector3.right * speed * Time.deltaTime);
+        transform.Rotate(Vector3.right * Speed * Time.deltaTime);
     }
 }

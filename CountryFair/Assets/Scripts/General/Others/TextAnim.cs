@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Animates UI text with a continuous up-and-down floating motion.
@@ -9,24 +10,25 @@ public class TextAnim : MonoBehaviour
     /// <summary>Duration in seconds for the text to move up and then down.</summary>
     [Header("Animation Settings")]
     [SerializeField]
-    private float animationDuration = 0.5f;
+    [FormerlySerializedAs("animationDuration")]
+    private float _animationDuration = 0.5f;
 
-    /// <summary>Distance in units the text moves vertically during the animation.</summary>
+    /// <summary>Distance the text moves vertically, in the parent's local units (canvas units for UI text, hence the large default).</summary>
     [SerializeField]
-    private float moveDistance = 200f;
+    private float _moveDistance = 200f;
 
     /// <summary>Original local position stored on initialization.</summary>
-    private Vector3 originalPosition;
+    private Vector3 _originalPosition;
 
     /// <summary>Sequence controlling the animation loop.</summary>
-    private Sequence animationSequence;
+    private Sequence _animationSequence;
 
     /// <summary>
-    /// Stores the original position and creates the animation sequence.
+    /// Stores the original position the float animation oscillates around.
     /// </summary>
     private void Awake()
     {
-        originalPosition = transform.localPosition;
+        _originalPosition = transform.localPosition;
     }
 
     /// <summary>
@@ -35,7 +37,7 @@ public class TextAnim : MonoBehaviour
     private void Start()
     {
         CreateAnimation();
-        animationSequence.Play();
+        _animationSequence.Play();
     }
 
     /// <summary>
@@ -43,16 +45,16 @@ public class TextAnim : MonoBehaviour
     /// </summary>
     private void CreateAnimation()
     {
-        animationSequence = DOTween.Sequence();
+        _animationSequence = DOTween.Sequence();
 
         Ease easeType = Ease.InOutSine;
-        
-        animationSequence.Append(transform.DOLocalMoveY(originalPosition.y + moveDistance, animationDuration)
+
+        _animationSequence.Append(transform.DOLocalMoveY(_originalPosition.y + _moveDistance, _animationDuration)
             .SetEase(easeType));
 
-        animationSequence.Append(transform.DOLocalMoveY(originalPosition.y, animationDuration)
+        _animationSequence.Append(transform.DOLocalMoveY(_originalPosition.y, _animationDuration)
             .SetEase(easeType));
 
-        animationSequence.SetLoops(-1, LoopType.Yoyo);
+        _animationSequence.SetLoops(-1, LoopType.Yoyo);
     }
-}
+}

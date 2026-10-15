@@ -1420,8 +1420,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91fd59fe21eaa504d86bc9e57e1a4c92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextAnimation
-  animationDuration: 0.5
-  moveDistance: 200
+  _animationDuration: 0.5
+  _moveDistance: 200
 --- !u!1 &1209141638119976203
 GameObject:
   m_ObjectHideFlags: 0

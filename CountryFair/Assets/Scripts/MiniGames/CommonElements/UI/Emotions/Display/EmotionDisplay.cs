@@ -9,20 +9,36 @@ using System.Linq;
 /// </summary>
 public abstract class EmotionDisplay: NetworkBehaviour
 {
+    /// <summary>
+    /// Re-entrancy guard: true while a change is being applied from a <c>NetworkVariable</c> callback, so the visual update
+    /// does not echo the same value back to the network.
+    /// </summary>
     protected bool _isUpdatingFromNetwork = false;
 
+    /// <summary>Separator of the server message <c>EXPRESSION;CATEGORY</c> (e.g. <c>happy;positive</c>).</summary>
     protected char _messageSeparator = ';';
 
+    /// <summary>Must be overridden to subscribe to the subclass's <c>NetworkVariable</c> and apply its current value.</summary>
     public override void OnNetworkSpawn()
     {
        Debug.LogError("OnNetworkSpawn should be overridden in derived classes of EmotionDisplay.");
     }
 
+    /// <summary>Must be overridden to unsubscribe from the subclass's <c>NetworkVariable</c>.</summary>
     public override void OnNetworkDespawn()
     {
         Debug.LogError("OnNetworkDespawn should be overridden in derived classes of EmotionDisplay.");
     }
 
+    /// <summary>
+    /// Entry point for messages from <see cref="ServerListener"/>. The base implementation trims the message and logs a
+    /// warning unless it has exactly one separator.
+    /// </summary>
+    /// <remarks>
+    /// The early returns only leave this base method: overrides that call it still run their own parsing afterwards,
+    /// so they must not rely on it to reject malformed messages.
+    /// </remarks>
+    /// <param name="message">Raw server line, <c>EXPRESSION;CATEGORY</c>.</param>
     public virtual void ProcessServerString(string message)
     {
         if (string.IsNullOrEmpty(message))

@@ -2,99 +2,119 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Serialization;
 
 
 /// <summary>
 /// Networked slider UI that tracks overall player mood as a POSITIVE / NEUTRAL / NEGATIVE category.
-/// Each update nudges the slider value by <see cref="sliderChangeAmountThreshold"/> and recolors the
+/// Each update nudges the slider value by <see cref="_sliderChangeAmountThreshold"/> and recolors the
 /// fill and handle sprite accordingly. State is synchronized across the network via a server-authoritative
 /// <see cref="NetworkVariable{T}"/>.
 /// </summary>
+/// <remarks>
+/// Note that only the latest category is synchronized, not the slider value: a late joiner applies one nudge for the
+/// current category instead of reproducing the accumulated value.
+/// </remarks>
 public class SliderDisplay: EmotionDisplay
 {
-    [Header("Slider Configuration")]
     /// <summary>Slider component that visually represents cumulative mood (0 = most negative, 1 = most positive).</summary>
+    [Header("Slider Configuration")]
     [SerializeField]
-    private Slider slider = null;
+    [FormerlySerializedAs("slider")]
+    private Slider _slider = null;
 
     /// <summary>Fill image of the slider; color reflects the current mood category.</summary>
     [SerializeField]
-    private Image fillImage = null;
+    [FormerlySerializedAs("fillImage")]
+    private Image _fillImage = null;
 
     /// <summary>Handle image; sprite swaps between neutral/happy/angry emoji sprites based on mood.</summary>
     [SerializeField]
-    private Image handleImage = null;
+    [FormerlySerializedAs("handleImage")]
+    private Image _handleImage = null;
 
-    [Header("Slider Colors")]
     /// <summary>Fill and handle color when mood is in the positive range.</summary>
+    [Header("Slider Colors")]
     [SerializeField]
-    private Color positiveColor = Color.green;
+    [FormerlySerializedAs("positiveColor")]
+    private Color _positiveColor = Color.green;
 
     /// <summary>Fill and handle color when mood is in the neutral range.</summary>
     [SerializeField]
-    private Color neutralColor = Color.yellow;
+    [FormerlySerializedAs("neutralColor")]
+    private Color _neutralColor = Color.yellow;
 
     /// <summary>Fill and handle color when mood is in the negative range.</summary>
     [SerializeField]
-    private Color negativeColor = Color.red;
+    [FormerlySerializedAs("negativeColor")]
+    private Color _negativeColor = Color.red;
 
-    [Header("Emoji Sprites")]
     /// <summary>Sprite shown on the handle when mood is neutral.</summary>
+    [Header("Emoji Sprites")]
     [SerializeField]
-    private Sprite neutralEmoji = null;
+    [FormerlySerializedAs("neutralEmoji")]
+    private Sprite _neutralEmoji = null;
 
     /// <summary>Sprite shown on the handle when mood is positive.</summary>
     [SerializeField]
-    private Sprite happyEmoji = null;
+    [FormerlySerializedAs("happyEmoji")]
+    private Sprite _happyEmoji = null;
 
     /// <summary>Sprite shown on the handle when mood is negative.</summary>
     [SerializeField]
-    private Sprite angryEmoji = null;
+    [FormerlySerializedAs("angryEmoji")]
+    private Sprite _angryEmoji = null;
 
-    [Header("Emojis State Thresholds")]
     /// <summary>Slider value at or above which the mood is classified as positive.</summary>
+    [Header("Emojis State Thresholds")]
     [SerializeField]
     [Range(0, 1)]
-    private float positiveThreshold = 0.6f;
+    [FormerlySerializedAs("positiveThreshold")]
+    private float _positiveThreshold = 0.6f;
 
     /// <summary>Slider value at or below which the mood is classified as negative.</summary>
     [SerializeField]
     [Range(0, 1)]
-    private float negativeThreshold = 0.4f;
+    [FormerlySerializedAs("negativeThreshold")]
+    private float _negativeThreshold = 0.4f;
 
     /// <summary>Step amount added to or subtracted from the slider value on each emotion update.</summary>
     [SerializeField]
     [Range(0, 1)]
-    private float sliderChangeAmountThreshold = 0.05f;
+    [FormerlySerializedAs("sliderChangeAmountThreshold")]
+    private float _sliderChangeAmountThreshold = 0.05f;
 
+    /// <summary>Last mood category; written only by the server (clients go through <see cref="RequestDisplayChangeServerRpc"/>).</summary>
      private readonly NetworkVariable<EMOJI_CATEGORY> _netSliderState = new(
-        EMOJI_CATEGORY.NEUTRAL,
+        EMOJI_CATEGORY.Neutral,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
 
+    /// <summary>Mood category sent by the server after the separator (<c>EXPRESSION;CATEGORY</c>).</summary>
     public enum EMOJI_CATEGORY
     {
-        NEUTRAL,
-        POSITIVE,
-        NEGATIVE,
+        Neutral,
+        Positive,
+        Negative,
     }
 
+    /// <summary>Validates the references and resets the slider to a hidden neutral state.</summary>
     private void Awake()
     {  
-        if (slider == null ||  fillImage  == null)
+        if (_slider == null ||  _fillImage  == null)
         {
             Debug.LogError("Slider and/or its fill image is not reference is not assigned in EmojiSlider.");
             return;
         }
 
-        if (handleImage == null)
+        if (_handleImage == null)
         {
             Debug.LogError("Handle Image reference is not assigned in EmojiSlider.");
             return;
         }
 
-        if (neutralEmoji == null || happyEmoji == null || angryEmoji == null)
+        if (_neutralEmoji == null || _happyEmoji == null || _angryEmoji == null)
         {
             Debug.LogError("One or more emoji GameObjects are not assigned in EmojiSlider.");
             return;
@@ -104,6 +124,7 @@ public class SliderDisplay: EmotionDisplay
     }
 
     
+    /// <summary>Subscribes to the category variable and applies its current value without sending it back.</summary>
     public override void OnNetworkSpawn()
     {
         _netSliderState.OnValueChanged += OnCategoryChanged;
@@ -124,6 +145,7 @@ public class SliderDisplay: EmotionDisplay
     }
 
     
+    /// <summary>Applies a category received from the network, guarded so it is not re-sent.</summary>
     private void OnCategoryChanged(EMOJI_CATEGORY previous, EMOJI_CATEGORY current)
     {
         _isUpdatingFromNetwork = true;
@@ -141,7 +163,7 @@ public class SliderDisplay: EmotionDisplay
     {
        string categoryName = newCategory.ToString();
 
-       slider.gameObject.SetActive(true);
+       _slider.gameObject.SetActive(true);
 
         if (!Enum.TryParse(categoryName.ToUpper(), out EMOJI_CATEGORY category))
         {
@@ -151,12 +173,12 @@ public class SliderDisplay: EmotionDisplay
 
         Debug.Log($"Updating slider with category: {category}");
 
-        if (category == EMOJI_CATEGORY.POSITIVE)
+        if (category == EMOJI_CATEGORY.Positive)
         {
-             slider.value = Mathf.Min(slider.value + sliderChangeAmountThreshold, 1);
+             _slider.value = Mathf.Min(_slider.value + _sliderChangeAmountThreshold, 1);
 
-        }else if(category == EMOJI_CATEGORY.NEGATIVE){
-             slider.value = Mathf.Max(slider.value - sliderChangeAmountThreshold, 0);
+        }else if(category == EMOJI_CATEGORY.Negative){
+             _slider.value = Mathf.Max(_slider.value - _sliderChangeAmountThreshold, 0);
         }
 
         UpdateEmojiVisual();
@@ -169,38 +191,40 @@ public class SliderDisplay: EmotionDisplay
         }
     }
    
+    /// <summary>Centers the slider (0.5) with the neutral sprite and color, and hides it until the first update.</summary>
     private void StartAsNeutral()
     {
-        handleImage.sprite = neutralEmoji;
-        slider.value = 0.5f;
-        fillImage.color = neutralColor;
+        _handleImage.sprite = _neutralEmoji;
+        _slider.value = 0.5f;
+        _fillImage.color = _neutralColor;
 
-        slider.gameObject.SetActive(false);
+        _slider.gameObject.SetActive(false);
 
     }
 
+    /// <summary>Picks handle sprite and fill color from the value: positive at or above <see cref="_positiveThreshold"/>, negative at or below <see cref="_negativeThreshold"/>, neutral in between.</summary>
     private void UpdateEmojiVisual()
     {  
-        if (slider.value >= positiveThreshold)
+        if (_slider.value >= _positiveThreshold)
         {
-            handleImage.sprite = happyEmoji;
+            _handleImage.sprite = _happyEmoji;
          
-            fillImage.color = positiveColor;
+            _fillImage.color = _positiveColor;
          
 
             return;
         }
 
-        if (slider.value <= negativeThreshold)
+        if (_slider.value <= _negativeThreshold)
         {
-            handleImage.sprite = angryEmoji;
-            fillImage.color = negativeColor;
+            _handleImage.sprite = _angryEmoji;
+            _fillImage.color = _negativeColor;
 
             return;
         }
 
-        handleImage.sprite = neutralEmoji;
-        fillImage.color = neutralColor;
+        _handleImage.sprite = _neutralEmoji;
+        _fillImage.color = _neutralColor;
     }
 
 
@@ -208,6 +232,7 @@ public class SliderDisplay: EmotionDisplay
     /// Parses a server message (format: <c>type;CATEGORY</c>) and calls <see cref="UpdateSlider"/> with the parsed category.
     /// </summary>
     /// <param name="message">Raw server string containing the emoji category after the separator.</param>
+    /// <remarks>Does not call the base validation; a message without a separator throws an <see cref="IndexOutOfRangeException"/>.</remarks>
     public override void ProcessServerString(string message)
     {
         string emotionCategory = message.Split(_messageSeparator)[1];
@@ -219,6 +244,10 @@ public class SliderDisplay: EmotionDisplay
     }
 
 
+    /// <summary>
+    /// Pushes a locally applied category to the network: written directly on the server, requested by RPC from the owning
+    /// client, ignored when Netcode is not running (offline testing).
+    /// </summary>
     private void SyncToNetwork(EMOJI_CATEGORY category)
     {
         // Checks if NetworkManager exists and is running
@@ -243,6 +272,7 @@ public class SliderDisplay: EmotionDisplay
         }
     }
 
+    /// <summary>Server RPC through which the owning client asks the server to write <see cref="_netSliderState"/>.</summary>
    [ServerRpc]
    private void RequestDisplayChangeServerRpc(EMOJI_CATEGORY category)
     {

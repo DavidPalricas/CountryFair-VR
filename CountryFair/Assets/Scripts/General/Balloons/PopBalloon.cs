@@ -1,22 +1,27 @@
 using UnityEngine;
 
-public class PopBalloon : MonoBehaviour  
-{  
+/// <summary>
+/// Pops a decorative balloon: spawns its burst effect and destroys the balloon.
+/// Called by <see cref="BalloonsSpawner"/> when the balloon's rise tween completes.
+/// </summary>
+public class PopBalloon : MonoBehaviour
+{
     /// <summary>
     /// Visual effect prefab instantiated when a balloon pops.
     /// </summary>
     [SerializeField]
-    private GameObject popBalloonEffect = null;
+    private GameObject _popBalloonEffect = null;
 
    /// <summary>
    /// The duration in seconds before the pop effect is destroyed.
    /// </summary>
     [SerializeField]
-    private float effectDuration = 2f;
+    private float _effectDuration = 2f;
 
+    /// <summary>Logs an error if the pop effect is not assigned, since <see cref="Pop"/> would instantiate null.</summary>
     protected void Awake()
     {
-        if (popBalloonEffect == null)
+        if (_popBalloonEffect == null)
         {
             Debug.LogError("Pop Balloon Effect is not assigned in ScoreAreaAnim script.");
 
@@ -30,10 +35,10 @@ public class PopBalloon : MonoBehaviour
     /// </summary>
     public void Pop()
     {
-        GameObject effect = Instantiate(popBalloonEffect, transform.position, Quaternion.identity);
+        GameObject effect = Instantiate(_popBalloonEffect, transform.position, Quaternion.identity);
 
-        Destroy(effect, effectDuration); 
-                    
+        Destroy(effect, _effectDuration);
+
         Destroy(gameObject);
     }
-}
+}

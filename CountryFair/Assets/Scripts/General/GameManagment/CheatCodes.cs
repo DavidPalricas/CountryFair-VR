@@ -5,8 +5,18 @@ using UnityEngine;
 using UnityEngine.Events;
 using System;
 
+/// <summary>
+/// Base class for the debug/therapist cheat codes. Collects characters from the keyboard
+/// (<see cref="OnTextInput"/>) or whole codes from the web app (<see cref="OnWebCheatCode"/>) into
+/// <see cref="_playerInput"/>, and lets each scene's subclass match that buffer against its registered cheats.
+/// </summary>
+/// <remarks>
+/// Subclasses (<c>CountryFairCheatCodes</c>, <c>MiniGameCheatCodes</c>) register their cheats via
+/// <see cref="RegisterCheat"/> / <see cref="RegisterNumericCheat"/> and override <see cref="CheckCheatCode"/>
+/// to apply their own gating (intro/tutorial completed).
+/// </remarks>
 public class CheatCodes : MonoBehaviour
-{   
+{
 
     /// <summary>
     /// Fired by the "skip" cheat. Wired in the Inspector (CountryFair.unity) to
@@ -16,6 +26,10 @@ public class CheatCodes : MonoBehaviour
     private UnityEvent _skipDialogue;
 
 
+    /// <summary>
+    /// Rolling buffer of the lower-cased letters/digits typed so far, trimmed to <see cref="_maxCheatLength"/>
+    /// so a cheat is recognised as soon as its last character arrives. Cleared by subclasses after a cheat fires.
+    /// </summary>
     protected string _playerInput = "";
 
     /// <summary>
@@ -66,11 +80,11 @@ public class CheatCodes : MonoBehaviour
              Keyboard.current.onTextInput -= OnTextInput;
         }
 
-        ConnectToWebApp.Instance.receiveCheatCode.RemoveListener(OnWebCheatCode);
+        ConnectToWebApp.Instance.ReceiveCheatCode.RemoveListener(OnWebCheatCode);
     }
 
     /// <summary>
-    /// Subscribes to <see cref="ConnectToWebApp.receiveCheatCode"/> so cheat codes typed on the
+    /// Subscribes to <see cref="ConnectToWebApp.ReceiveCheatCode"/> so cheat codes typed on the
     /// web app are processed the same way as keyboard input. Done in Start() (rather than
     /// OnEnable(), like the keyboard) because <see cref="ConnectToWebApp.Instance"/> is only
     /// guaranteed to exist once every object's Awake() has run, matching the pattern already
@@ -78,7 +92,7 @@ public class CheatCodes : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        ConnectToWebApp.Instance.receiveCheatCode.AddListener(OnWebCheatCode);
+        ConnectToWebApp.Instance.ReceiveCheatCode.AddListener(OnWebCheatCode);
     }
 
     /// <summary>
@@ -158,7 +172,7 @@ public class CheatCodes : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles a cheat code received from the web app (<see cref="ConnectToWebApp.receiveCheatCode"/>).
+    /// Handles a cheat code received from the web app (<see cref="ConnectToWebApp.ReceiveCheatCode"/>).
     /// Rebuilds <see cref="_playerInput"/> from <paramref name="rawCode"/> using the exact same
     /// character filtering/lowercasing as <see cref="OnTextInput"/>, then runs it through
     /// <see cref="CheckCheatCode"/> so web-entered codes go through the same verification and
@@ -186,11 +200,16 @@ public class CheatCodes : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Matches <see cref="_playerInput"/> against the registered cheats and runs the matching command.
+    /// Must be overridden; the subclass decides which cheats are allowed in the current game state.
+    /// </summary>
     protected virtual void CheckCheatCode()
     {
         Debug.LogError("CheckCheatCode should be overridden in derived classes.");
     }
 
+    /// <summary>Registers the cheats shared by every scene (currently <c>"skip"</c>, which invokes <see cref="_skipDialogue"/>).</summary>
     protected virtual void RegisterBaseCheats()
     {
         RegisterCheat("skip", () => _skipDialogue.Invoke());

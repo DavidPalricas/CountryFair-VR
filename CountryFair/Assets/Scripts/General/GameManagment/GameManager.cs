@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class GameManager 
 {
-    private static GameManager s_instance;
+    private static GameManager _instance;
 
     /// <summary>True once the hub-world intro dialogue sequence has been completed.</summary>
     public bool IntroCompleted { get; set; } = false;
@@ -25,9 +25,9 @@ public class GameManager
     /// <summary>Returns the singleton instance, creating it on first call.</summary>
     public static GameManager GetInstance()
     {
-        s_instance ??= new GameManager();
+        _instance ??= new GameManager();
 
-        return s_instance;
+        return _instance;
     }
 
 

@@ -6,55 +6,63 @@ using UnityEngine;
 /// </summary>
 public class AnimalEat: AnimalState
 {
-    [Header("Recovery Stats Rates")]
     /// <summary>Amount hunger decreases each time the animal enters the eating state (0–1).</summary>
+    [Header("Recovery Stats Rates")]
     [SerializeField]
     [Range(0f, 1f)]
-    private float hungerRecoveryRate = 0.1f;
+    private float _hungerRecoveryRate = 0.1f;
 
-    [Header("Eating Time Settings")]
     /// <summary>Minimum eating duration in seconds.</summary>
+    [Header("Eating Time Settings")]
     [SerializeField]
-    private float minTimeToEat = 30f;
+    private float _minTimeToEat = 30f;
 
     /// <summary>Maximum eating duration in seconds.</summary>
     [SerializeField]
-    private float maxTimeToEat = 60f;
+    private float _maxTimeToEat = 60f;
 
 
+    /// <summary>Absolute <see cref="Time.time"/> at which eating ends and the next action is decided.</summary>
     private float _timeToEat;
 
+    /// <summary>Registers the <c>"GoEat"</c> trigger, chosen when hunger is the highest stat.</summary>
     protected override void RegisterActionInUtility()
     {
-        _animalUtility.RegisterAction("GoEat", () => _animalUtility.stats.hunger);
+        _animalUtility.RegisterAction("GoEat", () => _animalUtility.stats.Hunger);
     }
 
+    /// <summary>Picks a random eating duration and recovers hunger up front.</summary>
     public override void Enter()
     {
         base.Enter();
 
-        _timeToEat = Utils.RandomValueInRange(minTimeToEat, maxTimeToEat) + Time.time;
+        _timeToEat = Utils.RandomValueInRange(_minTimeToEat, _maxTimeToEat) + Time.time;
 
-        _hungerStat = Mathf.Max(_hungerStat - hungerRecoveryRate, 0f);
+        _hungerStat = Mathf.Max(_hungerStat - _hungerRecoveryRate, 0f);
 
         UpdateStats();
     }
 
 
+    /// <summary>
+    /// When the eating time is over, decides the next action (which sets its Animator trigger); once the
+    /// Animator has switched clips, fires that same name as the FSM transition (<c>"GoEat"</c>,
+    /// <c>"GoWalk"</c> or <c>"GoIdle"</c>).
+    /// </summary>
     public override void Execute()
     {
         base.Execute();
 
         if (IsPlayingNewAnimation())
         {
-             fSM.ChangeState(transitionName);
+             _fsm.ChangeState(_transitionName);
              return;
         }
 
         if (Time.time >= _timeToEat && !_readyToTransition)
-        {   
+        {
             _readyToTransition = true;
-            transitionName = _animalUtility.DecideNextAction(animator);
+            _transitionName = _animalUtility.DecideNextAction(animator);
         }
     }
 
@@ -62,4 +70,4 @@ public class AnimalEat: AnimalState
     {
         base.Exit();
     }
-}
+}

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -7,10 +8,10 @@ using UnityEngine.Events;
 /// The dog remains stationary at its target position, faces the player, and waits for the frisbee to be thrown.
 /// </summary>
 /// <remarks>
-/// This state activates the score area (the catch zone where the frisbee can land) and continuously rotates
-/// the dog to face the player. When the frisbee lands in the catch zone, the state transitions to "FrisbeeLanded"
-/// which eventually leads to the <see cref="CatchFrisbee"/> state.
-/// The current position is saved to the game manager for potential return navigation.
+/// This state activates the score area (the catch zone where the frisbee can land) and the dog's name tag, spawns the
+/// floating score areas, and barks at random intervals while waiting. Transitions are driven by the Animator: the
+/// <c>Jump</c> trigger set by <see cref="PlayerScored"/> leads to "FrisbeeLanded", and a non-zero <c>Speed</c> set by
+/// <see cref="DiffHasChanged"/> leads to "DiffcultyHasDecreased".
 /// </remarks>
 public class DogIdle : DogState
 {   
@@ -22,52 +23,64 @@ public class DogIdle : DogState
     /// The score area typically contains a collider or trigger that detects when the frisbee lands within the catchable zone.
     /// </remarks>
     [SerializeField]
-    private GameObject scoreArea;
+    [FormerlySerializedAs("scoreArea")]
+    private GameObject _scoreArea;
 
     
+    /// <summary>Dog's name tag, only visible while it is waiting.</summary>
     [SerializeField]
     private GameObject _name;
     
+    /// <summary>Minimum seconds between impatient barks while waiting for the throw.</summary>
     [Header("Impatient Timer Settings")]
     [SerializeField]
-    private float minImpatientTime = 10f;
+    [FormerlySerializedAs("minImpatientTime")]
+    private float _minImpatientTime = 10f;
     
+    /// <summary>Maximum seconds between impatient barks while waiting for the throw.</summary>
     [SerializeField]
-    private float maxImpatientTime = 15f;
+    [FormerlySerializedAs("maxImpatientTime")]
+    private float _maxImpatientTime = 15f;
 
+    /// <summary>Raised on <see cref="Enter"/> to spawn the floating score areas around the dog.</summary>
     [Header("Idle Events")]
     [SerializeField]
-    private UnityEvent spawnScoreAreas;
+    [FormerlySerializedAs("spawnScoreAreas")]
+    private UnityEvent _spawnScoreAreas;
 
+    /// <summary>Raised on <see cref="Exit"/> to remove the floating score areas.</summary>
      [SerializeField]
-    private UnityEvent removeScoreAreas;
+    [FormerlySerializedAs("removeScoreAreas")]
+    private UnityEvent _removeScoreAreas;
 
     /// <summary>
     /// Event invoked when the dog reaches its target position and enters the idle state.
-    /// Its used to notify the player that the dog is ready for catching the frisbee see <see cref="OnPlayerFront.DogReachedTarget/>.
+    /// It notifies the frisbee that the dog is ready to catch (see <see cref="OnPlayerFront.DogReachedTarget"/>).
     /// </summary>
     [SerializeField]
-    private UnityEvent positionReached;
+    [FormerlySerializedAs("positionReached")]
+    private UnityEvent _positionReached;
 
 
+    /// <summary>Absolute <see cref="Time.time"/> of the next impatient bark.</summary>
     private float _impatientTimer = 0f;
 
 
-    private bool playerScored = false;
+    /// <summary>Reset on <see cref="Exit"/> but never set to true; currently unused.</summary>
+    private bool _playerScored = false;
 
     /// <summary>
-    /// Initializes the DogIdle state and ensures the score area is initially deactivated.
+    /// Runs the base dog setup and hides the score area and name tag until the dog is waiting.
     /// </summary>
     /// <remarks>
-    /// Unity lifecycle callback invoked when the script instance is being loaded.
-    /// Calls <see cref="DogState.Awake"/> to set up state properties and NavMeshAgent configuration,
-    /// then deactivates the score area so it only appears when the dog is actively in the idle state.
+    /// The name-tag check tests the inherited <c>name</c> property rather than <see cref="_name"/>, so a missing
+    /// name tag is not reported here.
     /// </remarks>
     protected override void Awake()
     {   
         base.Awake();
 
-        if (scoreArea == null)
+        if (_scoreArea == null)
         {
             Debug.LogError("DogIdle: Score Area GameObject reference is not assigned in the inspector.");
 
@@ -81,17 +94,13 @@ public class DogIdle : DogState
             return;
         }
  
-        scoreArea.SetActive(false);
+        _scoreArea.SetActive(false);
         _name.SetActive(false);
     }
 
     /// <summary>
-    /// Initializes references to the player and game manager.
+    /// Adds nothing to <see cref="DogState.LateStart"/>.
     /// </summary>
-    /// <remarks>
-    /// Calls <see cref="DogState.LateStart"/> to set up player transform and game manager references
-    /// required for rotation and position tracking.
-    /// </remarks>
     public override void LateStart()
     {
         base.LateStart();
@@ -99,19 +108,9 @@ public class DogIdle : DogState
     
     /// <summary>
     /// Called when entering the DogIdle state.
-    /// Saves the current position, activates the score area, and notifies listeners that the position is reached.
+    /// Barks, starts the impatience timer, shows the score area and name tag, and raises <see cref="_positionReached"/>
+    /// and <see cref="_spawnScoreAreas"/>.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// When entering the idle state:
-    /// <list type="number">
-    /// <item><description>Validates the game manager reference</description></item>
-    /// <item><description>Saves the dog's current position to <see cref="FrisbeeGameManager.currentTargetPos"/> for potential return navigation</description></item>
-    /// <item><description>Activates the score area to enable frisbee landing detection</description></item>
-    /// <item><description>Invokes the <see cref="positionReached"/> event to notify the game that the dog is ready</description></item>
-    /// </list>
-    /// </para>
-    /// </remarks>
     public override void Enter()
     {
         base.Enter();
@@ -120,22 +119,20 @@ public class DogIdle : DogState
 
         RestImpatientTimer();
 
-        scoreArea.SetActive(true);
+        _scoreArea.SetActive(true);
         _name.SetActive(true);
 
-        positionReached.Invoke();
+        _positionReached.Invoke();
  
-        spawnScoreAreas.Invoke();
+        _spawnScoreAreas.Invoke();
     }
 
     /// <summary>
     /// Called every frame while in the DogIdle state.
-    /// Continuously rotates the dog to face the player while waiting.
+    /// Waits for the Animator to leave the idle clip, then fires "DiffcultyHasDecreased" if <c>Speed</c> &gt; 0 (difficulty
+    /// changed, the dog must reposition) or "FrisbeeLanded" otherwise (the jump trigger was set). Barks when the impatience
+    /// timer expires.
     /// </summary>
-    /// <remarks>
-    /// This creates the behavior of the dog watching and tracking the player,
-    /// maintaining visual engagement while waiting for the frisbee to be thrown.
-    /// </remarks>
     public override void Execute()
     {
         base.Execute();
@@ -144,12 +141,12 @@ public class DogIdle : DogState
         {    
             if (animator.GetFloat("Speed") > 0f)
             {
-                fSM.ChangeState("DiffcultyHasDecreased");   
+                _fsm.ChangeState("DiffcultyHasDecreased");   
 
                 return;
             }
             
-            fSM.ChangeState("FrisbeeLanded");      
+            _fsm.ChangeState("FrisbeeLanded");      
             return;
         }
 
@@ -162,25 +159,27 @@ public class DogIdle : DogState
     }
 
     /// <summary>
-    /// Triggers the state transition when the frisbee lands in the catch zone.
-    /// Should be called by external components (e.g., collision detection on the score area) when the frisbee lands.
+    /// Starts the catch when the frisbee lands in a score area: sets the <c>Jump</c> trigger (and <c>Speed</c> 0) so
+    /// <see cref="Execute"/> fires "FrisbeeLanded" once the jump clip starts. Ignored if the dog is not idle.
     /// </summary>
-    /// <remarks>
-    /// Initiates the transition to the "FrisbeeLanded" state, which will eventually lead to the
-    /// <see cref="CatchFrisbee"/> state where the dog navigates to retrieve the frisbee.
-    /// </remarks>
+    /// <remarks>Invoked via Inspector (FrisbeeGame scene) by the frisbee's scoring event.</remarks>
     public void PlayerScored()
     {   
-        if (fSM.CurrentState == this)
+        if (_fsm.CurrentState == this)
         {
             animator.SetTrigger("Jump");
             animator.SetFloat("Speed", 0f);
         }
     }
 
+    /// <summary>
+    /// Makes an idle dog start walking (<c>Speed</c> 1) so <see cref="Execute"/> fires "DiffcultyHasDecreased" and the dog
+    /// moves to a new distance. Skipped while the Animator's <c>StopAnim</c> flag is set.
+    /// </summary>
+    /// <remarks>Invoked via Inspector (FrisbeeGame scene) when the difficulty changes.</remarks>
     public void DiffHasChanged()
     {    
-        if (fSM.CurrentState == this && !animator.GetBool("StopAnim"))
+        if (_fsm.CurrentState == this && !animator.GetBool("StopAnim"))
         {
             animator.SetFloat("Speed", 1f);
         } 
@@ -188,26 +187,24 @@ public class DogIdle : DogState
 
     /// <summary>
     /// Called when exiting the DogIdle state.
-    /// Deactivates the score area to prevent frisbee detection while the dog is no longer idle.
+    /// Hides the name tag and score area and raises <see cref="_removeScoreAreas"/>, so no landing is detected while
+    /// the dog is moving or returning.
     /// </summary>
-    /// <remarks>
-    /// The score area is deactivated because the dog is no longer waiting to catch,
-    /// preventing false triggers during other states like movement or returning.
-    /// </remarks>
     public override void Exit()
     {
         base.Exit();
 
         _name.SetActive(false);
-        scoreArea.SetActive(false);
+        _scoreArea.SetActive(false);
 
-        removeScoreAreas.Invoke();
+        _removeScoreAreas.Invoke();
 
-        playerScored = false;
+        _playerScored = false;
     }
 
+    /// <summary>Schedules the next impatient bark at a random time between the min and max.</summary>
     private void RestImpatientTimer()
     {
-        _impatientTimer = Utils.RandomValueInRange(minImpatientTime, maxImpatientTime) + Time.time;
+        _impatientTimer = Utils.RandomValueInRange(_minImpatientTime, _maxImpatientTime) + Time.time;
     }
 }

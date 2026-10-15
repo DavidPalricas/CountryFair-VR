@@ -96,12 +96,12 @@ public class PlayerScale : MonoBehaviour
    /// <summary>
    /// Sound effect passed to <see cref="_onScaleToGiant"/> when the player grows.
    /// </summary>
-   private readonly AudioManager.GameSoundEffects _scaleToGiantSoundEffect = AudioManager.GameSoundEffects.SCALE_TO_GIANT;
+   private readonly AudioManager.GameSoundEffects _scaleToGiantSoundEffect = AudioManager.GameSoundEffects.ScaleToGiant;
 
    /// <summary>
    /// Sound effect passed to <see cref="_onScaleToNormal"/> when the player shrinks back.
    /// </summary>
-   private readonly AudioManager.GameSoundEffects _scaleToNormalSoundEffect = AudioManager.GameSoundEffects.SCALE_TO_NORMAL;
+   private readonly AudioManager.GameSoundEffects _scaleToNormalSoundEffect = AudioManager.GameSoundEffects.SCALEToNormal;
 
 
   /// <summary>

@@ -77,10 +77,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalWalk
   animator: {fileID: 1314551978317020635}
-  hungerIncreaseRate: 0.1
-  boredomIncreaseRate: 0
-  fatigueIncreaseRate: 0.2
-  boredomRecoveryRate: 0.1
+  _hungerIncreaseRate: 0.1
+  _boredomIncreaseRate: 0
+  _fatigueIncreaseRate: 0.2
+  _boredomRecoveryRate: 0.1
 --- !u!114 &8873384000573442767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,12 +94,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalEat
   animator: {fileID: 1314551978317020635}
-  hungerIncreaseRate: 0
-  boredomIncreaseRate: 0.1
-  fatigueIncreaseRate: 0.05
-  hungerRecoveryRate: 0.2
-  minTimeToEat: 15
-  maxTimeToEat: 30
+  _hungerIncreaseRate: 0
+  _boredomIncreaseRate: 0.1
+  _fatigueIncreaseRate: 0.05
+  _hungerRecoveryRate: 0.2
+  _minTimeToEat: 15
+  _maxTimeToEat: 30
 --- !u!114 &8877622317175251246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,12 +113,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalIdle
   animator: {fileID: 1314551978317020635}
-  hungerIncreaseRate: 0.05
-  boredomIncreaseRate: 0.2
-  fatigueIncreaseRate: 0
-  fatigueRecoveryRate: 0.1
-  minTimeToIdle: 5
-  maxTimeToIdle: 10
+  _hungerIncreaseRate: 0.05
+  _boredomIncreaseRate: 0.2
+  _fatigueIncreaseRate: 0
+  _fatigueRecoveryRate: 0.1
+  _minTimeToIdle: 5
+  _maxTimeToIdle: 10
 --- !u!195 &9178171286587767482
 NavMeshAgent:
   m_ObjectHideFlags: 0

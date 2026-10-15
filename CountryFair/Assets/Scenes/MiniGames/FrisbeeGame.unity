@@ -1815,14 +1815,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92ca02ddcde62c642bace59e254adc86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FrisbeeAudioManager
-  ambienceMusic:
+  _ambienceMusic:
     Guid:
       Data1: 1041645944
       Data2: 1181187447
       Data3: -176062317
       Data4: -315743057
     Path: event:/AmbienceMusic
-  buttonPressedSound:
+  _buttonPressedSound:
     Guid:
       Data1: 1489044289
       Data2: 1104193514
@@ -2671,7 +2671,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -4299,7 +4299,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -5366,7 +5366,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -7998,7 +7998,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -8979,7 +8979,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -13082,7 +13082,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -15435,7 +15435,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
@@ -15967,7 +15967,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8873384000573442767, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 9178171286587767482, guid: 50911547b994b5d429a2f60036fc04b5, type: 3}

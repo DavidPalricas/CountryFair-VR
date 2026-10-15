@@ -2,15 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Dynamic Difficulty Adjustment (DDA) system that monitors player performance and
 /// fires difficulty change events based on precision thresholds and consecutive-attempt counters.
 /// </summary>
 /// <remarks>
-/// Precision per task = 1 / attempts_until_score. Three consecutive high-precision tasks trigger
-/// an increase; three consecutive low-precision tasks trigger a decrease. If the player misses
-/// <see cref="failingConsecutiveThreshold"/> times in a row, difficulty drops immediately.
+/// Precision per task = 1 / attempts_until_score. High-precision tasks fill <see cref="_excelCounter"/> and
+/// low-precision ones fill <see cref="_struggleCounter"/>; every other task drains them, so a change needs a net run of
+/// <see cref="_thresholdToChangeDiff"/> tasks rather than strictly consecutive ones. If the player misses
+/// <see cref="_failingConsecutiveThreshold"/> times on the same task, difficulty drops immediately.
 /// At session end, <see cref="SessionGoalReached"/> marks the session complete in <see cref="GameManager"/>
 /// and returns to the hub scene.
 /// </remarks>
@@ -19,44 +21,74 @@ public class CarnyWise : MonoBehaviour
 {
     /// <summary>Wired in Inspector to <see cref="MiniGameManager.ChangeDifficulty"/>.</summary>
     [SerializeField]
-    private UnityEvent <bool> changeDifficulty;
+    [FormerlySerializedAs("changeDifficulty")]
+    private UnityEvent <bool> _changeDifficulty;
 
-    [Header("Adaptation Configuration")]
     /// <summary>Precision ratio at or above which a task counts as excelling (triggers potential increase).</summary>
+    [Header("Adaptation Configuration")]
     [SerializeField, Range(0f, 1f)]
-    private float precisionThresholdToIncreaseDiff = 0.7f;
+    [FormerlySerializedAs("precisionThresholdToIncreaseDiff")]
+    private float _precisionThresholdToIncreaseDiff = 0.7f;
 
     /// <summary>Precision ratio at or below which a task counts as struggling (triggers potential decrease).</summary>
     [SerializeField, Range(0f, 1f)]
-    private float precisionThresholdToDecreaseDiff = 0.3f;
+    [FormerlySerializedAs("precisionThresholdToDecreaseDiff")]
+    private float _precisionThresholdToDecreaseDiff = 0.3f;
 
     /// <summary>Number of consecutive excelling or struggling tasks required to change difficulty.</summary>
     [SerializeField]
-    private int thresholdToChangeDiff = 3;
+    [FormerlySerializedAs("thresholdToChangeDiff")]
+    private int _thresholdToChangeDiff = 3;
 
     /// <summary>Number of consecutive misses that immediately trigger a difficulty decrease.</summary>
     [SerializeField]
-    private int failingConsecutiveThreshold = 4;
+    [FormerlySerializedAs("failingConsecutiveThreshold")]
+    private int _failingConsecutiveThreshold = 4;
 
-    // Variáveis de Estado
+    /// <summary><see cref="Time.time"/> when the current task started; 0 means no task is running.</summary>
     private float _taskStartTime = 0f;
+    /// <summary>Attempts (misses + the final score) spent on the current task; precision is its inverse.</summary>
     private int _currentAttemptsForTask = 0; 
     
-    // Contadores de buffer
+    /// <summary>
+    /// Struggle buffer: +1 for each scored task with precision at or below <see cref="_precisionThresholdToDecreaseDiff"/>,
+    /// −1 (never below 0) for an excelling or in-flow task. Reaching <see cref="_thresholdToChangeDiff"/> lowers the
+    /// difficulty and resets it to 0, so a single unlucky task cannot lower the difficulty on its own.
+    /// </summary>
     private int _struggleCounter = 0;
+
+    /// <summary>
+    /// Excel buffer: +1 for each scored task with precision at or above <see cref="_precisionThresholdToIncreaseDiff"/>,
+    /// −1 (never below 0) for a struggling or in-flow task. Reaching <see cref="_thresholdToChangeDiff"/> raises the
+    /// difficulty and resets it to 0, so a single lucky task cannot raise the difficulty on its own.
+    /// </summary>
     private int _excelCounter = 0;
 
+    /// <summary>Session key for the save file; only used by the currently disabled <c>SaveSessionData</c>.</summary>
     private readonly string _sessionID = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
+    /// <summary>
+    /// Seconds each scored task took, from <see cref="StartTaskTimer"/> to <see cref="PlayerScored"/>. Misses add nothing;
+    /// they only lower the precision of the task. Averaged for the session summary, which is currently not saved.
+    /// </summary>
     private readonly List<float> _tasksTimes = new ();
+    
+    /// <summary>
+    /// Precision of each scored task: <c>1 / attempts</c> (1 = first try, 0.5 = second, ...). Averaged for the session
+    /// summary; its count is also the session's points. The summary is currently not saved.
+    /// </summary>
     private readonly List<float> _tasksPrecisions = new ();
 
-    private bool _is_frisbeeMiniGame = false;
+    /// <summary>Derived from the scene name; selects the PlayerPrefs difficulty key and the session-complete flag.</summary>
+    private bool _isFrisbeeMiniGame = false;
 
+    /// <summary>
+    /// Carny Wise dialog on the same GameObject that tells the player the difficulty went up or down. Cached in
+    /// <see cref="Awake"/> and not null-checked, so the component must exist next to this one.
+    /// </summary>
     private CarnyWiseDiffFeedback _diffFeedback;
 
-
-
+    /// <summary>Detects which mini-game is running and caches the difficulty feedback dialog.</summary>
     private void Awake()
     {
         SetMiniGameName();
@@ -64,20 +96,25 @@ public class CarnyWise : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Sets <see cref="_isFrisbeeMiniGame"/> from the active scene name (contains <c>frisbee</c> or <c>archery</c>,
+    /// case-insensitive).
+    /// </summary>
+    /// <remarks>Any other scene logs an error and keeps the Archery behaviour (flag stays false).</remarks>
     private void SetMiniGameName()
     {
         string sceneName = SceneManager.GetActiveScene().name.ToLower();
 
         if (sceneName.Contains("frisbee"))
         {
-            _is_frisbeeMiniGame = true;
+            _isFrisbeeMiniGame = true;
 
              return;
         }
 
         if (sceneName.Contains("archery"))
         {
-            _is_frisbeeMiniGame = false;
+            _isFrisbeeMiniGame = false;
 
             return;
         }
@@ -88,9 +125,9 @@ public class CarnyWise : MonoBehaviour
     /// <summary>
     /// Starts the per-task completion timer. Safe to call multiple times; only the first call sets the start time.
     /// </summary>
-    /// <remarks>Invocado via Inspector quando o jogador começa uma tarefa (ex: ao ativar uma score area).</remarks>
+    /// <remarks>Invoked via Inspector when the player starts a task (e.g. when a score area is activated or the bow string is grabbed).</remarks>
     public void StartTaskTimer()
-    {   // If the timer already started, do not reset
+    {
         if (_taskStartTime <= 0f)
         {
              _taskStartTime = Time.time;
@@ -98,14 +135,19 @@ public class CarnyWise : MonoBehaviour
     }
 
     /// <summary>
-    /// Records a miss attempt. If consecutive misses exceed <see cref="failingConsecutiveThreshold"/>, immediately decreases difficulty.
+    /// Records a miss attempt on the current task. When the attempts on it reach <see cref="_failingConsecutiveThreshold"/>,
+    /// immediately decreases difficulty (safety net) and starts a fresh task, without waiting for the struggle buffer.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo evento playerMissed do mini-jogo.</remarks>
+    /// <remarks>
+    /// The fresh task also clears the timer, so the next task's time only starts at the next <see cref="StartTaskTimer"/>
+    /// call. The abandoned task is not added to <see cref="_tasksTimes"/>/<see cref="_tasksPrecisions"/>.
+    /// </remarks>
+    /// <remarks>Invoked via Inspector by the mini-game's <c>_playerMissed</c> event.</remarks>
     public void PlayerMissed()
     {
         _currentAttemptsForTask++;
 
-        if (_currentAttemptsForTask >= failingConsecutiveThreshold)
+        if (_currentAttemptsForTask >= _failingConsecutiveThreshold)
         {
             DecreaseDifficulty();
 
@@ -116,7 +158,7 @@ public class CarnyWise : MonoBehaviour
     /// <summary>
     /// Records a successful score, calculates task precision, and evaluates whether to change difficulty.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo evento playerScored do mini-jogo.</remarks>
+    /// <remarks>Invoked via Inspector by the mini-game's <c>_playerScored</c> event.</remarks>
     public void PlayerScored()
     {
         _currentAttemptsForTask++;
@@ -124,9 +166,9 @@ public class CarnyWise : MonoBehaviour
         // Debug.Log($"Player Scored! Current Attempts: {_currentAttemptsForTask}");
         float timeTaken = Time.time - _taskStartTime;
 
-        const int SCORE_ATTEMPT = 1; 
+        const int ScoreAttempt = 1; 
 
-        float taskPrecision = SCORE_ATTEMPT / (float)_currentAttemptsForTask; 
+        float taskPrecision = ScoreAttempt / (float)_currentAttemptsForTask; 
 
         // Debug.Log("Task Precision: " + taskPrecision);
 
@@ -139,15 +181,27 @@ public class CarnyWise : MonoBehaviour
     }
 
 
+    /// <summary>Ends the current task: clears the start time (so <see cref="StartTaskTimer"/> can start a new one) and the attempt count.</summary>
     private void ResetTask()
     {
         _taskStartTime = 0f;
         _currentAttemptsForTask = 0; 
     }
 
+    /// <summary>
+    /// Classifies the task as excelling, struggling or in flow and updates the buffers. <paramref name="timeTaken"/>
+    /// is not used in the decision yet.
+    /// </summary>
+    /// <param name="precision">Precision of the finished task (<c>1 / attempts</c>, 0–1].</param>
+    /// <param name="timeTaken">Seconds the task took; currently ignored.</param>
+    /// <remarks>
+    /// Excelling (≥ <see cref="_precisionThresholdToIncreaseDiff"/>): excel +1, struggle −1, then checks for a change.
+    /// Struggling (≤ <see cref="_precisionThresholdToDecreaseDiff"/>): struggle +1, excel −1, then checks for a change.
+    /// Otherwise the task is in flow and <see cref="MantainFlowState"/> drains both.
+    /// </remarks>
     private void EvaluatePerformance(float precision, float timeTaken)
     {
-        if (precision >= precisionThresholdToIncreaseDiff)
+        if (precision >= _precisionThresholdToIncreaseDiff)
         {
             _excelCounter++;
 
@@ -157,7 +211,7 @@ public class CarnyWise : MonoBehaviour
             return;
         }
 
-        if (precision <= precisionThresholdToDecreaseDiff)
+        if (precision <= _precisionThresholdToDecreaseDiff)
         {
             _struggleCounter++;
 
@@ -172,6 +226,10 @@ public class CarnyWise : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// The task was in the flow band (between the two precision thresholds): decays both buffers by 1, never below 0, so
+    /// the difficulty stays and earlier streaks lose weight.
+    /// </summary>
     private void MantainFlowState()
     {   
        // Debug.Log("Mantaining Flow State");
@@ -180,47 +238,58 @@ public class CarnyWise : MonoBehaviour
         _excelCounter = Mathf.Max(0, _excelCounter - 1);
     }
 
+    /// <summary>
+    /// Raises the difficulty when <see cref="_excelCounter"/> reaches <see cref="_thresholdToChangeDiff"/>, otherwise lowers
+    /// it when <see cref="_struggleCounter"/> does. The excel check runs first.
+    /// </summary>
     private void CheckToChangeDifficulty()
     {  
-        if (_excelCounter >= thresholdToChangeDiff)
+        if (_excelCounter >= _thresholdToChangeDiff)
         {
             IncreaseDifficulty();
             return;
         }
 
-        if (_struggleCounter >= thresholdToChangeDiff)
+        if (_struggleCounter >= _thresholdToChangeDiff)
         {
             DecreaseDifficulty();
         }
     }
 
+    /// <summary>Raises the difficulty, shows the Carny Wise feedback and clears the excel buffer.</summary>
+    /// <remarks>Also called directly by the <c>increase</c> cheat in <see cref="MiniGameCheatCodes"/>.</remarks>
     public void IncreaseDifficulty()
     {
-        const bool IS_TO_INCREASE_DIFF = true;
+        const bool IsToIncreaseDiff = true;
 
 
-        changeDifficulty.Invoke(IS_TO_INCREASE_DIFF);
+        _changeDifficulty.Invoke(IsToIncreaseDiff);
        
 
-        _diffFeedback.ShowNewDiffFeedback(IS_TO_INCREASE_DIFF);
+        _diffFeedback.ShowNewDiffFeedback(IsToIncreaseDiff);
 
         _excelCounter = 0; 
     }
 
+    /// <summary>
+    /// Lowers the difficulty and clears the struggle buffer. The feedback dialog is only shown when the saved level is
+    /// above 0, so the player is not told the game got easier when it is already at the minimum.
+    /// </summary>
+    /// <remarks>Also called by the safety net in <see cref="PlayerMissed"/> and by the <c>decrease</c>/<c>reset</c> cheats.</remarks>
     public void DecreaseDifficulty()
     {   
-        string playerPrefsDiffKey = _is_frisbeeMiniGame ? "FrisbeeDifficultyLevel" : "ArcheryDifficultyLevel";
+        string playerPrefsDiffKey = _isFrisbeeMiniGame ? "FrisbeeDifficultyLevel" : "ArcheryDifficultyLevel";
         
         int currentDifficulty = PlayerPrefs.GetInt(playerPrefsDiffKey, 0);
 
-        const bool IS_TO_INCREASE_DIFF = false;
+        const bool IsToIncreaseDiff = false;
         
         if (currentDifficulty > 0)
         {
-            _diffFeedback.ShowNewDiffFeedback(IS_TO_INCREASE_DIFF);
+            _diffFeedback.ShowNewDiffFeedback(IsToIncreaseDiff);
         }
 
-        changeDifficulty.Invoke(IS_TO_INCREASE_DIFF);
+        _changeDifficulty.Invoke(IsToIncreaseDiff);
 
         _struggleCounter = 0; 
     }
@@ -230,7 +299,7 @@ public class CarnyWise : MonoBehaviour
     /// Called when the player reaches the session score goal.
     /// Flags the session as complete in <see cref="GameManager"/> and loads the hub scene after a short delay.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo evento sessionGoalReached do <see cref="ScoreAndStreakSystem"/>.</remarks>
+    /// <remarks>Invoked via Inspector by the <c>_sessionGoalReached</c> event of <see cref="ScoreAndStreakSystem"/>.</remarks>
     public void SessionGoalReached()
     {
        // SaveSessionData();
@@ -238,11 +307,12 @@ public class CarnyWise : MonoBehaviour
         Invoke(nameof(ReturnToFair), 1f);     
     }
 
+    /// <summary>Sets the mini-game's session-completed flag (shown by the hub dialogue) and loads <c>CountryFair</c>.</summary>
     private void ReturnToFair()
     {   
         GameManager gameManager = GameManager.GetInstance();
 
-        if (_is_frisbeeMiniGame)
+        if (_isFrisbeeMiniGame)
         {
             gameManager.FrisbeeSessionCompleted = true;
         }

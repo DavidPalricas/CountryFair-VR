@@ -6,11 +6,12 @@ using UnityEngine;
 /// </summary>
 public class CabinScript : MonoBehaviour
 {
-    Transform wheel;
+    /// <summary>The rotating wheel (this cabin's parent) whose Z rotation is cancelled.</summary>
+    Transform _wheel;
 
     void Start()
     {
-        wheel = transform.parent;
+        _wheel = transform.parent;
     }
 
     /// <summary>Cancels the parent wheel's Z rotation so the cabin stays level while the wheel spins.</summary>
@@ -19,7 +20,7 @@ public class CabinScript : MonoBehaviour
         transform.rotation = Quaternion.Euler(
             0f,
             0f,
-            -wheel.eulerAngles.z
+            -_wheel.eulerAngles.z
         );
     }
-}
+}

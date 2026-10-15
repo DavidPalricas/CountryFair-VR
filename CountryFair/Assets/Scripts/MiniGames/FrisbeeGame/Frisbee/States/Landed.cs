@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// State representing the frisbee after it has landed and stopped on the ground.
@@ -8,46 +9,60 @@ using UnityEngine.Events;
 /// </summary>
 public class Landed: FrisbeeState
 {    
+    /// <summary>Frisbee mesh; its bounds give the radius used to detect an overlapping score area.</summary>
     [SerializeField]
-    private MeshRenderer frisbeeMeshRenderer;
+    [FormerlySerializedAs("frisbeeMeshRenderer")]
+    private MeshRenderer _frisbeeMeshRenderer;
 
+    /// <summary>While true (tutorial practice), landing in a score area returns the frisbee without raising scoring events.</summary>
     public bool TutorialActive { get; set; } = true;
 
-    [Header("Landed Events")]
-
-    /// <summary>Event invoked when the player successfully scores by landing the frisbee in the score area.
+    /// <summary>Event invoked with the score area's points when the frisbee lands in a score area outside the tutorial.
     /// </summary>
     /// <remarks>
-    /// This event is trigger in the <see cref="GiveFrisbeeToPlayer"/> state to alert the dog that the player has scored,
-    /// and it must choose a new position accordingly.
+    /// Wired to the score system, the DDA and the dog (<see cref="DogIdle.PlayerScored"/>, <see cref="GoToTarget.IsToChooseNewTarget"/>),
+    /// which then picks a new position.
     /// </remarks>
+    [Header("Landed Events")]
+
     [SerializeField]
-    private UnityEvent <int> playerScored;
+    [FormerlySerializedAs("playerScored")]
+    private UnityEvent <int> _playerScored;
     
+    /// <summary>Wired to the audio manager to play the point-scored sound.</summary>
     [SerializeField]
-    private UnityEvent <AudioManager.GameSoundEffects> scoreSoundEffectEvent;
+    [FormerlySerializedAs("scoreSoundEffectEvent")]
+    private UnityEvent <AudioManager.GameSoundEffects> _scoreSoundEffectEvent;
 
+    /// <summary>Raised when the frisbee lands outside every score area.</summary>
     [SerializeField]
-    private UnityEvent playerMissed;
+    [FormerlySerializedAs("playerMissed")]
+    private UnityEvent _playerMissed;
 
-    private readonly AudioManager.GameSoundEffects _scoreSoundEffect = AudioManager.GameSoundEffects.POINT_SCORED;
+    /// <summary>
+    /// Sound sent through <see cref="_scoreSoundEffectEvent"/> when the frisbee lands in a score area, also during the
+    /// tutorial (fixed; not editable in the Inspector).
+    /// </summary>
+    private readonly AudioManager.GameSoundEffects _scoreSoundEffect = AudioManager.GameSoundEffects.PointScored;
 
+    /// <summary>Points of the score area the frisbee landed in, read from <see cref="ScoreAreaProperties.ScorePoints"/>.</summary>
     private int _scorePoints = 1;
 
     /// <summary>
-    /// Initializes the state by setting up physics component references.
+    /// Initializes the state by setting up physics component references and validating the mesh renderer.
     /// </summary>
     protected override void Awake()
     {  
         base.Awake();
 
-        if (frisbeeMeshRenderer == null)
+        if (_frisbeeMeshRenderer == null)
         {
             Debug.LogError("MeshRenderer component is not assigned in Landed script.");
         }
     }
 
 
+    /// <summary>No extra setup for this state; only runs the base <see cref="State.LateStart"/>.</summary>
     public override void LateStart()
     {
         base.LateStart();
@@ -55,8 +70,13 @@ public class Landed: FrisbeeState
 
     /// <summary>
     /// Called when entering the Landed state.
-    /// Invokes the frisbeeLanded event to notify other systems and disables the trajectory visualization.
+    /// Stops the frisbee and resolves the throw.
     /// </summary>
+    /// <remarks>
+    /// In a score area during the tutorial: "ReturnToPlayer" immediately. In a score area outside the tutorial: raises
+    /// <see cref="_playerScored"/> and waits here until the dog brings it back (<see cref="FrisbeeGivenByDog"/>).
+    /// Outside any score area: raises <see cref="_playerMissed"/> and fires "ReturnToPlayer".
+    /// </remarks>
     public override void Enter()
    {
         base.Enter();
@@ -67,19 +87,19 @@ public class Landed: FrisbeeState
         {
             if (TutorialActive)
             {
-                fSM.ChangeState("ReturnToPlayer");
+                _fsm.ChangeState("ReturnToPlayer");
 
                 return;
             }
 
-            playerScored.Invoke(_scorePoints);
+            _playerScored.Invoke(_scorePoints);
 
             return;
         }
 
-        playerMissed.Invoke();
+        _playerMissed.Invoke();
 
-        fSM.ChangeState("ReturnToPlayer");
+        _fsm.ChangeState("ReturnToPlayer");
     }
 
     /// <summary>
@@ -100,20 +120,25 @@ public class Landed: FrisbeeState
     }
 
     /// <summary>
-    /// Called by the event <see cref="GiveFrisbeeToPlayer.frisbeeGivenToPlayer"/> when the dog gives the frisbee back to the player.
+    /// Called by the event <see cref="GiveFrisbeeToPlayer._frisbeeGivenToPlayer"/> when the dog gives the frisbee back to the player.
     /// Triggers the transition "RetrievedByDog" to the <see cref="OnPlayerFront"/> state.
     /// </summary>
     public void FrisbeeGivenByDog()
     {   
-        if (fSM.CurrentState == this)
+        if (_fsm.CurrentState == this)
         {
-            fSM.ChangeState("RetrievedByDog");
+            _fsm.ChangeState("RetrievedByDog");
         }
     }
 
+    /// <summary>
+    /// True if a <c>ScoreArea</c>-tagged collider overlaps the frisbee; in that case also plays the area's score
+    /// animation and sound and stores its points in <see cref="_scorePoints"/>.
+    /// </summary>
+    /// <remarks>Only the first 10 overlapping colliders are inspected.</remarks>
     private bool FrisbeeOnScoreArea()
     {   
-        float frisbeeRadius = frisbeeMeshRenderer.bounds.extents.magnitude;
+        float frisbeeRadius = _frisbeeMeshRenderer.bounds.extents.magnitude;
 
         Collider[] overlapResults = new Collider[10];
 
@@ -140,7 +165,7 @@ public class Landed: FrisbeeState
                 }
 
                 scoreAreaAnimations.ScoreAnimation();
-                scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
+                _scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
 
                 _scorePoints = scoreAreaProperties.ScorePoints;
 

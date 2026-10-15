@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json; 
+using Newtonsoft.Json;
 
 /// <summary>
 /// Singleton that loads and saves the patient's persistent JSON save file (<c>survivorData.json</c>).
@@ -9,16 +9,20 @@ using Newtonsoft.Json;
 /// </summary>
 public class DataFileManager
 {
-    private const string SAVE_FILE_NAME = "survivorData.json";
+    private const string SaveFileName = "survivorData.json";
 
-    // Instância global (Singleton)
     private static DataFileManager _instance  = null;
 
-    // A variável que guarda os dados em memória
+    /// <summary>In-memory copy of the save file; every write method mutates it and then rewrites the whole file.</summary>
     public DataFileRoot CurrentData { get; private set; }
 
+    /// <summary>Absolute path of the save file, resolved by <see cref="SetFilePath"/>.</summary>
     private string _filePath;
 
+    /// <remarks>
+    /// <see cref="LoadData"/> runs before <see cref="SetFilePath"/>, so <see cref="_filePath"/> is still null
+    /// during the first load and an empty <see cref="DataFileRoot"/> is always created.
+    /// </remarks>
     private DataFileManager()
     {
         LoadData();
@@ -34,14 +38,15 @@ public class DataFileManager
     private void SetFilePath()
     {
         #if UNITY_EDITOR
-         
+
             string projectRoot = Directory.GetParent(Application.dataPath).ToString();
-            _filePath = Path.Combine(projectRoot, SAVE_FILE_NAME);
+            _filePath = Path.Combine(projectRoot, SaveFileName);
         #else
-            _filePath = Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
+            _filePath = Path.Combine(Application.persistentDataPath, SaveFileName);
         #endif
     }
 
+    /// <summary>Serializes <see cref="CurrentData"/> (indented, human-readable) and overwrites the save file; errors are logged, not thrown.</summary>
     private void SaveData()
     {
         string path = _filePath;
@@ -96,7 +101,6 @@ public class DataFileManager
     /// <param name="miniGameName">"frisbee" or "archery" — determines which sub-dictionary receives the record.</param>
     public void SaveSessionData(SessionData newSession, string sessionID, string miniGameName)
     {
-        // Pequena proteção para garantir que os objetos internos existem
         if (CurrentData == null) CurrentData = new DataFileRoot();
         if (CurrentData.frisbeeGame == null) CurrentData.frisbeeGame = new ();
         if (CurrentData.archeryGame == null) CurrentData.archeryGame = new ();
@@ -105,7 +109,7 @@ public class DataFileManager
         {
             if (CurrentData.frisbeeGame.SessionsData.ContainsKey(sessionID))
             {
-                CurrentData.frisbeeGame.SessionsData[sessionID] = newSession; 
+                CurrentData.frisbeeGame.SessionsData[sessionID] = newSession;
             }
             else
             {
@@ -129,7 +133,7 @@ public class DataFileManager
             return;
         }
 
-        SaveData(); 
+        SaveData();
     }
 
 
@@ -143,4 +147,4 @@ public class DataFileManager
 
         SaveData();
     }
-}
+}
