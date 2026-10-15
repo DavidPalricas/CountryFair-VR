@@ -14,11 +14,11 @@ public class CountryFairAudioManager : AudioManager
    [SerializeField]
    private EventReference _crowdNoise;
 
-   /// <summary>FMOD one-shot played when the player grows to giant scale (<see cref="AudioManager.GameSoundEffects.SCALE_TO_GIANT"/>).</summary>
+   /// <summary>FMOD one-shot played when the player grows to giant scale (<see cref="AudioManager.GameSoundEffects.ScaleToGiant"/>).</summary>
    [SerializeField]
    private EventReference _scaleToGiantSound;
   
-   /// <summary>FMOD one-shot played when the player shrinks back to normal scale (<see cref="AudioManager.GameSoundEffects.SCALE_TO_NORMAL"/>).</summary>
+   /// <summary>FMOD one-shot played when the player shrinks back to normal scale (<see cref="AudioManager.GameSoundEffects.SCALEToNormal"/>).</summary>
    [SerializeField]
    private EventReference _scaleToNormalSound;
 
@@ -69,12 +69,12 @@ public class CountryFairAudioManager : AudioManager
 
         switch (soundEffect)
         {  
-           case GameSoundEffects.SCALE_TO_GIANT:
+           case GameSoundEffects.ScaleToGiant:
                 eventToPlay = _scaleToGiantSound;
                 break;
 
 
-            case GameSoundEffects.SCALE_TO_NORMAL:
+            case GameSoundEffects.SCALEToNormal:
                 eventToPlay = _scaleToNormalSound;
                 break;
                 
@@ -96,8 +96,8 @@ public class CountryFairAudioManager : AudioManager
 
         switch (soundEffect)
         {  
-           case GameSoundEffects.BUTTON_PRESSED:
-                eventToPlay = buttonPressedSound;
+           case GameSoundEffects.ButtonPressed:
+                eventToPlay = _buttonPressedSound;
                 break;
                 
             default:

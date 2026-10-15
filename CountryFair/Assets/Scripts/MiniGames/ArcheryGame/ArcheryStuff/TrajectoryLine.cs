@@ -1,19 +1,23 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Renders a parabolic arrow trajectory preview using a <see cref="LineRenderer"/>.
-/// Samples <see cref="points"/> positions along the predicted path, applying scaled gravity to the Y axis.
+/// Samples <see cref="Points"/> positions along the predicted path, applying scaled gravity to the Y axis.
 /// </summary>
 public class TrajectoryLine : MonoBehaviour
 {
     /// <summary>LineRenderer used to draw the trajectory arc.</summary>
     public LineRenderer lineRenderer;
     /// <summary>Number of sample points along the predicted trajectory.</summary>
-    public int points = 50;
+    [FormerlySerializedAs("points")]
+    public int Points = 50;
     /// <summary>Time interval in seconds between consecutive trajectory samples.</summary>
-    public float timeStep = 0.05f;
+    [FormerlySerializedAs("timeStep")]
+    public float TimeStep = 0.05f;
     /// <summary>Multiplier applied to <see cref="Physics.gravity"/> when computing the arc (1 = real gravity).</summary>
-    public float gravityScale = 1f;
+    [FormerlySerializedAs("gravityScale")]
+    public float GravityScale = 1f;
 
     /// <summary>
     /// Computes and displays a parabolic arc for an arrow launched from <paramref name="startPos"/>
@@ -23,13 +27,13 @@ public class TrajectoryLine : MonoBehaviour
     /// <param name="startVelocity">Initial velocity vector of the arrow at launch.</param>
     public void ShowTrajectory(Vector3 startPos, Vector3 startVelocity)
     {
-        lineRenderer.positionCount = points;
+        lineRenderer.positionCount = Points;
 
-        for (int i = 0; i < points; i++)
+        for (int i = 0; i < Points; i++)
         {
-            float t = i * timeStep;
+            float t = i * TimeStep;
             Vector3 point = startPos + startVelocity * t;
-            point.y += Physics.gravity.y * gravityScale * t * t / 2f;
+            point.y += Physics.gravity.y * GravityScale * t * t / 2f;
 
             lineRenderer.SetPosition(i, point);
         }

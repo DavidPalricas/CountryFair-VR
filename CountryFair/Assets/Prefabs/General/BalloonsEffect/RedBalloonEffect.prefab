@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6ba23cb9ff1df4abb399c34507cba5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopBalloon
-  popBalloonEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
-  effectDuration: 2
+  _popBalloonEffect: {fileID: 6138996388446846769, guid: 7a9856b17b0c22c48b320dbac8884056, type: 3}
+  _effectDuration: 2
 --- !u!1001 &8915296324251304895
 PrefabInstance:
   m_ObjectHideFlags: 0

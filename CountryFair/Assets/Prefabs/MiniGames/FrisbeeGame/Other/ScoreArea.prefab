@@ -285,15 +285,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01ee92f52696e614bb4c94749cd422b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AreaToCatchFrisbee
-  blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
-  redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
-  yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
-  maxBalloons: 3
-  minBalloons: 1
-  minHeightToBalloonExplode: 3
-  maxHeightToBalloonExplode: 5
-  minflyDuration: 1
-  maxflyDuration: 2
+  _blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
+  _redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
+  _yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
+  _maxBalloons: 3
+  _minBalloons: 1
+  _minHeightToBalloonExplode: 3
+  _maxHeightToBalloonExplode: 5
+  _minFlyDuration: 1
+  _maxFlyDuration: 2
   floatDuration: 2
   rotationDuration: 3
   pulseDuration: 0.8

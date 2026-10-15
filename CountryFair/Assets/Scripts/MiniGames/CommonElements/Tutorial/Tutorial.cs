@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 /// <summary>
 /// Drives the mini-game tutorial flow: presents rule slides from JSON, launches a practice phase,
-/// and fires <c>tutorialCompleted</c> when the player is ready to play for real.
+/// and fires <see cref="_tutorialCompleted"/> when the player is ready to play for real.
 /// Skips itself immediately if <see cref="GameManager"/> reports the tutorial was already completed.
 /// </summary>
 public class Tutorial : UIDialog
@@ -14,8 +14,8 @@ public class Tutorial : UIDialog
     [SerializeField]
     private UnityEvent _tutorialCompleted;
 
-    [Header("Practise Elements")]
     /// <summary>Video screen container shown during the practice phase.</summary>
+    [Header("Practise Elements")]
     [SerializeField]
     private GameObject _videoScreen;
 
@@ -31,8 +31,8 @@ public class Tutorial : UIDialog
     [SerializeField]
     private GameObject _practiceElements;
 
-    [Header("Game Elements")]
     /// <summary>Button the player presses to advance through rule slides and to confirm practice completion.</summary>
+    [Header("Game Elements")]
     [SerializeField]
     private GameObject _tutorialButton;
 
@@ -171,9 +171,12 @@ public class Tutorial : UIDialog
     }
 
     /// <summary>Picks the Frisbee or Archery tutorial JSON based on <see cref="_isFromFrisbeGame"/>.</summary>
+    /// <remarks>
+    /// Called by <see cref="UIDialog"/>'s Awake, which runs before <see cref="Start"/> calls <see cref="CheckCurrenMiniGame"/>,
+    /// so <see cref="_isFromFrisbeGame"/> is still false here and the Archery file is always selected.
+    /// </remarks>
     protected override void SetJSONFileName()
     {
-        // _isFromFrisbeGame is determined by CheckCurrenMiniGame(), called from TutorialWasCompleted() in Start().
         _jsonFileName = _isFromFrisbeGame ? "frisbee_tutorial.json" : "archery_tutorial.json";
     }
 
@@ -197,7 +200,7 @@ public class Tutorial : UIDialog
     }
 
     /// <summary>
-    /// Activates the mini-game prop and post-tutorial UI, fires <c>tutorialCompleted</c>, marks the tutorial
+    /// Activates the mini-game prop and post-tutorial UI, fires <see cref="_tutorialCompleted"/>, marks the tutorial
     /// complete in <see cref="GameManager"/>, and destroys this tutorial object.
     /// </summary>
     /// <remarks>Invoked via Inspector by the "Estou Pronto" ("I'm ready") button at the end of the tutorial.</remarks>

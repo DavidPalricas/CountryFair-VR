@@ -9,12 +9,14 @@ public class ButtonPressed : MonoBehaviour
 {
     /// <summary>Wired in Inspector to the scene AudioManager's PlaySpatialSoundEffect method.</summary>
     public UnityEvent<AudioManager.GameSoundEffects, GameObject> buttonPressed;
-    private AudioManager.GameSoundEffects _buttonPressSoundEffect = AudioManager.GameSoundEffects.BUTTON_PRESSED;
+
+    /// <summary>Sound effect sent with every press; fixed to <see cref="AudioManager.GameSoundEffects.ButtonPressed"/>.</summary>
+    private AudioManager.GameSoundEffects _buttonPressSoundEffect = AudioManager.GameSoundEffects.ButtonPressed;
 
     /// <summary>
     /// Invokes the button-pressed sound effect event, using this GameObject as the spatial audio source.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo XR Interactable (OnSelectEntered) no botão.</remarks>
+    /// <remarks>Invoked via Inspector by the button's XR Interactable (OnSelectEntered).</remarks>
     public void Pressed()
     {
         buttonPressed.Invoke(_buttonPressSoundEffect, gameObject);

@@ -6468,12 +6468,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 1a409fe1aa04aef43a42a6a12abcb548, type: 3}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: gameName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: MiniGame
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: gameName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: textToShow
@@ -6492,13 +6492,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: _currentPlaceHolder
-      value: 
-      objectReference: {fileID: 1992457933}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGamePropPrefab
       value: 
       objectReference: {fileID: 8755715232111771409, guid: 7d5cee41b63170a4f8469f95112216ff, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 1992457933}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: _miniGamePropPrefab
       value: 
@@ -10394,15 +10394,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002d0241534036841a734dfd520d2d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CountryFairBalloonSpawner
-  blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
-  redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
-  yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
-  maxBalloons: 20
-  minBalloons: 0
-  minHeightToBalloonExplode: 8
-  maxHeightToBalloonExplode: 10
-  minflyDuration: 1
-  maxflyDuration: 2
+  _blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
+  _redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
+  _yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
+  _maxBalloons: 20
+  _minBalloons: 0
+  _minHeightToBalloonExplode: 8
+  _maxHeightToBalloonExplode: 10
+  _minFlyDuration: 1
+  _maxFlyDuration: 2
   _minSpawnInterval: 0.5
   _maxSpawnInterval: 1
   _balloonsInitialHeight: 7
@@ -20504,14 +20504,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dd2121423837164297df21d7364e0df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CountryFairAudioManager
-  ambienceMusic:
+  _ambienceMusic:
     Guid:
       Data1: 1041645944
       Data2: 1181187447
       Data3: -176062317
       Data4: -315743057
     Path: event:/AmbienceMusic
-  buttonPressedSound:
+  _buttonPressedSound:
     Guid:
       Data1: 1489044289
       Data2: 1104193514
@@ -22674,12 +22674,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 515739078}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: gameName
-      value: FrisbeeGame
-      objectReference: {fileID: 0}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: MiniGame
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: gameName
+      value: FrisbeeGame
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: redButton
@@ -22706,13 +22706,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: _currentPlaceHolder
-      value: 
-      objectReference: {fileID: 189216393}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGamePropPrefab
       value: 
       objectReference: {fileID: 495728589920066737, guid: 98b4112b4da0492458c36f58451ec24f, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 189216393}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: _miniGamePropPrefab
       value: 
@@ -26010,15 +26010,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002d0241534036841a734dfd520d2d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CountryFairBalloonSpawner
-  blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
-  redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
-  yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
-  maxBalloons: 20
-  minBalloons: 0
-  minHeightToBalloonExplode: 8
-  maxHeightToBalloonExplode: 10
-  minflyDuration: 1
-  maxflyDuration: 2
+  _blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
+  _redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
+  _yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
+  _maxBalloons: 20
+  _minBalloons: 0
+  _minHeightToBalloonExplode: 8
+  _maxHeightToBalloonExplode: 10
+  _minFlyDuration: 1
+  _maxFlyDuration: 2
   _minSpawnInterval: 0.5
   _maxSpawnInterval: 1
   _balloonsInitialHeight: 7
@@ -28047,15 +28047,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002d0241534036841a734dfd520d2d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CountryFairBalloonSpawner
-  blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
-  redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
-  yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
-  maxBalloons: 20
-  minBalloons: 0
-  minHeightToBalloonExplode: 8
-  maxHeightToBalloonExplode: 10
-  minflyDuration: 1
-  maxflyDuration: 2
+  _blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
+  _redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
+  _yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
+  _maxBalloons: 20
+  _minBalloons: 0
+  _minHeightToBalloonExplode: 8
+  _maxHeightToBalloonExplode: 10
+  _minFlyDuration: 1
+  _maxFlyDuration: 2
   _minSpawnInterval: 0.5
   _maxSpawnInterval: 1
   _balloonsInitialHeight: 7
@@ -28576,15 +28576,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002d0241534036841a734dfd520d2d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CountryFairBalloonSpawner
-  blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
-  redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
-  yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
-  maxBalloons: 20
-  minBalloons: 0
-  minHeightToBalloonExplode: 8
-  maxHeightToBalloonExplode: 10
-  minflyDuration: 1
-  maxflyDuration: 2
+  _blueBalloonPrefab: {fileID: 3396820265375727783, guid: 543bbd44f60af49468ed4badde237551, type: 3}
+  _redBalloonPrefab: {fileID: 3396820265375727783, guid: 2fea604df3fdc13458361852d27e2e12, type: 3}
+  _yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 5a9573db5608ed84eae2be47c6632bdd, type: 3}
+  _maxBalloons: 20
+  _minBalloons: 0
+  _minHeightToBalloonExplode: 8
+  _maxHeightToBalloonExplode: 10
+  _minFlyDuration: 1
+  _maxFlyDuration: 2
   _minSpawnInterval: 0.5
   _maxSpawnInterval: 1
   _balloonsInitialHeight: 7
@@ -30330,12 +30330,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: dac4b1b1690ebe94097998a4c2a7798d, type: 3}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: gameName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: MiniGame
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: gameName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: textToShow
@@ -30354,13 +30354,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2029425154}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: _currentPlaceHolder
-      value: 
-      objectReference: {fileID: 747718444}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGamePropPrefab
       value: 
       objectReference: {fileID: 5319194762821552515, guid: 0283159d65e61fb4d90b109da1e592a0, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 747718444}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: _miniGamePropPrefab
       value: 
@@ -32048,11 +32048,11 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2082441911727038875, guid: d963e3cc8c138304aabae15cf754492f, type: 3}
-      propertyPath: fatigueIncreaseRate
+      propertyPath: _fatigueIncreaseRate
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2093738121744905447, guid: d963e3cc8c138304aabae15cf754492f, type: 3}
-      propertyPath: hungerIncreaseRate
+      propertyPath: _hungerIncreaseRate
       value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 2128151958402252051, guid: d963e3cc8c138304aabae15cf754492f, type: 3}
@@ -32410,13 +32410,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
-      propertyPath: _currentPlaceHolder
-      value: 
-      objectReference: {fileID: 1456664939}
-    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: miniGamePropPrefab
       value: 
       objectReference: {fileID: 4425362018096994360, guid: 01569bf784932d64199a9ae3852be027, type: 3}
+    - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
+      propertyPath: _currentPlaceHolder
+      value: 
+      objectReference: {fileID: 1456664939}
     - target: {fileID: 5061425256794820537, guid: 74ae356102c48d243afd34516f6c8e3d, type: 3}
       propertyPath: currentTentPlaceHolder
       value: 

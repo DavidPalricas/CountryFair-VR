@@ -2,39 +2,46 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Serialization;
 
 /// <summary>
-/// Handles the animation of the score area including floating, rotating, and pulsing effects.
+/// Handles the animation of the score area including floating, rotating, and pulsing effects, and the balloon burst
+/// (inherited from <see cref="BalloonsSpawner"/>) played when the frisbee lands in it.
 /// </summary>
 
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(ScoreAreaProperties))]
 public class ScoreAreaAnimations : BalloonsSpawner
 {
-    [Header("Rotate Animation Settings")]
     /// <summary>
     /// Duration of one cycle of the floating animation.
     /// </summary>
+    /// <remarks>The float height is currently 0 (see <see cref="StartRotationAnimation"/>), so this tween has no visible effect.</remarks>
+    [Header("Rotate Animation Settings")]
     [SerializeField]
-     private float floatDuration = 2f;
+     [FormerlySerializedAs("floatDuration")]
+     private float _floatDuration = 2f;
 
     /// <summary>
     /// Duration of one full rotation cycle.
     /// </summary>
     [SerializeField]
-     private float rotationDuration = 3f;
+     [FormerlySerializedAs("rotationDuration")]
+     private float _rotationDuration = 3f;
 
     /// <summary>
     /// Duration of one cycle of the pulse scaling animation.
     /// </summary>
     [SerializeField]
-     private float pulseDuration = 1.5f;
+     [FormerlySerializedAs("pulseDuration")]
+     private float _pulseDuration = 1.5f;
 
     /// <summary>
     /// Maximum scale multiplier for the pulse animation.
     /// </summary>
     [SerializeField]
-     private float pulseScale = 1.2f;
+     [FormerlySerializedAs("pulseScale")]
+     private float _pulseScale = 1.2f;
 
     /// <summary>
     /// Cached starting position used as baseline for floating animation.
@@ -52,25 +59,27 @@ public class ScoreAreaAnimations : BalloonsSpawner
     private Sequence _animSequence;
 
 
+    /// <summary>Sibling component notified after the burst so the area is consumed (<see cref="ScoreAreaProperties.OnPlayerScore"/>).</summary>
     private ScoreAreaProperties _scoreAreaProperties;
 
 
-    [Header("Score Animation Settings")]
     /// <summary>
     /// Transform containing child GameObjects that serve as spawn positions for balloons.
     /// </summary>
+    [Header("Score Animation Settings")]
     [SerializeField]
-    private Transform balloonsPlaceHoldersGroup = null;
+    [FormerlySerializedAs("balloonsPlaceHoldersGroup")]
+    private Transform _balloonsPlaceHoldersGroup = null;
 
     /// <summary>
     /// Cached array of placeholder GameObjects used as spawn positions for balloons.
-    /// Populated during Awake from the children of balloonsPlaceHoldersGroup.
+    /// Populated during Awake from the children of <see cref="_balloonsPlaceHoldersGroup"/>; its length also becomes <see cref="BalloonsSpawner._maxBalloons"/>.
     /// </summary>
     private GameObject[] _balloonsPlaceHolders = null;
 
     /// <summary>
-    /// Caches the initial position and scale for animation reference.
-    /// Unity callback called when the script instance is being loaded.
+    /// Caches the initial position and scale for animation reference, collects the balloon placeholders and caps
+    /// the burst size to their count.
     /// </summary>
     protected override void Awake()
     {   
@@ -79,23 +88,22 @@ public class ScoreAreaAnimations : BalloonsSpawner
         _startPosition = transform.position;
         _startScale = transform.localScale;
 
-        if (balloonsPlaceHoldersGroup == null)
+        if (_balloonsPlaceHoldersGroup == null)
         {
             Debug.LogError("Balloons PlaceHolders Group is not assigned in ScoreAreaAnim script.");
 
             return; 
         }
 
-        _balloonsPlaceHolders = Utils.GetChildren(balloonsPlaceHoldersGroup);
+        _balloonsPlaceHolders = Utils.GetChildren(_balloonsPlaceHoldersGroup);
 
-        maxBalloons = _balloonsPlaceHolders.Length;
+        _maxBalloons = _balloonsPlaceHolders.Length;
 
         _scoreAreaProperties = GetComponent<ScoreAreaProperties>();
     }
 
     /// <summary>
-    /// Begins the animation sequence.
-    /// Unity callback called before the first frame update.
+    /// Starts the idle float/rotate/pulse loops.
     /// </summary>
     private void Start()
     {
@@ -109,24 +117,23 @@ public class ScoreAreaAnimations : BalloonsSpawner
     {
         _animSequence = DOTween.Sequence();
 
-        const float FLOAT_HEIGHT = 0f;
+        const float FloatHeight = 0f;
 
-        transform.DOMoveY(_startPosition.y + FLOAT_HEIGHT, floatDuration)
+        transform.DOMoveY(_startPosition.y + FloatHeight, _floatDuration)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1, LoopType.Yoyo);
 
-        transform.DORotate(new Vector3(0, 360, 0), rotationDuration, RotateMode.FastBeyond360)
+        transform.DORotate(new Vector3(0, 360, 0), _rotationDuration, RotateMode.FastBeyond360)
             .SetEase(Ease.Linear)
             .SetLoops(-1, LoopType.Restart);
 
-        transform.DOScale(_startScale * pulseScale, pulseDuration)
+        transform.DOScale(_startScale * _pulseScale, _pulseDuration)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1, LoopType.Yoyo);
     }
 
     /// <summary>
-    /// Cleans up DOTween animations when the object is destroyed.
-    /// Unity callback called when the MonoBehaviour will be destroyed.
+    /// Kills this area's looping tweens so DOTween does not keep animating a destroyed transform.
     /// </summary>
     private void OnDestroy()
     {
@@ -136,12 +143,14 @@ public class ScoreAreaAnimations : BalloonsSpawner
 
     /// <summary>
     /// Triggers the score animation by spawning and animating balloons.
-    /// Randomly spawns between minBaloons and maxBaloons, ensuring balanced distribution of colors.
-    /// Each balloon flies upward and pops at a random height.
+    /// Randomly spawns between <see cref="BalloonsSpawner._minBalloons"/> and <see cref="BalloonsSpawner._maxBalloons"/>
+    /// (exclusive), one per free placeholder, ensuring balanced distribution of colors.
+    /// Each balloon flies upward and pops at a random height. Then consumes the area via <see cref="ScoreAreaProperties.OnPlayerScore"/>.
     /// </summary>
+    /// <remarks>Called by <see cref="Landed"/> when the frisbee comes to rest inside this area.</remarks>
     public void ScoreAnimation()
     {    
-        int balloonsToSpawn = Utils.RandomValueInRange(minBalloons, maxBalloons);
+        int balloonsToSpawn = Utils.RandomValueInRange(_minBalloons, _maxBalloons);
 
         List<GameObject> avaiblePlaceholders = _balloonsPlaceHolders.ToList();
 

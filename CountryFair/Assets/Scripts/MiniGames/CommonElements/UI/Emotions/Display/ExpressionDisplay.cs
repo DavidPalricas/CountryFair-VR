@@ -5,10 +5,13 @@ using System;
 
 /// <summary>
 /// Manages expressions activation (emojis or faces) and synchronization over the network.
-/// Works in conjunction with EmojiDisplayManager to support both server and slider modes.
+/// Used twice in each mini-game scene (emoji display and face display); <see cref="ServerListener"/> keeps only one
+/// of the three display modes active.
 /// </summary>
 /// <remarks>
-/// This component handles the core expression visualization logic.
+/// Each child GameObject is one expression, looked up by its lower-case name (e.g. <c>happy</c>, <c>neutral</c>).
+/// <c>_netExpressionState</c> is written only by the server; a client owner requests changes through
+/// <see cref="RequestDisplayChangeServerRpc"/>.
 /// </remarks>
 public class ExpressionDisplay : EmotionDisplay
 {
@@ -27,7 +30,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// Only the server has permission to write to this variable.
     /// </summary>
     private readonly NetworkVariable<EXPRESSION_TYPE> _netExpressionState = new(
-        EXPRESSION_TYPE.NEUTRAL,
+        EXPRESSION_TYPE.Neutral,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
@@ -37,27 +40,24 @@ public class ExpressionDisplay : EmotionDisplay
     /// </summary>
     public enum EXPRESSION_TYPE {
         /// <summary>Represents a sad expression.</summary>
-        SAD,
+        Sad,
         /// <summary>Represents a happy expression.</summary>
-        HAPPY,
+        Happy,
         /// <summary>Represents an angry expression.</summary>
-        ANGRY,
+        Angry,
         /// <summary>Represents a disgusted expression.</summary>
-        DISGUST,
+        Disgust,
         /// <summary>Represents a surprised expression.</summary>
-        SURPRISE,
+        Surprise,
         /// <summary>Represents a fearful expression.</summary>
-        FEAR,
+        Fear,
         /// <summary>Represents a neutral expression.</summary>
-        NEUTRAL
+        Neutral
     }
 
     /// <summary>
-    /// Unity Awake method. Initializes internal state.
+    /// Builds the expression lookup from the children and hides them all.
     /// </summary>
-    /// <remarks>
-    /// This component focuses solely on expression visualization and network sync.
-    /// </remarks>
     private void Awake()
     {
         SetExpressions();
@@ -134,7 +134,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// <summary>
     /// Isolated logic for sending state to the network.
     /// </summary>
-    /// <param name="displayValue">The expression type to synchronize.</param>
+    /// <param name="type">The expression type to synchronize.</param>
     private void SyncToNetwork(EXPRESSION_TYPE type)
     {
         // Checks if NetworkManager exists and is running
@@ -169,12 +169,10 @@ public class ExpressionDisplay : EmotionDisplay
         _netExpressionState.Value = newType;
     }
 
-    // --- UTILS E PARSING ---
-
     /// <summary>
     /// Processes a string message (e.g., from server) and updates the expression.
     /// </summary>
-    /// <param name="message">String representation of the EmojiType.</param>
+    /// <param name="message">Server line <c>EXPRESSION;CATEGORY</c>; only the expression part (before the separator) is used, case-insensitively.</param>
     public override void ProcessServerString(string message)
     {
         base.ProcessServerString(message);

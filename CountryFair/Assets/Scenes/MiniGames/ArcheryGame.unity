@@ -1364,14 +1364,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62d87c5678270d148807b8d56ad8d4ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcheryAudioManager
-  ambienceMusic:
+  _ambienceMusic:
     Guid:
       Data1: 1041645944
       Data2: 1181187447
       Data3: -176062317
       Data4: -315743057
     Path: event:/AmbienceMusic
-  buttonPressedSound:
+  _buttonPressedSound:
     Guid:
       Data1: 1489044289
       Data2: 1104193514

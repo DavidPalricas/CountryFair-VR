@@ -7,83 +7,87 @@ using FMOD.Studio;
 /// This class uses FMOD for audio playback and should be inherited by specific game audio managers.
 /// </summary>
 public class AudioManager: MonoBehaviour
-{  
-    [Header("Ambience Music")]
+{
     /// <summary>
     /// FMOD event reference for the ambient background music.
     /// </summary>
+    [Header("Ambience Music")]
     [SerializeField]
-    protected EventReference ambienceMusic;
-    
-    [Header("Button Pressed Sound Effect")]
+    protected EventReference _ambienceMusic;
+
     /// <summary>
     /// FMOD event reference for the button pressed sound effect.
     /// </summary>
+    [Header("Button Pressed Sound Effect")]
     [SerializeField]
-    protected EventReference buttonPressedSound;
-    
+    protected EventReference _buttonPressedSound;
+
     /// <summary>
     /// Tracks whether the ambient music has been started to prevent multiple instances.
+    /// Static so it survives scene loads: every scene's audio manager shares the single instance below.
     /// </summary>
-    private static bool ambienceMusicStarted = false;
+    private static bool _ambienceMusicStarted = false;
 
     /// <summary>
     /// The FMOD event instance for the ambient music that persists across scenes.
     /// </summary>
-    private static EventInstance ambienceMusicInstance;
+    private static EventInstance _ambienceMusicInstance;
 
     /// <summary>
     /// Enumeration of all available game sound effects across different mini-games.
     /// </summary>
     public enum GameSoundEffects {
         /* General Sound Effects */
-        BUTTON_PRESSED,
+        ButtonPressed,
 
         /* Country Fair Sound Effects */
 
-        SCALE_TO_GIANT,
+        /// <summary>Played when giant mode grows the player (<c>PlayerScale</c>).</summary>
+        ScaleToGiant,
 
-        SCALE_TO_NORMAL,
-        
+        /// <summary>Played when giant mode shrinks the player back (<c>PlayerScale</c>).</summary>
+        SCALEToNormal,
+
         /* Carny Wise Sound Effects */
-        CARNYWISE_INCREASE_DIFF,
+        /// <summary>Carny Wise feedback when the DDA raises the difficulty.</summary>
+        CarnyWiseIncreaseDiff,
 
-        CARNYWISE_DECREASE_DIFF,
+        /// <summary>Carny Wise feedback when the DDA lowers the difficulty.</summary>
+        CarnyWiseDecreaseDiff,
 
         /* Frisbee Game Sound Effects*/
         /// <summary>Dog barking sound effect.</summary>
-        DOG_BARK,
+        DogBark,
         /// <summary>Frisbee throwing sound effect.</summary>
-        FRISBEE_THROW,
+        FrisbeeThrow,
         /// <summary>Point scored sound effect.</summary>
-        POINT_SCORED,
+        PointScored,
         /// <summary>Dog footsteps sound effect.</summary>
-        DOG_FOOTSTEPS,
+        DogFootSteps,
 
-        DOG_HAPPY_WHINE,
+        /// <summary>Dog whine played when it is happy (e.g. after returning the frisbee).</summary>
+        DogHappyWhine,
 
         /* Archery Game Sound Effects */
         ///<summary>Balloon popping sound effect.</summary>
-        BALLOON_POP,
-        
+        BalloonPop,
+
         ///<summary>Arrow shooting sound effect.</summary>
-        ARROW_SHOT,
-        
-        ///<summary>Cheering sound effect.</summary>
-        CHEER_SOUND_EFFECT
+        ArrowShot,
     }
 
 
+    /// <summary>Logs an error for any unassigned base FMOD event reference.</summary>
     protected virtual void Awake()
     {
-        if (ambienceMusic.IsNull)
+        if (_ambienceMusic.IsNull)
         {
             Debug.LogError("Ambience music EventReference is not assigned in AudioManager.");
 
             return;
         }
 
-        if (buttonPressedSound.IsNull)
+        if (_buttonPressedSound.IsNull)
         {
             Debug.LogError("Button pressed sound EventReference is not assigned in AudioManager.");
 
@@ -96,9 +100,9 @@ public class AudioManager: MonoBehaviour
     /// </summary>
     protected virtual void Start()
     {
-        if (!ambienceMusicStarted)
+        if (!_ambienceMusicStarted)
         {
-            ambienceMusicStarted = true;
+            _ambienceMusicStarted = true;
             PlayAmbienceMusic();
 
             return;
@@ -133,12 +137,13 @@ public class AudioManager: MonoBehaviour
     /// </summary>
     private void PlayAmbienceMusic()
     {
-        ambienceMusicInstance = RuntimeManager.CreateInstance(ambienceMusic);
-        ambienceMusicInstance.start();
+        _ambienceMusicInstance = RuntimeManager.CreateInstance(_ambienceMusic);
+        _ambienceMusicInstance.start();
     }
 
     /// <summary>
-    /// Pauses the ambient music when the audio manager is destroyed.
+    /// Pauses the ambient music when the audio manager is destroyed (e.g. on scene change);
+    /// the next scene's audio manager resumes it in <see cref="Start"/>.
     /// </summary>
     private void OnDestroy()
     {
@@ -151,6 +156,6 @@ public class AudioManager: MonoBehaviour
     /// <param name="pauseMusic">True to pause the music, false to resume it.</param>
     private void IsToPauseMusic(bool pauseMusic)
     {
-        ambienceMusicInstance.setPaused(pauseMusic);
+        _ambienceMusicInstance.setPaused(pauseMusic);
     }
 }

@@ -51,6 +51,6 @@ MonoBehaviour:
   updateTentsOrder:
     m_PersistentCalls:
       m_Calls: []
-  receiveCheatCode:
+  ReceiveCheatCode:
     m_PersistentCalls:
       m_Calls: []

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Score area target in the Frisbee mini-game. Supports three area types: NORMAL (can move and blink,
@@ -13,34 +14,40 @@ public class ScoreAreaProperties : MonoBehaviour
 {
     /// <summary>Determines behavior and base score value; only NORMAL areas support movement/blinking modifiers.</summary>
     [SerializeField]
-    private AreaType areaType = AreaType.NORMAL;
+    [FormerlySerializedAs("areaType")]
+    private AreaType _areaType = AreaType.Normal;
 
     /// <summary>Fired in tutorial mode when the player scores here — notifies <see cref="Tutorial"/> that a task completed.</summary>
     [SerializeField]
-    private UnityEvent tutorialTaskCompleted;
+    [FormerlySerializedAs("tutorialTaskCompleted")]
+    private UnityEvent _tutorialTaskCompleted;
 
-    [Header("Movement Settings")]
     /// <summary>Circular orbit speed expressed as seconds per full revolution.</summary>
+    [Header("Movement Settings")]
     [SerializeField]
-    private float moveSpeed = 2f;
+    [FormerlySerializedAs("moveSpeed")]
+    private float _moveSpeed = 2f;
     /// <summary>Radius of the circular orbit path.</summary>
     [SerializeField]
-    private float radius = 0.5f;
+    [FormerlySerializedAs("radius")]
+    private float _radius = 0.5f;
 
-    [Header("Visibility Settings")]
     /// <summary>Time in seconds the area stays visible during each blink cycle.</summary>
+    [Header("Visibility Settings")]
     [SerializeField]
-    private float timeVisible = 3f;
+    [FormerlySerializedAs("timeVisible")]
+    private float _timeVisible = 3f;
     /// <summary>Time in seconds the area stays invisible during each blink cycle.</summary>
     [SerializeField]
-    private float timeInvisible = 2f;
+    [FormerlySerializedAs("timeInvisible")]
+    private float _timeInvisible = 2f;
 
+    /// <summary>Spawn position; center reference of the orbit and target of <see cref="StopMoving"/>.</summary>
     private Vector3 _initialPosition = Vector3.zero;
     private Renderer _renderer;
     private Collider _collider;
 
-    // Constante para loops infinitos
-    private const int _INFINITE_LOOPS = -1;
+    private const int InfiniteLoops = -1;
 
     // Unique ID to differentiate Blinking from Moving
     private string _blinkId; 
@@ -48,15 +55,22 @@ public class ScoreAreaProperties : MonoBehaviour
 
     private FrisbeeGameManager _frisbeeGameManager;
 
+    /// <summary>Points awarded when the frisbee lands here; read by <see cref="Landed"/>.</summary>
+    /// <remarks>
+    /// <see cref="AdjustMovement"/> and <see cref="AdjustVisibility"/> multiply it on every call and nothing resets it,
+    /// so an area that is re-adjusted several times keeps accumulating the multipliers.
+    /// </remarks>
     public int ScorePoints  { get; private set; } = 1;
 
+    /// <summary>Kind of score area: regular targets, the dog's catch area, or a tutorial practice area.</summary>
     public enum AreaType
     {
-        NORMAL,
-        DOG,
-        TUTORIAL
+        Normal,
+        Dog,
+        Tutorial
     }
 
+    /// <summary>Caches components, the spawn position and the blink id; DOG areas are worth 8 points.</summary>
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
@@ -66,7 +80,7 @@ public class ScoreAreaProperties : MonoBehaviour
         _blinkId = "blink_" + GetInstanceID();
 
 
-        if (areaType == AreaType.DOG)
+        if (_areaType == AreaType.Dog)
         {
             ScorePoints = 8;
         }
@@ -86,13 +100,13 @@ public class ScoreAreaProperties : MonoBehaviour
     /// <param name="isToMove">True to begin orbiting; false to return to the initial position.</param>
     public void AdjustMovement(bool isToMove)
     {
-        if (areaType != AreaType.NORMAL)
+        if (_areaType != AreaType.Normal)
         {
             Debug.LogWarning("Movement adjustment is only applicable for NORMAL area type.");
             return;
         }
 
-        if (areaType == AreaType.NORMAL && isToMove)
+        if (_areaType == AreaType.Normal && isToMove)
         {   
             ScorePoints *= 2;
             StartMoving();
@@ -107,7 +121,7 @@ public class ScoreAreaProperties : MonoBehaviour
     /// </summary>
     /// <param name="canChangeVisibility">True to start blinking; false to restore permanent visibility.</param>
     public void AdjustVisibility(bool canChangeVisibility)
-    {  if (areaType != AreaType.NORMAL)
+    {  if (_areaType != AreaType.Normal)
         {
             Debug.LogWarning("Visibility adjustment is only applicable for NORMAL area type.");
             return;
@@ -122,41 +136,45 @@ public class ScoreAreaProperties : MonoBehaviour
         StopBlinking();
     }
     
+    /// <summary>Starts an endless closed Catmull-Rom path through 8 points on a circle, one lap every <see cref="_moveSpeed"/> seconds.</summary>
     private void StartMoving()
     {   
         transform.DOKill(false);
 
-        const int STEPS = 8;
-        Vector3[] circularPath = GetCircularWaypoints(_initialPosition, radius, STEPS);
+        const int Steps = 8;
+        Vector3[] circularPath = GetCircularWaypoints(_initialPosition, _radius, Steps);
 
-        transform.DOPath(circularPath, moveSpeed, PathType.CatmullRom)
+        transform.DOPath(circularPath, _moveSpeed, PathType.CatmullRom)
             .SetOptions(true)
             .SetEase(Ease.Linear)
-            .SetLoops(_INFINITE_LOOPS);
+            .SetLoops(InfiniteLoops);
     }
 
+    /// <summary>Kills the orbit and eases back to the spawn position.</summary>
     private void StopMoving()
     {
         transform.DOKill(false);
 
-        const float DURATION_TO_INITIAL_POS = 0.5f;
+        const float DurationToInitialPos = 0.5f;
         
-        transform.DOMove(_initialPosition, DURATION_TO_INITIAL_POS); 
+        transform.DOMove(_initialPosition, DurationToInitialPos); 
     }
 
+    /// <summary>Starts the endless visible → hidden (renderer and collider off) cycle.</summary>
    private void StartBlinking()
     {
         Sequence sequence = DOTween.Sequence();
-        sequence.SetId(_blinkId); // <--- O SEGREDO: Dá um nome a esta animação
+        sequence.SetId(_blinkId);
 
-        sequence.AppendInterval(timeVisible);
+        sequence.AppendInterval(_timeVisible);
         sequence.AppendCallback(() => ToggleVisuals(false));
-        sequence.AppendInterval(timeInvisible);
+        sequence.AppendInterval(_timeInvisible);
         sequence.AppendCallback(() => ToggleVisuals(true));
        
-        sequence.SetLoops(_INFINITE_LOOPS);
+        sequence.SetLoops(InfiniteLoops);
     }
 
+    /// <summary>Kills only the blink sequence (by id, leaving the movement tween alive) and makes the area visible again.</summary>
     private void StopBlinking()
     {
         DOTween.Kill(_blinkId);
@@ -171,14 +189,19 @@ public class ScoreAreaProperties : MonoBehaviour
         _collider.enabled = visualState;
     }
 
+    /// <summary>
+    /// Waypoints of a horizontal circle of radius <paramref name="r"/> whose center is offset to the area's right, so the
+    /// path starts near <paramref name="centerPos"/> instead of jumping out to the rim (exactly at it only while the
+    /// area's right axis is world X; the area spins, so this is approximate).
+    /// </summary>
     private Vector3[] GetCircularWaypoints(Vector3 centerPos, float r, int steps)
     {
         Vector3[] points = new Vector3[steps];
         
         // 360 degrees in radians
-        const float FULL_CIRCLE_IN_RADIANS = 2 * Mathf.PI;
+        const float FullCircleInRadians = 2 * Mathf.PI;
 
-        float angleStep = FULL_CIRCLE_IN_RADIANS  / steps;
+        float angleStep = FullCircleInRadians  / steps;
         
         Vector3 centerOfCircle = centerPos + (transform.right * r); 
         
@@ -194,9 +217,11 @@ public class ScoreAreaProperties : MonoBehaviour
         return points;
     }
 
+    /// <summary>Kills the movement tween of NORMAL areas.</summary>
+    /// <remarks>The blink sequence is not attached to the transform, so it is not killed here.</remarks>
     private void OnDestroy()
     {   
-        if (areaType == AreaType.NORMAL)
+        if (_areaType == AreaType.Normal)
         {
               transform.DOKill(); 
 
@@ -206,22 +231,22 @@ public class ScoreAreaProperties : MonoBehaviour
 
     /// <summary>
     /// Called when the frisbee enters this score area.
-    /// TUTORIAL areas fire <c>tutorialTaskCompleted</c> and self-destroy.
+    /// TUTORIAL areas fire <c>_tutorialTaskCompleted</c> and self-destroy.
     /// NORMAL areas delegate destruction to <see cref="FrisbeeGameManager.DestroyTarget"/>.
     /// DOG areas simply deactivate themselves.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo evento playerScored da ScoreArea ao detectar o frisbee.</remarks>
+    /// <remarks>Called by <see cref="ScoreAreaAnimations.ScoreAnimation"/> after the balloon burst.</remarks>
     public void OnPlayerScore(){
-        if (areaType == AreaType.TUTORIAL)
+        if (_areaType == AreaType.Tutorial)
         {
-            tutorialTaskCompleted.Invoke();
+            _tutorialTaskCompleted.Invoke();
 
             Destroy(gameObject);
 
             return;
         }
 
-        if (areaType == AreaType.NORMAL)
+        if (_areaType == AreaType.Normal)
         {
              _frisbeeGameManager.DestroyTarget(gameObject);
 

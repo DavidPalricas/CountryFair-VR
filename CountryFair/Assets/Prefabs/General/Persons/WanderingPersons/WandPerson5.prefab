@@ -68,8 +68,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63c4157c8e57a764cb4ea37df0f9dca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Walk
-  walkRadius: 10
-  animator: {fileID: 2731896469100735689}
+  _walkRadius: 10
+  _animator: {fileID: 2731896469100735689}
 --- !u!1001 &4026367431611792568
 PrefabInstance:
   m_ObjectHideFlags: 0

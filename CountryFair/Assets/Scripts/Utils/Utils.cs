@@ -8,47 +8,43 @@ using System;
 /// </summary>
 public static class Utils
 {
-    /// <summary>  
-    /// Casts a ray from the user's eyes/head position in the Meta Quest 3 headset to the game world.
-    /// This method is used for gaze-based interactions and raycasting in VR applications,
-    /// allowing objects to be selected or interacted with based on where the user is looking.
+    /// <summary>
+    /// Casts a ray from the user's head in the Meta Quest 3 headset into the game world, along the gaze direction.
+    /// Used for gaze-based interactions, e.g. <c>MiniGameTent</c> showing its play button while the player looks at it.
     /// </summary>
     /// <returns>
-    /// A Ray object representing the ray cast from the user's eye position (center eye anchor)
-    /// in the direction they are looking (forward vector of the head).
-    /// Returns an empty ray if the OVRCameraRig cannot be found in the scene.
+    /// A Ray starting at the position of the object tagged <c>MainCamera</c> and pointing along its forward vector.
     /// </returns>
     /// <remarks>
-    /// This method depends on having an OVRCameraRig component in the scene tagged with "MainCamera".
-    /// The OVRCameraRig provides the centerEyeAnchor transform which represents the user's eye position.
-    /// The ray direction is the forward direction of the head, representing the direction the user is gazing.
-    /// 
+    /// Uses the transform of the <c>MainCamera</c>-tagged object directly (the per-eye <c>centerEyeAnchor</c> version
+    /// is commented out). That object must follow the head; if no object has the tag, a
+    /// <see cref="NullReferenceException"/> is thrown (nothing is logged).
+    /// Looks the object up by tag on every call, so avoid calling it many times per frame.
+    ///
     /// Typical usage:
     /// <code>
-    /// Ray gazRay = Utils.CastRayMetaQuest();
-    /// if (Physics.Raycast(gazRay, out RaycastHit hit))
+    /// Ray gazeRay = Utils.CastRayMetaQuest();
+    /// if (Physics.Raycast(gazeRay, out RaycastHit hit))
     /// {
     ///     Debug.Log("Looking at: " + hit.collider.gameObject.name);
     /// }
     /// </code>
     /// </remarks>
-    /// <exception cref="NullReferenceException">
-    /// Logs an error if OVRCameraRig is not found or if centerEyeAnchor is not accessible.
-    /// </exception>
+    /// <exception cref="NullReferenceException">No GameObject is tagged <c>MainCamera</c>.</exception>
     public static Ray CastRayMetaQuest()
     {
         GameObject ovrCameraRig = GameObject.FindGameObjectWithTag("MainCamera");
-       
+
        /*
         if (ovrCameraRig == null)
         {
             Debug.LogError("OVRCameraRig not found in the scene. Make sure you have an OVRCameraRig in your scene to use CastRayMetaQuest.");
             return new Ray();
         }
-        
- 
+
+
         Transform centerEyeTransform = ovrCameraRig.GetComponent<OVRCameraRig>().centerEyeAnchor;
-       
+
         return new Ray(centerEyeTransform.position, centerEyeTransform.forward);
 
         */
@@ -57,22 +53,18 @@ public static class Utils
     }
 
     /// <summary>
-    /// Generates a random float value within a specified range using a time-based seed.
-    /// This method provides pseudo-random number generation that avoids predictable patterns
-    /// by seeding the random number generator with the current system time in milliseconds.
+    /// Returns a random float in [<paramref name="min"/>, <paramref name="max"/>], reseeding Unity's random generator
+    /// with the system tick count (milliseconds) before every call.
     /// </summary>
     /// <remarks>
-    /// Why use this instead of UnityEngine.Random.Range or System.Random.Next?
-    /// 
-    /// Computers cannot generate truly random numbers; they generate pseudo-random numbers using a seed.
-    /// The default Unity random number generator may produce predictable patterns if not properly seeded.
-    /// This method seeds the random number generator with Environment.TickCount (current OS time in milliseconds)
-    /// on each call, which helps avoid such patterns in the generated random numbers.
-    /// 
-    /// WARNING: Seeding on every call has performance implications. For performance-critical code
-    /// that requires many random numbers, consider calling this method less frequently or using
-    /// the standard UnityEngine.Random.Range() directly if predictable patterns are acceptable.
-    /// 
+    /// The reseeding was meant to avoid predictable patterns, but it has two side effects worth knowing:
+    /// <list type="bullet">
+    /// <item><description>Calls made within the same millisecond (e.g. several in one frame) get the same seed and
+    /// therefore return the same value.</description></item>
+    /// <item><description><see cref="UnityEngine.Random.InitState"/> resets the global generator, so it also changes the
+    /// sequence seen by every other <see cref="UnityEngine.Random"/> caller.</description></item>
+    /// </list>
+    ///
     /// Typical usage:
     /// <code>
     /// float randomHealth = Utils.RandomValueInRange(10f, 100f);
@@ -86,7 +78,7 @@ public static class Utils
     /// If min >= max, it logs an error and returns 0f.
     /// </returns>
     public static float RandomValueInRange(float min, float max)
-    {   
+    {
         if (min >= max)
         {
             Debug.LogError("Utils.RandomValueInRange(float min, float max): min should be less than max.");
@@ -99,39 +91,31 @@ public static class Utils
 
         return UnityEngine.Random.Range(min, max);
     }
-    
-    
+
+
     /// <summary>
-    /// Generates a random int value within a specified range using a time-based seed.
-    /// This method provides pseudo-random number generation that avoids predictable patterns
-    /// by seeding the random number generator with the current system time in milliseconds.
+    /// Returns a random int in [<paramref name="min"/>, <paramref name="max"/>) — <b>max is exclusive</b>, like
+    /// <see cref="UnityEngine.Random.Range(int, int)"/> — reseeding Unity's random generator with the system tick count
+    /// before every call.
     /// </summary>
     /// <remarks>
-    /// Why use this instead of UnityEngine.Random.Range or System.Random.Next?
-    /// 
-    /// Computers cannot generate truly random numbers; they generate pseudo-random numbers using a seed.
-    /// The default Unity random number generator may produce predictable patterns if not properly seeded.
-    /// This method seeds the random number generator with Environment.TickCount (current OS time in milliseconds)
-    /// on each call, which helps avoid such patterns in the generated random numbers.
-    /// 
-    /// WARNING: Seeding on every call has performance implications. For performance-critical code
-    /// that requires many random numbers, consider calling this method less frequently or using
-    /// the standard UnityEngine.Random.Range() directly if predictable patterns are acceptable.
-    /// 
+    /// Because max is exclusive, it can be called directly with a collection's length to get a valid index.
+    /// Same reseeding side effects as the float overload: calls in the same millisecond return the same value, and the
+    /// global <see cref="UnityEngine.Random"/> state is reset.
+    ///
     /// Typical usage:
     /// <code>
-    /// int randomHealth = Utils.RandomValueInRange(10, 100);
-    /// int randomSpeed = Utils.RandomValueInRange(5, 15);
+    /// int index = Utils.RandomValueInRange(0, items.Length);
     /// </code>
     /// </remarks>
     /// <param name="min">The minimum int value of the range (inclusive).</param>
-    /// <param name="max">The maximum int value of the range (inclusive).</param>
+    /// <param name="max">The maximum int value of the range (exclusive).</param>
     /// <returns>
-    /// A random int value between min and max (inclusive).
+    /// A random int value from min to max - 1.
     /// If min >= max, it logs an error and returns 0.
     /// </returns>
     public static int RandomValueInRange(int min, int max)
-    {   
+    {
         if (min >= max)
         {
             Debug.LogError("Utils.RandomValueInRange(int min, int max): min should be less than max.");
@@ -146,10 +130,11 @@ public static class Utils
     }
 
     /// <summary>
-    /// The GetChildren method is responsible for retrieving the children of a game object.
+    /// Returns the direct children of <paramref name="parent"/> (not grandchildren), in hierarchy order, including
+    /// inactive ones.
     /// </summary>
     /// <param name="parent">The transform component of the game object whose children are to be retrieved.</param>
-    /// <returns>The children of the specified game object.</returns>
+    /// <returns>The children's GameObjects; an empty array if it has none.</returns>
     public static GameObject[] GetChildren(Transform parent)
     {
         GameObject[] children = new GameObject[parent.childCount];

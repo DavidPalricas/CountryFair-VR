@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Handles the visualization of the frisbee's trailing trajectory during flight.
@@ -16,16 +17,16 @@ using System.Collections.Generic;
 /// </summary>
 public class FrisbeeTrajectory : MonoBehaviour
 {
-    /// <summary>Trajectory Visualization - Settings for the trajectory line renderer</summary>
-    [Header("Trajectory Visualization")]
-   
     /// <summary>Color of the trajectory line with alpha transparency.</summary>
+    [Header("Trajectory Visualization")]
     [SerializeField]
-    private Color trajectoryColor = new(0f, 1f, 0f, 0.8f);
+    [FormerlySerializedAs("trajectoryColor")]
+    private Color _trajectoryColor = new(0f, 1f, 0f, 0.8f);
     
     /// <summary>Width of the trajectory line renderer in world units.</summary>
     [SerializeField]
-    private float trajectoryWidth = 0.05f;
+    [FormerlySerializedAs("trajectoryWidth")]
+    private float _trajectoryWidth = 0.05f;
 
     /// <summary>Line renderer component that displays the frisbee trajectory.</summary>
     private LineRenderer _line;
@@ -68,10 +69,10 @@ public class FrisbeeTrajectory : MonoBehaviour
         GameObject trajectoryObj = new("TrajectoryLine");
         _line = trajectoryObj.AddComponent<LineRenderer>();
         _line.material = new Material(Shader.Find("Sprites/Default"));
-        _line.startColor = trajectoryColor;
-        _line.endColor = trajectoryColor;
-        _line.startWidth = trajectoryWidth;
-        _line.endWidth = trajectoryWidth;
+        _line.startColor = _trajectoryColor;
+        _line.endColor = _trajectoryColor;
+        _line.startWidth = _trajectoryWidth;
+        _line.endWidth = _trajectoryWidth;
         _line.positionCount = 0;
         _line.useWorldSpace = true;
     }
@@ -87,10 +88,10 @@ public class FrisbeeTrajectory : MonoBehaviour
     /// </summary>
     private void DrawTrajectory()
     {
-        const float DISTANCE_THRESHOLD = 0.1f;
+        const float DistanceThreshold = 0.1f;
         
         // Only record a new point if the frisbee has moved far enough
-        if (Vector3.Distance(transform.position, _lastRecordedPosition) < DISTANCE_THRESHOLD)
+        if (Vector3.Distance(transform.position, _lastRecordedPosition) < DistanceThreshold)
         {
             return;
         }

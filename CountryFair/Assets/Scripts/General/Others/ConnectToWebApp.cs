@@ -42,7 +42,7 @@ public class ConnectToWebApp : MonoBehaviour
     private float _retryDelaySeconds = 3f;
 
     /// <summary>Enforces the singleton: the first instance survives scene loads, later ones self-destroy.</summary>
-    private static ConnectToWebApp s_instance = null;
+    private static ConnectToWebApp _instance = null;
 
     /// <summary>The joined <c>fairsceneroom</c> instance; null until <see cref="ConnectLoop"/> succeeds, and while disconnected.</summary>
     private Room<FairState> _room;
@@ -76,17 +76,17 @@ public class ConnectToWebApp : MonoBehaviour
     /// (see <c>CheatCodes.Start()</c>) instead of being wired once in the Inspector.
     /// </summary>
     [HideInInspector]
-    public UnityEvent<string> receiveCheatCode;
+    public UnityEvent<string> ReceiveCheatCode;
 
     /// <summary>Global accessor for the singleton established in <see cref="Awake"/>; null until the first <see cref="ConnectToWebApp"/> instance in the scene has run its Awake.</summary>
-    public static ConnectToWebApp Instance => s_instance;
+    public static ConnectToWebApp Instance => _instance;
 
     /// <summary>Establishes the singleton and marks this object to persist across the hub/mini-game scene loads, so the web app connection survives scene transitions.</summary>
     private void Awake()
     {
-        if (s_instance == null)
+        if (_instance == null)
         {
-            s_instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
 
             return;
@@ -170,7 +170,7 @@ public class ConnectToWebApp : MonoBehaviour
 
                 _room.OnMessage<string>("cheatCode", (code) =>
                 {
-                    receiveCheatCode.Invoke(code);
+                    ReceiveCheatCode.Invoke(code);
                 });
 
                 // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this

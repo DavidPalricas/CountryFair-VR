@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Abstract base class for all dog behavior states in the Frisbee mini-game.
@@ -15,15 +16,18 @@ using DG.Tweening;
 [RequireComponent(typeof(NavMeshAgent))]
  public abstract class DogState: AnimatableState
 {   
+    /// <summary>Wired to <see cref="FrisbeeAudioManager"/> to play the bark attached to the dog; raised by <see cref="Bark"/>.</summary>
     [SerializeField]
-    protected UnityEvent<AudioManager.GameSoundEffects, GameObject> barkEvent;
+    [FormerlySerializedAs("barkEvent")]
+    protected UnityEvent<AudioManager.GameSoundEffects, GameObject> _barkEvent;
 
     /// <summary>
     /// Reference to the player's transform component.
-    /// Initialized in <see cref="LateStart"/> and used for navigation and positioning relative to the player.
+    /// Assigned in the Inspector and used for navigation and positioning relative to the player.
     /// </summary>
     [SerializeField]
-    protected Transform playerTransform;
+    [FormerlySerializedAs("playerTransform")]
+    protected Transform _playerTransform;
 
     /// <summary>
     /// Reference to the NavMeshAgent component used for AI navigation and pathfinding.
@@ -31,9 +35,14 @@ using DG.Tweening;
     /// </summary>
     protected NavMeshAgent _agent;
 
+    /// <summary>
+    /// Destination chosen by <c>GoToTarget</c> and read by the other dog states. Static, so it is shared by all states
+    /// (and would be shared by every dog in the scene).
+    /// </summary>
     protected static Vector3 _currentTargetPos;
     
-    private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DOG_BARK;
+    /// <summary>Sound sent through <see cref="_barkEvent"/> by <see cref="Bark"/>, shared by every dog state (fixed; not editable in the Inspector).</summary>
+    private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DogBark;
 
     /// <summary>
     /// Initializes the dog state by setting up state properties and configuring the NavMeshAgent.
@@ -48,7 +57,7 @@ using DG.Tweening;
     {    
         base.Awake();
 
-        if (playerTransform == null)
+        if (_playerTransform == null)
         {
             Debug.LogError("Player Transform not assigned. Please assign it in the inspector.");
             return;
@@ -76,14 +85,9 @@ using DG.Tweening;
     }
 
     /// <summary>
-    /// Initializes references to the player and game manager by finding them in the scene.
-    /// Called once during FSM initialization for all states.
+    /// Called once during FSM initialization for all states. Adds nothing to <see cref="State.LateStart"/>; the player
+    /// reference is assigned in the Inspector (<see cref="_playerTransform"/>).
     /// </summary>
-    /// <remarks>
-    /// Searches for GameObjects with "Player" and "GameManager" tags and caches their references.
-    /// Logs errors if either reference cannot be found.
-    /// Derived classes can override this to add additional initialization but should call base.LateStart() to ensure these references are set.
-    /// </remarks>
     public override void LateStart()
     {
         base.LateStart();
@@ -106,6 +110,7 @@ using DG.Tweening;
         return !_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance;
     }
 
+    /// <summary>Tweens the dog's yaw (0.5 s) to face <paramref name="targetTransform"/>, ignoring height; kills any running rotation tween first.</summary>
     protected void RotateDogTowardsTarget(Transform targetTransform)
     {   
         Vector3 directionToTarget = (targetTransform.position - transform.position).normalized;
@@ -122,8 +127,9 @@ using DG.Tweening;
 
 
 
+    /// <summary>Plays the bark sound effect through <see cref="_barkEvent"/>.</summary>
     protected void Bark()
     {
-         barkEvent.Invoke(_barkSoundEffect, gameObject);
+         _barkEvent.Invoke(_barkSoundEffect, gameObject);
     }
 }

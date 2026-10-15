@@ -6,7 +6,7 @@ using UnityEngine.AI;
 /// The target position is generated within a semicircular area in front of the player at an adaptive distance.
 /// </summary>
 /// <remarks>
-/// This state uses adaptive parameters from the game manager to determine the dog's distance from the player.
+/// This state reads the adaptive <c>DogDistance</c> PlayerPrefs value (written by <see cref="FrisbeeGameManager"/>) to determine the dog's distance from the player.
 /// The target position is randomly chosen within a 180-degree arc in front of the player and validated on the NavMesh.
 /// A temporary GameObject is created to represent the target position for rotation purposes.
 /// </remarks>
@@ -18,36 +18,23 @@ public class GoToTarget : DogState{
     private Transform _newTargetTransform;
     
     /// <summary>
-    /// A flag indicating whether the player has scored.
-    /// Used to determine if a new target position should be chosen.
+    /// Whether <see cref="Enter"/> picks a new position (true, after a score) or returns to <see cref="DogState._currentTargetPos"/> (false, after a miss).
     /// </summary>
-    /// <notes>>
-    /// Its value is changed in the inspector on the event player socred or missed in the frisbee game object(Landed script).
-    /// </notes>
-    /// <value>
-    /// True if the player scored; otherwise, false.
-    /// </value>
+    /// <remarks>Set via Inspector by the frisbee's scored/missed events (<see cref="Landed"/>).</remarks>
     public bool IsToChooseNewTarget { get; set; } = false;
 
 
     /// <summary>
-    /// Initializes the GoToNewTarget state by calling the base DogState initialization.
+    /// Runs the base dog setup.
     /// </summary>
-    /// <remarks>
-    /// Calls <see cref="DogState.Awake"/> to set up state properties and NavMeshAgent configuration.
-    /// </remarks>
     protected override void Awake()
     {   
         base.Awake();
     }
 
     /// <summary>
-    /// Initializes references to the player and game manager.
+    /// Picks the first target position once the FSM is initialized.
     /// </summary>
-    /// <remarks>
-    /// Calls <see cref="DogState.LateStart"/> to set up player and game manager references
-    /// needed for position calculation and adaptive parameters.
-    /// </remarks>
     public override void LateStart()
     {
        base.LateStart();
@@ -56,8 +43,8 @@ public class GoToTarget : DogState{
     }
 
     /// <summary>
-    /// Called when entering the GoToNewTarget state.
-    /// Generates a new target position and sets up navigation to that position.
+    /// Called when entering the GoToTarget state.
+    /// Picks a new target position (or reuses the previous one, see <see cref="IsToChooseNewTarget"/>) and navigates to it.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -86,12 +73,11 @@ public class GoToTarget : DogState{
    }
 
     /// <summary>
-    /// Called every frame while in the GoToNewTarget state.
-    /// Rotates the dog toward the new target position and checks if the dog has reached it.
+    /// Called every frame while in the GoToTarget state.
     /// </summary>
     /// <remarks>
-    /// Continuously rotates the dog to face the target while moving.
-    /// When the dog reaches the target position, triggers the transition "PositionReached" to the <see cref="DogIdle"/> state.
+    /// When the dog stops, it turns to face the player and sets <c>Speed</c> to 0; once the Animator switches to the idle
+    /// clip, the "PositionReached" transition to <see cref="DogIdle"/> fires.
     /// </remarks>
     public override void Execute()
     {
@@ -99,20 +85,20 @@ public class GoToTarget : DogState{
 
         if (IsPlayingNewAnimation())
         {
-            fSM.ChangeState("PositionReached");
+            _fsm.ChangeState("PositionReached");
 
             return;
         }  
 
         if (DogStoped())
-        {   RotateDogTowardsTarget(playerTransform);
+        {   RotateDogTowardsTarget(_playerTransform);
             animator.SetFloat("Speed", 0f);
         }
     }
     
 
     /// <summary>
-    /// Called when exiting the GoToNewTarget state.
+    /// Called when exiting the GoToTarget state.
     /// Destroys the temporary target GameObject to clean up the scene.
     /// </summary>
     /// <remarks>
@@ -133,7 +119,7 @@ public class GoToTarget : DogState{
     /// <para>
     /// The algorithm:
     /// <list type="number">
-    /// <item><description>Retrieves the adaptive "DogDistance" parameter from the game manager</description></item>
+    /// <item><description>Reads the adaptive <c>DogDistance</c> PlayerPrefs value; if it is not set yet, returns the dog's current position</description></item>
     /// <item><description>Generates a random angle between -90° and +90° relative to the player's forward direction</description></item>
     /// <item><description>Calculates a position at the specified distance in the random direction</description></item>
     /// <item><description>Validates the position is on the NavMesh using NavMesh.SamplePosition</description></item>
@@ -154,20 +140,20 @@ public class GoToTarget : DogState{
             return transform.position;
         }
      
-        const float MIN_ANGLE = -90f * Mathf.Deg2Rad;
-        const float MAX_ANGLE = 90f * Mathf.Deg2Rad;
+        const float MinAngle = -90f * Mathf.Deg2Rad;
+        const float MaxAngle = 90f * Mathf.Deg2Rad;
 
-        float randomAngle = Utils.RandomValueInRange(MIN_ANGLE, MAX_ANGLE);
+        float randomAngle = Utils.RandomValueInRange(MinAngle, MaxAngle);
       
        Quaternion rotation = Quaternion.Euler(0, randomAngle * Mathf.Rad2Deg, 0);
 
-       Vector3 randomDirection = rotation * playerTransform.forward;
+       Vector3 randomDirection = rotation * _playerTransform.forward;
     
-       Vector3 targetPosition = playerTransform.position + randomDirection * dogDistance;
+       Vector3 targetPosition = _playerTransform.position + randomDirection * dogDistance;
 
-        const  float NAVMESH_SAMPLE_RADIUS = 200f;
+        const  float NavmeshSampleRadius = 200f;
 
-        if (NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, NAVMESH_SAMPLE_RADIUS, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, NavmeshSampleRadius, NavMesh.AllAreas))
         {   
             return hit.position;
         }

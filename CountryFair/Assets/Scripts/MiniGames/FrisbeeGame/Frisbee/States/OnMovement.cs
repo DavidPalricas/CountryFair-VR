@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// State representing the frisbee during flight, applying realistic aerodynamic forces.
@@ -25,26 +26,25 @@ using UnityEngine.Events;
 /// </remarks>
 public class OnMovement : FrisbeeState
 {
-    [Header("Aerodynamic Settings")]
-    
     /// <summary>
     /// Lift force strength coefficient applied to the frisbee during flight.
     /// Higher values increase upward force, making the disc rise more during flight.
-    /// Used in the lift calculation: lift = speed² × liftStrength × aerodynamicFactor
+    /// Used in the lift calculation: lift (N) = speed² × liftStrength × aerodynamicFactor, capped at 15 N. With the
+    /// default 0.15, the cap is reached at 10 m/s with the underside fully facing the air.
     /// </summary>
+    [Header("Aerodynamic Settings")]
     [Tooltip("Lift force strength. Higher values make the disc rise more.")]
     [SerializeField]
-    private float liftStrength = 0.15f;
+    [FormerlySerializedAs("liftStrength")]
+    private float _liftStrength = 0.15f;
     
     /// <summary>
-    /// Unity event invoked when the frisbee exits the play area bounds.
-    /// Listeners can use this to trigger game logic such as score penalties or UI updates.
+    /// Unity event invoked when the frisbee enters an <c>OutOfBounds</c> trigger during flight (counts as a miss).
     /// </summary>
-    
     [SerializeField]
-    private UnityEvent playerMissed;
+    [FormerlySerializedAs("playerMissed")]
+    private UnityEvent _playerMissed;
 
-    
     /// <summary>
     /// Flag indicating whether the frisbee has made contact with the ground.
     /// Used to determine when to transition to the stopped state.
@@ -57,9 +57,8 @@ public class OnMovement : FrisbeeState
     /// </summary>
     private float _defaultAngularDrag;
 
-
-    private const float STOP_THRESHOLD = 0.1f;
-
+    /// <summary>Speed (m/s) below which a frisbee that has touched the ground counts as stopped.</summary>
+    private const float StopThreshold = 0.1f;
 
     /// <summary>
     /// Initializes the OnMovement state by storing default physics values.
@@ -96,6 +95,8 @@ public class OnMovement : FrisbeeState
     /// <remarks>
     /// Invokes <see cref="ApplySimpleAerodynamics"/> each frame to calculate and apply
     /// lift and drag forces based on current velocity and orientation.
+    /// The FSM runs <c>Execute</c> from <c>Update</c>, not <c>FixedUpdate</c>, so the forces are added once per rendered
+    /// frame and the total lift depends on the frame rate.
     /// </remarks>
     public override void Execute()
     {
@@ -113,6 +114,7 @@ public class OnMovement : FrisbeeState
     /// <list type="bullet">
     /// <item><description>Restores original angular drag value</description></item>
     /// <item><description>Disables trajectory visualization line</description></item>
+    /// <item><description>Makes the Rigidbody kinematic so the frisbee stays where it stopped</description></item>
     /// <item><description>Resets ground contact flag</description></item>
     /// </list>
     /// </para>
@@ -154,7 +156,7 @@ public class OnMovement : FrisbeeState
     /// </list>
     /// </description></item>
     /// <item><description><b>Lift Clamping:</b> Maximum lift force is limited to 15N to prevent unrealistic behavior from VR tracking glitches.</description></item>
-    /// <item><description><b>Induced Drag:</b> When generating lift (high AoA), additional drag force is applied opposite to velocity direction.
+    /// <item><description><b>Induced Drag:</b> Whenever lift is generated (AoA &gt; 0), an extra drag of 10 % of the lift is applied opposite to the velocity direction.
     /// This prevents infinite gliding and creates realistic energy loss during flight.</description></item>
     /// </list>
     /// </para>
@@ -167,11 +169,11 @@ public class OnMovement : FrisbeeState
         Vector3 velocity = _rigidbody.linearVelocity; 
         float speed = velocity.magnitude;
        
-        if (speed < STOP_THRESHOLD)
+        if (speed < StopThreshold)
         {
             if (_touchedGround)
             {
-                fSM.ChangeState("StoppedOnGround");
+                _fsm.ChangeState("StoppedOnGround");
             } 
 
             return;
@@ -183,7 +185,7 @@ public class OnMovement : FrisbeeState
 
         float aerodynamicFactor = Mathf.Max(0, angleOfAttack);
 
-        float dynamicLift = speed * speed * liftStrength * aerodynamicFactor;
+        float dynamicLift = speed * speed * _liftStrength * aerodynamicFactor;
 
         dynamicLift = Mathf.Clamp(dynamicLift, 0, 15f); 
 
@@ -203,17 +205,17 @@ public class OnMovement : FrisbeeState
     /// </summary>
     /// <param name="other">The collision data associated with this collision event.</param>
     /// <remarks>
-    /// When colliding with objects tagged "Ground":
+    /// On any collision, removes all rigidbody constraints so the frisbee can tumble and settle naturally.
+    /// When colliding with objects tagged "Ground", also:
     /// <list type="bullet">
     /// <item><description>Sets <see cref="_touchedGround"/> flag to enable state transition when speed drops</description></item>
     /// <item><description>Increases angular damping to 10.0 to rapidly kill spin rotation</description></item>
-    /// <item><description>Removes all rigidbody constraints to allow natural settling</description></item>
     /// </list>
     /// Only processes collisions when this state is currently active.
     /// </remarks>
     private void OnCollisionEnter(Collision other)
     {  
-        if (fSM.CurrentState == this)
+        if (_fsm.CurrentState == this)
         {
             _rigidbody.constraints = RigidbodyConstraints.None;
 
@@ -233,29 +235,29 @@ public class OnMovement : FrisbeeState
     /// </summary>
     /// <param name="other">The collision data associated with this collision exit event.</param>
     /// <remarks>
-    /// When leaving collision with objects tagged "Ground":
-    /// <list type="bullet">
-    /// <item><description>Clears <see cref="_touchedGround"/> flag to prevent premature state transition</description></item>
-    /// <item><description>Restores low angular damping (0.1) to allow free spinning during flight</description></item>
-    /// </list>
-    /// This allows the frisbee to bounce and continue flying if it has sufficient velocity.
+    /// When leaving collision with objects tagged "Ground", restores low angular damping (0.1) so the frisbee spins freely
+    /// again and can keep flying after a bounce if it has enough speed.
+    /// <see cref="_touchedGround"/> is <b>not</b> cleared, so once the frisbee has touched the ground it lands as soon as
+    /// its speed drops below <see cref="StopThreshold"/>, even mid-bounce.
     /// Only processes collisions when this state is currently active.
     /// </remarks>
     private void OnCollisionExit(Collision other)
     {
-        if (other.gameObject.CompareTag("Ground") && fSM.CurrentState == this)
+        if (other.gameObject.CompareTag("Ground") && _fsm.CurrentState == this)
         {
             _rigidbody.angularDamping = 0.1f;
         }
     }
 
 
+    /// <summary>Entering an <c>OutOfBounds</c> trigger mid-flight is a miss: raises <see cref="_playerMissed"/> and fires "ReturnToPlayer".</summary>
+    /// <param name="other">Trigger the frisbee entered; only colliders tagged <c>OutOfBounds</c> are handled.</param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("OutOfBounds") && fSM.CurrentState == this)
+        if (other.CompareTag("OutOfBounds") && _fsm.CurrentState == this)
         {   
-            playerMissed.Invoke();
-            fSM.ChangeState("ReturnToPlayer");
+            _playerMissed.Invoke();
+            _fsm.ChangeState("ReturnToPlayer");
         }
     }
 }

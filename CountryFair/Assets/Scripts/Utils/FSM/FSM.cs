@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Represents a Finite State Machine (FSM) component used to manage state-based behavior for NPCs and other game entities.
@@ -16,16 +17,24 @@ public class FSM : MonoBehaviour
     /// List of all available states in this FSM.
     /// The first state in this list will be set as the initial state when the FSM starts.
     /// </summary>
+    /// <remarks>A transition whose <see cref="Transition.To"/> is not in this list is rejected by <see cref="ChangeState"/>.</remarks>
     [SerializeField]
-    private List<State> states;
+    [FormerlySerializedAs("states")]
+    private List<State> _states;
 
     /// <summary>
     /// List of all possible state transitions in this FSM.
-    /// Each transition defines a valid state change with a unique name, a source state (from), and a destination state (to).
+    /// Each transition defines a state change with a name, a source state (from), and a destination state (to).
     /// Transitions with a null 'from' state act as wildcards and can be triggered from any state.
     /// </summary>
-    [SerializeField] 
-    private List<Transition> transitions = new();
+    /// <remarks>
+    /// Names do not have to be unique: several transitions can share a name with different 'from' states. The list is
+    /// searched in order and the first match wins, so a wildcard placed before a specific transition of the same name
+    /// shadows it.
+    /// </remarks>
+    [SerializeField]
+    [FormerlySerializedAs("transitions")]
+    private List<Transition> _transitions = new();
 
     /// <summary>
     /// Gets the currently active state of the FSM.
@@ -36,38 +45,40 @@ public class FSM : MonoBehaviour
 
     /// <summary>
     /// Initializes the FSM on game start.
-    /// Sets the current state to the first state in the states list and calls its Enter method.
-    /// Also calls LateStart on all states for any necessary initialization.
+    /// Calls LateStart on all states, then sets the current state to the first state in the states list and calls its
+    /// Enter method.
     /// </summary>
     /// <remarks>
-    /// Unity lifecycle callback invoked before the first frame update.
-    /// Logs an error and returns early if no states are defined.
+    /// Runs after every state's <c>Awake</c>, so the states have already cached their references when <c>LateStart</c>
+    /// and the first <c>Enter</c> run.
+    /// Logs an error and returns early if no states are defined; <see cref="CurrentState"/> then stays null and
+    /// <see cref="Update"/> throws every frame.
     /// </remarks>
     private void Start()
-    {   
-        if (states.Count == 0)
+    {
+        if (_states.Count == 0)
         {
             Debug.LogError("FSM has no states defined.");
 
             return;
         }
 
-        foreach (State state in states)
+        foreach (State state in _states)
         {
             state.LateStart();
         }
 
-        CurrentState = states[0];
+        CurrentState = _states[0];
 
         CurrentState.Enter();
     }
 
     /// <summary>
-    /// Updates the FSM each frame by executing the current state's logic.
+    /// Runs the current state's per-frame logic (<see cref="State.Execute"/>).
     /// </summary>
     /// <remarks>
-    /// Unity lifecycle callback invoked once per frame.
-    /// Delegates to the <see cref="State.Execute"/> method of the <see cref="CurrentState"/>.
+    /// Called from <c>Update</c>, not <c>FixedUpdate</c>: states that apply physics forces in <c>Execute</c> are
+    /// therefore frame-rate dependent.
     /// </remarks>
     private void Update()
     {
@@ -79,10 +90,10 @@ public class FSM : MonoBehaviour
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method searches through the transitions list to find a matching transition.
+    /// This method searches through the transitions list, in order, for the first matching transition.
     /// A transition matches if:
     /// <list type="bullet">
-    /// <item><description>Its name equals the <paramref name="transitionName"/> (comparison is case-insensitive and ignores whitespace)</description></item>
+    /// <item><description>Its name equals the <paramref name="transitionName"/> (comparison is case-insensitive and ignores spaces; tabs and other whitespace are not stripped)</description></item>
     /// <item><description>Either the transition's 'from' state is null (wildcard), OR the current state matches the transition's 'from' state</description></item>
     /// </list>
     /// </para>
@@ -93,35 +104,35 @@ public class FSM : MonoBehaviour
     /// <item><description>Updates <see cref="CurrentState"/> to the transition's 'to' state</description></item>
     /// <item><description>Calls <see cref="State.Enter"/> on the new current state</description></item>
     /// </list>
+    /// A transition whose 'to' is the current state re-runs Exit and Enter on it.
     /// </para>
     /// <para>
-    /// If no matching transition is found, an error is logged to the console indicating the transition name,
-    /// the GameObject name, and the current state name.
+    /// If no matching transition is found, or its 'to' state is not in the states list, an error is logged and the
+    /// current state is kept.
     /// </para>
     /// </remarks>
-    /// <param name="transitionName">The name of the transition to execute. Case and whitespace insensitive.</param>
+    /// <param name="transitionName">The name of the transition to execute. Case and space insensitive.</param>
     /// <example>
     /// Example usage:
     /// <code>
     /// fsm.ChangeState("ToIdle");
-    /// fsm.ChangeState("to idle"); // Equivalent due to whitespace/case insensitivity
+    /// fsm.ChangeState("to idle"); // Equivalent due to space/case insensitivity
     /// </code>
     /// </example>
     public void ChangeState (string transitionName)
-    {      
-        foreach (Transition transition in transitions)
-        {   
-            // Removes whitespaces and converts to lowercase to avoid case sensitivity and whitespaces issues
-            if (transition.name.Replace(" ", "").ToLower() == transitionName.Replace(" ", "").ToLower() && (transition.from == null || CurrentState == transition.from))
-            {   
-                if (!states.Contains(transition.to))
+    {
+        foreach (Transition transition in _transitions)
+        {
+            if (transition.Name.Replace(" ", "").ToLower() == transitionName.Replace(" ", "").ToLower() && (transition.From == null || CurrentState == transition.From))
+            {
+                if (!_states.Contains(transition.To))
                 {
-                    Debug.LogError($"Transition target state {transition.to.StateName} not found in FSM states for game object {gameObject.name}.");
+                    Debug.LogError($"Transition target state {transition.To.StateName} not found in FSM states for game object {gameObject.name}.");
                     return;
                 }
 
                 CurrentState.Exit();
-                CurrentState = transition.to;
+                CurrentState = transition.To;
                 CurrentState.Enter();
 
                 return;

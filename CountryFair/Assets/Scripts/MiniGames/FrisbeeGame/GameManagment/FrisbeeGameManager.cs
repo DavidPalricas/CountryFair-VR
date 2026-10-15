@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages the Frisbee mini-game: spawns score areas around the player, applies DDA difficulty settings
@@ -10,68 +11,83 @@ using UnityEngine.Events;
 /// </summary>
 public class FrisbeeGameManager : MiniGameManager
 {
-    [Header("Dog Settings")]
     /// <summary>Distance in meters added to the baseline dog distance per difficulty level.</summary>
+    [Header("Dog Settings")]
     [SerializeField]
-    private float distanceIncrement = 2.5f;
+    [FormerlySerializedAs("distanceIncrement")]
+    private float _distanceIncrement = 2.5f;
 
     /// <summary>Maximum dog distance cap in meters, regardless of difficulty level.</summary>
     [SerializeField]
-    private float maxDogDistance = 20f;
+    [FormerlySerializedAs("maxDogDistance")]
+    private float _maxDogDistance = 20f;
 
-    [Header("Complexity Curves")]
     /// <summary>AnimationCurve controlling the fraction of score areas that move at a given difficulty saturation.</summary>
+    [Header("Complexity Curves")]
     [SerializeField]
-    private AnimationCurve movingRatioCurve;
+    [FormerlySerializedAs("movingRatioCurve")]
+    private AnimationCurve _movingRatioCurve;
     /// <summary>AnimationCurve controlling the fraction of score areas that blink at a given difficulty saturation.</summary>
     [SerializeField]
-    private AnimationCurve visibilityRatioCurve;
+    [FormerlySerializedAs("visibilityRatioCurve")]
+    private AnimationCurve _visibilityRatioCurve;
 
-    [Header("Game Specific References")]
     /// <summary>Prefab instantiated for each score area target.</summary>
+    [Header("Game Specific References")]
     [SerializeField]
-    private GameObject scoreAreaPrefab;
+    [FormerlySerializedAs("scoreAreaPrefab")]
+    private GameObject _scoreAreaPrefab;
     /// <summary>Collider defining the valid spawn region for score areas around the player.</summary>
     [SerializeField]
-    private Collider dogAreaCollider;
+    [FormerlySerializedAs("dogAreaCollider")]
+    private Collider _dogAreaCollider;
 
     /// <summary>Collider marking the elevated dog-score area; score area spawns are excluded from this zone.</summary>
     [SerializeField]
-    private Collider dogScoreAreaCollider;
+    [FormerlySerializedAs("dogScoreAreaCollider")]
+    private Collider _dogScoreAreaCollider;
 
     /// <summary>Player transform used to calculate dog distance and score-area placement relative to the player.</summary>
     [SerializeField]
-    private Transform playerTransform;
+    [FormerlySerializedAs("playerTransform")]
+    private Transform _playerTransform;
 
     /// <summary>Fired when difficulty changes (after the first level), signaling the dog AI to reposition.</summary>
     [SerializeField]
-    private UnityEvent difficultyHasChanged;
+    [FormerlySerializedAs("difficultyHasChanged")]
+    private UnityEvent _difficultyHasChanged;
     
-    // Variáveis para spawn
+    /// <summary>Ratios derived from the difficulty in <see cref="ApplyDifficultySettings"/> and applied to the score areas.</summary>
     private float _currentMovingRatio;
     private float _currentVisibilityRatio;
 
+    /// <summary>Bounding radius of the score area prefab, used to keep spawned areas from overlapping.</summary>
     private float _scoreAreaRadius = 0;
 
+    /// <summary>Player-to-dog distance measured when the tutorial ends; level 0 keeps the dog where the scene placed it.</summary>
     private float _defaultDogDistance;
 
 
+    /// <summary>
+    /// Validates references, measures the score area radius, and clears the saved difficulty if the tutorial was never
+    /// completed (the first session starts at level 0).
+    /// </summary>
     protected override void Awake()
     {
         base.Awake();
   
-        if (playerTransform == null)
+        if (_playerTransform == null)
         {
             Debug.LogError("Player not found. The rehabilitation system cannot start.");
             return;
         }
 
-        if (movingRatioCurve.length == 0 || visibilityRatioCurve.length == 0)
+        if (_movingRatioCurve.length == 0 || _visibilityRatioCurve.length == 0)
         {
             Debug.LogError("One or more animation curves are not assigned in the inspector.");
         }
 
-        _scoreAreaRadius = scoreAreaPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
+        _scoreAreaRadius = _scoreAreaPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
 
         if (!GameManager.GetInstance().FrisbeeTutorialCompleted)
         {
@@ -79,50 +95,62 @@ public class FrisbeeGameManager : MiniGameManager
         }
     }
 
+    /// <summary>Measures the baseline dog distance, restores the saved Frisbee difficulty and applies it.</summary>
     public override void TutorialCompleted()
     {   
         _defaultDogDistance =  GetPlayerDistanceToDog();
         
-        difficultyLevel = PlayerPrefs.GetInt("FrisbeeDifficultyLevel", 0);
+        DifficultyLevel = PlayerPrefs.GetInt("FrisbeeDifficultyLevel", 0);
 
-        Debug.Log("Current Difficulty Level: " + difficultyLevel);
+        Debug.Log("Current Difficulty Level: " + DifficultyLevel);
 
         ApplyDifficultySettings();
     }
 
+    /// <summary>
+    /// Moves one level up or down (never below 0) and re-applies the settings. Above level 0 it first raises
+    /// <see cref="_difficultyHasChanged"/> so the dog repositions.
+    /// </summary>
     public override void ChangeDifficulty(bool isToIncreaseDiff)
     {   
-        if (difficultyLevel > 0)
+        if (DifficultyLevel > 0)
         {   
-            difficultyHasChanged.Invoke();
+            _difficultyHasChanged.Invoke();
         }
 
-        difficultyLevel = isToIncreaseDiff ? difficultyLevel + 1 : Mathf.Max(0, difficultyLevel - 1);
-        // Debug.Log($"<color=blue>DDA:</color> Adjusting difficulty to Level {difficultyLevel} ({(isToIncreaseDiff ? "Increased" : "Decreased")})");
+        DifficultyLevel = isToIncreaseDiff ? DifficultyLevel + 1 : Mathf.Max(0, DifficultyLevel - 1);
+        // Debug.Log($"<color=blue>DDA:</color> Adjusting difficulty to Level {DifficultyLevel} ({(isToIncreaseDiff ? "Increased" : "Decreased")})");
         ApplyDifficultySettings();
 
     }
 
 
+    /// <summary>
+    /// Derives the dog distance (written to the <c>DogDistance</c> PlayerPrefs key read by <c>GoToTarget</c>), the score
+    /// area count and the moving/blinking ratios from the level, and saves the level. Score areas are not respawned
+    /// here; that happens on <see cref="SpawnScoreAreas"/>.
+    /// </summary>
+    /// <remarks><c>level / (level + 4)</c> is a saturation factor in [0, 1) so the curves flatten out at high levels.</remarks>
     protected override void ApplyDifficultySettings()
     {
-        float rawDistance = _defaultDogDistance + (difficultyLevel * distanceIncrement);
-        float finalDogDistance = Mathf.Min(rawDistance, maxDogDistance);
+        float rawDistance = _defaultDogDistance + (DifficultyLevel * _distanceIncrement);
+        float finalDogDistance = Mathf.Min(rawDistance, _maxDogDistance);
         
         PlayerPrefs.SetFloat("DogDistance", finalDogDistance);
 
-        PlayerPrefs.SetInt("FrisbeeDifficultyLevel", difficultyLevel);
+        PlayerPrefs.SetInt("FrisbeeDifficultyLevel", DifficultyLevel);
 
-        _currentDesiredCount = Mathf.RoundToInt(targetsCount + (difficultyLevel * targetsPerLevel));
+        _currentDesiredCount = Mathf.RoundToInt(_targetsCount + (DifficultyLevel * _targetsPerLevel));
 
-        float saturationFactor = difficultyLevel / (difficultyLevel + 4f);
+        float saturationFactor = DifficultyLevel / (DifficultyLevel + 4f);
 
-        _currentMovingRatio = movingRatioCurve.Evaluate(saturationFactor);
-        _currentVisibilityRatio = visibilityRatioCurve.Evaluate(saturationFactor);
+        _currentMovingRatio = _movingRatioCurve.Evaluate(saturationFactor);
+        _currentVisibilityRatio = _visibilityRatioCurve.Evaluate(saturationFactor);
 
-        // Debug.Log($"[DDA] Level {difficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {_currentDesiredCount} | Complexity: {saturationFactor:P0}");
+        // Debug.Log($"[DDA] Level {DifficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {_currentDesiredCount} | Complexity: {saturationFactor:P0}");
     }
 
+    /// <summary>Adds or removes score areas until there are <paramref name="desiredCount"/>, then redistributes movement/visibility.</summary>
     protected override void SyncTargets(int desiredCount)
     {
         while (_spawnedTargets.Count < desiredCount)
@@ -138,13 +166,15 @@ public class FrisbeeGameManager : MiniGameManager
         UpdateTargetsProperties();
     }
 
+    /// <summary>Spawns one score area at a free random position; <paramref name="prefabToSpawn"/> is ignored.</summary>
     protected override void AddTarget(GameObject prefabToSpawn = null)
     {
         Vector3 pos = GetRandomTargetPosition();
-        GameObject newScoreArea = Instantiate(scoreAreaPrefab, pos, Quaternion.identity);
+        GameObject newScoreArea = Instantiate(_scoreAreaPrefab, pos, Quaternion.identity);
         _spawnedTargets.Add(newScoreArea);
     }
 
+    /// <summary>Destroys the oldest score area.</summary>
     protected override void RemoveTarget()
     {
         if (_spawnedTargets.Count > 0)
@@ -155,6 +185,7 @@ public class FrisbeeGameManager : MiniGameManager
         }
     }
 
+    /// <summary>Shuffles the score areas and makes the first N moving and the first M blinking, according to the current ratios.</summary>
     protected override void UpdateTargetsProperties()
     {
         int total = _spawnedTargets.Count;
@@ -174,26 +205,31 @@ public class FrisbeeGameManager : MiniGameManager
         }
     }
 
+    /// <summary>
+    /// Random point around the player at 20–100 % of the current dog distance, at the dog area's height, inside the dog
+    /// area and not overlapping another score area (layer <c>ScoreArea</c>).
+    /// </summary>
+    /// <remarks>Retries recursively with no attempt limit, so an area too small for the requested count recurses until it overflows the stack.</remarks>
     protected override Vector3 GetRandomTargetPosition()
     {
         float currentDogDist = PlayerPrefs.GetFloat("DogDistance", _defaultDogDistance);
         
-        const float MIN_OFFSET = 0.2f;
-        const float MAX_OFFSET = 1f;
+        const float MinOffset = 0.2f;
+        const float MaxOffset = 1f;
 
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
 
-        float scoreAreaDistance = currentDogDist * Random.Range(MIN_OFFSET, MAX_OFFSET);
+        float scoreAreaDistance = currentDogDist * Random.Range(MinOffset, MaxOffset);
 
-        Vector3 scoreAreaPosition = playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
+        Vector3 scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
 
-        scoreAreaPosition.y = dogAreaCollider.bounds.center.y;
+        scoreAreaPosition.y = _dogAreaCollider.bounds.center.y;
 
         int layerMask = LayerMask.GetMask("ScoreArea");
         
         bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, layerMask);
 
-        if (!dogAreaCollider.bounds.Contains(scoreAreaPosition) || collidesWithOtherAreas)
+        if (!_dogAreaCollider.bounds.Contains(scoreAreaPosition) || collidesWithOtherAreas)
         {
             return GetRandomTargetPosition();
         }
@@ -202,6 +238,7 @@ public class FrisbeeGameManager : MiniGameManager
     }
     
 
+    /// <summary>Destroys a score area without replacing it and redistributes the properties of the remaining ones.</summary>
     public override void DestroyTarget(GameObject target, GameObject targetPrefab = null)
     {
         _spawnedTargets.Remove(target);
@@ -214,7 +251,7 @@ public class FrisbeeGameManager : MiniGameManager
     /// <summary>
     /// Spawns or removes score areas to match the current desired count for the active difficulty level.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo evento frisbeeScored do Dog AI quando uma nova ronda começa.</remarks>
+    /// <remarks>Invoked via Inspector by the dog's <c>_spawnScoreAreas</c> event (<see cref="DogIdle"/>) when a new round starts.</remarks>
     public void SpawnScoreAreas()
     {
         SyncTargets(_currentDesiredCount);
@@ -223,7 +260,7 @@ public class FrisbeeGameManager : MiniGameManager
     /// <summary>
     /// Destroys all active score areas and clears the spawned-targets list.
     /// </summary>
-    /// <remarks>Invocado via Inspector pelo evento difficultyHasChanged para limpar áreas antes de um respawn.</remarks>
+    /// <remarks>Invoked via Inspector by the dog's <c>_removeScoreAreas</c> event and by <see cref="_difficultyHasChanged"/>, to clear the areas before a respawn.</remarks>
     public void RemoveScoreAreas()
     {
        if (_spawnedTargets.Count > 0)
@@ -237,6 +274,7 @@ public class FrisbeeGameManager : MiniGameManager
         }
     }
 
+    /// <summary>Distance from the player to the <c>Dog</c>-tagged object, or 0 if it is missing.</summary>
     private float GetPlayerDistanceToDog()
     {
         GameObject dog = GameObject.FindGameObjectWithTag("Dog");
@@ -247,13 +285,14 @@ public class FrisbeeGameManager : MiniGameManager
             return 0f;
         }
 
-        return Vector3.Distance(playerTransform.position, dog.transform.position);
+        return Vector3.Distance(_playerTransform.position, dog.transform.position);
     }
 
 
+    /// <summary>Raises <see cref="_difficultyHasChanged"/> so the dog repositions, then drops to level 0.</summary>
     public override void ResetDifficulty()
     {      
-        difficultyHasChanged.Invoke();
+        _difficultyHasChanged.Invoke();
         base.ResetDifficulty();
     }
 }

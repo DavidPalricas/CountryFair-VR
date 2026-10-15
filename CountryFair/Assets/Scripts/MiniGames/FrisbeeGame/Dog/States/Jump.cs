@@ -1,23 +1,16 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
-/// Dog FSM state that performs a DOTween jump animation, then transitions to <c>CatchFrisbee</c>
-/// once the jump animation clip starts playing.
+/// Dog FSM state for the mid-air catch. The jump itself is the Animator clip triggered by the previous state; this
+/// state waits for the Animator to move on and then transitions to <c>CatchFrisbee</c>.
 /// </summary>
+/// <remarks>
+/// <see cref="_jumpDuration"/>, <see cref="_jumpPower"/> and <see cref="_jumpNumbers"/> are not used by the current code.
+/// </remarks>
 public class Jump: DogState
 {
-    [Header("Jumps Settings")]
-    /// <summary>Total duration of the jump sequence in seconds.</summary>
-    [SerializeField]
-    private float jumpDuration = 1.6f;
-
-    /// <summary>Height of the jump arc.</summary>
-    [SerializeField]
-    private float jumpPower = 0.3f;
-    /// <summary>Number of bounces during the jump sequence.</summary>
-    [SerializeField]
-    private int jumpNumbers = 2;
-
+    /// <summary>Validates the Animator reference on top of the base dog setup.</summary>
      protected override void Awake()
     {   
         base.Awake();
@@ -34,6 +27,10 @@ public class Jump: DogState
         base.Enter();
     }
 
+    /// <summary>
+    /// Once the Animator leaves the clip that was playing on <see cref="Enter"/>, restores the locomotion <c>Speed</c>
+    /// parameter and fires the <c>"CatchFrisbee"</c> transition.
+    /// </summary>
     public override void Execute()
     {
         base.Execute();
@@ -41,7 +38,7 @@ public class Jump: DogState
         if (IsPlayingNewAnimation())
         {   
             animator.SetFloat("Speed", 1f);
-            fSM.ChangeState("CatchFrisbee");
+            _fsm.ChangeState("CatchFrisbee");
 
             return;
         }

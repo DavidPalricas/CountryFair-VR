@@ -2,74 +2,105 @@ using UnityEngine;
 using System.Linq;
 using System;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 
+/// <summary>
+/// Cheat codes shared by every mini-game scene: scene/tutorial control, difficulty overrides, session goal and the
+/// emotion-display test codes. Subclasses (<see cref="ArcheryCheatCodes"/>, <see cref="FrisbeeCheatCodes"/>) supply
+/// the game-specific <c>miss</c>/<c>score</c> behaviour.
+/// </summary>
+/// <remarks>Until the tutorial is completed, only the codes in <see cref="_cheatCodesOnTutorial"/> are accepted.</remarks>
 [RequireComponent(typeof(MiniGameManager))]
 public class MiniGameCheatCodes : CheatCodes
 {   
+    /// <summary>Goal used by the <c>goal</c> cheat when no number follows it.</summary>
     [SerializeField]
     private int _defaultUpdateGoalValue = 10;
 
     [Header("Mini Game Dependencies")]
 
+    /// <summary>Used by the <c>return</c> cheat.</summary>
     [SerializeField]
-    private ReturnToFair returnToFair;
+    [FormerlySerializedAs("returnToFair")]
+    private ReturnToFair _returnToFair;
 
+    /// <summary>DDA system driven by the <c>increase</c>, <c>decrease</c>, <c>reset</c> and <c>complete</c> cheats.</summary>
     [SerializeField]
-    private CarnyWise carnyWise;
+    [FormerlySerializedAs("carnyWise")]
+    private CarnyWise _carnyWise;
 
+    /// <summary>Tutorial skipped by the <c>tutorial</c> cheat.</summary>
     [SerializeField]
-    private Tutorial tutorial;
+    [FormerlySerializedAs("tutorial")]
+    private Tutorial _tutorial;
 
+    /// <summary>Emoji display (<see cref="ServerListener.DISPLAYMODE.Emoji"/>) set by the <c>e*</c> cheats (e.g. <c>ehappy</c>).</summary>
     [Header("Emotion Server Dependencies")]
     [SerializeField]
-    private  ExpressionDisplay emojiDisplay;
+    [FormerlySerializedAs("emojiDisplay")]
+    private  ExpressionDisplay _emojiDisplay;
    
+    /// <summary>Face display (<see cref="ServerListener.DISPLAYMODE.Face"/>) set by the <c>f*</c> cheats (e.g. <c>fhappy</c>).</summary>
    [SerializeField]
-    private ExpressionDisplay faceDisplay;
+    [FormerlySerializedAs("faceDisplay")]
+    private ExpressionDisplay _faceDisplay;
     
+    /// <summary>Mood bar (<see cref="ServerListener.DISPLAYMODE.Slider"/>) nudged by the <c>positive</c>/<c>negative</c> cheats.</summary>
     [SerializeField]
-    private SliderDisplay sliderDisplay;
+    [FormerlySerializedAs("sliderDisplay")]
+    private SliderDisplay _sliderDisplay;
    
 
+    /// <summary>Wired to <see cref="ServerListener.UpdateDisplayMode"/> so a display cheat also switches to that display mode.</summary>
    [Header("Cheat Code Events")]
    [SerializeField]
-    private UnityEvent <ServerListener.DISPLAYMODE> changeEmotionDisplay;
+    [FormerlySerializedAs("changeEmotionDisplay")]
+    private UnityEvent <ServerListener.DISPLAYMODE> _changeEmotionDisplay;
 
 
+    /// <summary>Raised by the <c>goal</c> cheat with the new session goal (wired to the score system).</summary>
     [SerializeField]
     private UnityEvent <int> _newGoal;
 
+    /// <summary>
+    /// The scene's Archery/Frisbee manager on the same GameObject (guaranteed by <c>[RequireComponent]</c>), cached in
+    /// <see cref="Awake"/>. Read for <see cref="MiniGameManager.DifficultyLevel"/> and called directly by the
+    /// <c>increase</c>, <c>decrease</c> and <c>reset</c> cheats.
+    /// </summary>
     private MiniGameManager _miniGameManager;
 
+    /// <summary>Set by subclasses from <see cref="GameManager"/> and by <see cref="SkipTutorial"/>; gates most cheats.</summary>
     protected bool _tutorialCompleted = false;
 
+    /// <summary>Codes that work before the tutorial is completed.</summary>
     private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial"};
 
+    /// <summary>Validates the dependencies and registers the shared cheats.</summary>
     protected virtual void Awake()
     {
-        if (carnyWise == null)
+        if (_carnyWise == null)
         {
             Debug.LogError("CarnyWise component reference is not assigned in the inspector.");
 
             return;
         }
 
-        if (returnToFair == null)
+        if (_returnToFair == null)
         {
             Debug.LogError("ReturnToFair component reference is not assigned in the inspector.");
 
             return;
         }
 
-        if (tutorial == null)
+        if (_tutorial == null)
         {
             Debug.LogError("Tutorial component reference is not assigned in the inspector.");
 
             return;
         }
 
-        if (emojiDisplay == null || faceDisplay == null || sliderDisplay == null)
+        if (_emojiDisplay == null || _faceDisplay == null || _sliderDisplay == null)
         {
             Debug.LogError("One or more emotions display is missing");
             return;
@@ -83,13 +114,13 @@ public class MiniGameCheatCodes : CheatCodes
 
     /// <summary>
     /// Registers all shared cheat codes available across every mini-game.
-    /// Called during Start() before subclass cheats are added.
+    /// Called from <see cref="Awake"/>.
     /// </summary>
     protected override void RegisterBaseCheats()
     {   
         base.RegisterBaseCheats();
         
-        RegisterCheat("return", () => returnToFair.Return());
+        RegisterCheat("return", () => _returnToFair.Return());
 
         RegisterCheat("tutorial", () => SkipTutorial());
 
@@ -98,29 +129,29 @@ public class MiniGameCheatCodes : CheatCodes
         RegisterCheat("miss",   OnMissCheat);
         RegisterCheat("score",  OnScoreCheat);
 
-        RegisterCheat("complete", ()=> carnyWise.SessionGoalReached());
+        RegisterCheat("complete", ()=> _carnyWise.SessionGoalReached());
 
         RegisterCheat("increase", () => IncreaseDifficulty());
         RegisterCheat("decrease", () => DecreaseDifficulty());
 
-        RegisterCheat("ehappy",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.HAPPY));
-        RegisterCheat("eneutral",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.NEUTRAL));
-        RegisterCheat("esad",      () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.SAD));
-        RegisterCheat("eangry",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.ANGRY));
-        RegisterCheat("edisgust",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.DISGUST));
-        RegisterCheat("esurprise", () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.SURPRISE));
-        RegisterCheat("efear",     () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.FEAR));
+        RegisterCheat("ehappy",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Happy));
+        RegisterCheat("eneutral",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Neutral));
+        RegisterCheat("esad",      () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Sad));
+        RegisterCheat("eangry",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Angry));
+        RegisterCheat("edisgust",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Disgust));
+        RegisterCheat("esurprise", () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Surprise));
+        RegisterCheat("efear",     () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Fear));
 
-        RegisterCheat("fhappy",    () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.HAPPY));
-        RegisterCheat("fneutral",  () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.NEUTRAL));
-        RegisterCheat("fsad",      () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.SAD));
-        RegisterCheat("fangry",    () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.ANGRY));
-        RegisterCheat("fdisgust",  () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.DISGUST));
-        RegisterCheat("fsurprise", () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.SURPRISE));
-        RegisterCheat("ffear",     () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.FEAR));
+        RegisterCheat("fhappy",    () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Happy));
+        RegisterCheat("fneutral",  () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Neutral));
+        RegisterCheat("fsad",      () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Sad));
+        RegisterCheat("fangry",    () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Angry));
+        RegisterCheat("fdisgust",  () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Disgust));
+        RegisterCheat("fsurprise", () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Surprise));
+        RegisterCheat("ffear",     () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Fear));
 
-        RegisterCheat("positive", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.POSITIVE));
-        RegisterCheat("negative", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.NEGATIVE));
+        RegisterCheat("positive", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.Positive));
+        RegisterCheat("negative", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.Negative));
 
         RegisterNumericCheat("goal", _defaultUpdateGoalValue, newGoal => _newGoal.Invoke(newGoal));
     }
@@ -174,11 +205,12 @@ public class MiniGameCheatCodes : CheatCodes
         }
     }
 
+    /// <summary>Back to level 0, with the decrease feedback; no-op if already at 0.</summary>
     private void ResetDifficulty()
     {   
-        if (_miniGameManager.difficultyLevel > 0)
+        if (_miniGameManager.DifficultyLevel > 0)
         {
-            carnyWise.DecreaseDifficulty();
+            _carnyWise.DecreaseDifficulty();
             _miniGameManager.ResetDifficulty();
         }
    
@@ -186,21 +218,22 @@ public class MiniGameCheatCodes : CheatCodes
 
     private  void IncreaseDifficulty()
     {      
-        carnyWise.IncreaseDifficulty();
+        _carnyWise.IncreaseDifficulty();
 
         _miniGameManager.ChangeDifficulty(true);
     }
 
     private void DecreaseDifficulty()
     {   
-        if (_miniGameManager.difficultyLevel > 0)
+        if (_miniGameManager.DifficultyLevel > 0)
         {
-            carnyWise.DecreaseDifficulty();
+            _carnyWise.DecreaseDifficulty();
              
             _miniGameManager.ChangeDifficulty(false);     
         }
     }
 
+    /// <summary>Finishes the tutorial immediately via <see cref="Tutorial.ReadyToPlay"/>.</summary>
     private void SkipTutorial()
     {   
         if (_tutorialCompleted)
@@ -209,33 +242,34 @@ public class MiniGameCheatCodes : CheatCodes
             return;
         }
 
-        tutorial.ReadyToPlay();
+        _tutorial.ReadyToPlay();
 
         _tutorialCompleted = true;
     }
 
-
-
+    /// <summary>Switches to the emoji display and shows <paramref name="type"/> (also synced over the network).</summary>
     private void DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE type)
     {      
-        changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.EMOJI);
+        _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Emoji);
     
-        emojiDisplay.UpdateVisuals(type);
+        _emojiDisplay.UpdateVisuals(type);
     }
 
+    /// <summary>Switches to the face display and shows <paramref name="type"/>.</summary>
     private void DisplayFace(ExpressionDisplay.EXPRESSION_TYPE type)
     {
-        changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.FACE);
+        _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Face);
     
-        faceDisplay.UpdateVisuals(type);
+        _faceDisplay.UpdateVisuals(type);
     }
 
 
+    /// <summary>Switches to the slider display and nudges it towards <paramref name="category"/>.</summary>
     private void DisplaySlider(SliderDisplay.EMOJI_CATEGORY category)
     {
-        changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.SLIDER);
+        _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Slider);
 
-        sliderDisplay.UpdateSlider(category);
+        _sliderDisplay.UpdateSlider(category);
     }
 
 }

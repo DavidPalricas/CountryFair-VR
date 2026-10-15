@@ -1,77 +1,85 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages cheat code detection and activation for the Frisbee mini-game.
-/// Listens for keyboard input and triggers specific actions when valid cheat codes are entered.
+/// Implements <c>miss</c>/<c>score</c> for the frisbee and adds the <c>dog</c> cheat (score in the dog's catch area).
 /// </summary>
 public class FrisbeeCheatCodes : MiniGameCheatCodes
 {   
+    /// <summary>The dog's catch area; target of the <c>dog</c> cheat and excluded when picking an extra score area.</summary>
     [Header ("Dog Dependencies")]
     [SerializeField]
-    private Transform dogScoreAreaTransform;
+    [FormerlySerializedAs("dogScoreAreaTransform")]
+    private Transform _dogScoreAreaTransform;
 
+    /// <summary>Dog idle state; only validated here.</summary>
     [SerializeField]
-    private DogIdle dogIdleState;
+    [FormerlySerializedAs("dogIdleState")]
+    private DogIdle _dogIdleState;
     
-    [Header("Frisbee Dependencies")]
-
-    [SerializeField]
     /// <summary>
     /// Reference to the frisbee's OnPlayerFront state component.
     /// </summary>
-    private OnPlayerFront frisbeePlayerFrontState;
-    
+    [Header("Frisbee Dependencies")]
+
     [SerializeField]
+    [FormerlySerializedAs("frisbeePlayerFrontState")]
+    private OnPlayerFront _frisbeePlayerFrontState;
+    
     /// <summary>
     /// Reference to the frisbee's Landed state component.
     /// </summary>
-    private Landed frisbeeLandedState = null;
-     
     [SerializeField]
+    [FormerlySerializedAs("frisbeeLandedState")]
+    private Landed _frisbeeLandedState = null;
+     
     /// <summary>
     /// Transform of the frisbee game object.
     /// </summary>
-    private Transform frisbeeTransform = null;
-    
     [SerializeField]
+    [FormerlySerializedAs("frisbeeTransform")]
+    private Transform _frisbeeTransform = null;
+    
     /// <summary>
     /// Finite State Machine component controlling the frisbee's behavior.
     /// </summary>
-    private FSM frisbeeFSM = null;
+    [SerializeField]
+    [FormerlySerializedAs("frisbeeFSM")]
+    private FSM _frisbeeFSM = null;
 
     /// <summary>
-    /// Initializes component references and registers frisbee-specific cheat codes.
-    /// Unity callback called when the script instance is being loaded.
+    /// Validates the references, registers the <c>dog</c> cheat and reads whether the Frisbee tutorial is completed.
     /// </summary>
     protected override void Awake()
     {   
         base.Awake();
-        if (frisbeeFSM == null)
+        if (_frisbeeFSM == null)
         {
             Debug.LogError("FSM component not found on Frisbee GameObject.");
             return;
         }
 
-        if (dogIdleState == null)
+        if (_dogIdleState == null)
         {
             Debug.LogError("DogIdle component reference not assigned in the inspector.");
             return;
         }
 
-        if (frisbeePlayerFrontState == null)
+        if (_frisbeePlayerFrontState == null)
         {
             Debug.LogError("OnPlayerFront component not found.");
             return;
         }
 
-        if (frisbeeLandedState == null)
+        if (_frisbeeLandedState == null)
         {
             Debug.LogError("Landed component not found.");
             return;
         }
 
-        if (dogScoreAreaTransform == null)
+        if (_dogScoreAreaTransform == null)
         {
             Debug.LogError("DogScoreArea Transform not assigned.");
             return;
@@ -84,11 +92,11 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     }
 
     /// <summary>
-    /// Throws the frisbee without scoring.
+    /// Throws the frisbee from where it is (as a left-hand release); it falls short and counts as a miss.
     /// </summary>
     protected override void OnMissCheat()
     {
-        frisbeePlayerFrontState.ThrowFrisbee(false);
+        _frisbeePlayerFrontState.ThrowFrisbee(false);
     }
 
     /// <summary>
@@ -100,26 +108,29 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     }
 
     /// <summary>
-    /// Forces the frisbee to score a point by teleporting it to the score area.
-    /// Sets the frisbee as a child of the score area and triggers the scoring state.
-    /// Only works if the frisbee is in the OnPlayerFront state and the score area is active.
+    /// Forces the frisbee to score a point by teleporting it to a score area.
+    /// Unparents the frisbee, moves it onto the area and fires "ForcedPoint".
+    /// The transition only fires if the frisbee is in the OnPlayerFront state and the dog's score area is active;
+    /// otherwise the frisbee is still moved.
     /// </summary>
+    /// <param name="isDog">True for the dog's catch area, false for a random extra score area.</param>
     private void ForceScorePoint(bool isDog)
     {
-        frisbeeTransform.parent = null;
-        frisbeeTransform.localPosition = isDog ? dogScoreAreaTransform.position : GetExtraScoreAreaPosition();
+        _frisbeeTransform.parent = null;
+        _frisbeeTransform.localPosition = isDog ? _dogScoreAreaTransform.position : GetExtraScoreAreaPosition();
 
-        if (frisbeeFSM.CurrentState == frisbeePlayerFrontState && dogScoreAreaTransform.gameObject.activeSelf)
+        if (_frisbeeFSM.CurrentState == _frisbeePlayerFrontState && _dogScoreAreaTransform.gameObject.activeSelf)
         {
-            frisbeeFSM.ChangeState("ForcedPoint");
+            _frisbeeFSM.ChangeState("ForcedPoint");
         }
     }
 
 
+    /// <summary>Position of a random <c>ScoreArea</c>-tagged object other than the dog's catch area, or <see cref="Vector3.zero"/> if none exist.</summary>
     private Vector3 GetExtraScoreAreaPosition()
     {
         GameObject[] scoreAreas = GameObject.FindGameObjectsWithTag("ScoreArea")
-                                  .Where(scoreArea => scoreArea != dogScoreAreaTransform.gameObject)
+                                  .Where(scoreArea => scoreArea != _dogScoreAreaTransform.gameObject)
                                   .ToArray();
 
         if (scoreAreas.Length == 0)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using FMODUnity;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Archery-scene audio manager. Handles spatial balloon-pop and arrow-shot sounds in addition to
@@ -9,24 +10,27 @@ public class ArcheryAudioManager :MiniGameAudioManager
 {
     /// <summary>FMOD event played when a balloon is popped by an arrow.</summary>
     [SerializeField]
-    private EventReference balloonPopSound;
+    [FormerlySerializedAs("balloonPopSound")]
+    private EventReference _balloonPopSound;
 
     /// <summary>FMOD event played when the player releases the arrow.</summary>
     [SerializeField]
-    private EventReference arrowShotSound;
+    [FormerlySerializedAs("arrowShotSound")]
+    private EventReference _arrowShotSound;
 
+    /// <summary>Validates the base references and the two archery FMOD events.</summary>
     protected override void Awake()
     {   
         base.Awake();
 
-        if (balloonPopSound.IsNull)
+        if (_balloonPopSound.IsNull)
         {
             Debug.LogError("Balloon pop sound EventReference is not assigned in ArcheryAudioManager.");
 
             return;
         }
 
-        if (arrowShotSound.IsNull)
+        if (_arrowShotSound.IsNull)
         {
             Debug.LogError("Arrow shot sound EventReference is not assigned in ArcheryAudioManager.");
         }
@@ -38,22 +42,23 @@ public class ArcheryAudioManager :MiniGameAudioManager
     }
 
 
+    /// <summary>Plays the button, balloon-pop or arrow-shot event attached to <paramref name="target"/>; other effects log an error.</summary>
     public override void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
     {
         EventReference eventToPlay;
 
         switch (soundEffect)
         {  
-           case GameSoundEffects.BUTTON_PRESSED:
-                eventToPlay = buttonPressedSound;
+           case GameSoundEffects.ButtonPressed:
+                eventToPlay = _buttonPressedSound;
                 break;
 
-           case GameSoundEffects.BALLOON_POP:
-                eventToPlay = balloonPopSound;
+           case GameSoundEffects.BalloonPop:
+                eventToPlay = _balloonPopSound;
                 break;
 
-            case GameSoundEffects.ARROW_SHOT:
-                eventToPlay = arrowShotSound;
+            case GameSoundEffects.ArrowShot:
+                eventToPlay = _arrowShotSound;
                 break;
    
             default:
@@ -65,18 +70,19 @@ public class ArcheryAudioManager :MiniGameAudioManager
     }
 
 
+    /// <summary>Plays the non-spatial Carny Wise difficulty feedback events; other effects log an error.</summary>
     public override void PlaySoundEffect(GameSoundEffects soundEffect)
     {
         EventReference eventToPlay;
 
         switch (soundEffect)
         {  
-          case GameSoundEffects.CARNYWISE_INCREASE_DIFF:
-                eventToPlay = carnyWiseIncreaseDiffSound;
+          case GameSoundEffects.CarnyWiseIncreaseDiff:
+                eventToPlay = _carnyWiseIncreaseDiffSound;
                 break;
 
-            case GameSoundEffects.CARNYWISE_DECREASE_DIFF:
-                eventToPlay = carnyWiseDecreaseDiffSound;
+            case GameSoundEffects.CarnyWiseDecreaseDiff:
+                eventToPlay = _carnyWiseDecreaseDiffSound;
                 break;
 
             default:

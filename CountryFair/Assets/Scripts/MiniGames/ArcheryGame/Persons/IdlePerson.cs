@@ -1,5 +1,6 @@
 using UnityEngine;
-using DG.Tweening; // 1. Não esqueça de importar o namespace
+using DG.Tweening;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Crowd member that performs a DOTween jump with a full 360° Y-axis spin when <see cref="Jump"/> is called.
@@ -7,17 +8,21 @@ using DG.Tweening; // 1. Não esqueça de importar o namespace
 /// </summary>
 public class IdlePerson : MonoBehaviour
 {
-    [Header("Jump Settings")]
     /// <summary>Height of the jump arc.</summary>
+    [Header("Jump Settings")]
     [SerializeField]
-     private float jumpPower = 2f;
+     [FormerlySerializedAs("jumpPower")]
+     private float _jumpPower = 2f;
+    
     /// <summary>Total duration of the jump-and-spin sequence in seconds.</summary>
     [SerializeField]
-    private float jumpDuration = 0.5f;
+    [FormerlySerializedAs("jumpDuration")]
+    private float _jumpDuration = 0.5f;
 
-
+    /// <summary>Blocks a new jump until the current one completes.</summary>
     private bool _isOnGround = true;
 
+    /// <summary>Initializes DOTween in case this is the first tween user in the scene.</summary>
     private void Awake()
     {
         DOTween.Init(); 
@@ -32,13 +37,12 @@ public class IdlePerson : MonoBehaviour
 
             _isOnGround = false;
 
+            const int NumberOfJumps = 1;
 
-            const int NUMBER_OF_JUMPS = 1;
-
-            sequence.Append(transform.DOJump(transform.position, jumpPower, NUMBER_OF_JUMPS, jumpDuration));
+            sequence.Append(transform.DOJump(transform.position, _jumpPower, NumberOfJumps, _jumpDuration));
 
          
-            sequence.Join(transform.DORotate(new Vector3(0, 360, 0), jumpDuration, RotateMode.LocalAxisAdd)
+            sequence.Join(transform.DORotate(new Vector3(0, 360, 0), _jumpDuration, RotateMode.LocalAxisAdd)
                     .SetEase(Ease.Linear));
             
             sequence.OnComplete(() => _isOnGround = true);

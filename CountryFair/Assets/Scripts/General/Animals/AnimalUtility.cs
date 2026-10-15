@@ -14,11 +14,11 @@ public class AnimalUtility: MonoBehaviour
     public struct Stats
     {
         /// <summary>How hungry the animal is (0 = not hungry, 1 = starving).</summary>
-        public float hunger;
+        public float Hunger;
         /// <summary>How bored the animal is (0 = content, 1 = restless).</summary>
-        public float boredom;
+        public float Boredom;
         /// <summary>How tired the animal is (0 = energetic, 1 = exhausted).</summary>
-        public float fatigue;
+        public float Fatigue;
     }
 
     /// <summary>Current stats snapshot, read and updated by the active animal state.</summary>
@@ -28,6 +28,14 @@ public class AnimalUtility: MonoBehaviour
     private readonly Dictionary<string, Func<float>> _registeredActions = new();
 
 
+    /// <summary>
+    /// Seeds the stats with random values so animals of the same herd start in different states
+    /// instead of all picking the same first action in lockstep.
+    /// </summary>
+    /// <remarks>
+    /// Runs before the <see cref="AnimalState"/> components read <see cref="stats"/> in their own Awake
+    /// only if this component's Awake executes first; the script execution order is not enforced in code.
+    /// </remarks>
     private void Awake()
     {
        InitializeStats();
@@ -37,9 +45,9 @@ public class AnimalUtility: MonoBehaviour
     {
         stats = new Stats()
         {
-            hunger = UnityEngine.Random.value,
-            boredom = UnityEngine.Random.value,
-            fatigue = UnityEngine.Random.value
+            Hunger = UnityEngine.Random.value,
+            Boredom = UnityEngine.Random.value,
+            Fatigue = UnityEngine.Random.value
         };
     }
 
@@ -48,6 +56,8 @@ public class AnimalUtility: MonoBehaviour
     /// triggerName must match the Animator trigger (e.g. "GoEat", "GoIdle", "GoWalk").
     /// statGetter is a lambda that returns the relevant stat value at decision time.
     /// </summary>
+    /// <param name="triggerName">Animator trigger fired when this action wins; also used as the FSM transition name.</param>
+    /// <param name="statGetter">Returns the stat this action recovers; the highest value at decision time wins.</param>
     public void RegisterAction(string triggerName, Func<float> statGetter)
     {
         _registeredActions[triggerName] = statGetter;
@@ -68,11 +78,11 @@ public class AnimalUtility: MonoBehaviour
         {
              actions[entry.Key] = entry.Value();
         }
-           
+
         string actionChoosen = actions.OrderByDescending(x => x.Value).First().Key;
 
         animator.SetTrigger(actionChoosen);
 
         return actionChoosen;
     }
-}
+}
