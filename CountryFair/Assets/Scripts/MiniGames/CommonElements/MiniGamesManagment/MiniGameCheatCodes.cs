@@ -17,50 +17,53 @@ public class MiniGameCheatCodes : CheatCodes
     [SerializeField]
     private int _defaultUpdateGoalValue = 10;
 
-    [Header("Mini Game Dependencies")]
+    /// <summary>
+    /// Raised by the <c>increase</c> (true) and <c>decrease</c> (false) cheats; wired to <see cref="CarnyWise.ChangeDifficulty"/>.
+    /// </summary>
+    [Header("CarnyWise Events")]
+    [SerializeField]
+    private UnityEvent <bool> _changeDifficulty;
+
+    /// <summary>Raised by the <c>reset</c> cheat; wired to <see cref="CarnyWise.ResetDifficulty"/>.</summary>
+    [SerializeField]
+    private  UnityEvent _resetDifficulty;
+
+    /// <summary>Raised by the <c>complete</c> cheat; wired to <see cref="CarnyWise.SessionGoalReached"/>.</summary>
+    [SerializeField]
+    private UnityEvent _goalReached;
+
+    /// <summary>Selects the active emotion display mode; wired to <see cref="ServerListener.UpdateDisplayMode"/>.</summary>
+    [Header("Emotion Display Events")]
+
+    [SerializeField]
+    private UnityEvent <ServerListener.DISPLAYMODE> _changeEmotionDisplay;
+
+    /// <summary>Shows an expression on the face display (<c>f</c> + expression cheats).</summary>
+    [SerializeField]
+    private UnityEvent <ExpressionDisplay.EXPRESSION_TYPE> _updateFaceDisplay;
+
+    /// <summary>Shows an expression on the emoji display (<c>e</c> + expression cheats).</summary>
+   [SerializeField]
+    private UnityEvent <ExpressionDisplay.EXPRESSION_TYPE> _updateEmojiDisplay;
+
+    /// <summary>Nudges the mood slider (<c>positive</c>/<c>negative</c> cheats).</summary>
+    [SerializeField]
+    private UnityEvent <SliderDisplay.EMOJI_CATEGORY> _updateSliderDisplay;
+
 
     /// <summary>Used by the <c>return</c> cheat.</summary>
+    [Header("Other Common Mini-Game Events")]
     [SerializeField]
-    private ReturnToFair _returnToFair;
-
-    /// <summary>DDA system driven by the <c>increase</c>, <c>decrease</c>, <c>reset</c> and <c>complete</c> cheats.</summary>
-    [SerializeField]
-    private CarnyWise _carnyWise;
+    private UnityEvent _returnToFair;
 
     /// <summary>Tutorial skipped by the <c>tutorial</c> cheat.</summary>
     [SerializeField]
-    private Tutorial _tutorial;
-
-    /// <summary>Emoji display (<see cref="ServerListener.DISPLAYMODE.Emoji"/>) set by the <c>e*</c> cheats (e.g. <c>ehappy</c>).</summary>
-    [Header("Emotion Server Dependencies")]
-    [SerializeField]
-    private  ExpressionDisplay _emojiDisplay;
-   
-    /// <summary>Face display (<see cref="ServerListener.DISPLAYMODE.Face"/>) set by the <c>f*</c> cheats (e.g. <c>fhappy</c>).</summary>
-   [SerializeField]
-    private ExpressionDisplay _faceDisplay;
-    
-    /// <summary>Mood bar (<see cref="ServerListener.DISPLAYMODE.Slider"/>) nudged by the <c>positive</c>/<c>negative</c> cheats.</summary>
-    [SerializeField]
-    private SliderDisplay _sliderDisplay;
-   
-
-    /// <summary>Wired to <see cref="ServerListener.UpdateDisplayMode"/> so a display cheat also switches to that display mode.</summary>
-   [Header("Cheat Code Events")]
-   [SerializeField]
-    private UnityEvent <ServerListener.DISPLAYMODE> _changeEmotionDisplay;
-
+    private UnityEvent _skipTutorial;
 
     /// <summary>Raised by the <c>goal</c> cheat with the new session goal (wired to the score system).</summary>
     [SerializeField]
     private UnityEvent <int> _newGoal;
 
-    /// <summary>
-    /// The scene's Archery/Frisbee manager on the same GameObject (guaranteed by <c>[RequireComponent]</c>), cached in
-    /// <see cref="Awake"/>. Read for <see cref="MiniGameManager.DifficultyLevel"/> and called directly by the
-    /// <c>increase</c>, <c>decrease</c> and <c>reset</c> cheats.
-    /// </summary>
-    private MiniGameManager _miniGameManager;
 
     /// <summary>Set by subclasses from <see cref="GameManager"/> and by <see cref="SkipTutorial"/>; gates most cheats.</summary>
     protected bool _tutorialCompleted = false;
@@ -68,39 +71,9 @@ public class MiniGameCheatCodes : CheatCodes
     /// <summary>Codes that work before the tutorial is completed.</summary>
     private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial"};
 
-    /// <summary>Validates the dependencies and registers the shared cheats.</summary>
+    /// <summary>Registers the shared cheats; subclasses then add their own and read the tutorial flag.</summary>
     protected virtual void Awake()
     {
-        if (_carnyWise == null)
-        {
-            Debug.LogError("CarnyWise component reference is not assigned in the inspector.");
-
-            return;
-        }
-
-        if (_returnToFair == null)
-        {
-            Debug.LogError("ReturnToFair component reference is not assigned in the inspector.");
-
-            return;
-        }
-
-        if (_tutorial == null)
-        {
-            Debug.LogError("Tutorial component reference is not assigned in the inspector.");
-
-            return;
-        }
-
-        if (_emojiDisplay == null || _faceDisplay == null || _sliderDisplay == null)
-        {
-            Debug.LogError("One or more emotions display is missing");
-            return;
-        }
-
-
-        _miniGameManager = GetComponent<MiniGameManager>();
-
         RegisterBaseCheats();
     }
 
@@ -112,19 +85,19 @@ public class MiniGameCheatCodes : CheatCodes
     {   
         base.RegisterBaseCheats();
         
-        RegisterCheat("return", () => _returnToFair.Return());
+        RegisterCheat("return", () => _returnToFair.Invoke());
 
         RegisterCheat("tutorial", () => SkipTutorial());
 
-        RegisterCheat("reset",  () => ResetDifficulty());
+        RegisterCheat("reset",  () => _resetDifficulty.Invoke());
         
         RegisterCheat("miss",   OnMissCheat);
         RegisterCheat("score",  OnScoreCheat);
 
-        RegisterCheat("complete", ()=> _carnyWise.SessionGoalReached());
+        RegisterCheat("complete", ()=> _goalReached.Invoke());
 
-        RegisterCheat("increase", () => IncreaseDifficulty());
-        RegisterCheat("decrease", () => DecreaseDifficulty());
+        RegisterCheat("increase", () => _changeDifficulty.Invoke(true));
+        RegisterCheat("decrease", () => _changeDifficulty.Invoke(false));
 
         RegisterCheat("ehappy",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Happy));
         RegisterCheat("eneutral",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Neutral));
@@ -182,7 +155,8 @@ public class MiniGameCheatCodes : CheatCodes
             {
                 _playerInput = string.Empty;
 
-                // Every cheat code except the  skp tutorial one ("tutorial") requires the tutorial to be completed, to avoid errors this statment is added"
+                // Most cheats depend on objects that only exist after the tutorial (targets, dog, DDA), so only the
+                // codes in _cheatCodesOnTutorial are allowed before it is completed.
                 if (!_tutorialCompleted && !_cheatCodesOnTutorial.Contains(code))
                 {
                     Debug.LogWarning($"Cheat code '{code}' entered but tutorial not completed. Cheat ignored.");
@@ -197,44 +171,18 @@ public class MiniGameCheatCodes : CheatCodes
         }
     }
 
-    /// <summary>Back to level 0, with the decrease feedback; no-op if already at 0.</summary>
-    private void ResetDifficulty()
-    {   
-        if (_miniGameManager.DifficultyLevel > 0)
-        {
-            _carnyWise.DecreaseDifficulty();
-            _miniGameManager.ResetDifficulty();
-        }
-   
-     }
-
-    private  void IncreaseDifficulty()
-    {      
-        _carnyWise.IncreaseDifficulty();
-
-        _miniGameManager.ChangeDifficulty(true);
-    }
-
-    private void DecreaseDifficulty()
-    {   
-        if (_miniGameManager.DifficultyLevel > 0)
-        {
-            _carnyWise.DecreaseDifficulty();
-             
-            _miniGameManager.ChangeDifficulty(false);     
-        }
-    }
 
     /// <summary>Finishes the tutorial immediately via <see cref="Tutorial.ReadyToPlay"/>.</summary>
     private void SkipTutorial()
-    {   
+    {    
         if (_tutorialCompleted)
         {
-            Debug.LogWarning("Tutorial already completed. Cheat ignored.");
+            Debug.LogWarning("Cheat code 'tutorial' entered but tutorial already completed. Cheat ignored.");
+
             return;
         }
 
-        _tutorial.ReadyToPlay();
+        _skipTutorial.Invoke();
 
         _tutorialCompleted = true;
     }
@@ -244,7 +192,7 @@ public class MiniGameCheatCodes : CheatCodes
     {      
         _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Emoji);
     
-        _emojiDisplay.UpdateVisuals(type);
+        _updateEmojiDisplay.Invoke(type);
     }
 
     /// <summary>Switches to the face display and shows <paramref name="type"/>.</summary>
@@ -252,7 +200,7 @@ public class MiniGameCheatCodes : CheatCodes
     {
         _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Face);
     
-        _faceDisplay.UpdateVisuals(type);
+        _updateFaceDisplay.Invoke(type);
     }
 
 
@@ -261,7 +209,6 @@ public class MiniGameCheatCodes : CheatCodes
     {
         _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Slider);
 
-        _sliderDisplay.UpdateSlider(category);
+        _updateSliderDisplay.Invoke(category);
     }
-
 }

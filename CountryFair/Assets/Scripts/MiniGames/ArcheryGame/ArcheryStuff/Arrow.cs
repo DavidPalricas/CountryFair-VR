@@ -16,7 +16,8 @@ public class Arrow : MonoBehaviour
     [HideInInspector]
     public bool ReadyToLaunch = false;
 
-    /// <summary>When false (tutorial mode), hitting a balloon does not fire scoring events.</summary>
+    /// <summary>While true (tutorial mode), hitting a balloon pops it but fires neither scoring nor miss events.</summary>
+    /// <remarks>Set to false via Inspector by the tutorial's <c>_tutorialCompleted</c> event (ArcheryGame scene).</remarks>
     public bool IsTutorialActive{get; set;} = true;
     /// <summary>True while the arrow is in flight; prevents re-grabbing before it lands.</summary>
     public bool InAir { get ; private set; } = false;
@@ -34,6 +35,7 @@ public class Arrow : MonoBehaviour
     /// <summary>Fired when the arrow hits a non-scoring balloon, the ground, or goes out of bounds.</summary>
     [SerializeField]
     private UnityEvent _playerMissed;
+
 
     /// <summary>Caches the Rigidbody and the scene <see cref="Crowd"/>, and starts kinematic so the arrow follows the bow.</summary>
     private void Awake()
@@ -54,7 +56,12 @@ public class Arrow : MonoBehaviour
     /// Detaches the arrow from the bow, enables physics, and applies <paramref name="launchForce"/> in the forward direction.
     /// </summary>
     /// <param name="launchForce">Force magnitude via <see cref="ForceMode.VelocityChange"/>; pass 0 for a drop-miss cheat.</param>
-    public void Launch(float launchForce)
+    /// <param name="targetPosition">Optional world position to move the arrow to after launching; <c>null</c> keeps the current position.</param>
+    /// <remarks>
+    /// Called by <see cref="BowHandTracking"/> on string release, and invoked via Inspector (ArcheryGame scene) by
+    /// <c>ArcheryCheatCodes._launchArrow</c> for the <c>miss</c>/<c>score</c> cheats.
+    /// </remarks>
+    public void Launch(float launchForce, Vector3? targetPosition = null)
     {
         ReadyToLaunch = false;
         InAir = true;
@@ -67,6 +74,11 @@ public class Arrow : MonoBehaviour
         transform.parent = null;
 
         _rb.AddForce(transform.forward * launchForce, ForceMode.VelocityChange);
+
+        if (targetPosition.HasValue)
+        {
+            transform.position = targetPosition.Value;
+        }
     }
 
     /// <summary>

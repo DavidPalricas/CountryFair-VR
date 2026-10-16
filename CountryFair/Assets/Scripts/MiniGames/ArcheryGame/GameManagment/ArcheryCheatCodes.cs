@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Events;
 
 /// <summary>
 /// Archery-specific cheat code handler. Extends <see cref="MiniGameCheatCodes"/> with miss/score
@@ -8,34 +9,28 @@ using System.Linq;
 /// </summary>
 public class ArcheryCheatCodes : MiniGameCheatCodes
 {
-    /// <summary>Transform used to reposition the arrow during the score cheat.</summary>
-    [Header("Arrow Dependencies")]
+    /// <summary>
+    /// Launch force used by the <c>score</c> cheat. It only needs to make the arrow leave the bow, because the arrow is
+    /// then teleported onto the balloon.
+    /// </summary>
+    [Header("Archery Cheat Code Stuff")]
     [SerializeField]
-    private Transform _arrowTransform = null;
-
-    /// <summary>Arrow component used to trigger launches via cheat commands.</summary>
-    [SerializeField]
-    private Arrow _arrowComponent = null;
+    private float _launchForce = 5f;
 
     /// <summary>
-    /// Validates the arrow references and reads whether the archery tutorial is already completed,
+    /// Raised with (force, optional target position) to fire the arrow. Wired in the Inspector to <see cref="Arrow.Launch"/>.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent<float, Vector3?> _launchArrow;
+
+
+    /// <summary>
+    /// Registers the shared cheats and reads whether the archery tutorial is already completed,
     /// which gates every cheat except <c>return</c> and <c>tutorial</c>.
     /// </summary>
     protected override void Awake()
     {
         base.Awake();
-
-        if (_arrowComponent == null)
-        {
-            Debug.LogError("Arrow component reference is not assigned in the inspector.");
-            return;
-        }
-
-        if (_arrowTransform == null)
-        {
-            Debug.LogError("Arrow Transform reference is not assigned in the inspector.");
-            return;
-        }
 
         _tutorialCompleted = GameManager.GetInstance().ArcheryTutorialCompleted;
     }
@@ -45,7 +40,7 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     /// </summary>
     protected override void OnMissCheat()
     {
-        _arrowComponent.Launch(0f);
+        _launchArrow.Invoke(0f, null);
     }
 
     /// <summary>
@@ -53,9 +48,9 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     /// </summary>
     protected override void OnScoreCheat()
     {
-        // Random value of launch force, to ensure the arrow is not kinematic
-        _arrowComponent.Launch(5f);
-        _arrowTransform.position = GetCorrectBalloonPosition() + new Vector3(0, 0f, 0);
+        Vector3 targetPosition = GetCorrectBalloonPosition();
+
+        _launchArrow.Invoke(_launchForce, targetPosition);
     }
 
     /// <summary>

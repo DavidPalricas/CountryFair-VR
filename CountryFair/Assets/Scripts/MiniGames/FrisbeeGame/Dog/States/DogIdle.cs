@@ -48,19 +48,15 @@ public class DogIdle : DogState
     private UnityEvent _removeScoreAreas;
 
     /// <summary>
-    /// Event invoked when the dog reaches its target position and enters the idle state.
-    /// It notifies the frisbee that the dog is ready to catch (see <see cref="OnPlayerFront.DogReachedTarget"/>).
+    /// Event invoked with true on <see cref="Enter"/> (dog at its target, ready to catch) and false on
+    /// <see cref="Exit"/>. Notifies the frisbee (see <see cref="OnPlayerFront.OnDogReadyToCatchChanged"/>).
     /// </summary>
     [SerializeField]
-    private UnityEvent _positionReached;
+    private UnityEvent<bool> _readyToCatchChanged;
 
 
     /// <summary>Absolute <see cref="Time.time"/> of the next impatient bark.</summary>
     private float _impatientTimer = 0f;
-
-
-    /// <summary>Reset on <see cref="Exit"/> but never set to true; currently unused.</summary>
-    private bool _playerScored = false;
 
     /// <summary>
     /// Runs the base dog setup and hides the score area and name tag until the dog is waiting.
@@ -80,7 +76,7 @@ public class DogIdle : DogState
             return;
         }
 
-        if(name == null)
+        if(_name == null)
         {
             Debug.LogError("DogIdle: Name GameObject reference is not assigned in the inspector.");
 
@@ -101,7 +97,7 @@ public class DogIdle : DogState
     
     /// <summary>
     /// Called when entering the DogIdle state.
-    /// Barks, starts the impatience timer, shows the score area and name tag, and raises <see cref="_positionReached"/>
+    /// Barks, starts the impatience timer, shows the score area and name tag, and raises <see cref="_readyToCatchChanged"/> (true)
     /// and <see cref="_spawnScoreAreas"/>.
     /// </summary>
     public override void Enter()
@@ -115,7 +111,7 @@ public class DogIdle : DogState
         _scoreArea.SetActive(true);
         _name.SetActive(true);
 
-        _positionReached.Invoke();
+        _readyToCatchChanged.Invoke(true);
  
         _spawnScoreAreas.Invoke();
     }
@@ -187,12 +183,11 @@ public class DogIdle : DogState
     {
         base.Exit();
 
+        _readyToCatchChanged.Invoke(false);
+
         _name.SetActive(false);
         _scoreArea.SetActive(false);
-
         _removeScoreAreas.Invoke();
-
-        _playerScored = false;
     }
 
     /// <summary>Schedules the next impatient bark at a random time between the min and max.</summary>

@@ -17,14 +17,14 @@ using System;
 /// </remarks>
 public class CheatCodes : MonoBehaviour
 {
-
     /// <summary>
-    /// Fired by the "skip" cheat. Wired in the Inspector (CountryFair.unity) to
-    /// <see cref="CountryFairDialogue.NextStep"/>, advancing the intro by a single step.
+    /// Fired by the "skip" cheat to advance the current dialogue by a single step. Wired in the Inspector to
+    /// <see cref="CountryFairDialogue.NextStep"/> in CountryFair.unity and to <see cref="Tutorial.NextStep"/> in the
+    /// mini-game scenes.
     /// </summary>
+    [Header("Common Cheat Code Event")]
     [SerializeField]
     private UnityEvent _skipDialogue;
-
 
     /// <summary>
     /// Rolling buffer of the lower-cased letters/digits typed so far, trimmed to <see cref="_maxCheatLength"/>

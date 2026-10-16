@@ -50,6 +50,7 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     private Material[] _materials;
 
+    /// <summary>Sound effect passed to <see cref="_throwSoundEffectEvent"/> on every throw.</summary>
     private readonly AudioManager.GameSoundEffects _throwSoundEffect = AudioManager.GameSoundEffects.FrisbeeThrow;
 
     /// <summary>Keeps the frisbee in front of the head while waiting; disabled for the flight.</summary>
@@ -59,10 +60,10 @@ public class OnPlayerFront : FrisbeeState
     /// Whether the dog is in position to catch. Starts true because the dog begins the game at its target position.
     /// </summary>
     /// <remarks>
-    /// Set to false via Inspector when the dog leaves to catch (<see cref="CatchFrisbee"/>) and back to true by
-    /// <see cref="DogReachedTarget"/>. It only drives the opacity feedback; <see cref="ThrowFrisbee"/> does not check it.
+    /// Kept in sync by <see cref="OnDogReadyToCatchChanged"/>. It only drives the opacity/grab feedback;
+    /// <see cref="ThrowFrisbee"/> does not check it.
     /// </remarks>
-    public bool DogInTarget { get; set; } = true;
+    private bool _isDogReadyToCatch = false;
     
     /// <summary>
     /// True if the frisbee is currently held by the right hand, false for the left.
@@ -107,7 +108,7 @@ public class OnPlayerFront : FrisbeeState
     /// Resets the frisbee in front of the player and configures it to be grabbed.
     /// </summary>
     /// <remarks>
-    /// Updates the material opacity based on <see cref="DogInTarget"/> status and calls
+    /// Updates the material opacity based on <see cref="_isDogReadyToCatch"/> status and calls
     /// <see cref="InPlayerFront"/> to reset physics and transform.
     /// This state is entered when the dog returns the frisbee to the player or at game start.
     /// </remarks>
@@ -207,7 +208,8 @@ public class OnPlayerFront : FrisbeeState
 
         _collider.isTrigger = true;
 
-        _frisbeeGrabbable.enabled = true;
+        // Only grabbable if the dog is already in position (true at game start, false when the dog hands it back).
+        _frisbeeGrabbable.enabled = _isDogReadyToCatch;
 
         _followPlayerHead.enabled = true;
     }
@@ -217,7 +219,7 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When <see cref="DogInTarget"/> is true:
+    /// When <see cref="_isDogReadyToCatch"/> is true:
     /// <list type="bullet">
     /// <item><description>Alpha is set to 1.0 (fully opaque)</description></item>
     /// <item><description>Render queue is set to 2000 (opaque rendering)</description></item>
@@ -225,7 +227,7 @@ public class OnPlayerFront : FrisbeeState
     /// </list>
     /// </para>
     /// <para>
-    /// When <see cref="DogInTarget"/> is false:
+    /// When <see cref="_isDogReadyToCatch"/> is false:
     /// <list type="bullet">
     /// <item><description>Alpha is set to <see cref="_cannotThrowAlpha"/> (semi-transparent)</description></item>
     /// <item><description>Render queue is set to 3000 (transparent rendering)</description></item>
@@ -242,7 +244,7 @@ public class OnPlayerFront : FrisbeeState
 
         int renderQueue, zWriteValue;
 
-        if (DogInTarget)
+        if (_isDogReadyToCatch)
         {   
             const float MaxAlpha = 1f;
 
@@ -314,18 +316,38 @@ public class OnPlayerFront : FrisbeeState
     }
 
     /// <summary>
-    /// Called externally when the dog reaches its target position and is ready to catch.
-    /// Enables throwing and updates the visual feedback, making the frisbee fully opaque.
+    /// Called (via Inspector, from <see cref="DogIdle"/>) whenever the dog becomes ready or stops being ready to catch.
     /// </summary>
+    /// <param name="isReady">True when the dog enters <see cref="DogIdle"/> at its target; false when it leaves it.</param>
     /// <remarks>
-    /// Invoked via Inspector by <see cref="DogIdle"/>'s <c>_positionReached</c> event to signal that
-    /// the game is ready for the next throw. Sets <see cref="DogInTarget"/> to true and updates
-    /// material opacity to full visibility, indicating to the player that throwing is now allowed.
+    /// When the dog becomes ready while the frisbee is waiting in front of the player, the frisbee turns opaque and
+    /// grabbable again.
     /// </remarks>
-    public void DogReachedTarget()
+    public void OnDogReadyToCatchChanged(bool isReady)
     {
-        DogInTarget = true;
-        ChangeMaterialsOpacity();
+        _isDogReadyToCatch = isReady;
+
+        if (isReady && _fsm.CurrentState == this)
+        {
+            ChangeMaterialsOpacity();
+            _frisbeeGrabbable.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// Cheat shortcut: unparents the waiting frisbee, places it at <paramref name="targetPosition"/> and fires
+    /// "ForcedPoint", skipping the throw. Ignored unless this state is active and the dog is ready to catch.
+    /// </summary>
+    /// <param name="targetPosition">World position of the score area to land in (the frisbee has no parent at that point).</param>
+    /// <remarks>Invoked via Inspector (FrisbeeGame scene) by <c>FrisbeeCheatCodes._forceScorePoint</c>.</remarks>
+    public void ForceScorePoint(Vector3 targetPosition)
+    {
+        if (_fsm.CurrentState == this && _isDogReadyToCatch)
+        {    
+            transform.parent = null;
+            transform.localPosition = targetPosition;
+            _fsm.ChangeState("ForcedPoint");
+        }
     }
 }
     
