@@ -76,6 +76,15 @@ public class TentPlaceHolderManager : MonoBehaviour
         _updateOtherManagers.Invoke(fairState);
     }
 
+    /// <summary>
+    /// Removes the listener added in <see cref="Start"/> from <see cref="ConnectToWebApp.updateTentsOrder"/>, so the
+    /// <c>DontDestroyOnLoad</c> event does not keep calling this destroyed instance after the scene unloads.
+    /// </summary>
+    private void OnDestroy()
+    {
+        ConnectToWebApp.Instance.updateTentsOrder.RemoveListener(OnOtherManagerUpdate);
+    }
+
 
     /// <summary>Collects every <see cref="OrderableTentElement"/> registered under <see cref="_elementsTransform"/>.</summary>
     private OrderableTentElement[] GetOrderableElements()
