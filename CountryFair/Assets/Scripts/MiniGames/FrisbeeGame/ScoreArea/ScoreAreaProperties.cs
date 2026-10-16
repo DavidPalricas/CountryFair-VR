@@ -37,15 +37,22 @@ public class ScoreAreaProperties : MonoBehaviour
 
     /// <summary>Spawn position; center reference of the orbit and target of <see cref="StopMoving"/>.</summary>
     private Vector3 _initialPosition = Vector3.zero;
+    /// <summary>Hidden during the invisible phase of the blink cycle.</summary>
     private Renderer _renderer;
+    /// <summary>Disabled together with <see cref="_renderer"/> so the frisbee cannot score on an invisible area.</summary>
     private Collider _collider;
 
+    /// <summary>DOTween loop count meaning "repeat forever".</summary>
     private const int InfiniteLoops = -1;
 
-    // Unique ID to differentiate Blinking from Moving
-    private string _blinkId; 
+    /// <summary>
+    /// DOTween id of the blink sequence, unique per instance. Lets <see cref="StopBlinking"/> kill only the blink without
+    /// touching the movement tween on the transform.
+    /// </summary>
+    private string _blinkId;
 
 
+    /// <summary>Found by the <c>GameManager</c> tag; destroys NORMAL areas when they are scored.</summary>
     private FrisbeeGameManager _frisbeeGameManager;
 
     /// <summary>Points awarded when the frisbee lands here; read by <see cref="Landed"/>.</summary>
@@ -175,7 +182,7 @@ public class ScoreAreaProperties : MonoBehaviour
         ToggleVisuals(true); 
     }
 
-
+    /// <summary>Shows or hides the area, turning the renderer and collider on or off together.</summary>
     private void ToggleVisuals(bool visualState)
     {
         _renderer.enabled = visualState;
@@ -220,6 +227,12 @@ public class ScoreAreaProperties : MonoBehaviour
 
               return;
         }
+    }
+
+    /// <summary>Area type; used by <see cref="FrisbeeCheatCodes"/> to tell the dog's catch area from the extra ones.</summary>
+    public AreaType GetAreaType()
+    {
+        return _areaType;
     }
 
     /// <summary>

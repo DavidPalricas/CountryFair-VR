@@ -22,6 +22,10 @@ public class CarnyWise : MonoBehaviour
     [SerializeField]
     private UnityEvent <bool> _changeDifficulty;
 
+    /// <summary>Raised by <see cref="ResetDifficulty"/>; wired in Inspector to <see cref="MiniGameManager.ResetDifficulty"/>.</summary>
+    [SerializeField]
+    private UnityEvent _resetDifficulty;
+
     /// <summary>Precision ratio at or above which a task counts as excelling (triggers potential increase).</summary>
     [Header("Adaptation Configuration")]
     [SerializeField, Range(0f, 1f)]
@@ -135,8 +139,8 @@ public class CarnyWise : MonoBehaviour
     /// <remarks>
     /// The fresh task also clears the timer, so the next task's time only starts at the next <see cref="StartTaskTimer"/>
     /// call. The abandoned task is not added to <see cref="_tasksTimes"/>/<see cref="_tasksPrecisions"/>.
+    /// Invoked via Inspector by the mini-game's <c>_playerMissed</c> event.
     /// </remarks>
-    /// <remarks>Invoked via Inspector by the mini-game's <c>_playerMissed</c> event.</remarks>
     public void PlayerMissed()
     {
         _currentAttemptsForTask++;
@@ -250,12 +254,54 @@ public class CarnyWise : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Forces a difficulty change outside the precision buffers, going through the same path (feedback dialog, buffer
+    /// reset) as an automatic one.
+    /// </summary>
+    /// <param name="isToIncreaseDiff">True raises the difficulty, false lowers it.</param>
+    /// <remarks>Invoked via Inspector by <c>MiniGameCheatCodes._changeDifficulty</c> (<c>increase</c>/<c>decrease</c> cheats).</remarks>
+    public void ChangeDifficulty(bool isToIncreaseDiff)
+    {
+        if (isToIncreaseDiff)
+        {
+            IncreaseDifficulty();
+
+            return;
+        }
+       
+         DecreaseDifficulty();
+    }
+
+
+    /// <summary>
+    /// Drops the mini-game back to difficulty 0 and clears the current task and both buffers, so the DDA starts over.
+    /// Does nothing if the saved level is already 0.
+    /// </summary>
+    /// <remarks>Invoked via Inspector by <c>MiniGameCheatCodes._resetDifficulty</c> (<c>reset</c> cheat).</remarks>
+    public void ResetDifficulty()
+    {   string playerPrefsDiffKey = _isFrisbeeMiniGame ? "FrisbeeDifficultyLevel" : "ArcheryDifficultyLevel";
+    
+        int currentDifficulty = PlayerPrefs.GetInt(playerPrefsDiffKey, 0);
+
+        if (currentDifficulty > 0)
+        {
+            _diffFeedback.ShowNewDiffFeedback(false);
+            _resetDifficulty.Invoke();
+
+            ResetTask();
+
+            _struggleCounter = 0;
+            _excelCounter = 0;
+        }
+    }
+
+
+
     /// <summary>Raises the difficulty, shows the Carny Wise feedback and clears the excel buffer.</summary>
-    /// <remarks>Also called directly by the <c>increase</c> cheat in <see cref="MiniGameCheatCodes"/>.</remarks>
-    public void IncreaseDifficulty()
+    /// <remarks>Also reached by the <c>increase</c> cheat through <see cref="ChangeDifficulty"/>.</remarks>
+    private void IncreaseDifficulty()
     {
         const bool IsToIncreaseDiff = true;
-
 
         _changeDifficulty.Invoke(IsToIncreaseDiff);
        
@@ -269,8 +315,11 @@ public class CarnyWise : MonoBehaviour
     /// Lowers the difficulty and clears the struggle buffer. The feedback dialog is only shown when the saved level is
     /// above 0, so the player is not told the game got easier when it is already at the minimum.
     /// </summary>
-    /// <remarks>Also called by the safety net in <see cref="PlayerMissed"/> and by the <c>decrease</c>/<c>reset</c> cheats.</remarks>
-    public void DecreaseDifficulty()
+    /// <remarks>
+    /// Also called by the safety net in <see cref="PlayerMissed"/> and reached by the <c>decrease</c> cheat through
+    /// <see cref="ChangeDifficulty"/>.
+    /// </remarks>
+    private void DecreaseDifficulty()
     {   
         string playerPrefsDiffKey = _isFrisbeeMiniGame ? "FrisbeeDifficultyLevel" : "ArcheryDifficultyLevel";
         
@@ -287,7 +336,6 @@ public class CarnyWise : MonoBehaviour
 
         _struggleCounter = 0; 
     }
-
 
     /// <summary>
     /// Called when the player reaches the session score goal.

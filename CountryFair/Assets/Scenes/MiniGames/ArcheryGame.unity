@@ -1434,12 +1434,51 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   _defaultUpdateGoalValue: 10
-  _returnToFair: {fileID: 309234832}
-  _carnyWise: {fileID: 719487115}
-  _tutorial: {fileID: 1246274070}
-  _emojiDisplay: {fileID: 255034105}
-  _faceDisplay: {fileID: 32811218}
-  _sliderDisplay: {fileID: 1668669052}
+  _changeDifficulty:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 719487115}
+        m_TargetAssemblyTypeName: CarnyWise, Assembly-CSharp
+        m_MethodName: ChangeDifficulty
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _resetDifficulty:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 719487115}
+        m_TargetAssemblyTypeName: CarnyWise, Assembly-CSharp
+        m_MethodName: ResetDifficulty
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _goalReached:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 719487115}
+        m_TargetAssemblyTypeName: CarnyWise, Assembly-CSharp
+        m_MethodName: SessionGoalReached
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _changeEmotionDisplay:
     m_PersistentCalls:
       m_Calls:
@@ -1447,6 +1486,81 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: ServerListener, Assembly-CSharp
         m_MethodName: UpdateDisplayMode
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _updateFaceDisplay:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 32811218}
+        m_TargetAssemblyTypeName: ExpressionDisplay, Assembly-CSharp
+        m_MethodName: UpdateVisuals
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _updateEmojiDisplay:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 255034105}
+        m_TargetAssemblyTypeName: ExpressionDisplay, Assembly-CSharp
+        m_MethodName: UpdateVisuals
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _updateSliderDisplay:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1668669052}
+        m_TargetAssemblyTypeName: SliderDisplay, Assembly-CSharp
+        m_MethodName: UpdateSlider
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _returnToFair:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 309234832}
+        m_TargetAssemblyTypeName: ReturnToFair, Assembly-CSharp
+        m_MethodName: Return
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _skipTutorial:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1246274070}
+        m_TargetAssemblyTypeName: Tutorial, Assembly-CSharp
+        m_MethodName: ReadyToPlay
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1470,8 +1584,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _arrowTransform: {fileID: 1754926366}
-  _arrowComponent: {fileID: 1754926365}
+  _launchForce: 5
+  _launchArrow:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1754926365}
+        m_TargetAssemblyTypeName: Arrow, Assembly-CSharp
+        m_MethodName: Launch
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &109936699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4111,8 +4239,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4200267, b: 0.2485632, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.42002812, b: 0.2485646, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4200205, b: 0.24855697, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.4200213, b: 0.24855778, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -14423,11 +14551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 855b41b9e58fed44faa81dda3bc7da05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
---- !u!4 &1754926366 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 343275071630199665, guid: 571136f6eed984e4ca4d01b59d1e855a, type: 3}
-  m_PrefabInstance: {fileID: 1754926363}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1758612435
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18402,9 +18525,37 @@ PrefabInstance:
       value: CarnyWise
       objectReference: {fileID: 0}
     - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 106628084}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: _changeDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 106628084}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ResetDifficulty
+      objectReference: {fileID: 0}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ArcheryGameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7724761647319537216, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _resetDifficulty.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
