@@ -148,23 +148,15 @@ public class SliderDisplay: EmotionDisplay
     /// <param name="newCategory">The mood category to apply.</param>
     public void UpdateSlider(EMOJI_CATEGORY newCategory)
     {
-       string categoryName = newCategory.ToString();
-
        _slider.gameObject.SetActive(true);
 
-        if (!Enum.TryParse(categoryName.ToUpper(), out EMOJI_CATEGORY category))
-        {
-            Debug.LogError($"Invalid emoji category: {categoryName}");
-            return;
-        }
+        Debug.Log($"Updating slider with category: {newCategory}");
 
-        Debug.Log($"Updating slider with category: {category}");
-
-        if (category == EMOJI_CATEGORY.Positive)
+        if (newCategory == EMOJI_CATEGORY.Positive)
         {
              _slider.value = Mathf.Min(_slider.value + _sliderChangeAmountThreshold, 1);
 
-        }else if(category == EMOJI_CATEGORY.Negative){
+        }else if(newCategory == EMOJI_CATEGORY.Negative){
              _slider.value = Mathf.Max(_slider.value - _sliderChangeAmountThreshold, 0);
         }
 
@@ -174,7 +166,7 @@ public class SliderDisplay: EmotionDisplay
          // 2. NETWORK LOGIC (Only executes if NOT updating via network callback)
         if (!_isUpdatingFromNetwork)
         {
-            SyncToNetwork(category);
+            SyncToNetwork(newCategory);
         }
     }
    

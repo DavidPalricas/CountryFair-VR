@@ -199,32 +199,44 @@ public class FrisbeeGameManager : MiniGameManager
     /// Random point around the player at 20–100 % of the current dog distance, at the dog area's height, inside the dog
     /// area and not overlapping another score area (layer <c>ScoreArea</c>).
     /// </summary>
-    /// <remarks>Retries recursively with no attempt limit, so an area too small for the requested count recurses until it overflows the stack.</remarks>
+    /// <remarks>
+    /// Gives up after <c>MaxAttempts</c> failures instead of retrying without limit, which overflowed the stack when the
+    /// area was too small for the requested count. The fallback is the last candidate clamped into the dog area, so the
+    /// dog can still reach it even if it overlaps another score area.
+    /// </remarks>
     protected override Vector3 GetRandomTargetPosition()
     {
         float currentDogDist = PlayerPrefs.GetFloat("DogDistance", _defaultDogDistance);
-        
+
         const float MinOffset = 0.2f;
         const float MaxOffset = 1f;
+        const int MaxAttempts = 30;
 
-        Vector2 randomDirection = Random.insideUnitCircle.normalized;
-
-        float scoreAreaDistance = currentDogDist * Random.Range(MinOffset, MaxOffset);
-
-        Vector3 scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
-
-        scoreAreaPosition.y = _dogAreaCollider.bounds.center.y;
+        Bounds dogAreaBounds = _dogAreaCollider.bounds;
 
         int layerMask = LayerMask.GetMask("ScoreArea");
-        
-        bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, layerMask);
 
-        if (!_dogAreaCollider.bounds.Contains(scoreAreaPosition) || collidesWithOtherAreas)
+        Vector3 scoreAreaPosition = Vector3.zero;
+
+        for (int attempt = 0; attempt < MaxAttempts; attempt++)
         {
-            return GetRandomTargetPosition();
+            Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+            float scoreAreaDistance = currentDogDist * Random.Range(MinOffset, MaxOffset);
+
+            scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
+
+            scoreAreaPosition.y = dogAreaBounds.center.y;
+
+            bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, layerMask);
+
+            if (dogAreaBounds.Contains(scoreAreaPosition) && !collidesWithOtherAreas)
+            {
+                return scoreAreaPosition;
+            }
         }
 
-        return scoreAreaPosition;
+        return dogAreaBounds.ClosestPoint(scoreAreaPosition);
     }
     
 

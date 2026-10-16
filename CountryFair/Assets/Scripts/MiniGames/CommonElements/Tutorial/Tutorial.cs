@@ -172,11 +172,13 @@ public class Tutorial : UIDialog
 
     /// <summary>Picks the Frisbee or Archery tutorial JSON based on <see cref="_isFromFrisbeGame"/>.</summary>
     /// <remarks>
-    /// Called by <see cref="UIDialog"/>'s Awake, which runs before <see cref="Start"/> calls <see cref="CheckCurrenMiniGame"/>,
-    /// so <see cref="_isFromFrisbeGame"/> is still false here and the Archery file is always selected.
+    /// Called by <see cref="UIDialog"/>'s Awake, which runs before <see cref="Start"/>, so it calls
+    /// <see cref="CheckCurrenMiniGame"/> itself to resolve <see cref="_isFromFrisbeGame"/> before choosing the file.
     /// </remarks>
     protected override void SetJSONFileName()
     {
+        CheckCurrenMiniGame();
+
         _jsonFileName = _isFromFrisbeGame ? "frisbee_tutorial.json" : "archery_tutorial.json";
     }
 
