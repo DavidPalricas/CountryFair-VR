@@ -1255,6 +1255,9 @@ MonoBehaviour:
   DifficultyLevel: 0
   _balloonColorToScoreText: {fileID: 1694698409}
   _balloonSpawnArea: {fileID: 925036648}
+  _balloonOverlapLayers:
+    serializedVersion: 2
+    m_Bits: 4096
   _blueBalloonPrefab: {fileID: 3396820265375727783, guid: 8e9d91feadc8e4e9d816ee298dae3e26, type: 3}
   _redBalloonPrefab: {fileID: 3396820265375727783, guid: 6bc1fa59f754e43eca1ede6a24d1fe8c, type: 3}
   _yellowBalloonPrefab: {fileID: 3396820265375727783, guid: 2f216f7780c07414e8283e089d6d69b3, type: 3}
@@ -4239,8 +4242,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4200205, b: 0.24855697, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.4200213, b: 0.24855778, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.42002, b: 0.2485565, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.42002046, b: 0.24855694, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -12690,21 +12693,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e34d47d07205b614ebceb2d4c7752044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crowd
-  _cheer:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 106628086}
-        m_TargetAssemblyTypeName: ArcheryAudioManager, Assembly-CSharp
-        m_MethodName: PlaySpatialSoundEffect
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1001 &1578235475
 PrefabInstance:
   m_ObjectHideFlags: 0

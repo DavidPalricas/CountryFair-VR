@@ -8,9 +8,11 @@ using Newtonsoft.Json;
 /// On Android (Quest) the file lives in <see cref="Application.persistentDataPath"/>; in the Editor it is placed at the project root.
 /// </summary>
 public class DataFileManager
-{
+{   
+    /// <summary>Name of the JSON save file, relative to <see cref="Application.persistentDataPath"/> on Android and to the project root in the Editor.
     private const string SaveFileName = "survivorData.json";
-
+     
+     /// Singleton instance of the <see cref="DataFileManager"/>; created on first call to <see cref="GetInstance"/>.
     private static DataFileManager _instance;
 
     /// <summary>In-memory copy of the save file; every write method mutates it and then rewrites the whole file.</summary>
@@ -22,6 +24,7 @@ public class DataFileManager
     /// <remarks>
     /// <see cref="SetFilePath"/> must run before <see cref="LoadData"/>: with a null <see cref="_filePath"/> the load
     /// finds no file, starts an empty <see cref="DataFileRoot"/>, and the next save overwrites the patient's history.
+    /// the constructor is private to enforce the singleton pattern, and calls both methods in the correct order.
     /// </remarks>
     private DataFileManager()
     {
