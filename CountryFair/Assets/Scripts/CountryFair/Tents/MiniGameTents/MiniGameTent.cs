@@ -56,6 +56,21 @@ public class MiniGameTent : OrderableTentElement
      private bool _isSelected = false;
 
     /// <summary>
+    /// Furthest distance (meters) at which looking at a tent shows its play button. Bounds the gaze raycast, which
+    /// previously ran to infinity.
+    /// </summary>
+    private const float MaxGazeDistance = 20f;
+
+    /// <summary>
+    /// <see cref="Time.frameCount"/> of the last gaze raycast. Shared by every tent so the four tents do one raycast per
+    /// frame between them instead of one each.
+    /// </summary>
+    private static int _gazeFrame = -1;
+
+    /// <summary>Collider hit by the current frame's gaze raycast, or null if it hit nothing within <see cref="MaxGazeDistance"/>.</summary>
+    private static Collider _gazedCollider;
+
+    /// <summary>
     /// Initialises UI text, validates required references, snaps the tent to its starting placeholder,
     /// and hides the play button until the player aims at the tent.
     /// </summary>
@@ -112,17 +127,43 @@ public class MiniGameTent : OrderableTentElement
         }
     }
 
-    /// <summary>Shows the play button only when the player's gaze/pointer ray is currently hitting this tent's collider.</summary>
+    /// <summary>
+    /// Shows the play button only when the player's gaze ray is currently hitting this tent's collider. Keeps the
+    /// current state when the ray hits nothing, and only calls <c>SetActive</c> when the state actually changes.
+    /// </summary>
     private void CheckIfPlayerWantsToGoToMiniGame()
     {
-        Ray ray = Utils.CastRayMetaQuest();
+        Collider gazedCollider = GetGazedCollider();
 
-        if (Physics.Raycast(ray, out RaycastHit hitInfo))
+        if (gazedCollider == null)
         {
-            bool isToShowData = hitInfo.collider == _collider;
+            return;
+        }
 
+        bool isToShowData = gazedCollider == _collider;
+
+        if (_buttonToPlayMiniGame.activeSelf != isToShowData)
+        {
             _buttonToPlayMiniGame.SetActive(isToShowData);
         }
+    }
+
+    /// <summary>
+    /// Returns the collider the player is looking at this frame. The first tent to ask in a frame does the raycast;
+    /// the others reuse its result.
+    /// </summary>
+    private static Collider GetGazedCollider()
+    {
+        if (_gazeFrame != Time.frameCount)
+        {
+            _gazeFrame = Time.frameCount;
+
+            _gazedCollider = Physics.Raycast(Utils.CastRayMetaQuest(), out RaycastHit hitInfo, MaxGazeDistance)
+                ? hitInfo.collider
+                : null;
+        }
+
+        return _gazedCollider;
     }
 
     /// <summary>Instantiates <see cref="_miniGamePropPrefab"/> slightly above the placeholder anchor and parents it to this tent.</summary>

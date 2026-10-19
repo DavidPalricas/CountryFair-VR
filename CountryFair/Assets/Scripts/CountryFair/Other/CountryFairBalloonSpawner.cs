@@ -25,6 +25,12 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     private Collider _areaCollider;
 
     /// <summary>
+    /// <see cref="Time.time"/> at which the next balloon may spawn. A single timer means at most one spawn is pending at
+    /// a time, so the live count never overshoots <see cref="BalloonsSpawner._maxBalloons"/>.
+    /// </summary>
+    private float _nextSpawnTime = 0f;
+
+    /// <summary>
     /// Initializes the spawner by retrieving the collider component.
     /// Logs an error if the collider is not found.
     /// </summary>
@@ -41,15 +47,20 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     }
 
     /// <summary>
-    /// Called every frame. While below <c>_maxBalloons</c>, schedules a <see cref="SpawnBalloon"/> after a random
-    /// delay in [<see cref="_minSpawnInterval"/>, <see cref="_maxSpawnInterval"/>].
-    /// <c>_currentBalloons</c> is only incremented when a scheduled spawn fires, so several spawns can be pending at once.
+    /// While below <c>_maxBalloons</c>, spawns one balloon each time <see cref="_nextSpawnTime"/> is reached, then waits
+    /// a random delay in [<see cref="_minSpawnInterval"/>, <see cref="_maxSpawnInterval"/>] before the next one.
     /// </summary>
+    /// <remarks>
+    /// Replaces an <c>Invoke</c> scheduled every frame: since the counter only grew when a spawn fired, dozens of spawns
+    /// were queued per refill and the live count overshot the cap.
+    /// </remarks>
     private void Update()
     {
-        if (_currentBalloons < _maxBalloons)
+        if (_currentBalloons < _maxBalloons && Time.time >= _nextSpawnTime)
         {
-            Invoke(nameof(SpawnBalloon), Utils.RandomValueInRange(_minSpawnInterval, _maxSpawnInterval));
+            SpawnBalloon();
+
+            _nextSpawnTime = Time.time + Utils.RandomValueInRange(_minSpawnInterval, _maxSpawnInterval);
         }
     }
 

@@ -20,13 +20,13 @@ public class DataFileManager
     private string _filePath;
 
     /// <remarks>
-    /// <see cref="LoadData"/> runs before <see cref="SetFilePath"/>, so <see cref="_filePath"/> is still null
-    /// during the first load and an empty <see cref="DataFileRoot"/> is always created.
+    /// <see cref="SetFilePath"/> must run before <see cref="LoadData"/>: with a null <see cref="_filePath"/> the load
+    /// finds no file, starts an empty <see cref="DataFileRoot"/>, and the next save overwrites the patient's history.
     /// </remarks>
     private DataFileManager()
     {
-        LoadData();
         SetFilePath();
+        LoadData();
     }
 
     /// <summary>Returns the singleton instance, creating it on first call (which triggers an immediate file load).</summary>

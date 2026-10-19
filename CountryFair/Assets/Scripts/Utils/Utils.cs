@@ -9,6 +9,13 @@ using System;
 public static class Utils
 {
     /// <summary>
+    /// Transform of the <c>MainCamera</c>-tagged object, cached by <see cref="CastRayMetaQuest"/> so the tag search runs
+    /// once instead of on every call. It becomes null (Unity's destroyed-object check) when the scene unloads, which
+    /// triggers a new search in the next scene.
+    /// </summary>
+    private static Transform _headTransform;
+
+    /// <summary>
     /// Casts a ray from the user's head in the Meta Quest 3 headset into the game world, along the gaze direction.
     /// Used for gaze-based interactions, e.g. <c>MiniGameTent</c> showing its play button while the player looks at it.
     /// </summary>
@@ -19,7 +26,7 @@ public static class Utils
     /// Uses the transform of the <c>MainCamera</c>-tagged object directly (the per-eye <c>centerEyeAnchor</c> version
     /// is commented out). That object must follow the head; if no object has the tag, a
     /// <see cref="NullReferenceException"/> is thrown (nothing is logged).
-    /// Looks the object up by tag on every call, so avoid calling it many times per frame.
+    /// The object is looked up by tag only once per scene and then cached in <see cref="_headTransform"/>.
     ///
     /// Typical usage:
     /// <code>
@@ -33,37 +40,23 @@ public static class Utils
     /// <exception cref="NullReferenceException">No GameObject is tagged <c>MainCamera</c>.</exception>
     public static Ray CastRayMetaQuest()
     {
-        GameObject ovrCameraRig = GameObject.FindGameObjectWithTag("MainCamera");
-
-       /*
-        if (ovrCameraRig == null)
+        if (_headTransform == null)
         {
-            Debug.LogError("OVRCameraRig not found in the scene. Make sure you have an OVRCameraRig in your scene to use CastRayMetaQuest.");
-            return new Ray();
+            _headTransform = GameObject.FindGameObjectWithTag("MainCamera").transform;
         }
 
 
-        Transform centerEyeTransform = ovrCameraRig.GetComponent<OVRCameraRig>().centerEyeAnchor;
-
-        return new Ray(centerEyeTransform.position, centerEyeTransform.forward);
-
-        */
-
-        return new Ray(ovrCameraRig.transform.position, ovrCameraRig.transform.forward);
+        return new Ray(_headTransform.position, _headTransform.forward);
     }
 
     /// <summary>
-    /// Returns a random float in [<paramref name="min"/>, <paramref name="max"/>], reseeding Unity's random generator
-    /// with the system tick count (milliseconds) before every call.
+    /// Returns a random float in [<paramref name="min"/>, <paramref name="max"/>], drawn from Unity's global random
+    /// generator.
     /// </summary>
     /// <remarks>
-    /// The reseeding was meant to avoid predictable patterns, but it has two side effects worth knowing:
-    /// <list type="bullet">
-    /// <item><description>Calls made within the same millisecond (e.g. several in one frame) get the same seed and
-    /// therefore return the same value.</description></item>
-    /// <item><description><see cref="UnityEngine.Random.InitState"/> resets the global generator, so it also changes the
-    /// sequence seen by every other <see cref="UnityEngine.Random"/> caller.</description></item>
-    /// </list>
+    /// The generator is never reseeded here: Unity seeds it once at startup, which is already unpredictable. Reseeding
+    /// on every call (with <see cref="Environment.TickCount"/>, as before) made calls in the same millisecond return the
+    /// same value and reset the sequence of every other <see cref="UnityEngine.Random"/> caller.
     ///
     /// Typical usage:
     /// <code>
@@ -85,23 +78,17 @@ public static class Utils
             return 0f;
         }
 
-        int seed = Environment.TickCount;
-
-        UnityEngine.Random.InitState(seed);
-
         return UnityEngine.Random.Range(min, max);
     }
 
 
     /// <summary>
     /// Returns a random int in [<paramref name="min"/>, <paramref name="max"/>) — <b>max is exclusive</b>, like
-    /// <see cref="UnityEngine.Random.Range(int, int)"/> — reseeding Unity's random generator with the system tick count
-    /// before every call.
+    /// <see cref="UnityEngine.Random.Range(int, int)"/> — drawn from Unity's global random generator.
     /// </summary>
     /// <remarks>
     /// Because max is exclusive, it can be called directly with a collection's length to get a valid index.
-    /// Same reseeding side effects as the float overload: calls in the same millisecond return the same value, and the
-    /// global <see cref="UnityEngine.Random"/> state is reset.
+    /// Like the float overload, it never reseeds the generator.
     ///
     /// Typical usage:
     /// <code>
@@ -121,10 +108,6 @@ public static class Utils
             Debug.LogError("Utils.RandomValueInRange(int min, int max): min should be less than max.");
             return 0;
         }
-
-        int seed = Environment.TickCount;
-
-        UnityEngine.Random.InitState(seed);
 
         return UnityEngine.Random.Range(min, max);
     }

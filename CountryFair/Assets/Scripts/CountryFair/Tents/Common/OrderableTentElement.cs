@@ -9,7 +9,7 @@ using System.Collections;
 /// grab handling and slot-specific visuals are supplied by derived classes.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class OrderableTentElement : MonoBehaviour
+public abstract class OrderableTentElement : MonoBehaviour
 {
      /// <summary>
     /// Raised when the tent grab state changes.
@@ -102,10 +102,7 @@ public class OrderableTentElement : MonoBehaviour
     /// </summary>
     /// <param name="isGrabbed">True when the grab begins; false when the player releases the tent.</param>
     /// <remarks>Invoked via Inspector by the OnSelectEntered/OnSelectExited events of the XR Grab Interactable component.</remarks>
-    public virtual void HandleGrab(bool isGrabbed)
-    {
-        Debug.LogError("HandleGrab method must be implemented in a derived class.");
-    }
+    public abstract void HandleGrab(bool isGrabbed);
 
      /// <summary>
     /// Teleports this element to the current placeholder's position and rotation.

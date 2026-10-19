@@ -38,9 +38,7 @@ public class AnimalEat: AnimalState
 
         _timeToEat = Utils.RandomValueInRange(_minTimeToEat, _maxTimeToEat) + Time.time;
 
-        _hungerStat = Mathf.Max(_hungerStat - _hungerRecoveryRate, 0f);
-
-        UpdateStats();
+        _animalUtility.stats.Hunger = Mathf.Max(_animalUtility.stats.Hunger - _hungerRecoveryRate, 0f);
     }
 
 

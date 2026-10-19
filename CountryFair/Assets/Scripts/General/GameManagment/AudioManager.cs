@@ -6,7 +6,7 @@ using FMOD.Studio;
 /// Base audio manager class that handles ambient music and provides virtual methods for game-specific sound effects.
 /// This class uses FMOD for audio playback and should be inherited by specific game audio managers.
 /// </summary>
-public class AudioManager: MonoBehaviour
+public abstract class AudioManager: MonoBehaviour
 {
     /// <summary>
     /// FMOD event reference for the ambient background music.
@@ -113,24 +113,16 @@ public class AudioManager: MonoBehaviour
 
     /// <summary>
     /// Plays a spatial sound effect attached to a specific game object in 3D space.
-    /// This method must be overridden in derived classes.
     /// </summary>
     /// <param name="soundEffect">The type of sound effect to play.</param>
     /// <param name="target">The game object to which the sound will be attached.</param>
-    public virtual void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
-    {
-        Debug.LogError("The PlaySpatialAudio method must be overridden in a derived class.");
-    }
+    public abstract void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target);
 
     /// <summary>
     /// Plays a non-spatial sound effect at the default listener position.
-    /// This method must be overridden in derived classes.
     /// </summary>
     /// <param name="soundEffect">The type of sound effect to play.</param>
-    public virtual void PlaySoundEffect(GameSoundEffects soundEffect)
-    {
-        Debug.LogError("The PlayGlobalSoundEffect method must be overridden in a derived class.");
-    }
+    public abstract void PlaySoundEffect(GameSoundEffects soundEffect);
 
     /// <summary>
     /// Creates and starts the ambient music instance.

@@ -86,18 +86,17 @@ public class OnMovement : FrisbeeState
     }
 
     /// <summary>
-    /// Called every frame while in the OnMovement state.
+    /// Called every physics step while in the OnMovement state.
     /// Continuously applies aerodynamic forces to simulate realistic frisbee flight.
     /// </summary>
     /// <remarks>
-    /// Invokes <see cref="ApplySimpleAerodynamics"/> each frame to calculate and apply
-    /// lift and drag forces based on current velocity and orientation.
-    /// The FSM runs <c>Execute</c> from <c>Update</c>, not <c>FixedUpdate</c>, so the forces are added once per rendered
-    /// frame and the total lift depends on the frame rate.
+    /// Invokes <see cref="ApplySimpleAerodynamics"/> once per physics step to calculate and apply lift and drag forces
+    /// based on current velocity and orientation. Running it from <c>FixedUpdate</c> (not <c>Update</c>) keeps the
+    /// flight identical at 72, 90 and 120 Hz.
     /// </remarks>
-    public override void Execute()
+    public override void FixedExecute()
     {
-        base.Execute();
+        base.FixedExecute();
         ApplySimpleAerodynamics();
     }
 

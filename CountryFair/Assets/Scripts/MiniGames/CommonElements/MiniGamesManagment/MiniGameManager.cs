@@ -8,7 +8,7 @@ using System.Collections.Generic;
 /// Concrete implementations: <see cref="FrisbeeGameManager"/>, <see cref="ArcheryGameManager"/>.
 /// </summary>
 [RequireComponent(typeof(MiniGameCheatCodes))]
-public class MiniGameManager : MonoBehaviour
+public abstract class MiniGameManager : MonoBehaviour
 {
     /// <summary>Base number of targets present at difficulty level 0.</summary>
     [Header("Targets Configuration")]
@@ -43,52 +43,28 @@ public class MiniGameManager : MonoBehaviour
 
 
     /// <summary>Moves one level up or down and re-applies the settings. Wired from <see cref="CarnyWise"/>'s <c>_changeDifficulty</c> event.</summary>
-    public virtual void ChangeDifficulty(bool isToIncreaseDiff){
-        Debug.LogError("ChangeDifficulty should be overridden in derived classes.");
-    }
+    public abstract void ChangeDifficulty(bool isToIncreaseDiff);
 
-    protected virtual void ApplyDifficultySettings(){
-        Debug.LogError("ApplyDifficultySettings should be overridden in derived classes.");
-    }
+    protected abstract void ApplyDifficultySettings();
 
-    protected virtual Vector3 GetRandomTargetPosition()
-    {
-        Debug.LogError("GetRandomTargetPosition should be overridden in derived classes.");
-        return Vector3.zero;
-    }
+    protected abstract Vector3 GetRandomTargetPosition();
 
-    protected virtual void SyncTargets(int desiredCount){
-        Debug.LogError("SyncTargets should be overridden in derived classes.");
-    }
+    protected abstract void SyncTargets(int desiredCount);
 
-    protected virtual void UpdateTargetsProperties()
-    {
-        Debug.LogError("UpdateTargetsProperties should be overridden in derived classes.");
-    }
+    protected abstract void UpdateTargetsProperties();
 
-    protected virtual void AddTarget(GameObject targetPrefab = null)
-    {
-        Debug.LogError("AddTarget should be overridden in derived classes.");
-    }
+    protected abstract void AddTarget(GameObject targetPrefab = null);
 
-    protected virtual void RemoveTarget()
-    {
-        Debug.LogError("RemoveTarget should be overridden in derived classes.");
-    }
+    protected abstract void RemoveTarget();
 
-    public virtual void DestroyTarget(GameObject target, GameObject targetPrefab = null)
-    {
-        Debug.LogError("DestroyTarget should be overridden in derived classes.");
-    }
+    public abstract void DestroyTarget(GameObject target, GameObject targetPrefab = null);
 
     /// <summary>
     /// Called by the Tutorial system when the tutorial is fully complete.
     /// Implementations should read the persisted difficulty level and apply initial settings.
     /// </summary>
     /// <remarks>Invoked via Inspector by the <c>_tutorialCompleted</c> event of <see cref="Tutorial"/>.</remarks>
-    public virtual void TutorialCompleted(){
-        Debug.LogError("TutorialCompleted should be overridden in derived classes.");
-    }
+    public abstract void TutorialCompleted();
 
     
     /// <summary>Sets the level to 0 and re-applies the settings (the <c>reset</c> cheat).</summary>

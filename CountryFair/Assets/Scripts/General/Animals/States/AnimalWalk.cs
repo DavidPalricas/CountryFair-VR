@@ -46,9 +46,7 @@ public class AnimalWalk: AnimalState
 
         SetRandomDestination();
 
-        _boredomStat = Mathf.Max(_boredomStat - _boredomRecoveryRate, 0f);
-
-        UpdateStats();
+        _animalUtility.stats.Boredom = Mathf.Max(_animalUtility.stats.Boredom - _boredomRecoveryRate, 0f);
     }
 
     /// <summary>

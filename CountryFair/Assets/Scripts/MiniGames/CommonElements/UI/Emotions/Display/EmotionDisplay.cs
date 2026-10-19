@@ -18,17 +18,11 @@ public abstract class EmotionDisplay: NetworkBehaviour
     /// <summary>Separator of the server message <c>EXPRESSION;CATEGORY</c> (e.g. <c>happy;positive</c>).</summary>
     protected char _messageSeparator = ';';
 
-    /// <summary>Must be overridden to subscribe to the subclass's <c>NetworkVariable</c> and apply its current value.</summary>
-    public override void OnNetworkSpawn()
-    {
-       Debug.LogError("OnNetworkSpawn should be overridden in derived classes of EmotionDisplay.");
-    }
+    /// <summary>Subscribes to the subclass's <c>NetworkVariable</c> and applies its current value.</summary>
+    public abstract override void OnNetworkSpawn();
 
-    /// <summary>Must be overridden to unsubscribe from the subclass's <c>NetworkVariable</c>.</summary>
-    public override void OnNetworkDespawn()
-    {
-        Debug.LogError("OnNetworkDespawn should be overridden in derived classes of EmotionDisplay.");
-    }
+    /// <summary>Unsubscribes from the subclass's <c>NetworkVariable</c>.</summary>
+    public abstract override void OnNetworkDespawn();
 
     /// <summary>
     /// Entry point for messages from <see cref="ServerListener"/>. The base implementation trims the message and logs a

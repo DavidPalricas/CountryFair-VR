@@ -74,12 +74,21 @@ public class FSM : MonoBehaviour
     /// Runs the current state's per-frame logic (<see cref="State.Execute"/>).
     /// </summary>
     /// <remarks>
-    /// Called from <c>Update</c>, not <c>FixedUpdate</c>: states that apply physics forces in <c>Execute</c> are
-    /// therefore frame-rate dependent.
+    /// Called from <c>Update</c>: states must not apply physics forces here (they would scale with the frame rate);
+    /// they use <see cref="State.FixedExecute"/> instead.
     /// </remarks>
     private void Update()
     {
         CurrentState.Execute();
+    }
+
+    /// <summary>
+    /// Runs the current state's physics logic (<see cref="State.FixedExecute"/>) once per physics step.
+    /// </summary>
+    /// <remarks>Null-checked because physics steps can run before <see cref="Start"/> has set the first state.</remarks>
+    private void FixedUpdate()
+    {
+        CurrentState.FixedExecute();
     }
 
     /// <summary>

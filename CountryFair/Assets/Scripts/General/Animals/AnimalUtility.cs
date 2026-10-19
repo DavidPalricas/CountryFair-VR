@@ -33,8 +33,8 @@ public class AnimalUtility: MonoBehaviour
     /// instead of all picking the same first action in lockstep.
     /// </summary>
     /// <remarks>
-    /// Runs before the <see cref="AnimalState"/> components read <see cref="stats"/> in their own Awake
-    /// only if this component's Awake executes first; the script execution order is not enforced in code.
+    /// The <see cref="AnimalState"/> components do not read <see cref="stats"/> in their Awake, so the order between
+    /// this Awake and theirs does not matter.
     /// </remarks>
     private void Awake()
     {
