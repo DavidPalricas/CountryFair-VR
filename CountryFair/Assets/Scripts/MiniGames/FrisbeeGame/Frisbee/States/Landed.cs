@@ -3,17 +3,15 @@ using UnityEngine.Events;
 
 /// <summary>
 /// State representing the frisbee after it has landed and stopped on the ground.
-/// Handles the landing event invocation and disabling of trajectory visualization.
-/// Waits for the dog to retrieve the frisbee before transitioning to the <see cref="OnPlayerFront"/> state.
+/// Decides whether the throw scored (by overlapping a <c>ScoreArea</c>) and raises the matching event.
+/// After a scored throw outside the tutorial it waits for the dog to bring it back ("RetrievedByDog"); otherwise it
+/// returns straight to the player ("ReturnToPlayer").
 /// </summary>
 public class Landed: FrisbeeState
 {    
     /// <summary>Frisbee mesh; its bounds give the radius used to detect an overlapping score area.</summary>
     [SerializeField]
     private MeshRenderer _frisbeeMeshRenderer;
-
-    /// <summary>While true (tutorial practice), landing in a score area returns the frisbee without raising scoring events.</summary>
-    public bool TutorialActive { get; set; } = true;
 
     /// <summary>Event invoked with the score area's points when the frisbee lands in a score area outside the tutorial.
     /// </summary>
@@ -107,7 +105,7 @@ public class Landed: FrisbeeState
     }
     
     /// <summary>
-    /// Called when exiting the Landed state (when dog retrieves the frisbee).
+    /// Called when exiting the Landed state, either on "ReturnToPlayer" or when the dog retrieves the frisbee.
     /// </summary>
     public override void Exit()
     {   

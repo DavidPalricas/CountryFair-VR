@@ -15,7 +15,7 @@ using TMPro;
 /// Subclasses must override <see cref="SetJSONFileName"/>, <see cref="GetJSONDataType"/>,
 /// <see cref="OnDataLoaded"/>, and <see cref="NextStep"/> to implement specific dialogue behaviour.
 /// </remarks>
-public class UIDialog : MonoBehaviour
+public abstract class UIDialog : MonoBehaviour
 {
     [Header("Dialogue Box")]
     /// <summary>Root GameObject of the dialogue bubble; shown/hidden by subclass logic.</summary>
@@ -52,12 +52,8 @@ public class UIDialog : MonoBehaviour
        // Debug.Log("Data loaded in base. Waiting for child class logic.");
     }
 
-    /// <summary>Returns the concrete <see cref="JSONData"/> subtype to deserialize <see cref="_jsonFileName"/> into; must be overridden.</summary>
-    protected virtual System.Type GetJSONDataType()
-    {
-        Debug.LogError("GetJSONDataType must be overridden.");
-        return null;
-    }
+    /// <summary>Returns the concrete <see cref="JSONData"/> subtype to deserialize <see cref="_jsonFileName"/> into.</summary>
+    protected abstract System.Type GetJSONDataType();
 
     /// <summary>
     /// Reads <see cref="_jsonFileName"/> from <c>StreamingAssets/DialogFiles/</c> (via <see cref="UnityWebRequest"/>
@@ -116,15 +112,9 @@ public class UIDialog : MonoBehaviour
         }
     }
 
-    /// <summary>Sets <see cref="_jsonFileName"/> to the dialogue file this instance should load; must be overridden.</summary>
-    protected virtual void SetJSONFileName()
-    {
-        Debug.LogError("SetJSONFileName must be overridden in derived classes.");
-    }
+    /// <summary>Sets <see cref="_jsonFileName"/> to the dialogue file this instance should load.</summary>
+    protected abstract void SetJSONFileName();
 
-    /// <summary>Advances the dialogue by one step (line, section, or phase); must be overridden.</summary>
-    public virtual void NextStep()
-    {
-        Debug.LogError("NextStep method must be overridden in derived classes.");
-    }
+    /// <summary>Advances the dialogue by one step (line, section, or phase).</summary>
+    public abstract void NextStep();
 }

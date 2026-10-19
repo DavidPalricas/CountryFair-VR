@@ -1,18 +1,21 @@
 using Oculus.Interaction;
+using Oculus.Interaction.HandGrab;
 using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
 /// State representing the frisbee floating in front of the player, ready to be grabbed and thrown.
 /// Keeps it in front of the head (<see cref="FollowPlayerHead"/>), lets the Meta XR <see cref="Grabbable"/> handle the
-/// grab, and hands it over to physics when the grab is released.
+/// grab (enabled through the per-hand <see cref="HandGrabInteractable"/>s), and hands it over to physics when the grab
+/// is released.
 /// </summary>
 /// <remarks>
 /// <para>
 /// This state handles the frisbee while it waits in front of the player:
 /// <list type="bullet">
 /// <item><description>Resets it in front of the player when entered (game start or after the dog returns it)</description></item>
-/// <item><description>Shows it semi-transparent while the dog is not yet in position, fully opaque once it is</description></item>
+/// <item><description>Shows it semi-transparent and not grabbable while the dog is not yet in position, fully opaque
+/// and grabbable once it is (always grabbable during the tutorial, which has no dog)</description></item>
 /// <item><description>On release (<see cref="ThrowFrisbee"/>, Inspector-wired), enables physics and the trajectory line and fires "FrisbeeThrown"</description></item>
 /// </list>
 /// </para>
@@ -22,10 +25,13 @@ using UnityEngine.Events;
 /// </remarks>
 [RequireComponent(typeof(FollowPlayerHead))]
 public class OnPlayerFront : FrisbeeState
-{   
-    /// <summary>Meta XR Grabbable on the frisbee; enabled while waiting in front of the player, disabled during flight.</summary>
-    [SerializeField]
-   private Grabbable _frisbeeGrabbable;
+{
+    /// <summary>
+    /// Hand grab interactables of the frisbee (one per hand). Toggling them is what allows or blocks grabbing: they
+    /// are disabled on throw and while the dog is not ready to catch.
+    /// </summary>
+   [SerializeField]
+   private HandGrabInteractable[] _handInteractables;
    
     /// <summary>Wired to the audio manager to play the throw sound attached to the frisbee.</summary>
    [SerializeField]
@@ -57,11 +63,12 @@ public class OnPlayerFront : FrisbeeState
     private FollowPlayerHead _followPlayerHead;
 
     /// <summary>
-    /// Whether the dog is in position to catch. Starts true because the dog begins the game at its target position.
+    /// Whether the dog is in position to catch. Starts false until <see cref="DogIdle"/> reports the dog at its target.
     /// </summary>
     /// <remarks>
-    /// Kept in sync by <see cref="OnDogReadyToCatchChanged"/>. It only drives the opacity/grab feedback;
-    /// <see cref="ThrowFrisbee"/> does not check it.
+    /// Kept in sync by <see cref="OnDogReadyToCatchChanged"/>. Outside the tutorial it drives the opacity and whether
+    /// the hand interactables are enabled, and gates <see cref="ForceScorePoint"/>. <see cref="ThrowFrisbee"/> does not
+    /// check it directly: a frisbee that cannot be grabbed cannot be released.
     /// </remarks>
     private bool _isDogReadyToCatch = false;
     
@@ -89,9 +96,9 @@ public class OnPlayerFront : FrisbeeState
             return;
         }
 
-        if (_frisbeeGrabbable == null)
+        if (_handInteractables.Length == 0)
         {
-            Debug.LogError("Component Grabbable is not assigned in OnPlayerFront script.");
+            Debug.LogError("HandGrabInteractors are not assigned in OnPlayerFront script.");
 
             return;
         }
@@ -115,9 +122,10 @@ public class OnPlayerFront : FrisbeeState
     public override void Enter()
    {
         base.Enter();
-
-        ChangeMaterialsOpacity();
-
+        
+       ChangeMaterialsOpacity();
+        
+     
         InPlayerFront();
    }
 
@@ -149,7 +157,7 @@ public class OnPlayerFront : FrisbeeState
     /// <item><description>Stops following the head</description></item>
     /// <item><description>Enables physics simulation (non-kinematic, with gravity)</description></item>
     /// <item><description>Disables trigger mode on collider for physical interactions</description></item>
-    /// <item><description>Enables trajectory visualization line and disables the Grabbable</description></item>
+    /// <item><description>Enables trajectory visualization line and disables the hand grab interactables</description></item>
     /// <item><description>Plays the throw sound and transitions to "FrisbeeThrown" (<see cref="OnMovement"/>)</description></item>
     /// </list>
     /// </para>
@@ -173,11 +181,21 @@ public class OnPlayerFront : FrisbeeState
 
             _trajectoryLine.enabled = true; 
 
-            _frisbeeGrabbable.enabled = false;
+            HandleHandInteractables(false);
 
             _throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
 
             _fsm.ChangeState("FrisbeeThrown");
+        }
+    }
+
+
+    /// <summary>Enables or disables every hand grab interactable, i.e. whether the frisbee can be grabbed.</summary>
+    private void HandleHandInteractables(bool enable)
+    {
+        foreach (var interactable in _handInteractables)
+        {
+            interactable.enabled = enable;
         }
     }
 
@@ -191,7 +209,8 @@ public class OnPlayerFront : FrisbeeState
     /// <item><description>Resets the local rotation</description></item>
     /// <item><description>Keeps the Rigidbody non-kinematic but without gravity, zeroes its velocities and freezes X/Z rotation</description></item>
     /// <item><description>Makes the collider a trigger so it does not push anything while waiting</description></item>
-    /// <item><description>Re-enables the Grabbable and <see cref="FollowPlayerHead"/></description></item>
+    /// <item><description>Re-enables <see cref="FollowPlayerHead"/>, and the hand grab interactables only during the
+    /// tutorial or when the dog is ready to catch</description></item>
     /// </list>
     /// Activation of the GameObject itself is handled by <see cref="GiveFrisbeeToPlayer"/>, not here.
     /// </para>
@@ -208,10 +227,13 @@ public class OnPlayerFront : FrisbeeState
 
         _collider.isTrigger = true;
 
-        // Only grabbable if the dog is already in position (true at game start, false when the dog hands it back).
-        _frisbeeGrabbable.enabled = _isDogReadyToCatch;
-
         _followPlayerHead.enabled = true;
+
+        // Grabbable only once the dog is in position to catch (it is usually still walking back when it hands the
+        // frisbee over). The tutorial has no dog, so there it is always grabbable.
+        bool enableGrabbable = TutorialActive || _isDogReadyToCatch;
+
+        HandleHandInteractables(enableGrabbable);
     }
 
     /// <summary>
@@ -219,7 +241,7 @@ public class OnPlayerFront : FrisbeeState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When <see cref="_isDogReadyToCatch"/> is true:
+    /// When <see cref="_isDogReadyToCatch"/> or <see cref="FrisbeeState.TutorialActive"/> is true:
     /// <list type="bullet">
     /// <item><description>Alpha is set to 1.0 (fully opaque)</description></item>
     /// <item><description>Render queue is set to 2000 (opaque rendering)</description></item>
@@ -227,7 +249,7 @@ public class OnPlayerFront : FrisbeeState
     /// </list>
     /// </para>
     /// <para>
-    /// When <see cref="_isDogReadyToCatch"/> is false:
+    /// Otherwise:
     /// <list type="bullet">
     /// <item><description>Alpha is set to <see cref="_cannotThrowAlpha"/> (semi-transparent)</description></item>
     /// <item><description>Render queue is set to 3000 (transparent rendering)</description></item>
@@ -244,7 +266,7 @@ public class OnPlayerFront : FrisbeeState
 
         int renderQueue, zWriteValue;
 
-        if (_isDogReadyToCatch)
+        if (_isDogReadyToCatch || TutorialActive)
         {   
             const float MaxAlpha = 1f;
 
@@ -330,7 +352,7 @@ public class OnPlayerFront : FrisbeeState
         if (isReady && _fsm.CurrentState == this)
         {
             ChangeMaterialsOpacity();
-            _frisbeeGrabbable.enabled = true;
+            HandleHandInteractables(true);
         }
     }
 

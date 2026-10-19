@@ -6,7 +6,9 @@ using FMODUnity;
 /// Extends <see cref="AudioManager"/> with the Carny Wise DDA sound effects shared across all mini-game scenes.
 /// Concrete audio managers (<see cref="FrisbeeAudioManager"/>, <see cref="ArcheryAudioManager"/>) inherit from this class.
 /// </summary>
-public class MiniGameAudioManager : AudioManager
+/// <remarks>Abstract because it leaves <see cref="AudioManager.PlaySoundEffect"/> and
+/// <see cref="AudioManager.PlaySpatialSoundEffect"/> to the concrete mini-game managers.</remarks>
+public abstract class MiniGameAudioManager : AudioManager
 {
     /// <summary>FMOD event played when CarnyWise increases the difficulty.</summary>
     [Header("Carny Wise Feedback Sound Effects")]

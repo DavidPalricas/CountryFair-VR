@@ -240,10 +240,14 @@ public class ArcheryGameManager : MiniGameManager
     /// </summary>
     /// <param name="target">Root GameObject of the balloon instance.</param>
     /// <param name="targetPrefab">Prefab it was spawned from, used to update the color counters.</param>
+    /// <remarks>
+    /// Only the replacement gets its properties (<see cref="UpdateNewTargetProperties"/>); the other balloons are left
+    /// as they are, so a pop never changes the balloon the player is aiming at mid-attempt.
+    /// </remarks>
     public override void DestroyTarget(GameObject target, GameObject targetPrefab)
-    {   
+    {
         _balloonTypesCount[targetPrefab] = Mathf.Max(0, _balloonTypesCount[targetPrefab] - 1);
-        
+
         _spawnedTargets.Remove(target);
 
         Destroy(target);
@@ -258,12 +262,54 @@ public class ArcheryGameManager : MiniGameManager
             {
                 AddTarget();
             }
-            
-            UpdateTargetsProperties();
+
+            UpdateNewTargetProperties(_spawnedTargets[^1]);
         }
     }
 
+    /// <summary>
+    /// Gives a freshly spawned balloon the current move duration, and makes it moving/transparent only if the other
+    /// balloons are below the counts the current ratios ask for.
+    /// </summary>
+    /// <param name="newTarget">Root GameObject of the balloon just added by <see cref="AddTarget"/>.</param>
+    private void UpdateNewTargetProperties(GameObject newTarget)
+    {
+        int total = _spawnedTargets.Count;
+        int targetMovingCount = Mathf.RoundToInt(total * _currentMovingRatio);
+        int targetTransparentCount = Mathf.RoundToInt(total * _currentTransparencyRatio);
+
+        int movingCount = 0;
+        int transparentCount = 0;
+
+        foreach (GameObject target in _spawnedTargets)
+        {
+            if (target == newTarget)
+            {
+                continue;
+            }
+
+            BalloonArcheryGame balloon = target.GetComponentInChildren<BalloonArcheryGame>();
+
+            if (balloon.IsMoving)
+            {
+                movingCount++;
+            }
+
+            if (balloon.IsTransparent)
+            {
+                transparentCount++;
+            }
+        }
+
+        BalloonArcheryGame newBalloon = newTarget.GetComponentInChildren<BalloonArcheryGame>();
+
+        newBalloon.SetMoveDuration(_currentMoveDuration);
+        newBalloon.AdjustMovement(movingCount < targetMovingCount);
+        newBalloon.AdjustTransparency(transparentCount < targetTransparentCount);
+    }
+
     /// <summary>Shuffles the balloons and makes the first N moving and the first M transparent, according to the current ratios.</summary>
+    /// <remarks>Only runs on a difficulty change (<see cref="SyncTargets"/>); a pop updates just the replacement.</remarks>
     protected override void UpdateTargetsProperties()
     {
         int total = _spawnedTargets.Count;

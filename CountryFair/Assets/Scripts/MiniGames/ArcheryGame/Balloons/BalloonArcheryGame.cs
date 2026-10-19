@@ -56,8 +56,20 @@ public class BalloonArcheryGame : MonoBehaviour
     /// <summary>True while the fade cycle is enabled by <see cref="AdjustTransparency"/>; applies <see cref="TransparentMultiplier"/>.</summary>
     private bool _isTransparent = false;
 
-    /// <summary>Balloon renderer; its (per-instance) material is faded by the transparency cycle.</summary>
+    /// <summary>Whether this balloon currently wanders; lets <see cref="ArcheryGameManager"/> count the moving balloons.</summary>
+    public bool IsMoving => _isMoving;
+    /// <summary>Whether this balloon's fade cycle is on; lets <see cref="ArcheryGameManager"/> count the transparent balloons.</summary>
+    public bool IsTransparent => _isTransparent;
+
+    /// <summary>Balloon renderer; its per-instance material (<see cref="_material"/>) is faded by the transparency cycle.</summary>
     private Renderer _renderer;
+
+    /// <summary>
+    /// Per-instance copy of the renderer's material, created once in <see cref="Awake"/> by <c>Renderer.material</c>.
+    /// Unity never frees these copies on its own, so <see cref="OnDestroy"/> destroys it; otherwise every popped
+    /// balloon would leak one material until the scene unloads.
+    /// </summary>
+    private Material _material;
     /// <summary>The balloon's hit collider; toggled by the transparency cycle and force-enabled by the score cheat.</summary>
     public Collider Collider { get; private set; }
     /// <summary>
@@ -103,14 +115,16 @@ public class BalloonArcheryGame : MonoBehaviour
 
         _colorName = _color.ToString().ToLower();
 
-        if (_renderer.material.HasProperty("_Color"))
+        _material = _renderer.material;
+
+        if (_material.HasProperty("_Color"))
         {
-            _originalColor = _renderer.material.color;
-        } 
-        else if (_renderer.material.HasProperty("_BaseColor"))
+            _originalColor = _material.color;
+        }
+        else if (_material.HasProperty("_BaseColor"))
         {
-            _originalColor = _renderer.material.GetColor("_BaseColor");
-        } 
+            _originalColor = _material.GetColor("_BaseColor");
+        }
 
         GameObject spawner = GameObject.FindGameObjectWithTag("BalloonSpawn");
 
@@ -249,10 +263,10 @@ public class BalloonArcheryGame : MonoBehaviour
         Sequence seq = DOTween.Sequence();
         seq.SetId(_fadeId);
 
-        seq.Append(_renderer.material.DOFade(_minAlpha, _fadeDuration).SetEase(Ease.InOutSine));
+        seq.Append(_material.DOFade(_minAlpha, _fadeDuration).SetEase(Ease.InOutSine));
         seq.AppendCallback(() => Collider.enabled = false);
         seq.AppendInterval(_stayTranslucentDuration);
-        seq.Append(_renderer.material.DOFade(1f, _fadeDuration).SetEase(Ease.InOutSine));
+        seq.Append(_material.DOFade(1f, _fadeDuration).SetEase(Ease.InOutSine));
         seq.AppendCallback(() => Collider.enabled = true); 
 
         seq.SetLoops(InfiniteLoops);
@@ -268,7 +282,7 @@ public class BalloonArcheryGame : MonoBehaviour
 
         DOTween.Kill(_fadeId);
 
-        _renderer.material.DOFade(1f, 0.5f);
+        _material.DOFade(1f, 0.5f);
         Collider.enabled = true;
     }
 
@@ -280,7 +294,7 @@ public class BalloonArcheryGame : MonoBehaviour
     public void Pop()
     {
         transform.DOKill();
-        _renderer.material.DOKill();
+        _material.DOKill();
 
         if (_popEffect != null)
         {
@@ -343,24 +357,27 @@ public class BalloonArcheryGame : MonoBehaviour
 
 
     /// <summary>
-    /// Updates the movement tween duration. If the balloon is currently moving, restarts the tween with the new duration.
+    /// Updates the wander duration. A moving balloon is not restarted: the current leg finishes and the next one
+    /// (<see cref="MoveToNextWanderPoint"/>) uses the new duration, so the balloon never jumps under the player's aim.
     /// </summary>
-    /// <param name="duration">New movement cycle duration in seconds.</param>
+    /// <param name="duration">New duration in seconds of each wander leg.</param>
     public void SetMoveDuration(float duration)
     {
         _moveDuration = duration;
-        
-        if (DOTween.IsTweening(_moveId))
-        {
-            StopMovement();
-            StartMovement();
-        }
     }
 
-    /// <summary>Kills this balloon's tweens so DOTween does not keep animating a destroyed transform/material.</summary>
+    /// <summary>
+    /// Kills this balloon's tweens so DOTween does not keep animating a destroyed transform/material, and destroys the
+    /// per-instance <see cref="_material"/>.
+    /// </summary>
     private void OnDestroy()
     {
         transform.DOKill();
-        if (_renderer && _renderer.material) _renderer.material.DOKill();
+
+        if (_material != null)
+        {
+            _material.DOKill();
+            Destroy(_material);
+        }
     }
 }

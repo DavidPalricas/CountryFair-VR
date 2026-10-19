@@ -7,8 +7,9 @@ using UnityEngine;
 /// <see cref="AnimalUtility.DecideNextAction"/> pick the next state when activity ends.
 /// </summary>
 /// <remarks>
-/// Each state keeps a local copy of the stats (<see cref="_hungerStat"/>, ...) and pushes it back to the
-/// shared <see cref="AnimalUtility.stats"/> through <see cref="UpdateStats"/>.
+/// Every state reads and writes the shared <see cref="AnimalUtility.stats"/> directly. The states must not keep their
+/// own copies: each one would write its stale values back over the progress made by the other states (e.g. the hunger
+/// recovered while eating would be undone by the next walk).
 /// </remarks>
 [RequireComponent(typeof(AnimalUtility))]
 public class AnimalState: AnimatableState
@@ -35,16 +36,6 @@ public class AnimalState: AnimatableState
     /// <summary>Shared stats holder on the same GameObject; also where this state registers its action.</summary>
     protected AnimalUtility _animalUtility;
 
-    /// <summary>Local copy of <see cref="AnimalUtility.Stats.Hunger"/>, written back by <see cref="UpdateStats"/>.</summary>
-    protected float _hungerStat = 0f;
-
-    /// <summary>Local copy of <see cref="AnimalUtility.Stats.Boredom"/>, written back by <see cref="UpdateStats"/>.</summary>
-    protected float _boredomStat = 0f;
-
-    /// <summary>Local copy of <see cref="AnimalUtility.Stats.Fatigue"/>, written back by <see cref="UpdateStats"/>.</summary>
-    protected float _fatigueStat = 0f;
-
-
 
     /// <summary>
     /// FSM transition chosen by <see cref="AnimalUtility.DecideNextAction"/>. Its Animator trigger is set
@@ -57,18 +48,16 @@ public class AnimalState: AnimatableState
     /// <summary>True once the next action has been decided, so it is not decided again every frame while the Animator transitions.</summary>
     protected bool _readyToTransition = false;
 
-    /// <summary>Caches <see cref="AnimalUtility"/>, copies its initial stats and registers this state's action.</summary>
+    /// <summary>Caches <see cref="AnimalUtility"/> and registers this state's action.</summary>
+    /// <remarks>
+    /// The stats are not read here, so it does not matter whether <see cref="AnimalUtility"/>'s Awake (which seeds them)
+    /// has run yet; they are first used in <see cref="Enter"/>, after every Awake.
+    /// </remarks>
     protected override void Awake()
     {
         base.Awake();
 
         _animalUtility = GetComponent<AnimalUtility>();
-
-        AnimalUtility.Stats animalStats = _animalUtility.stats;
-
-        _hungerStat = animalStats.Hunger;
-        _boredomStat = animalStats.Boredom;
-        _fatigueStat = animalStats.Fatigue;
 
         SetStateProprieties();
 
@@ -106,20 +95,11 @@ public class AnimalState: AnimatableState
     }
 
 
+    /// <summary>Raises every shared stat by this state's increase rate, capped at 1.</summary>
     private void IncreaseStats()
     {
-        _hungerStat = Mathf.Min(_hungerStat + _hungerIncreaseRate, 1f);
-        _boredomStat = Mathf.Min(_boredomStat + _boredomIncreaseRate, 1f);
-        _fatigueStat = Mathf.Min(_fatigueStat + _fatigueIncreaseRate, 1f);
-    }
-
-    /// <summary>Writes the local stat copies back to <see cref="AnimalUtility.stats"/> so the next decision sees them.</summary>
-    protected void UpdateStats()
-    {
-        _animalUtility.stats.Hunger = _hungerStat;
-        _animalUtility.stats.Boredom = _boredomStat;
-        _animalUtility.stats.Fatigue = _fatigueStat;
-
-        // Debug.Log("Animal Current State: " + GetType().Name + " | Hunger: " + _animalUtility.stats.Hunger + " | Boredom: " + _animalUtility.stats.Boredom + " | Fatigue: " + _animalUtility.stats.Fatigue);
+        _animalUtility.stats.Hunger = Mathf.Min(_animalUtility.stats.Hunger + _hungerIncreaseRate, 1f);
+        _animalUtility.stats.Boredom = Mathf.Min(_animalUtility.stats.Boredom + _boredomIncreaseRate, 1f);
+        _animalUtility.stats.Fatigue = Mathf.Min(_animalUtility.stats.Fatigue + _fatigueIncreaseRate, 1f);
     }
 }

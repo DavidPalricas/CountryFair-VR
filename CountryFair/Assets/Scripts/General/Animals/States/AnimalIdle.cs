@@ -38,9 +38,7 @@ public class AnimalIdle: AnimalState
 
         _timeIdle = Utils.RandomValueInRange(_minTimeToIdle, _maxTimeToIdle) + Time.time;
 
-        _fatigueStat = Mathf.Max(_fatigueStat - _fatigueRecoveryRate, 0f);
-
-        UpdateStats();
+        _animalUtility.stats.Fatigue = Mathf.Max(_animalUtility.stats.Fatigue - _fatigueRecoveryRate, 0f);
     }
 
 

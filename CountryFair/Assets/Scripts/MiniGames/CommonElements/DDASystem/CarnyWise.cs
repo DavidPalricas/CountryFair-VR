@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -62,18 +63,18 @@ public class CarnyWise : MonoBehaviour
     /// </summary>
     private int _excelCounter = 0;
 
-    /// <summary>Session key for the save file; only used by the currently disabled <c>SaveSessionData</c>.</summary>
+    /// <summary>Session key for the save file, taken when the mini-game scene loads; used by <see cref="SaveSessionData"/>.</summary>
     private readonly string _sessionID = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
     /// <summary>
     /// Seconds each scored task took, from <see cref="StartTaskTimer"/> to <see cref="PlayerScored"/>. Misses add nothing;
-    /// they only lower the precision of the task. Averaged for the session summary, which is currently not saved.
+    /// they only lower the precision of the task. Averaged for the session summary saved by <see cref="SaveSessionData"/>.
     /// </summary>
     private readonly List<float> _tasksTimes = new ();
     
     /// <summary>
     /// Precision of each scored task: <c>1 / attempts</c> (1 = first try, 0.5 = second, ...). Averaged for the session
-    /// summary; its count is also the session's points. The summary is currently not saved.
+    /// summary saved by <see cref="SaveSessionData"/>; its count is also the session's points.
     /// </summary>
     private readonly List<float> _tasksPrecisions = new ();
 
@@ -339,14 +340,15 @@ public class CarnyWise : MonoBehaviour
 
     /// <summary>
     /// Called when the player reaches the session score goal.
-    /// Flags the session as complete in <see cref="GameManager"/> and loads the hub scene after a short delay.
+    /// Saves the session summary, then flags the session as complete in <see cref="GameManager"/> and loads the hub
+    /// scene after a short delay.
     /// </summary>
     /// <remarks>Invoked via Inspector by the <c>_sessionGoalReached</c> event of <see cref="ScoreAndStreakSystem"/>.</remarks>
     public void SessionGoalReached()
     {
-       // SaveSessionData();
+        SaveSessionData();
 
-        Invoke(nameof(ReturnToFair), 1f);     
+        Invoke(nameof(ReturnToFair), 1f);
     }
 
     /// <summary>Sets the mini-game's session-completed flag (shown by the hub dialogue) and loads <c>CountryFair</c>.</summary>
@@ -371,21 +373,29 @@ public class CarnyWise : MonoBehaviour
     }
      
 
-     /*
+    /// <summary>
+    /// Writes this session's summary (points, average precision, average task time) to <c>survivorData.json</c> under
+    /// <see cref="_sessionID"/>, in the current mini-game's section.
+    /// </summary>
+    /// <remarks>
+    /// The averages are 0 when no task was scored (e.g. the session was ended with the <c>complete</c> cheat), because
+    /// <c>Average()</c> throws on an empty list.
+    /// </remarks>
     private void SaveSessionData()
     {
-       int averageTaskPrecision = (int)System.Math.Round(_tasksPrecisions.Average() * 100);
+        int averageTaskPrecision = _tasksPrecisions.Count > 0 ? (int)System.Math.Round(_tasksPrecisions.Average() * 100) : 0;
 
-       int averageTaskTime = (int)System.Math.Round(_tasksTimes.Average());
+        int averageTaskTime = _tasksTimes.Count > 0 ? (int)System.Math.Round(_tasksTimes.Average()) : 0;
 
-       SessionData sessionData = new()
-       {
-           SessionGoal = $"{_tasksPrecisions.Count} pontos",
-           AverageTaskPrecision = $"{averageTaskPrecision} %",
-           AverageTaskCompletionTime = $"{averageTaskTime} segundos"
-       };
+        SessionData sessionData = new()
+        {
+            SessionGoal = $"{_tasksPrecisions.Count} pontos",
+            AverageTaskPrecision = $"{averageTaskPrecision} %",
+            AverageTaskCompletionTime = $"{averageTaskTime} segundos"
+        };
 
-       DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, _miniGameName);
+        string miniGameName = _isFrisbeeMiniGame ? "frisbee" : "archery";
+
+        DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, miniGameName);
     }
-    */
 }

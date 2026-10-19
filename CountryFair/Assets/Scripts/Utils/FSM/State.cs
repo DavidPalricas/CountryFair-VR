@@ -17,6 +17,7 @@ using UnityEngine;
 /// <item><description><see cref="LateStart"/>: Called once during FSM initialization for all states</description></item>
 /// <item><description><see cref="Enter"/>: Called when transitioning into this state</description></item>
 /// <item><description><see cref="Execute"/>: Called every frame while this state is active</description></item>
+/// <item><description><see cref="FixedExecute"/>: Called every physics step while this state is active</description></item>
 /// <item><description><see cref="Exit"/>: Called when transitioning out of this state</description></item>
 /// </list>
 /// </para>
@@ -89,6 +90,13 @@ public abstract class State : MonoBehaviour
     public virtual void Execute() {
       // Debug.Log($"Executing {StateName} State");
     }
+
+    /// <summary>
+    /// Called every physics step while this state is active. Override it for anything that applies Rigidbody forces,
+    /// so the result does not depend on the headset's frame rate (72/90/120 Hz on Quest 3).
+    /// </summary>
+    /// <remarks>Invoked by the FSM's <c>FixedUpdate</c>. The base implementation does nothing.</remarks>
+    public virtual void FixedExecute() { }
 
     /// <summary>
     /// Called when the FSM transitions out of this state to another state.

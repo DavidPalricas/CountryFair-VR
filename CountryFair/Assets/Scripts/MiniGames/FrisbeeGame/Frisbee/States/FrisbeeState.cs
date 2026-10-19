@@ -11,12 +11,15 @@ public class FrisbeeState : State
 {   
     /// <summary>Reference to the rigidbody component for physics calculations.</summary>
     protected Rigidbody _rigidbody;
-    
+   
     /// <summary>Reference to the collider component for enabling/disabling collisions.</summary>
     protected Collider _collider;
     
     /// <summary>Reference to the trajectory visualization component.</summary>
     protected FrisbeeTrajectory _trajectoryLine;
+
+    /// <summary>While true (tutorial practice), landing in a score area returns the frisbee without raising scoring events.</summary>
+    public static bool TutorialActive { get; set; } = true;
 
     /// <summary>
     /// Initializes the frisbee state by setting up references to rigidbody, collider, and trajectory line renderer and setting state properties(fsm and state name).

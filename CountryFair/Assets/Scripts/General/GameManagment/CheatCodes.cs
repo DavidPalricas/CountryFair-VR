@@ -15,7 +15,7 @@ using System;
 /// <see cref="RegisterCheat"/> / <see cref="RegisterNumericCheat"/> and override <see cref="CheckCheatCode"/>
 /// to apply their own gating (intro/tutorial completed).
 /// </remarks>
-public class CheatCodes : MonoBehaviour
+public abstract class CheatCodes : MonoBehaviour
 {
     /// <summary>
     /// Fired by the "skip" cheat to advance the current dialogue by a single step. Wired in the Inspector to
@@ -202,12 +202,9 @@ public class CheatCodes : MonoBehaviour
 
     /// <summary>
     /// Matches <see cref="_playerInput"/> against the registered cheats and runs the matching command.
-    /// Must be overridden; the subclass decides which cheats are allowed in the current game state.
+    /// Each subclass decides which cheats are allowed in the current game state.
     /// </summary>
-    protected virtual void CheckCheatCode()
-    {
-        Debug.LogError("CheckCheatCode should be overridden in derived classes.");
-    }
+    protected abstract void CheckCheatCode();
 
     /// <summary>Registers the cheats shared by every scene (currently <c>"skip"</c>, which invokes <see cref="_skipDialogue"/>).</summary>
     protected virtual void RegisterBaseCheats()

@@ -154,6 +154,16 @@ public class CarnyWiseDiffFeedback : UIDialog
         Invoke(nameof(HideFeedback), _displayDuration);
     }
 
+    /// <summary>
+    /// The feedback is a single line, so advancing it means dismissing it: hides the panel now instead of waiting for
+    /// <see cref="_displayDuration"/>.
+    /// </summary>
+    public override void NextStep()
+    {
+        CancelInvoke(nameof(HideFeedback));
+        HideFeedback();
+    }
+
     /// <summary>Hides the panel; scheduled with <c>Invoke</c> by <see cref="ShowNewDiffFeedback"/>.</summary>
     private  void HideFeedback()
     {
