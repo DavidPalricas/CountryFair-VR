@@ -20644,6 +20644,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4786872874757885023}
@@ -20668,6 +20672,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 147053872}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 7903971523121746712}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -20677,6 +20685,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
@@ -20704,6 +20716,10 @@ PrefabInstance:
       value: TutorialCompleted
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: CarnyWise, Assembly-CSharp
       objectReference: {fileID: 0}
@@ -20728,6 +20744,10 @@ PrefabInstance:
       value: FrisbeeGameManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: FrisbeeGameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
       value: 1
       objectReference: {fileID: 0}
@@ -20749,6 +20769,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}

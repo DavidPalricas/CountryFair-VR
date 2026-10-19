@@ -179,20 +179,20 @@ public class MiniGameTent : OrderableTentElement
     }
 
     /// <summary>Returns the tent panel text for the given mini-game.</summary>
-    private static string GetTextToShow(MINI_GAMES miniGame)
+    private static string GetTextToShow(GameManager.MiniGames miniGame)
     {
         switch (miniGame)
         {
-            case MINI_GAMES.ARCHERY:
+            case GameManager.MiniGames.Archery:
                 return "Carregue no botao para jogar arco e flecha";
 
-            case MINI_GAMES.DUCKGAME:
+            case GameManager.MiniGames.DuckGame:
                 return "Carregue no botao para jogar o jogo do pato";
 
-            case MINI_GAMES.FISHING:
+            case GameManager.MiniGames.Fishing:
                 return "Carregue no botao para pescar";
 
-            case MINI_GAMES.FRISBEE:
+            case GameManager.MiniGames.Frisbee:
                 return "Carregue no botao para jogar frisbee";
 
             default:
@@ -226,7 +226,6 @@ public class MiniGameTent : OrderableTentElement
     /// </summary>
     private void TentUnselected()
     {
-        Debug.Log("Tent Unselected");
         _buttonToPlayMiniGame.SetActive(true);
 
         _tentText.gameObject.SetActive(true);

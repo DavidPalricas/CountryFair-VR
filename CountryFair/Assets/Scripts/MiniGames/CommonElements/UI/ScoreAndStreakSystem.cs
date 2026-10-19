@@ -234,7 +234,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
 
         UpdateSessionGoalText();
        
-        ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+        ConnectToWebApp.Instance.UpdatePlayerProgressOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
     }
 
     /// <summary>
@@ -271,7 +271,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
         _streakValue += 1;
         _streakSymbol.SetActive(true);
 
-        ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+        ConnectToWebApp.Instance.UpdatePlayerProgressOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
 
         // Update text
         UpdateScoreText();
@@ -339,7 +339,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
             _streakSymbol.SetActive(false);
             _streakValue = 0;
 
-            ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+            ConnectToWebApp.Instance.UpdatePlayerProgressOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
 
             UpdateStreakText();
             
@@ -453,6 +453,6 @@ public class ScoreAndStreakSystem : MonoBehaviour
 
         _sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
 
-        ConnectToWebApp.Instance.UpdatePlayerProgessOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
+        ConnectToWebApp.Instance.UpdatePlayerProgressOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
     }
 }

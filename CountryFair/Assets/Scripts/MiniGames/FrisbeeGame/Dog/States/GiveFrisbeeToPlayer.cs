@@ -114,7 +114,7 @@ public class GiveFrisbeeToPlayer : DogState
     {
          base.Execute();
 
-         if (DogStoped())
+         if (_agent.HasReachedDestination())
          {  
             _frisbeeGivenToPlayer.Invoke();
 

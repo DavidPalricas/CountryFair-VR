@@ -15,78 +15,17 @@ public class ArcheryAudioManager :MiniGameAudioManager
     [SerializeField]
     private EventReference _arrowShotSound;
 
-    /// <summary>Validates the base references and the two archery FMOD events.</summary>
+    /// <summary>Registers the inherited sound effects and the two archery FMOD events.</summary>
     protected override void Awake()
-    {   
+    {
         base.Awake();
 
-        if (_balloonPopSound.IsNull)
-        {
-            Debug.LogError("Balloon pop sound EventReference is not assigned in ArcheryAudioManager.");
-
-            return;
-        }
-
-        if (_arrowShotSound.IsNull)
-        {
-            Debug.LogError("Arrow shot sound EventReference is not assigned in ArcheryAudioManager.");
-        }
+        RegisterSoundEffect(GameSoundEffects.BalloonPop, _balloonPopSound);
+        RegisterSoundEffect(GameSoundEffects.ArrowShot, _arrowShotSound);
     }
 
     protected override void Start()
     {
         base.Start();
-    }
-
-
-    /// <summary>Plays the button, balloon-pop or arrow-shot event attached to <paramref name="target"/>; other effects log an error.</summary>
-    public override void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
-    {
-        EventReference eventToPlay;
-
-        switch (soundEffect)
-        {  
-           case GameSoundEffects.ButtonPressed:
-                eventToPlay = _buttonPressedSound;
-                break;
-
-           case GameSoundEffects.BalloonPop:
-                eventToPlay = _balloonPopSound;
-                break;
-
-            case GameSoundEffects.ArrowShot:
-                eventToPlay = _arrowShotSound;
-                break;
-   
-            default:
-                Debug.LogError("Invalid sound effect: " + soundEffect);
-                return;
-        }
-
-        RuntimeManager.PlayOneShotAttached(eventToPlay, target);
-    }
-
-
-    /// <summary>Plays the non-spatial Carny Wise difficulty feedback events; other effects log an error.</summary>
-    public override void PlaySoundEffect(GameSoundEffects soundEffect)
-    {
-        EventReference eventToPlay;
-
-        switch (soundEffect)
-        {  
-          case GameSoundEffects.CarnyWiseIncreaseDiff:
-                eventToPlay = _carnyWiseIncreaseDiffSound;
-                break;
-
-            case GameSoundEffects.CarnyWiseDecreaseDiff:
-                eventToPlay = _carnyWiseDecreaseDiffSound;
-                break;
-
-            default:
-                Debug.LogError("Invalid sound effect: " + soundEffect);
-                return;
-        }
-
-        RuntimeManager.PlayOneShot(eventToPlay);
     }
 }

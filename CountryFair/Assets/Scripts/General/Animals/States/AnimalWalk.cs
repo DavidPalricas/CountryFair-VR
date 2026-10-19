@@ -67,7 +67,7 @@ public class AnimalWalk: AnimalState
              return;
         }
 
-        if (AnimalStoped() && !_readyToTransition)
+        if (_agent.HasReachedDestination() && !_readyToTransition)
         {
              _readyToTransition = true;
 
@@ -97,10 +97,5 @@ public class AnimalWalk: AnimalState
         {
             _agent.SetDestination(hit.position);
         }
-    }
-
-    private bool AnimalStoped()
-    {
-        return !_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance;
     }
 }

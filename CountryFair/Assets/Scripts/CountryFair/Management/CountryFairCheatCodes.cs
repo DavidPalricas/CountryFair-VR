@@ -46,10 +46,10 @@ public class CountryFairCheatCodes : CheatCodes
         
         RegisterCheat("intro", () => _completeIntro.Invoke());
    
-        RegisterCheat("frisbee", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.FRISBEE));
-        RegisterCheat("archery", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.ARCHERY));
-        RegisterCheat("duck", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.DUCKGAME));
-        RegisterCheat("fishing", () => GameManager.GetInstance().GoToMiniGame(OrderableTentElement.MINI_GAMES.FISHING));
+        RegisterCheat("frisbee", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.Frisbee));
+        RegisterCheat("archery", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.Archery));
+        RegisterCheat("duck", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.DuckGame));
+        RegisterCheat("fishing", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.Fishing));
         RegisterCheat("giant", () => _togglePlayerScale.Invoke());
     }
 

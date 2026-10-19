@@ -9,6 +9,24 @@ public class GameManager
 {
     private static GameManager _instance;
 
+    /// <summary>
+    /// Every mini-game of the fair. Only <see cref="Archery"/> and <see cref="Frisbee"/> currently have a scene wired up
+    /// in <see cref="GoToMiniGame"/>.
+    /// </summary>
+    /// <remarks>
+    /// Names are matched case-insensitively against the web app's mini-game keys in
+    /// <see cref="TentPlaceHolderManager.OnOtherManagerUpdate"/>, so renaming a member breaks the sync. Values are
+    /// serialized as ints in the tent prefabs/scene (<see cref="OrderableTentElement.MiniGame"/>), so members must not be
+    /// reordered either.
+    /// </remarks>
+    public enum MiniGames
+    {
+        Archery,
+        DuckGame,
+        Fishing,
+        Frisbee,
+    }
+
     /// <summary>Name of the hub scene, loaded when a mini-game session ends.</summary>
     public const string HubScene = "CountryFair";
     /// <summary>Name of the Archery mini-game scene.</summary>
@@ -50,35 +68,35 @@ public class GameManager
     /// <see cref="FrisbeeScene"/>.
     /// </summary>
     /// <returns>The running mini-game, or null in the hub or any other scene.</returns>
-    public static OrderableTentElement.MINI_GAMES? GetCurrentMiniGame()
+    public static MiniGames? GetCurrentMiniGame()
     {
         return SceneManager.GetActiveScene().name switch
         {
-            ArcheryScene => OrderableTentElement.MINI_GAMES.ARCHERY,
-            FrisbeeScene => OrderableTentElement.MINI_GAMES.FRISBEE,
+            ArcheryScene => MiniGames.Archery,
+            FrisbeeScene => MiniGames.Frisbee,
             _ => null
         };
     }
 
     /// <summary>
     /// Loads the scene for <paramref name="miniGame"/> and notifies <see cref="ConnectToWebApp"/> of the scene
-    /// change. Only <see cref="OrderableTentElement.MINI_GAMES.ARCHERY"/> and
-    /// <see cref="OrderableTentElement.MINI_GAMES.FRISBEE"/> have a scene implemented; other values log a warning
+    /// change. Only <see cref="MiniGames.Archery"/> and
+    /// <see cref="MiniGames.Frisbee"/> have a scene implemented; other values log a warning
     /// and are ignored.
     /// </summary>
     /// <param name="miniGame">The mini-game to load.</param>
-    public void GoToMiniGame(OrderableTentElement.MINI_GAMES miniGame)
+    public void GoToMiniGame(MiniGames miniGame)
     {
 
         string sceneName;
 
         switch (miniGame)
         {
-            case OrderableTentElement.MINI_GAMES.ARCHERY:
+            case MiniGames.Archery:
                sceneName = ArcheryScene;
                 break;
 
-            case OrderableTentElement.MINI_GAMES.FRISBEE:
+            case MiniGames.Frisbee:
                 sceneName = FrisbeeScene;
                 break;
 

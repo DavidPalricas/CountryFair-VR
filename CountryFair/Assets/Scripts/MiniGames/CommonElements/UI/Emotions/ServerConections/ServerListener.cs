@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System;
-using Unity.VisualScripting;
 
 /// <summary>
 /// Connects to a TCP server to listen for emoji commands.
@@ -67,7 +66,7 @@ public class ServerListener : MonoBehaviour
     private EmotionDisplay _currentDisplayMode;
 
     /// <summary>Available emotion display modes.</summary>
-    public enum DISPLAYMODE
+    public enum DisplayMode
     {
         Emoji,
         Face,
@@ -232,11 +231,11 @@ public class ServerListener : MonoBehaviour
 
     /// <summary>Switches the active display mode at runtime.</summary>
     /// <remarks>Invoked via Inspector by the <c>_changeEmotionDisplay</c> event of <see cref="MiniGameCheatCodes"/> (emotion test cheats).</remarks>
-    public void UpdateDisplayMode(DISPLAYMODE newMode)
+    public void UpdateDisplayMode(DisplayMode newMode)
     {   
         _currentDisplayMode.gameObject.SetActive(false);
 
-        if (newMode == DISPLAYMODE.Slider)
+        if (newMode == DisplayMode.Slider)
         {   
             _currentDisplayMode = _sliderDisplay;
             _currentDisplayMode.gameObject.SetActive(true);
@@ -244,7 +243,7 @@ public class ServerListener : MonoBehaviour
             return;
         }
 
-        if (newMode == DISPLAYMODE.Face)
+        if (newMode == DisplayMode.Face)
         {   
             _currentDisplayMode = _faceDisplay;
             _currentDisplayMode.gameObject.SetActive(true);

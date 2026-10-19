@@ -58,7 +58,7 @@ public class ScoreAreaProperties : MonoBehaviour
 
     /// <summary>
     /// DOTween id of the orbit and return-to-spawn tweens, unique per instance. Killing by id instead of
-    /// <c>transform.DOKill()</c> keeps the float/rotate/pulse loops started by <see cref="ScoreAreaAnimations"/> on
+    /// <c>transform.DOKill()</c> keeps the rotate/pulse loops started by <see cref="ScoreAreaAnimations"/> on
     /// the same transform alive.
     /// </summary>
     private string _moveId;

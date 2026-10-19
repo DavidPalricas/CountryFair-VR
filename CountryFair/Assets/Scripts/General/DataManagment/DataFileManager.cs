@@ -99,7 +99,7 @@ public class DataFileManager
     /// <param name="newSession">Metrics to store for the session.</param>
     /// <param name="sessionID">Timestamp key used to identify the session (e.g., "2024-01-01_10-00-00").</param>
     /// <param name="miniGame">Mini-game whose section receives the record; only Frisbee and Archery have one.</param>
-    public void SaveSessionData(SessionData newSession, string sessionID, OrderableTentElement.MINI_GAMES miniGame)
+    public void SaveSessionData(SessionData newSession, string sessionID, GameManager.MiniGames miniGame)
     {
         if (CurrentData == null) CurrentData = new DataFileRoot();
         if (CurrentData.frisbeeGame == null) CurrentData.frisbeeGame = new ();
@@ -107,8 +107,8 @@ public class DataFileManager
 
         MiniGameData miniGameData = miniGame switch
         {
-            OrderableTentElement.MINI_GAMES.FRISBEE => CurrentData.frisbeeGame,
-            OrderableTentElement.MINI_GAMES.ARCHERY => CurrentData.archeryGame,
+            GameManager.MiniGames.Frisbee => CurrentData.frisbeeGame,
+            GameManager.MiniGames.Archery => CurrentData.archeryGame,
             _ => null
         };
 
@@ -131,8 +131,8 @@ public class DataFileManager
     /// <param name="adaptiveParameters">New key-value map of adaptive algorithm parameters.</param>
     public void AddFrisbeeAdaptiveParameters(Dictionary<string, string> adaptiveParameters)
     {
-        CurrentData.frisbeeGame.AdadaptiveParameters = adaptiveParameters;
+        CurrentData.frisbeeGame.AdaptiveParameters = adaptiveParameters;
 
         SaveData();
     }
-}
+}

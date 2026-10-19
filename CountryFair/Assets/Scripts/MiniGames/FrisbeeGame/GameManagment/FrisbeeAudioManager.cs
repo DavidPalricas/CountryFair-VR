@@ -38,36 +38,16 @@ public class FrisbeeAudioManager : MiniGameAudioManager
     [SerializeField]
     private EventReference _dogFootstepsSound;
 
-    /// <summary>Validates the inherited references and the Frisbee FMOD events.</summary>
+    /// <summary>Registers the inherited sound effects and the Frisbee FMOD events.</summary>
     protected override void Awake()
     {
         base.Awake();
 
-        if (_dogBarkSound.IsNull)
-        {
-            Debug.LogError("Dog bark sound EventReference is not assigned in FrisbeeAudioManager.");
-
-            return;
-        }
-
-        if (_frisbeeThrowSound.IsNull)
-        {
-            Debug.LogError("Frisbee throw sound EventReference is not assigned in FrisbeeAudioManager.");
-
-            return;
-        }
-
-        if (_pointScoredSound.IsNull)
-        {
-            Debug.LogError("Point scored sound EventReference is not assigned in FrisbeeAudioManager.");
-
-            return;
-        }
-
-        if (_dogFootstepsSound.IsNull)
-        {
-            Debug.LogError("Dog footsteps sound EventReference is not assigned in FrisbeeAudioManager.");
-        }
+        RegisterSoundEffect(GameSoundEffects.DogBark, _dogBarkSound);
+        RegisterSoundEffect(GameSoundEffects.DogHappyWhine, _dogHappyWhineSound);
+        RegisterSoundEffect(GameSoundEffects.FrisbeeThrow, _frisbeeThrowSound);
+        RegisterSoundEffect(GameSoundEffects.PointScored, _pointScoredSound);
+        RegisterSoundEffect(GameSoundEffects.DogFootSteps, _dogFootstepsSound);
     }
 
     /// <summary>
@@ -76,74 +56,5 @@ public class FrisbeeAudioManager : MiniGameAudioManager
     protected override void Start()
     {
         base.Start();
-    }
-
-    /// <summary>
-    /// Plays a spatial sound effect attached to a specific game object in 3D space.
-    /// </summary>
-    /// <param name="soundEffect">The type of sound effect to play.</param>
-    /// <param name="target">The game object to which the sound will be attached.</param>
-    public override void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
-    {   
-        EventReference eventToPlay;
-
-        switch (soundEffect)
-        {   
-            case GameSoundEffects.ButtonPressed:
-                eventToPlay = _buttonPressedSound;
-                break;
-
-            case GameSoundEffects.DogBark:
-                eventToPlay = _dogBarkSound;
-                break;
-
-            case GameSoundEffects.DogHappyWhine:
-                eventToPlay = _dogHappyWhineSound;
-                break;
-                
-            case GameSoundEffects.FrisbeeThrow:
-                eventToPlay = _frisbeeThrowSound;
-                break;
-
-            case GameSoundEffects.DogFootSteps:
-                eventToPlay = _dogFootstepsSound;
-                break;
-   
-            default:
-                Debug.LogError("Invalid sound effect: " + soundEffect);
-                return;
-        }
-
-        RuntimeManager.PlayOneShotAttached(eventToPlay, target);
-    }
-
-    /// <summary>
-    /// Plays a non-spatial sound effect at the default listener position.
-    /// </summary>
-    /// <param name="soundEffect">The type of sound effect to play.</param>
-    public override void PlaySoundEffect(GameSoundEffects soundEffect)
-    {
-        EventReference eventToPlay;
-       
-        switch (soundEffect)
-        {   
-            case GameSoundEffects.CarnyWiseIncreaseDiff:
-                eventToPlay = _carnyWiseIncreaseDiffSound;
-                break;
-
-            case GameSoundEffects.CarnyWiseDecreaseDiff:
-                eventToPlay = _carnyWiseDecreaseDiffSound;
-                break;
-
-            case GameSoundEffects.PointScored:
-                eventToPlay = _pointScoredSound;
-                break;
-                
-            default:
-                Debug.LogError("Unhandled sound effect: " + soundEffect);
-                return;
-        }
-
-        RuntimeManager.PlayOneShot(eventToPlay);
     }
 }

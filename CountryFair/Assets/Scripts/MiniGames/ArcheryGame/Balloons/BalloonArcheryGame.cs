@@ -19,13 +19,17 @@ public class BalloonArcheryGame : MonoBehaviour
     private const string BalloonSpawnTag = "BalloonSpawn";
 
     /// <summary>Balloon colors; the lower-case name is compared with the <c>BalloonColorToScore</c> PlayerPrefs value.</summary>
-    public enum Colors { RED, BLUE, YELLOW }
+    public enum Colors {
+         Red, 
+         Blue, 
+         Yellow 
+    }
 
     /// <summary>The prefab this balloon was instantiated from; stored for lifecycle management in <see cref="ArcheryGameManager"/>.</summary>
     public GameObject OriginalPrefab { get; set; }
 
     /// <summary>Color of this balloon prefab; decides whether hitting it scores.</summary>
-    [SerializeField] private Colors _color = Colors.RED;
+    [SerializeField] private Colors _color = Colors.Red;
     /// <summary>Particle effect spawned on pop; its start color is tinted with the balloon color.</summary>
     [SerializeField] private GameObject _popEffect;
 

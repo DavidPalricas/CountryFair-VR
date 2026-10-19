@@ -1,4 +1,3 @@
-using Oculus.Platform;
 using UnityEngine;
 
 /// <summary>
@@ -30,9 +29,6 @@ public class AnimalState: AnimatableState
     [Range(0f, 1f)]
     private float _fatigueIncreaseRate = 0.01f;
 
-    /// <summary>Never assigned; subclasses use the inherited <see cref="AnimatableState.animator"/> instead.</summary>
-    protected Animator _animator;
-
     /// <summary>Shared stats holder on the same GameObject; also where this state registers its action.</summary>
     protected AnimalUtility _animalUtility;
 
@@ -59,7 +55,7 @@ public class AnimalState: AnimatableState
 
         _animalUtility = GetComponent<AnimalUtility>();
 
-        SetStateProprieties();
+        SetStateProperties();
 
         // Each subclass registers its own trigger + stat so AnimalUtility
         // knows which actions are available without any hardcoded list.

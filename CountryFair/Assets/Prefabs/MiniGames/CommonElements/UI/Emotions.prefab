@@ -614,7 +614,6 @@ GameObject:
   - component: {fileID: 7077225228843133005}
   - component: {fileID: 6461612525873076729}
   - component: {fileID: 4313943641193146690}
-  - component: {fileID: 1286438263502714331}
   m_Layer: 5
   m_Name: Emotions
   m_TagString: Emojis
@@ -750,18 +749,6 @@ MonoBehaviour:
   _sliderDisplay: {fileID: 8132782977344325314}
   _faceDisplay: {fileID: 2186083304696299180}
   _pollIntervalSeconds: 0.5
---- !u!114 &1286438263502714331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3914214517096288678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76111aadd9f308b43a1326cda12ece55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MainThreadDispatcher
 --- !u!1 &3998603726381004334
 GameObject:
   m_ObjectHideFlags: 0

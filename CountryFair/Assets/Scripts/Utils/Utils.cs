@@ -1,5 +1,8 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Utility class providing helper methods for common game mechanics and calculations.
@@ -113,6 +116,42 @@ public static class Utils
         }
 
         return UnityEngine.Random.Range(min, max);
+    }
+
+    /// <summary>
+    /// Picks one of the least-used prefabs in <paramref name="counts"/>, keeping their distribution balanced, and
+    /// increments its count.
+    /// </summary>
+    /// <remarks>Each caller owns its <paramref name="counts"/> and decides when to decrement or reset them.</remarks>
+    /// <param name="counts">How many times each prefab is in use; must not be empty.</param>
+    /// <param name="preferred">Returned whenever it is one of the least-used prefabs; otherwise a random one of them is.</param>
+    /// <returns>The selected prefab.</returns>
+    public static GameObject PickBalancedPrefab(Dictionary<GameObject, int> counts, GameObject preferred = null)
+    {
+        int minCount = counts.Min(typeCount => typeCount.Value);
+
+        GameObject[] candidates = counts
+            .Where(typeCount => typeCount.Value == minCount)
+            .Select(typeCount => typeCount.Key)
+            .ToArray();
+
+        GameObject selected = preferred != null && candidates.Contains(preferred)
+            ? preferred
+            : candidates[RandomValueInRange(0, candidates.Length)];
+
+        counts[selected]++;
+
+        return selected;
+    }
+
+    /// <summary>
+    /// Whether <paramref name="agent"/> has finished computing its path and is within its stopping distance of the destination.
+    /// </summary>
+    /// <param name="agent">The NavMesh agent to check.</param>
+    /// <returns>True once the agent has reached its destination; otherwise, false.</returns>
+    public static bool HasReachedDestination(this NavMeshAgent agent)
+    {
+        return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
     }
 
     /// <summary>
