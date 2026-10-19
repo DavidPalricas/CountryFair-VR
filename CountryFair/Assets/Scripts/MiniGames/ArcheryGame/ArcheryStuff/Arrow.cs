@@ -9,6 +9,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Rigidbody))]
 public class Arrow : MonoBehaviour
 {
+    /// <summary>Tag of the crowd object whose <see cref="Crowd"/> cheers on every scoring hit.</summary>
+    private const string CrowdTag = "CrowdArcheryGame";
+
     /// <summary>Kinematic while the arrow rests on the bow; switched to dynamic only for the flight in <see cref="Launch"/>.</summary>
     private Rigidbody _rb;
 
@@ -42,7 +45,7 @@ public class Arrow : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
     
-        _crowd = GameObject.FindGameObjectWithTag("CrowdArcheryGame").GetComponent<Crowd>();
+        _crowd = GameObject.FindGameObjectWithTag(CrowdTag).GetComponent<Crowd>();
 
         if (_crowd == null)
         {
@@ -87,7 +90,7 @@ public class Arrow : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.CompareTag("Balloon"))
+        if (col.gameObject.CompareTag(BalloonArcheryGame.BalloonTag))
         {   
             BalloonArcheryGame balloon = col.gameObject.GetComponent<BalloonArcheryGame>();
 
@@ -117,7 +120,7 @@ public class Arrow : MonoBehaviour
             return;
         }
 
-        if (col.gameObject.CompareTag("Ground") || col.gameObject.CompareTag("OutOfBounds"))
+        if (col.gameObject.CompareTag(GameManager.GroundTag) || col.gameObject.CompareTag(GameManager.OutOfBoundsTag))
         {
             _playerMissed.Invoke();
             SetArrowToOrginalPosition();

@@ -12,7 +12,10 @@ using UnityEngine.Events;
 /// real frisbee, which is the only place where the frisbee is reactivated.
 /// </remarks>
 public class GiveFrisbeeToPlayer : DogState
-{  
+{
+    /// <summary>FSM transition fired once the frisbee has been handed back to the player.</summary>
+    private const string FrisbeeGivenTransition = "FrisbeeGiven";
+
    /// <summary>
    /// Visual representation of the frisbee held in the dog's mouth.
    /// This GameObject is activated when entering the state and deactivated on exit.
@@ -117,7 +120,7 @@ public class GiveFrisbeeToPlayer : DogState
 
             _happyWhine.Invoke(_happyWhineSoundEffect, gameObject);
 
-            _fsm.ChangeState("FrisbeeGiven");
+            _fsm.ChangeState(FrisbeeGivenTransition);
          }
     }
 

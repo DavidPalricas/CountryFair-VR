@@ -10,6 +10,12 @@ using UnityEngine.Events;
 /// </summary>
 public class FrisbeeGameManager : MiniGameManager
 {
+    /// <summary>PlayerPrefs key of the saved Frisbee difficulty level; also read by <see cref="CarnyWise"/>.</summary>
+    public const string DifficultyLevelKey = "FrisbeeDifficultyLevel";
+    /// <summary>PlayerPrefs key of the current player-to-dog distance; read by <see cref="GoToTarget"/>.</summary>
+    public const string DogDistanceKey = "DogDistance";
+    /// <summary>Tag of the dog, used to measure its starting distance to the player.</summary>
+    private const string DogTag = "Dog";
     /// <summary>Distance in meters added to the baseline dog distance per difficulty level.</summary>
     [Header("Dog Settings")]
     [SerializeField]
@@ -81,7 +87,7 @@ public class FrisbeeGameManager : MiniGameManager
 
         if (!GameManager.GetInstance().FrisbeeTutorialCompleted)
         {
-            PlayerPrefs.DeleteKey("FrisbeeDifficultyLevel");
+            PlayerPrefs.DeleteKey(DifficultyLevelKey);
         }
     }
 
@@ -90,7 +96,7 @@ public class FrisbeeGameManager : MiniGameManager
     {   
         _defaultDogDistance =  GetPlayerDistanceToDog();
         
-        DifficultyLevel = PlayerPrefs.GetInt("FrisbeeDifficultyLevel", 0);
+        DifficultyLevel = PlayerPrefs.GetInt(DifficultyLevelKey, 0);
 
         Debug.Log("Current Difficulty Level: " + DifficultyLevel);
 
@@ -126,9 +132,9 @@ public class FrisbeeGameManager : MiniGameManager
         float rawDistance = _defaultDogDistance + (DifficultyLevel * _distanceIncrement);
         float finalDogDistance = Mathf.Min(rawDistance, _maxDogDistance);
         
-        PlayerPrefs.SetFloat("DogDistance", finalDogDistance);
+        PlayerPrefs.SetFloat(DogDistanceKey, finalDogDistance);
 
-        PlayerPrefs.SetInt("FrisbeeDifficultyLevel", DifficultyLevel);
+        PlayerPrefs.SetInt(DifficultyLevelKey, DifficultyLevel);
 
         _currentDesiredCount = Mathf.RoundToInt(_targetsCount + (DifficultyLevel * _targetsPerLevel));
 
@@ -206,7 +212,7 @@ public class FrisbeeGameManager : MiniGameManager
     /// </remarks>
     protected override Vector3 GetRandomTargetPosition()
     {
-        float currentDogDist = PlayerPrefs.GetFloat("DogDistance", _defaultDogDistance);
+        float currentDogDist = PlayerPrefs.GetFloat(DogDistanceKey, _defaultDogDistance);
 
         const float MinOffset = 0.2f;
         const float MaxOffset = 1f;
@@ -214,7 +220,7 @@ public class FrisbeeGameManager : MiniGameManager
 
         Bounds dogAreaBounds = _dogAreaCollider.bounds;
 
-        int layerMask = LayerMask.GetMask("ScoreArea");
+        int layerMask = LayerMask.GetMask(ScoreAreaProperties.ScoreAreaLayer);
 
         Vector3 scoreAreaPosition = Vector3.zero;
 
@@ -279,7 +285,7 @@ public class FrisbeeGameManager : MiniGameManager
     /// <summary>Distance from the player to the <c>Dog</c>-tagged object, or 0 if it is missing.</summary>
     private float GetPlayerDistanceToDog()
     {
-        GameObject dog = GameObject.FindGameObjectWithTag("Dog");
+        GameObject dog = GameObject.FindGameObjectWithTag(DogTag);
 
         if (dog == null)
         {

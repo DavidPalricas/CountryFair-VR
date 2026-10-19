@@ -8,7 +8,10 @@ using UnityEngine.Events;
 /// returns straight to the player ("ReturnToPlayer").
 /// </summary>
 public class Landed: FrisbeeState
-{    
+{
+    /// <summary>FSM transition fired when the dog picks up the landed frisbee.</summary>
+    private const string RetrievedByDogTransition = "RetrievedByDog";
+
     /// <summary>Frisbee mesh; its bounds give the radius used to detect an overlapping score area.</summary>
     [SerializeField]
     private MeshRenderer _frisbeeMeshRenderer;
@@ -80,7 +83,7 @@ public class Landed: FrisbeeState
         {
             if (TutorialActive)
             {
-                _fsm.ChangeState("ReturnToPlayer");
+                _fsm.ChangeState(ReturnToPlayerTransition);
 
                 return;
             }
@@ -92,7 +95,7 @@ public class Landed: FrisbeeState
 
         _playerMissed.Invoke();
 
-        _fsm.ChangeState("ReturnToPlayer");
+        _fsm.ChangeState(ReturnToPlayerTransition);
     }
 
     /// <summary>
@@ -120,7 +123,7 @@ public class Landed: FrisbeeState
     {   
         if (_fsm.CurrentState == this)
         {
-            _fsm.ChangeState("RetrievedByDog");
+            _fsm.ChangeState(RetrievedByDogTransition);
         }
     }
 
@@ -139,7 +142,7 @@ public class Landed: FrisbeeState
 
         foreach (Collider collider in overlapResults)
         {
-            if (collider != null && collider.gameObject.CompareTag("ScoreArea")) 
+            if (collider != null && collider.gameObject.CompareTag(ScoreAreaProperties.ScoreAreaTag))
             {    
                 GameObject scoreArea = collider.gameObject;
 

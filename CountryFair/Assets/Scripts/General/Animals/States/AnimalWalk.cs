@@ -9,6 +9,9 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class AnimalWalk: AnimalState
 {
+    /// <summary>Animator trigger and FSM transition name of this action.</summary>
+    private const string GoWalkTrigger = "GoWalk";
+
     /// <summary>Amount boredom decreases each time the animal enters the walk state (0–1).</summary>
     [Header("Recovery Stats Rates")]
     [SerializeField]
@@ -32,7 +35,7 @@ public class AnimalWalk: AnimalState
     /// <summary>Registers the <c>"GoWalk"</c> trigger, chosen when boredom is the highest stat.</summary>
     protected override void RegisterActionInUtility()
     {
-        _animalUtility.RegisterAction("GoWalk", () => _animalUtility.stats.Boredom);
+        _animalUtility.RegisterAction(GoWalkTrigger, () => _animalUtility.stats.Boredom);
     }
 
     /// <summary>Resumes the agent with its normal priority, sends it to a random nearby point and recovers boredom.</summary>

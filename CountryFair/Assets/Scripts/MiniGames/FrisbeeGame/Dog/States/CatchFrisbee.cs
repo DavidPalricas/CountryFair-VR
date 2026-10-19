@@ -11,7 +11,10 @@ using UnityEngine.Events;
 /// to the <see cref="GiveFrisbeeToPlayer"/> state.
 /// </remarks>
 public class CatchFrisbee : DogState
-{   
+{
+    /// <summary>FSM transition fired once the dog has picked up the frisbee.</summary>
+    private const string FrisbeeCaughtTransition = "FrisbeeCaught";
+
     /// <summary>Raised when the dog starts running to the frisbee (wired in the Inspector).</summary>
     [SerializeField]
     private UnityEvent _catchFrisbee;
@@ -86,7 +89,7 @@ public class CatchFrisbee : DogState
          if (DogStoped())
          {  
             _frisbeeTransform.gameObject.SetActive(false);
-            _fsm.ChangeState("FrisbeeCaught");
+            _fsm.ChangeState(FrisbeeCaughtTransition);
          }
     }
 

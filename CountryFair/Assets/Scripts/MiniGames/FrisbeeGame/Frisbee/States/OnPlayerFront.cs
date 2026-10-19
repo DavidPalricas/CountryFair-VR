@@ -26,6 +26,11 @@ using UnityEngine.Events;
 [RequireComponent(typeof(FollowPlayerHead))]
 public class OnPlayerFront : FrisbeeState
 {
+    /// <summary>FSM transition fired when the player throws the frisbee.</summary>
+    private const string FrisbeeThrownTransition = "FrisbeeThrown";
+    /// <summary>FSM transition fired by the score cheat, which lands the frisbee straight on a score area.</summary>
+    private const string ForcedPointTransition = "ForcedPoint";
+
     /// <summary>
     /// Hand grab interactables of the frisbee (one per hand). Toggling them is what allows or blocks grabbing: they
     /// are disabled on throw and while the dog is not ready to catch.
@@ -185,7 +190,7 @@ public class OnPlayerFront : FrisbeeState
 
             _throwSoundEffectEvent.Invoke(_throwSoundEffect, gameObject);
 
-            _fsm.ChangeState("FrisbeeThrown");
+            _fsm.ChangeState(FrisbeeThrownTransition);
         }
     }
 
@@ -368,7 +373,7 @@ public class OnPlayerFront : FrisbeeState
         {    
             transform.parent = null;
             transform.localPosition = targetPosition;
-            _fsm.ChangeState("ForcedPoint");
+            _fsm.ChangeState(ForcedPointTransition);
         }
     }
 }

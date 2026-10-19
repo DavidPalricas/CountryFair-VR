@@ -13,6 +13,11 @@ using DG.Tweening;
 /// </summary>
 public class ArcheryGameManager : MiniGameManager
 {
+    /// <summary>PlayerPrefs key of the saved Archery difficulty level; also read by <see cref="CarnyWise"/>.</summary>
+    public const string DifficultyLevelKey = "ArcheryDifficultyLevel";
+    /// <summary>PlayerPrefs key of the balloon color that scores; read by <see cref="BalloonArcheryGame"/> and <see cref="ArcheryCheatCodes"/>.</summary>
+    public const string BalloonColorToScoreKey = "BalloonColorToScore";
+
     /// <summary>TMP text displaying the balloon color that scores; its text and color are set to match the target balloon.</summary>
     [Header("Game Specific References")]
     [SerializeField] private TextMeshProUGUI _balloonColorToScoreText;
@@ -129,7 +134,7 @@ public class ArcheryGameManager : MiniGameManager
 
           if (!GameManager.GetInstance().ArcheryTutorialCompleted)
         {
-            PlayerPrefs.DeleteKey("ArcheryDifficultyLevel");
+            PlayerPrefs.DeleteKey(DifficultyLevelKey);
         }
 
         SetBalloonColorToScore();
@@ -138,7 +143,7 @@ public class ArcheryGameManager : MiniGameManager
     /// <summary>Restores the saved archery difficulty and spawns the balloons for it.</summary>
     public override void TutorialCompleted()
     {   
-        DifficultyLevel = PlayerPrefs.GetInt("ArcheryDifficultyLevel", 0);
+        DifficultyLevel = PlayerPrefs.GetInt(DifficultyLevelKey, 0);
         ApplyDifficultySettings();
     }
 
@@ -177,7 +182,7 @@ public class ArcheryGameManager : MiniGameManager
 
         _currentMoveDuration = Mathf.Lerp(_slowMoveDuration, _fastMoveDuration, saturationFactor);
 
-        PlayerPrefs.SetInt("ArcheryDifficultyLevel", DifficultyLevel);
+        PlayerPrefs.SetInt(DifficultyLevelKey, DifficultyLevel);
         
         // Debug.Log($"[Archery Stats] Total Balloons: {_currentDesiredCount} | Movimento Ratio: {_currentMovingRatio:P0} | Move Duration: {_currentMoveDuration:F1}s");
         
@@ -359,7 +364,7 @@ public class ArcheryGameManager : MiniGameManager
 
             foreach (Collider hit in hitColliders)
             {
-                if (hit.CompareTag("Balloon"))
+                if (hit.CompareTag(BalloonArcheryGame.BalloonTag))
                 {
                     hitBalloon = true;
                     break;
@@ -419,7 +424,7 @@ public class ArcheryGameManager : MiniGameManager
         _balloonColorToScoreText.transform.DOPunchScale(Vector3.one * _punchScale, _punchDuration, 5, 0.5f);
 
 
-        PlayerPrefs.SetString("BalloonColorToScore", colorToScore); 
+        PlayerPrefs.SetString(BalloonColorToScoreKey, colorToScore); 
     }
 
     /// <summary>Returns the least-spawned color, preferring the scoring color on ties, and increments its counter.</summary>

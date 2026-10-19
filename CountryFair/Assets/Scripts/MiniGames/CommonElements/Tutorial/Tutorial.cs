@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 
 /// <summary>
@@ -119,24 +118,18 @@ public class Tutorial : UIDialog
         ShowGameRule();
     }
 
-    /// <summary>Sets <see cref="_isFromFrisbeGame"/> by inspecting the active scene's name.</summary>
+    /// <summary>Sets <see cref="_isFromFrisbeGame"/> from the active scene (<see cref="GameManager.GetCurrentMiniGame"/>).</summary>
     private void CheckCurrenMiniGame()
     {
-        string sceneName = SceneManager.GetActiveScene().name.ToLower();
+        OrderableTentElement.MINI_GAMES? miniGame = GameManager.GetCurrentMiniGame();
 
-        if (sceneName.Contains("frisbee"))
+        if (miniGame == null)
         {
-            _isFromFrisbeGame = true;
+            Debug.LogError("Invalid scene for tutorial detection.");
             return;
         }
 
-        if (sceneName.Contains("archery"))
-        {
-            _isFromFrisbeGame = false;
-            return;
-        }
-
-        Debug.LogError("Invalid scene for tutorial detection.");
+        _isFromFrisbeGame = miniGame == OrderableTentElement.MINI_GAMES.FRISBEE;
     }
 
     /// <summary>

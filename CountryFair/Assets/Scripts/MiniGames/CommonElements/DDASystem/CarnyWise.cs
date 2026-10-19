@@ -96,29 +96,20 @@ public class CarnyWise : MonoBehaviour
 
 
     /// <summary>
-    /// Sets <see cref="_isFrisbeeMiniGame"/> from the active scene name (contains <c>frisbee</c> or <c>archery</c>,
-    /// case-insensitive).
+    /// Sets <see cref="_isFrisbeeMiniGame"/> from the active scene (<see cref="GameManager.GetCurrentMiniGame"/>).
     /// </summary>
     /// <remarks>Any other scene logs an error and keeps the Archery behaviour (flag stays false).</remarks>
     private void SetMiniGameName()
     {
-        string sceneName = SceneManager.GetActiveScene().name.ToLower();
+        OrderableTentElement.MINI_GAMES? miniGame = GameManager.GetCurrentMiniGame();
 
-        if (sceneName.Contains("frisbee"))
+        if (miniGame == null)
         {
-            _isFrisbeeMiniGame = true;
-
-             return;
-        }
-
-        if (sceneName.Contains("archery"))
-        {
-            _isFrisbeeMiniGame = false;
-
+            Debug.LogError("Invalid scene");
             return;
         }
-      
-        Debug.LogError("Invalid scene"); 
+
+        _isFrisbeeMiniGame = miniGame == OrderableTentElement.MINI_GAMES.FRISBEE;
     }
 
     /// <summary>
@@ -280,7 +271,7 @@ public class CarnyWise : MonoBehaviour
     /// </summary>
     /// <remarks>Invoked via Inspector by <c>MiniGameCheatCodes._resetDifficulty</c> (<c>reset</c> cheat).</remarks>
     public void ResetDifficulty()
-    {   string playerPrefsDiffKey = _isFrisbeeMiniGame ? "FrisbeeDifficultyLevel" : "ArcheryDifficultyLevel";
+    {   string playerPrefsDiffKey = _isFrisbeeMiniGame ? FrisbeeGameManager.DifficultyLevelKey : ArcheryGameManager.DifficultyLevelKey;
     
         int currentDifficulty = PlayerPrefs.GetInt(playerPrefsDiffKey, 0);
 
@@ -322,7 +313,7 @@ public class CarnyWise : MonoBehaviour
     /// </remarks>
     private void DecreaseDifficulty()
     {   
-        string playerPrefsDiffKey = _isFrisbeeMiniGame ? "FrisbeeDifficultyLevel" : "ArcheryDifficultyLevel";
+        string playerPrefsDiffKey = _isFrisbeeMiniGame ? FrisbeeGameManager.DifficultyLevelKey : ArcheryGameManager.DifficultyLevelKey;
         
         int currentDifficulty = PlayerPrefs.GetInt(playerPrefsDiffKey, 0);
 
@@ -365,11 +356,9 @@ public class CarnyWise : MonoBehaviour
             gameManager.ArcherySessionCompleted = true;
         }
 
-        string sceneName = "CountryFair";
+        SceneManager.LoadScene(GameManager.HubScene);
 
-        SceneManager.LoadScene(sceneName);
-
-        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
+        ConnectToWebApp.Instance.UpdateScene(GameManager.HubScene.ToLower());
     }
      
 
@@ -394,8 +383,10 @@ public class CarnyWise : MonoBehaviour
             AverageTaskCompletionTime = $"{averageTaskTime} segundos"
         };
 
-        string miniGameName = _isFrisbeeMiniGame ? "frisbee" : "archery";
+        OrderableTentElement.MINI_GAMES miniGame = _isFrisbeeMiniGame
+            ? OrderableTentElement.MINI_GAMES.FRISBEE
+            : OrderableTentElement.MINI_GAMES.ARCHERY;
 
-        DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, miniGameName);
+        DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, miniGame);
     }
 }

@@ -9,6 +9,9 @@ using UnityEngine;
 /// </remarks>
 public class Jump: DogState
 {
+    /// <summary>FSM transition fired when the jump ends and the dog goes to catch the frisbee.</summary>
+    private const string CatchFrisbeeTransition = "CatchFrisbee";
+
     /// <summary>Validates the Animator reference on top of the base dog setup.</summary>
      protected override void Awake()
     {   
@@ -36,8 +39,8 @@ public class Jump: DogState
         
         if (IsPlayingNewAnimation())
         {   
-            animator.SetFloat("Speed", 1f);
-            _fsm.ChangeState("CatchFrisbee");
+            animator.SetFloat(SpeedParam, 1f);
+            _fsm.ChangeState(CatchFrisbeeTransition);
 
             return;
         }

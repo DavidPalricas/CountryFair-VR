@@ -8,6 +8,9 @@ using System;
 /// </summary>
 public static class Utils
 {
+    /// <summary>Tag of the head-tracked camera object that <see cref="CastRayMetaQuest"/> casts from.</summary>
+    private const string MainCameraTag = "MainCamera";
+
     /// <summary>
     /// Transform of the <c>MainCamera</c>-tagged object, cached by <see cref="CastRayMetaQuest"/> so the tag search runs
     /// once instead of on every call. It becomes null (Unity's destroyed-object check) when the scene unloads, which
@@ -42,7 +45,7 @@ public static class Utils
     {
         if (_headTransform == null)
         {
-            _headTransform = GameObject.FindGameObjectWithTag("MainCamera").transform;
+            _headTransform = GameObject.FindGameObjectWithTag(MainCameraTag).transform;
         }
 
 

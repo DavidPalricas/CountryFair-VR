@@ -59,7 +59,7 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     /// </summary>
     private Vector3 GetCorrectBalloonPosition()
     {
-        string balloonColorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
+        string balloonColorToScore = PlayerPrefs.GetString(ArcheryGameManager.BalloonColorToScoreKey, "red").ToLower();
         
         BalloonArcheryGame balloon = FindObjectsByType<BalloonArcheryGame>(FindObjectsSortMode.None)
             .FirstOrDefault(candidate => candidate.GetBalloonColorName().ToLower() == balloonColorToScore);
