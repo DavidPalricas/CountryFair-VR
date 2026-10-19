@@ -98,40 +98,28 @@ public class DataFileManager
     /// </summary>
     /// <param name="newSession">Metrics to store for the session.</param>
     /// <param name="sessionID">Timestamp key used to identify the session (e.g., "2024-01-01_10-00-00").</param>
-    /// <param name="miniGameName">"frisbee" or "archery" — determines which sub-dictionary receives the record.</param>
-    public void SaveSessionData(SessionData newSession, string sessionID, string miniGameName)
+    /// <param name="miniGame">Mini-game whose section receives the record; only Frisbee and Archery have one.</param>
+    public void SaveSessionData(SessionData newSession, string sessionID, OrderableTentElement.MINI_GAMES miniGame)
     {
         if (CurrentData == null) CurrentData = new DataFileRoot();
         if (CurrentData.frisbeeGame == null) CurrentData.frisbeeGame = new ();
         if (CurrentData.archeryGame == null) CurrentData.archeryGame = new ();
 
-        if (miniGameName == "frisbee")
+        MiniGameData miniGameData = miniGame switch
         {
-            if (CurrentData.frisbeeGame.SessionsData.ContainsKey(sessionID))
-            {
-                CurrentData.frisbeeGame.SessionsData[sessionID] = newSession;
-            }
-            else
-            {
-                CurrentData.frisbeeGame.SessionsData.Add(sessionID, newSession);
-            }
-        }
-        else if (miniGameName == "archery")
+            OrderableTentElement.MINI_GAMES.FRISBEE => CurrentData.frisbeeGame,
+            OrderableTentElement.MINI_GAMES.ARCHERY => CurrentData.archeryGame,
+            _ => null
+        };
+
+        if (miniGameData == null)
         {
-            if (CurrentData.archeryGame.SessionsData.ContainsKey(sessionID))
-            {
-                CurrentData.archeryGame.SessionsData[sessionID] = newSession;
-            }
-            else
-            {
-                CurrentData.archeryGame.SessionsData.Add(sessionID, newSession);
-            }
-        }
-        else
-        {
-            Debug.LogError($"Invalid Mini Game Name: {miniGameName}");
+            Debug.LogError($"No save data section for mini-game: {miniGame}");
             return;
         }
+
+        // The indexer adds the session or overwrites an existing one with the same ID.
+        miniGameData.SessionsData[sessionID] = newSession;
 
         SaveData();
     }

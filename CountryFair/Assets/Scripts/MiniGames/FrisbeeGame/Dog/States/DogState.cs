@@ -37,7 +37,14 @@ using DG.Tweening;
     /// (and would be shared by every dog in the scene).
     /// </summary>
     protected static Vector3 _currentTargetPos;
-    
+
+    /// <summary>Hash of the dog Animator's <c>Speed</c> float (0 = idle, 1 = walking).</summary>
+    protected static readonly int SpeedParam = Animator.StringToHash("Speed");
+    /// <summary>Hash of the dog Animator's <c>Jump</c> trigger, set when the frisbee lands in a score area.</summary>
+    protected static readonly int JumpParam = Animator.StringToHash("Jump");
+    /// <summary>Hash of the dog Animator's <c>StopAnim</c> bool, which blocks the walk triggered by a difficulty change.</summary>
+    protected static readonly int StopAnimParam = Animator.StringToHash("StopAnim");
+
     /// <summary>Sound sent through <see cref="_barkEvent"/> by <see cref="Bark"/>, shared by every dog state (fixed; not editable in the Inspector).</summary>
     private readonly AudioManager.GameSoundEffects _barkSoundEffect = AudioManager.GameSoundEffects.DogBark;
 

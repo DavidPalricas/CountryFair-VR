@@ -10,6 +10,9 @@ using System.Collections.Generic;
 [RequireComponent(typeof(MiniGameCheatCodes))]
 public abstract class MiniGameManager : MonoBehaviour
 {
+    /// <summary>PlayerPrefs key of the session score goal; read by <see cref="ScoreAndStreakSystem"/>.</summary>
+    public const string SessionGoalKey = "SessionGoal";
+
     /// <summary>Base number of targets present at difficulty level 0.</summary>
     [Header("Targets Configuration")]
     [SerializeField]
@@ -38,7 +41,7 @@ public abstract class MiniGameManager : MonoBehaviour
     /// <summary>Publishes the session goal in the <c>SessionGoal</c> PlayerPrefs key read by the score system.</summary>
     protected virtual void Awake()
     {
-       PlayerPrefs.SetInt("SessionGoal", _sessionScoreGoal);
+       PlayerPrefs.SetInt(SessionGoalKey, _sessionScoreGoal);
     }
 
 

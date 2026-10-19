@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class AnimalIdle: AnimalState
 {
+    /// <summary>Animator trigger and FSM transition name of this action.</summary>
+    private const string GoIdleTrigger = "GoIdle";
+
     /// <summary>Amount fatigue decreases each time the animal enters the idle state (0–1).</summary>
     [Header("Recovery Stats Rates")]
     [SerializeField]
@@ -28,7 +31,7 @@ public class AnimalIdle: AnimalState
     /// <summary>Registers the <c>"GoIdle"</c> trigger, chosen when fatigue is the highest stat.</summary>
     protected override void RegisterActionInUtility()
     {
-        _animalUtility.RegisterAction("GoIdle", () => _animalUtility.stats.Fatigue);
+        _animalUtility.RegisterAction(GoIdleTrigger, () => _animalUtility.stats.Fatigue);
     }
 
     /// <summary>Picks a random idle duration and recovers fatigue up front.</summary>

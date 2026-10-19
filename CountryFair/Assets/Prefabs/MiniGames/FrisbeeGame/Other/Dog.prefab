@@ -137,7 +137,7 @@ MonoBehaviour:
   - Name: CatchFrisbee
     From: {fileID: 3607899206716178632}
     To: {fileID: 2793601278903920947}
-  - Name: DiffcultyHasDecreased
+  - Name: DifficultyHasDecreased
     From: {fileID: 7572416769146546949}
     To: {fileID: 1080295073776879282}
 --- !u!114 &7572416769146546949
@@ -839,7 +839,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Pipoca
+  m_text: Joca
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
   m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}

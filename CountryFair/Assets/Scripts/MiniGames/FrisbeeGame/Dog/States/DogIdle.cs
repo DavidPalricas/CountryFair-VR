@@ -13,7 +13,12 @@ using UnityEngine.Events;
 /// <see cref="DiffHasChanged"/> leads to "DiffcultyHasDecreased".
 /// </remarks>
 public class DogIdle : DogState
-{   
+{
+    /// <summary>FSM transition fired when a difficulty change makes the idle dog walk to a new distance.</summary>
+    private const string DiffcultyHasDecreasedTransition = "DifficultyHasDecreased";
+    /// <summary>FSM transition fired when the frisbee lands in a score area and the dog jumps for it.</summary>
+    private const string FrisbeeLandedTransition = "FrisbeeLanded";
+
     /// <summary>
     /// Reference to the score area GameObject representing the catch zone.
     /// This area is activated when the dog is idle and ready to catch, and deactivated when the dog leaves this state.
@@ -128,14 +133,14 @@ public class DogIdle : DogState
         
         if (IsPlayingNewAnimation())
         {    
-            if (animator.GetFloat("Speed") > 0f)
+            if (animator.GetFloat(SpeedParam) > 0f)
             {
-                _fsm.ChangeState("DiffcultyHasDecreased");   
+                _fsm.ChangeState(DiffcultyHasDecreasedTransition);   
 
                 return;
             }
             
-            _fsm.ChangeState("FrisbeeLanded");      
+            _fsm.ChangeState(FrisbeeLandedTransition);      
             return;
         }
 
@@ -156,8 +161,8 @@ public class DogIdle : DogState
     {   
         if (_fsm.CurrentState == this)
         {
-            animator.SetTrigger("Jump");
-            animator.SetFloat("Speed", 0f);
+            animator.SetTrigger(JumpParam);
+            animator.SetFloat(SpeedParam, 0f);
         }
     }
 
@@ -168,9 +173,9 @@ public class DogIdle : DogState
     /// <remarks>Invoked via Inspector (FrisbeeGame scene) when the difficulty changes.</remarks>
     public void DiffHasChanged()
     {    
-        if (_fsm.CurrentState == this && !animator.GetBool("StopAnim"))
+        if (_fsm.CurrentState == this && !animator.GetBool(StopAnimParam))
         {
-            animator.SetFloat("Speed", 1f);
+            animator.SetFloat(SpeedParam, 1f);
         } 
     }
 

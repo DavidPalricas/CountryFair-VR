@@ -8,7 +8,10 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(FrisbeeTrajectory))]
 public class FrisbeeState : State
-{   
+{
+    /// <summary>FSM transition back to <see cref="OnPlayerFront"/>; fired by <see cref="Landed"/> and <see cref="OnMovement"/>.</summary>
+    protected const string ReturnToPlayerTransition = "ReturnToPlayer";
+
     /// <summary>Reference to the rigidbody component for physics calculations.</summary>
     protected Rigidbody _rigidbody;
    

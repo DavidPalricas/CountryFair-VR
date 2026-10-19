@@ -109,7 +109,7 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     /// <remarks>Tag lookups skip inactive objects, so this only succeeds while the dog is idle and its area is shown.</remarks>
     private Vector3 GetDogSocreAreaPosition()
     {
-        GameObject dogScoreArea = GameObject.FindGameObjectsWithTag("ScoreArea")
+        GameObject dogScoreArea = GameObject.FindGameObjectsWithTag(ScoreAreaProperties.ScoreAreaTag)
                                   .Where(scoreArea => scoreArea.GetComponent<ScoreAreaProperties>().GetAreaType() == ScoreAreaProperties.AreaType.Dog)
                                   .FirstOrDefault();
 
@@ -127,7 +127,7 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     /// <summary>Position of a random <c>ScoreArea</c>-tagged object other than the dog's catch area, or <see cref="Vector3.zero"/> if none exist.</summary>
     private Vector3 GetExtraScoreAreaPosition()
     {
-        GameObject[] scoreAreas = GameObject.FindGameObjectsWithTag("ScoreArea")
+        GameObject[] scoreAreas = GameObject.FindGameObjectsWithTag(ScoreAreaProperties.ScoreAreaTag)
                                   .Where(scoreArea => scoreArea.GetComponent<ScoreAreaProperties>().GetAreaType() == ScoreAreaProperties.AreaType.Normal)
                                   .ToArray();
 

@@ -13,6 +13,11 @@ using DG.Tweening;
 [RequireComponent(typeof(Collider))]
 public class BalloonArcheryGame : MonoBehaviour
 {
+    /// <summary>Tag of every archery balloon; used by <see cref="Arrow"/> and <see cref="ArcheryGameManager"/> to detect them.</summary>
+    public const string BalloonTag = "Balloon";
+    /// <summary>Tag of the spawn area the balloons wander inside.</summary>
+    private const string BalloonSpawnTag = "BalloonSpawn";
+
     /// <summary>Balloon colors; the lower-case name is compared with the <c>BalloonColorToScore</c> PlayerPrefs value.</summary>
     public enum Colors { RED, BLUE, YELLOW }
 
@@ -126,7 +131,7 @@ public class BalloonArcheryGame : MonoBehaviour
             _originalColor = _material.GetColor("_BaseColor");
         }
 
-        GameObject spawner = GameObject.FindGameObjectWithTag("BalloonSpawn");
+        GameObject spawner = GameObject.FindGameObjectWithTag(BalloonSpawnTag);
 
         if (spawner == null)
         {
@@ -143,7 +148,7 @@ public class BalloonArcheryGame : MonoBehaviour
         }
 
     
-        GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+        GameObject gameManager = GameObject.FindGameObjectWithTag(GameManager.GameManagerTag);
 
 
         if (gameManager == null)
@@ -327,7 +332,7 @@ public class BalloonArcheryGame : MonoBehaviour
     /// <remarks>Normal = 1, moving = 2, transparent = 3, moving + transparent = 6.</remarks>
     public int GetScoreValue()
     {
-        string colorToScore = PlayerPrefs.GetString("BalloonColorToScore", "red").ToLower();
+        string colorToScore = PlayerPrefs.GetString(ArcheryGameManager.BalloonColorToScoreKey, "red").ToLower();
 
         if (_colorName != colorToScore)
         {

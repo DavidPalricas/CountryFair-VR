@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public class AnimalEat: AnimalState
 {
+    /// <summary>Animator trigger and FSM transition name of this action.</summary>
+    private const string GoEatTrigger = "GoEat";
+
     /// <summary>Amount hunger decreases each time the animal enters the eating state (0–1).</summary>
     [Header("Recovery Stats Rates")]
     [SerializeField]
@@ -28,7 +31,7 @@ public class AnimalEat: AnimalState
     /// <summary>Registers the <c>"GoEat"</c> trigger, chosen when hunger is the highest stat.</summary>
     protected override void RegisterActionInUtility()
     {
-        _animalUtility.RegisterAction("GoEat", () => _animalUtility.stats.Hunger);
+        _animalUtility.RegisterAction(GoEatTrigger, () => _animalUtility.stats.Hunger);
     }
 
     /// <summary>Picks a random eating duration and recovers hunger up front.</summary>

@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class TentPlaceHolder: MonoBehaviour
 {
+    /// <summary>Tag every grabbable <see cref="OrderableTentElement"/> must carry to be tracked by a placeholder.</summary>
+    private const string TentElementTag = "TentElement";
+
     /// <summary>Slot number displayed on the tent ribbon when a tent occupies this placeholder.</summary>
     public int Number = 1;
 
@@ -17,7 +20,7 @@ public class TentPlaceHolder: MonoBehaviour
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("TentElement")){
+        if (other.gameObject.CompareTag(TentElementTag)){
             
             if (!other.gameObject.TryGetComponent<OrderableTentElement>(out var element))
             {
@@ -36,7 +39,7 @@ public class TentPlaceHolder: MonoBehaviour
     /// </summary>
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("TentElement")){
+        if (other.gameObject.CompareTag(TentElementTag)){
             
             if (!other.gameObject.TryGetComponent<OrderableTentElement>(out var element))
             {

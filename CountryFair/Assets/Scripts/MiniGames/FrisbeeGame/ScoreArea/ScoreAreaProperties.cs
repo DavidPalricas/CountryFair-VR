@@ -11,6 +11,11 @@ using DG.Tweening;
 [RequireComponent(typeof(Collider))]
 public class ScoreAreaProperties : MonoBehaviour
 {
+    /// <summary>Tag of every score area; used by <see cref="Landed"/> and <see cref="FrisbeeCheatCodes"/> to find them.</summary>
+    public const string ScoreAreaTag = "ScoreArea";
+    /// <summary>Physics layer of every score area; used by <see cref="FrisbeeGameManager"/> to keep new areas from overlapping.</summary>
+    public const string ScoreAreaLayer = "ScoreArea";
+
     /// <summary>Determines behavior and base score value; only NORMAL areas support movement/blinking modifiers.</summary>
     [SerializeField]
     private AreaType _areaType = AreaType.Normal;
@@ -106,7 +111,7 @@ public class ScoreAreaProperties : MonoBehaviour
             _baseScorePoints = 8;
         }
 
-        _frisbeeGameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<FrisbeeGameManager>();
+        _frisbeeGameManager = GameObject.FindGameObjectWithTag(GameManager.GameManagerTag).GetComponent<FrisbeeGameManager>();
 
         if (_frisbeeGameManager == null)
         {

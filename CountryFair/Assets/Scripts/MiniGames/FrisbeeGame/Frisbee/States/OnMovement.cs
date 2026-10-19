@@ -25,6 +25,9 @@ using UnityEngine.Events;
 /// </remarks>
 public class OnMovement : FrisbeeState
 {
+    /// <summary>FSM transition fired when the frisbee has touched the ground and slowed down enough to count as landed.</summary>
+    private const string StoppedOnGroundTransition = "StoppedOnGround";
+
     /// <summary>
     /// Lift force strength coefficient applied to the frisbee during flight.
     /// Higher values increase upward force, making the disc rise more during flight.
@@ -169,7 +172,7 @@ public class OnMovement : FrisbeeState
         {
             if (_touchedGround)
             {
-                _fsm.ChangeState("StoppedOnGround");
+                _fsm.ChangeState(StoppedOnGroundTransition);
             } 
 
             return;
@@ -215,7 +218,7 @@ public class OnMovement : FrisbeeState
         {
             _rigidbody.constraints = RigidbodyConstraints.None;
 
-            if (other.gameObject.CompareTag("Ground"))
+            if (other.gameObject.CompareTag(GameManager.GroundTag))
             {
                 _touchedGround = true;
                 _rigidbody.angularDamping = 10.0f;
@@ -239,7 +242,7 @@ public class OnMovement : FrisbeeState
     /// </remarks>
     private void OnCollisionExit(Collision other)
     {
-        if (other.gameObject.CompareTag("Ground") && _fsm.CurrentState == this)
+        if (other.gameObject.CompareTag(GameManager.GroundTag) && _fsm.CurrentState == this)
         {
             _rigidbody.angularDamping = 0.1f;
         }
@@ -250,10 +253,10 @@ public class OnMovement : FrisbeeState
     /// <param name="other">Trigger the frisbee entered; only colliders tagged <c>OutOfBounds</c> are handled.</param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("OutOfBounds") && _fsm.CurrentState == this)
+        if (other.CompareTag(GameManager.OutOfBoundsTag) && _fsm.CurrentState == this)
         {   
             _playerMissed.Invoke();
-            _fsm.ChangeState("ReturnToPlayer");
+            _fsm.ChangeState(ReturnToPlayerTransition);
         }
     }
 }

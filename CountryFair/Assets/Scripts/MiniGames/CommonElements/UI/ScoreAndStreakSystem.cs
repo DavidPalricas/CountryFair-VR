@@ -230,7 +230,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// <summary>Reads the session score goal from <see cref="PlayerPrefs"/>, displays it, and reports the initial (zeroed) progress to <see cref="ConnectToWebApp"/>.</summary>
     private void Start()
     {
-        _sessionGoal = PlayerPrefs.GetInt("SessionGoal", 0);
+        _sessionGoal = PlayerPrefs.GetInt(MiniGameManager.SessionGoalKey, 0);
 
         UpdateSessionGoalText();
        

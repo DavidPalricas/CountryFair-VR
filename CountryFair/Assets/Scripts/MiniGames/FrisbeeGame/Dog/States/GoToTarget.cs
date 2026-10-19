@@ -11,6 +11,9 @@ using UnityEngine.AI;
 /// A temporary GameObject is created to represent the target position for rotation purposes.
 /// </remarks>
 public class GoToTarget : DogState{
+    /// <summary>FSM transition fired when the dog reaches its new position.</summary>
+    private const string PositionReachedTransition = "PositionReached";
+
     /// <summary>
     /// Reference to a temporary GameObject's transform representing the new target position.
     /// Created in <see cref="Enter"/> and destroyed in <see cref="Exit"/>.
@@ -85,14 +88,14 @@ public class GoToTarget : DogState{
 
         if (IsPlayingNewAnimation())
         {
-            _fsm.ChangeState("PositionReached");
+            _fsm.ChangeState(PositionReachedTransition);
 
             return;
         }  
 
         if (DogStoped())
         {   RotateDogTowardsTarget(_playerTransform);
-            animator.SetFloat("Speed", 0f);
+            animator.SetFloat(SpeedParam, 0f);
         }
     }
     
@@ -133,7 +136,7 @@ public class GoToTarget : DogState{
     /// <returns>A valid Vector3 position on the NavMesh within the semicircular area.</returns>
     private Vector3 ChooseNewTargetPos()
     {
-        float dogDistance = PlayerPrefs.GetFloat("DogDistance", float.MaxValue);
+        float dogDistance = PlayerPrefs.GetFloat(FrisbeeGameManager.DogDistanceKey, float.MaxValue);
 
         if (dogDistance == float.MaxValue)
         {
