@@ -73,7 +73,7 @@ public class DuckSwim : MonoBehaviour
         ApplyBobbing();
         ApplyWobble();
 
-        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
+        if (_agent.HasReachedDestination())
         {
             SetNewDestination();
         }

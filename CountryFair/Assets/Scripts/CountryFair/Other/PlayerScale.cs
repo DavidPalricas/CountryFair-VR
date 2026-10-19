@@ -101,7 +101,7 @@ public class PlayerScale : MonoBehaviour
    /// <summary>
    /// Sound effect passed to <see cref="_onScaleToNormal"/> when the player shrinks back.
    /// </summary>
-   private readonly AudioManager.GameSoundEffects _scaleToNormalSoundEffect = AudioManager.GameSoundEffects.SCALEToNormal;
+   private readonly AudioManager.GameSoundEffects _scaleToNormalSoundEffect = AudioManager.GameSoundEffects.ScaleToNormal;
 
 
   /// <summary>

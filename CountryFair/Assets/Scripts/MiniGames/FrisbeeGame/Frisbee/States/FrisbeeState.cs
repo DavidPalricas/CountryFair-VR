@@ -30,7 +30,7 @@ public class FrisbeeState : State
     /// </summary>
     protected virtual void Awake()
     {   
-        SetStateProprieties();
+        SetStateProperties();
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
         _trajectoryLine = GetComponent<FrisbeeTrajectory>();

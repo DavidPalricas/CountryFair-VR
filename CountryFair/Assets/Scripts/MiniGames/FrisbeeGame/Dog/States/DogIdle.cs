@@ -10,12 +10,12 @@ using UnityEngine.Events;
 /// This state activates the score area (the catch zone where the frisbee can land) and the dog's name tag, spawns the
 /// floating score areas, and barks at random intervals while waiting. Transitions are driven by the Animator: the
 /// <c>Jump</c> trigger set by <see cref="PlayerScored"/> leads to "FrisbeeLanded", and a non-zero <c>Speed</c> set by
-/// <see cref="DiffHasChanged"/> leads to "DiffcultyHasDecreased".
+/// <see cref="DiffHasChanged"/> leads to "DifficultyHasDecreased".
 /// </remarks>
 public class DogIdle : DogState
 {
     /// <summary>FSM transition fired when a difficulty change makes the idle dog walk to a new distance.</summary>
-    private const string DiffcultyHasDecreasedTransition = "DifficultyHasDecreased";
+    private const string DifficultyHasDecreasedTransition = "DifficultyHasDecreased";
     /// <summary>FSM transition fired when the frisbee lands in a score area and the dog jumps for it.</summary>
     private const string FrisbeeLandedTransition = "FrisbeeLanded";
 
@@ -123,7 +123,7 @@ public class DogIdle : DogState
 
     /// <summary>
     /// Called every frame while in the DogIdle state.
-    /// Waits for the Animator to leave the idle clip, then fires "DiffcultyHasDecreased" if <c>Speed</c> &gt; 0 (difficulty
+    /// Waits for the Animator to leave the idle clip, then fires "DifficultyHasDecreased" if <c>Speed</c> &gt; 0 (difficulty
     /// changed, the dog must reposition) or "FrisbeeLanded" otherwise (the jump trigger was set). Barks when the impatience
     /// timer expires.
     /// </summary>
@@ -135,7 +135,7 @@ public class DogIdle : DogState
         {    
             if (animator.GetFloat(SpeedParam) > 0f)
             {
-                _fsm.ChangeState(DiffcultyHasDecreasedTransition);   
+                _fsm.ChangeState(DifficultyHasDecreasedTransition);   
 
                 return;
             }
@@ -167,7 +167,7 @@ public class DogIdle : DogState
     }
 
     /// <summary>
-    /// Makes an idle dog start walking (<c>Speed</c> 1) so <see cref="Execute"/> fires "DiffcultyHasDecreased" and the dog
+    /// Makes an idle dog start walking (<c>Speed</c> 1) so <see cref="Execute"/> fires "DifficultyHasDecreased" and the dog
     /// moves to a new distance. Skipped while the Animator's <c>StopAnim</c> flag is set.
     /// </summary>
     /// <remarks>Invoked via Inspector (FrisbeeGame scene) when the difficulty changes.</remarks>

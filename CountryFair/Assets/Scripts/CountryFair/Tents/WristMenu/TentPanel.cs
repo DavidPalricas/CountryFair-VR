@@ -65,19 +65,19 @@ public class TentPanel : OrderableTentElement
 
         switch (MiniGame)
         {   
-            case MINI_GAMES.FISHING:
+            case GameManager.MiniGames.Fishing:
                 tentName += " pesca";
                 break;
 
-            case MINI_GAMES.ARCHERY:
+            case GameManager.MiniGames.Archery:
                 tentName += " arco e flecha";
                 break;
 
-            case MINI_GAMES.FRISBEE:
+            case GameManager.MiniGames.Frisbee:
                 tentName += "frisbee";
                 break;
 
-            case MINI_GAMES.DUCKGAME:
+            case GameManager.MiniGames.DuckGame:
                 tentName += "jogo do pato";
                 break;
 

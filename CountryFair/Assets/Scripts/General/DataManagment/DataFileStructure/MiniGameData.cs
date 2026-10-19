@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Persisted data for a single mini-game: session records keyed by ISO timestamp and
@@ -11,11 +12,16 @@ public class MiniGameData
     public Dictionary<string, SessionData> SessionsData { get; set; } = new();
 
     /// <summary>Adaptive algorithm parameters stored as name-value string pairs for JSON flexibility.</summary>
-    public Dictionary<string, string> AdadaptiveParameters { get; set; } = new();
+    public Dictionary<string, string> AdaptiveParameters { get; set; } = new();
+
+    /// <summary>Read-only alias for the misspelled key written by older builds, so existing save files still load.</summary>
+    /// <remarks>Has no getter, so it is never written back; the next save stores the values under <see cref="AdaptiveParameters"/>.</remarks>
+    [JsonProperty("AdadaptiveParameters")]
+    private Dictionary<string, string> LegacyAdaptiveParameters { set => AdaptiveParameters = value; }
 
     public MiniGameData()
     {
         SessionsData = new Dictionary<string, SessionData>();
-        AdadaptiveParameters = new Dictionary<string, string>();
+        AdaptiveParameters = new Dictionary<string, string>();
     }
 }

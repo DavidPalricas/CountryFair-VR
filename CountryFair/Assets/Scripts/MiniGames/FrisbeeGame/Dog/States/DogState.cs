@@ -53,7 +53,7 @@ using DG.Tweening;
     /// </summary>
     /// <remarks>
     /// Unity lifecycle callback invoked when the script instance is being loaded.
-    /// Calls <see cref="State.SetStateProprieties"/> to initialize FSM reference and state name.
+    /// Calls <see cref="State.SetStateProperties"/> to initialize FSM reference and state name.
     /// Retrieves the NavMeshAgent component and disables automatic rotation (manual rotation is handled by <see cref="RotateDogTowardsTarget"/>).
     /// Derived classes should call base.Awake() when overriding this method.
     /// </remarks>
@@ -97,27 +97,16 @@ using DG.Tweening;
         base.LateStart();
     }
 
-    /// <summary>
-    /// Checks whether the dog has stopped moving and reached its destination.
-    /// </summary>
-    /// <remarks>
-    /// Returns true when both conditions are met:
-    /// <list type="bullet">
-    /// <item><description>The path is fully calculated (not pending)</description></item>
-    /// <item><description>The remaining distance to the destination is within the stopping distance threshold</description></item>
-    /// </list>
-    /// This method is commonly used in Execute methods to detect when the dog has completed navigation to trigger state transitions.
-    /// </remarks>
-    /// <returns>True if the dog has stopped at its destination; otherwise, false.</returns>
-    protected bool DogStoped()
-    {
-        return !_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance;
-    }
-
     /// <summary>Tweens the dog's yaw (0.5 s) to face <paramref name="targetTransform"/>, ignoring height; kills any running rotation tween first.</summary>
     protected void RotateDogTowardsTarget(Transform targetTransform)
+    {
+        RotateDogTowardsTarget(targetTransform.position);
+    }
+
+    /// <summary>Tweens the dog's yaw (0.5 s) to face <paramref name="targetPosition"/>, ignoring height; kills any running rotation tween first.</summary>
+    protected void RotateDogTowardsTarget(Vector3 targetPosition)
     {   
-        Vector3 directionToTarget = (targetTransform.position - transform.position).normalized;
+        Vector3 directionToTarget = (targetPosition - transform.position).normalized;
         directionToTarget.y = 0;
 
         if (directionToTarget != Vector3.zero)

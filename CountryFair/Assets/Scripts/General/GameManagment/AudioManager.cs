@@ -1,11 +1,17 @@
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
+using System.Collections.Generic;
 
 /// <summary>
-/// Base audio manager class that handles ambient music and provides virtual methods for game-specific sound effects.
+/// Base audio manager class that handles ambient music and plays the sound effects registered by each scene's manager.
 /// This class uses FMOD for audio playback and should be inherited by specific game audio managers.
 /// </summary>
+/// <remarks>
+/// Subclasses map each <see cref="GameSoundEffects"/> they support to its FMOD event with
+/// <see cref="RegisterSoundEffect"/> in <c>Awake</c>; <see cref="PlaySoundEffect"/> and
+/// <see cref="PlaySpatialSoundEffect"/> then look the event up instead of each subclass repeating a switch.
+/// </remarks>
 public abstract class AudioManager: MonoBehaviour
 {
     /// <summary>
@@ -33,6 +39,9 @@ public abstract class AudioManager: MonoBehaviour
     /// </summary>
     private static EventInstance _ambienceMusicInstance;
 
+    /// <summary>FMOD event of every sound effect this scene supports, filled by <see cref="RegisterSoundEffect"/>.</summary>
+    private readonly Dictionary<GameSoundEffects, EventReference> _soundEffects = new();
+
     /// <summary>
     /// Enumeration of all available game sound effects across different mini-games.
     /// </summary>
@@ -46,7 +55,7 @@ public abstract class AudioManager: MonoBehaviour
         ScaleToGiant,
 
         /// <summary>Played when giant mode shrinks the player back (<c>PlayerScale</c>).</summary>
-        SCALEToNormal,
+        ScaleToNormal,
 
         /* Carny Wise Sound Effects */
         /// <summary>Carny Wise feedback when the DDA raises the difficulty.</summary>
@@ -77,22 +86,34 @@ public abstract class AudioManager: MonoBehaviour
     }
 
 
-    /// <summary>Logs an error for any unassigned base FMOD event reference.</summary>
+    /// <summary>Validates the ambience music and registers the button pressed sound shared by every scene.</summary>
     protected virtual void Awake()
     {
         if (_ambienceMusic.IsNull)
         {
             Debug.LogError("Ambience music EventReference is not assigned in AudioManager.");
-
-            return;
         }
 
-        if (_buttonPressedSound.IsNull)
+        RegisterSoundEffect(GameSoundEffects.ButtonPressed, _buttonPressedSound);
+    }
+
+    /// <summary>
+    /// Makes <paramref name="soundEffect"/> playable through <see cref="PlaySoundEffect"/> and
+    /// <see cref="PlaySpatialSoundEffect"/>. Logs an error and skips it when <paramref name="eventReference"/> is not
+    /// assigned in the Inspector.
+    /// </summary>
+    /// <param name="soundEffect">The sound effect type.</param>
+    /// <param name="eventReference">The FMOD event played for it.</param>
+    protected void RegisterSoundEffect(GameSoundEffects soundEffect, EventReference eventReference)
+    {
+        if (eventReference.IsNull)
         {
-            Debug.LogError("Button pressed sound EventReference is not assigned in AudioManager.");
+            Debug.LogError($"{soundEffect} sound EventReference is not assigned in {GetType().Name}.");
 
             return;
         }
+
+        _soundEffects[soundEffect] = eventReference;
     }
 
     /// <summary>
@@ -116,14 +137,37 @@ public abstract class AudioManager: MonoBehaviour
     /// </summary>
     /// <param name="soundEffect">The type of sound effect to play.</param>
     /// <param name="target">The game object to which the sound will be attached.</param>
-    public abstract void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target);
+    /// <remarks>Invoked via Inspector by UnityEvents across the scenes; logs an error for effects this scene did not register.</remarks>
+    public void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
+    {
+        if (_soundEffects.TryGetValue(soundEffect, out EventReference eventToPlay))
+        {
+            RuntimeManager.PlayOneShotAttached(eventToPlay, target);
+
+            return;
+        }
+
+        Debug.LogError($"Sound effect {soundEffect} is not handled by {GetType().Name}.");
+    }
 
     /// <summary>
     /// Plays a non-spatial sound effect at the default listener position.
     /// </summary>
     /// <param name="soundEffect">The type of sound effect to play.</param>
-    public abstract void PlaySoundEffect(GameSoundEffects soundEffect);
+    /// <remarks>Invoked via Inspector by UnityEvents across the scenes; logs an error for effects this scene did not register.</remarks>
+    public void PlaySoundEffect(GameSoundEffects soundEffect)
+    {
+        if (_soundEffects.TryGetValue(soundEffect, out EventReference eventToPlay))
+        {
+            RuntimeManager.PlayOneShot(eventToPlay);
 
+            return;
+        }
+
+        Debug.LogError($"Sound effect {soundEffect} is not handled by {GetType().Name}.");
+    }
+
+  
     /// <summary>
     /// Creates and starts the ambient music instance.
     /// </summary>

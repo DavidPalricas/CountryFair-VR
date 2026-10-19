@@ -36,19 +36,19 @@ public class MiniGameCheatCodes : CheatCodes
     [Header("Emotion Display Events")]
 
     [SerializeField]
-    private UnityEvent <ServerListener.DISPLAYMODE> _changeEmotionDisplay;
+    private UnityEvent <ServerListener.DisplayMode> _changeEmotionDisplay;
 
     /// <summary>Shows an expression on the face display (<c>f</c> + expression cheats).</summary>
     [SerializeField]
-    private UnityEvent <ExpressionDisplay.EXPRESSION_TYPE> _updateFaceDisplay;
+    private UnityEvent <ExpressionDisplay.ExpressionType> _updateFaceDisplay;
 
     /// <summary>Shows an expression on the emoji display (<c>e</c> + expression cheats).</summary>
    [SerializeField]
-    private UnityEvent <ExpressionDisplay.EXPRESSION_TYPE> _updateEmojiDisplay;
+    private UnityEvent <ExpressionDisplay.ExpressionType> _updateEmojiDisplay;
 
     /// <summary>Nudges the mood slider (<c>positive</c>/<c>negative</c> cheats).</summary>
     [SerializeField]
-    private UnityEvent <SliderDisplay.EMOJI_CATEGORY> _updateSliderDisplay;
+    private UnityEvent <SliderDisplay.EmojiCategory> _updateSliderDisplay;
 
 
     /// <summary>Used by the <c>return</c> cheat.</summary>
@@ -99,24 +99,24 @@ public class MiniGameCheatCodes : CheatCodes
         RegisterCheat("increase", () => _changeDifficulty.Invoke(true));
         RegisterCheat("decrease", () => _changeDifficulty.Invoke(false));
 
-        RegisterCheat("ehappy",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Happy));
-        RegisterCheat("eneutral",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Neutral));
-        RegisterCheat("esad",      () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Sad));
-        RegisterCheat("eangry",    () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Angry));
-        RegisterCheat("edisgust",  () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Disgust));
-        RegisterCheat("esurprise", () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Surprise));
-        RegisterCheat("efear",     () => DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE.Fear));
+        RegisterCheat("ehappy",    () => DisplayEmoji(ExpressionDisplay.ExpressionType.Happy));
+        RegisterCheat("eneutral",  () => DisplayEmoji(ExpressionDisplay.ExpressionType.Neutral));
+        RegisterCheat("esad",      () => DisplayEmoji(ExpressionDisplay.ExpressionType.Sad));
+        RegisterCheat("eangry",    () => DisplayEmoji(ExpressionDisplay.ExpressionType.Angry));
+        RegisterCheat("edisgust",  () => DisplayEmoji(ExpressionDisplay.ExpressionType.Disgust));
+        RegisterCheat("esurprise", () => DisplayEmoji(ExpressionDisplay.ExpressionType.Surprise));
+        RegisterCheat("efear",     () => DisplayEmoji(ExpressionDisplay.ExpressionType.Fear));
 
-        RegisterCheat("fhappy",    () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Happy));
-        RegisterCheat("fneutral",  () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Neutral));
-        RegisterCheat("fsad",      () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Sad));
-        RegisterCheat("fangry",    () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Angry));
-        RegisterCheat("fdisgust",  () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Disgust));
-        RegisterCheat("fsurprise", () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Surprise));
-        RegisterCheat("ffear",     () => DisplayFace(ExpressionDisplay.EXPRESSION_TYPE.Fear));
+        RegisterCheat("fhappy",    () => DisplayFace(ExpressionDisplay.ExpressionType.Happy));
+        RegisterCheat("fneutral",  () => DisplayFace(ExpressionDisplay.ExpressionType.Neutral));
+        RegisterCheat("fsad",      () => DisplayFace(ExpressionDisplay.ExpressionType.Sad));
+        RegisterCheat("fangry",    () => DisplayFace(ExpressionDisplay.ExpressionType.Angry));
+        RegisterCheat("fdisgust",  () => DisplayFace(ExpressionDisplay.ExpressionType.Disgust));
+        RegisterCheat("fsurprise", () => DisplayFace(ExpressionDisplay.ExpressionType.Surprise));
+        RegisterCheat("ffear",     () => DisplayFace(ExpressionDisplay.ExpressionType.Fear));
 
-        RegisterCheat("positive", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.Positive));
-        RegisterCheat("negative", () => DisplaySlider(SliderDisplay.EMOJI_CATEGORY.Negative));
+        RegisterCheat("positive", () => DisplaySlider(SliderDisplay.EmojiCategory.Positive));
+        RegisterCheat("negative", () => DisplaySlider(SliderDisplay.EmojiCategory.Negative));
 
         RegisterNumericCheat("goal", _defaultUpdateGoalValue, newGoal => _newGoal.Invoke(newGoal));
     }
@@ -188,26 +188,26 @@ public class MiniGameCheatCodes : CheatCodes
     }
 
     /// <summary>Switches to the emoji display and shows <paramref name="type"/> (also synced over the network).</summary>
-    private void DisplayEmoji(ExpressionDisplay.EXPRESSION_TYPE type)
+    private void DisplayEmoji(ExpressionDisplay.ExpressionType type)
     {      
-        _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Emoji);
+        _changeEmotionDisplay.Invoke(ServerListener.DisplayMode.Emoji);
     
         _updateEmojiDisplay.Invoke(type);
     }
 
     /// <summary>Switches to the face display and shows <paramref name="type"/>.</summary>
-    private void DisplayFace(ExpressionDisplay.EXPRESSION_TYPE type)
+    private void DisplayFace(ExpressionDisplay.ExpressionType type)
     {
-        _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Face);
+        _changeEmotionDisplay.Invoke(ServerListener.DisplayMode.Face);
     
         _updateFaceDisplay.Invoke(type);
     }
 
 
     /// <summary>Switches to the slider display and nudges it towards <paramref name="category"/>.</summary>
-    private void DisplaySlider(SliderDisplay.EMOJI_CATEGORY category)
+    private void DisplaySlider(SliderDisplay.EmojiCategory category)
     {
-        _changeEmotionDisplay.Invoke(ServerListener.DISPLAYMODE.Slider);
+        _changeEmotionDisplay.Invoke(ServerListener.DisplayMode.Slider);
 
         _updateSliderDisplay.Invoke(category);
     }

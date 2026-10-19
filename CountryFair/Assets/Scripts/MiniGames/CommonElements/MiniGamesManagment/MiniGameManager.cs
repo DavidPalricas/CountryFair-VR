@@ -52,7 +52,21 @@ public abstract class MiniGameManager : MonoBehaviour
 
     protected abstract Vector3 GetRandomTargetPosition();
 
-    protected abstract void SyncTargets(int desiredCount);
+    /// <summary>Adds or removes targets until there are <paramref name="desiredCount"/>, then redistributes their properties (<see cref="UpdateTargetsProperties"/>).</summary>
+    protected void SyncTargets(int desiredCount)
+    {
+        while (_spawnedTargets.Count < desiredCount)
+        {
+            AddTarget();
+        }
+
+        while (_spawnedTargets.Count > desiredCount)
+        {
+            RemoveTarget();
+        }
+
+        UpdateTargetsProperties();
+    }
 
     protected abstract void UpdateTargetsProperties();
 

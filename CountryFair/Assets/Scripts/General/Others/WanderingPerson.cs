@@ -47,15 +47,10 @@ public class WanderingPerson: MonoBehaviour
     /// <summary>Picks a new destination as soon as the current one is reached, so the NPC never stops.</summary>
     private void Update()
     {
-        if (DestinationReached())
+        if (_agent.HasReachedDestination())
         {
             ChooseRandomDestination();
         }
-    }
-
-    private bool DestinationReached()
-    {
-        return !_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance;
     }
 
     /// <summary>

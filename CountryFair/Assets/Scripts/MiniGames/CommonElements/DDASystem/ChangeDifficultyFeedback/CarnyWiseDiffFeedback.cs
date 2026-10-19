@@ -38,7 +38,7 @@ public class CarnyWiseDiffFeedback : UIDialog
     /// loaded; <see cref="ShowNewDiffFeedback"/> uses that to decide whether to queue a request.
     /// </summary>
     /// <remarks>If the JSON never loads (missing file or bad format), it stays null and queued requests are never shown.</remarks>
-    private DiffcultyFeedBackData _feedbackData;
+    private DifficultyFeedbackData _feedbackData;
 
     /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes up (fixed; not editable in the Inspector).</summary>
     private readonly AudioManager.GameSoundEffects _increaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseIncreaseDiff;
@@ -72,13 +72,13 @@ public class CarnyWiseDiffFeedback : UIDialog
     /// <summary>Stores the loaded feedback lines and replays any queued requests.</summary>
     protected override void OnDataLoaded()
     {
-        if (_data is not DiffcultyFeedBackData)
+        if (_data is not DifficultyFeedbackData)
         {
-            Debug.LogError("ERROR: Cast to DiffcultyFeedBackData failed.");
+            Debug.LogError("ERROR: Cast to DifficultyFeedbackData failed.");
             return;
         }
 
-        _feedbackData = _data as DiffcultyFeedBackData;
+        _feedbackData = _data as DifficultyFeedbackData;
 
         while (_pendingRequests.Count > 0)
         {
@@ -87,10 +87,10 @@ public class CarnyWiseDiffFeedback : UIDialog
         }
     }
 
-    /// <summary>Deserializes <c>change_difficulty.json</c> into <see cref="DiffcultyFeedBackData"/>.</summary>
+    /// <summary>Deserializes <c>change_difficulty.json</c> into <see cref="DifficultyFeedbackData"/>.</summary>
     protected override System.Type GetJSONDataType()
     {
-        return typeof(DiffcultyFeedBackData);
+        return typeof(DifficultyFeedbackData);
     }
 
     /// <summary>Loads <c>StreamingAssets/DialogFiles/change_difficulty.json</c>; the same file serves both mini-games.</summary>

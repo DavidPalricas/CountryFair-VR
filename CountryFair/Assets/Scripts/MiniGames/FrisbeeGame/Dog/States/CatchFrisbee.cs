@@ -86,7 +86,7 @@ public class CatchFrisbee : DogState
     {
          base.Execute();
 
-         if (DogStoped())
+         if (_agent.HasReachedDestination())
          {  
             _frisbeeTransform.gameObject.SetActive(false);
             _fsm.ChangeState(FrisbeeCaughtTransition);

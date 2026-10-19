@@ -19,12 +19,6 @@ public class IdlePerson : MonoBehaviour
     /// <summary>Blocks a new jump until the current one completes.</summary>
     private bool _isOnGround = true;
 
-    /// <summary>Initializes DOTween in case this is the first tween user in the scene.</summary>
-    private void Awake()
-    {
-        DOTween.Init(); 
-    }
-
     /// <summary>Triggers a single jump with a full 360° Y-axis spin if the person is currently on the ground.</summary>
     public void Jump()
     {

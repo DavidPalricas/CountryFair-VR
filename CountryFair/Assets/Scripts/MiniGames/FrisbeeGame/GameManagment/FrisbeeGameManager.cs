@@ -98,8 +98,6 @@ public class FrisbeeGameManager : MiniGameManager
         
         DifficultyLevel = PlayerPrefs.GetInt(DifficultyLevelKey, 0);
 
-        Debug.Log("Current Difficulty Level: " + DifficultyLevel);
-
         ApplyDifficultySettings();
     }
 
@@ -144,22 +142,6 @@ public class FrisbeeGameManager : MiniGameManager
         _currentVisibilityRatio = _visibilityRatioCurve.Evaluate(saturationFactor);
 
         // Debug.Log($"[DDA] Level {DifficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {_currentDesiredCount} | Complexity: {saturationFactor:P0}");
-    }
-
-    /// <summary>Adds or removes score areas until there are <paramref name="desiredCount"/>, then redistributes movement/visibility.</summary>
-    protected override void SyncTargets(int desiredCount)
-    {
-        while (_spawnedTargets.Count < desiredCount)
-        {
-            AddTarget();
-        }
-        
-        while (_spawnedTargets.Count > desiredCount)
-        {
-            RemoveTarget();
-        }
-
-        UpdateTargetsProperties();
     }
 
     /// <summary>Spawns one score area at a free random position; <paramref name="prefabToSpawn"/> is ignored.</summary>

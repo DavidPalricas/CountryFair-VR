@@ -18,7 +18,7 @@ public class AnimatableState : State
     protected int _currentAnimationHashName = 0;
 
     /// <summary>
-    /// Validates that an Animator is assigned, then calls <see cref="State.SetStateProprieties"/>.
+    /// Validates that an Animator is assigned, then calls <see cref="State.SetStateProperties"/>.
     /// </summary>
     protected virtual void Awake()
     {
@@ -28,7 +28,7 @@ public class AnimatableState : State
             return;
         }
 
-         SetStateProprieties();
+         SetStateProperties();
     }
 
     /// <summary>Caches the current Animator state hash so <see cref="IsPlayingNewAnimation"/> can detect transitions.</summary>

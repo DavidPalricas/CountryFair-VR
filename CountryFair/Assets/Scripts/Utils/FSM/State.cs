@@ -28,7 +28,7 @@ public abstract class State : MonoBehaviour
 {
     /// <summary>
     /// Reference to the parent FSM component that manages this state.
-    /// Set by <see cref="SetStateProprieties"/> and used to trigger state transitions; null until a subclass calls it.
+    /// Set by <see cref="SetStateProperties"/> and used to trigger state transitions; null until a subclass calls it.
     /// </summary>
     protected FSM _fsm;
 
@@ -47,7 +47,7 @@ public abstract class State : MonoBehaviour
     /// (<c>AnimatableState</c>, <c>AnimalState</c>, <c>FrisbeeState</c>). A new direct subclass must call it too,
     /// otherwise <see cref="_fsm"/> stays null.
     /// </remarks>
-    protected void SetStateProprieties()
+    protected void SetStateProperties()
     {
         _fsm = GetComponent<FSM>();
 

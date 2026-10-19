@@ -1,7 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// Base class for anything that releases decorative balloons: picks a color with a balanced
@@ -97,18 +96,7 @@ public class BalloonsSpawner : MonoBehaviour
     /// <returns>A GameObject reference to the selected balloon prefab.</returns>
     protected GameObject GetBalloonType()
     {
-        int minCount = _balloonTypesCount.Min(typeCount => typeCount.Value);
-
-        GameObject[] candidates = _balloonTypesCount
-            .Where(typeCount => typeCount.Value == minCount)
-            .Select(typeCount => typeCount.Key)
-            .ToArray();
-
-        GameObject balloonType = candidates[Utils.RandomValueInRange(0, candidates.Length)];
-
-        _balloonTypesCount[balloonType]++;
-
-        return balloonType;
+        return Utils.PickBalancedPrefab(_balloonTypesCount);
     }
 
 

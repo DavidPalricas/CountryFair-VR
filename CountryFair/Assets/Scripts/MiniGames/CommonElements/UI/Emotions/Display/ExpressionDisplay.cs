@@ -29,8 +29,8 @@ public class ExpressionDisplay : EmotionDisplay
     /// Network variable to maintain expression state across clients.
     /// Only the server has permission to write to this variable.
     /// </summary>
-    private readonly NetworkVariable<EXPRESSION_TYPE> _netExpressionState = new(
-        EXPRESSION_TYPE.Neutral,
+    private readonly NetworkVariable<ExpressionType> _netExpressionState = new(
+        ExpressionType.Neutral,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
@@ -38,7 +38,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// <summary>
     /// Enumeration of supported expression types.
     /// </summary>
-    public enum EXPRESSION_TYPE {
+    public enum ExpressionType {
         /// <summary>Represents a sad expression.</summary>
         Sad,
         /// <summary>Represents a happy expression.</summary>
@@ -91,7 +91,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// </summary>
     /// <param name="previous">Previous state.</param>
     /// <param name="current">New state.</param>
-    private void OnExpressionChanged(EXPRESSION_TYPE previous, EXPRESSION_TYPE current)
+    private void OnExpressionChanged(ExpressionType previous, ExpressionType current)
     {
         // Protection: Notify UpdateVisuals that this came from the network
         _isUpdatingFromNetwork = true;
@@ -104,7 +104,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// Does both local visual updates and network synchronization.
     /// </summary>
     /// <param name="type">The expression type to display.</param>
-    public void UpdateVisuals(EXPRESSION_TYPE type)
+    public void UpdateVisuals(ExpressionType type)
     { 
         // 1. VISUAL UPDATE (Local and Immediate)
         string expressionName = type.ToString().ToLower();
@@ -135,7 +135,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// Isolated logic for sending state to the network.
     /// </summary>
     /// <param name="type">The expression type to synchronize.</param>
-    private void SyncToNetwork(EXPRESSION_TYPE type)
+    private void SyncToNetwork(ExpressionType type)
     {
         // Checks if NetworkManager exists and is running
         if (NetworkManager.Singleton == null || (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer))
@@ -164,7 +164,7 @@ public class ExpressionDisplay : EmotionDisplay
     /// </summary>
     /// <param name="newType">The new expression type requested.</param>
     [ServerRpc]
-    private void RequestDisplayChangeServerRpc(EXPRESSION_TYPE newType)
+    private void RequestDisplayChangeServerRpc(ExpressionType newType)
     {
         _netExpressionState.Value = newType;
     }
@@ -179,7 +179,7 @@ public class ExpressionDisplay : EmotionDisplay
 
         string emotionName = message.Split(_messageSeparator)[0];
 
-        if (Enum.TryParse(emotionName, true, out EXPRESSION_TYPE result))
+        if (Enum.TryParse(emotionName, true, out ExpressionType result))
         {
             UpdateVisuals(result); 
         }

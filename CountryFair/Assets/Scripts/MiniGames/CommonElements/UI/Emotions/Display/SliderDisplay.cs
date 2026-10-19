@@ -72,14 +72,14 @@ public class SliderDisplay: EmotionDisplay
     private float _sliderChangeAmountThreshold = 0.05f;
 
     /// <summary>Last mood category; written only by the server (clients go through <see cref="RequestDisplayChangeServerRpc"/>).</summary>
-     private readonly NetworkVariable<EMOJI_CATEGORY> _netSliderState = new(
-        EMOJI_CATEGORY.Neutral,
+     private readonly NetworkVariable<EmojiCategory> _netSliderState = new(
+        EmojiCategory.Neutral,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
 
-    /// <summary>Mood category sent by the server after the separator (<c>EXPRESSION;CATEGORY</c>).</summary>
-    public enum EMOJI_CATEGORY
+    /// <summary>Mood category sent by the server after the separator</summary>
+    public enum EmojiCategory
     {
         Neutral,
         Positive,
@@ -133,7 +133,7 @@ public class SliderDisplay: EmotionDisplay
 
     
     /// <summary>Applies a category received from the network, guarded so it is not re-sent.</summary>
-    private void OnCategoryChanged(EMOJI_CATEGORY previous, EMOJI_CATEGORY current)
+    private void OnCategoryChanged(EmojiCategory previous, EmojiCategory current)
     {
         _isUpdatingFromNetwork = true;
        UpdateSlider(current);
@@ -146,17 +146,15 @@ public class SliderDisplay: EmotionDisplay
     /// Updates visuals and, unless called from a network callback, syncs the category to the server.
     /// </summary>
     /// <param name="newCategory">The mood category to apply.</param>
-    public void UpdateSlider(EMOJI_CATEGORY newCategory)
+    public void UpdateSlider(EmojiCategory newCategory)
     {
        _slider.gameObject.SetActive(true);
 
-        Debug.Log($"Updating slider with category: {newCategory}");
-
-        if (newCategory == EMOJI_CATEGORY.Positive)
+        if (newCategory == EmojiCategory.Positive)
         {
              _slider.value = Mathf.Min(_slider.value + _sliderChangeAmountThreshold, 1);
 
-        }else if(newCategory == EMOJI_CATEGORY.Negative){
+        }else if(newCategory == EmojiCategory.Negative){
              _slider.value = Mathf.Max(_slider.value - _sliderChangeAmountThreshold, 0);
         }
 
@@ -216,7 +214,7 @@ public class SliderDisplay: EmotionDisplay
     {
         string emotionCategory = message.Split(_messageSeparator)[1];
         
-        if (Enum.TryParse(emotionCategory, true, out EMOJI_CATEGORY result))
+        if (Enum.TryParse(emotionCategory, true, out EmojiCategory result))
         {
            UpdateSlider(result); 
         }
@@ -227,7 +225,7 @@ public class SliderDisplay: EmotionDisplay
     /// Pushes a locally applied category to the network: written directly on the server, requested by RPC from the owning
     /// client, ignored when Netcode is not running (offline testing).
     /// </summary>
-    private void SyncToNetwork(EMOJI_CATEGORY category)
+    private void SyncToNetwork(EmojiCategory category)
     {
         // Checks if NetworkManager exists and is running
         if (NetworkManager.Singleton == null || (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer))
@@ -253,7 +251,7 @@ public class SliderDisplay: EmotionDisplay
 
     /// <summary>Server RPC through which the owning client asks the server to write <see cref="_netSliderState"/>.</summary>
    [ServerRpc]
-   private void RequestDisplayChangeServerRpc(EMOJI_CATEGORY category)
+   private void RequestDisplayChangeServerRpc(EmojiCategory category)
     {
         _netSliderState.Value = category;
     }

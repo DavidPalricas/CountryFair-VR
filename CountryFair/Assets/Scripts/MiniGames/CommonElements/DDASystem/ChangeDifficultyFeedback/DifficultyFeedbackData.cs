@@ -4,7 +4,7 @@ using System.Collections.Generic;
 /// <summary>
 /// JSON structure for Carny Wise difficulty-change feedback lines, loaded from <c>change_difficulty.json</c>.
 /// </summary>
-public class DiffcultyFeedBackData : JSONData
+public class DifficultyFeedbackData : JSONData
 {
     /// <summary>Lines displayed when the difficulty increases.</summary>
     public List<string> IncreaseDiff{ get; set;}

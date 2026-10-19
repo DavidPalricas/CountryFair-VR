@@ -190,22 +190,6 @@ public class ArcheryGameManager : MiniGameManager
         SyncTargets(_currentDesiredCount);
     }
 
-    /// <summary>Adds or removes balloons until there are <paramref name="desiredCount"/>, then redistributes movement/transparency.</summary>
-    protected override void SyncTargets(int desiredCount)
-    {
-        while (_spawnedTargets.Count < desiredCount)
-        {
-            AddTarget();
-        }
-
-        while (_spawnedTargets.Count > desiredCount)
-        {
-            RemoveTarget();
-        }
-
-        UpdateTargetsProperties();
-    }
-
     /// <summary>Spawns a balloon at a free position; when no prefab is given, the color is chosen by <see cref="GetBalloonType"/>.</summary>
     /// <remarks>An explicit <paramref name="prefabToSpawn"/> does not increment <see cref="_balloonTypesCount"/>.</remarks>
     protected override void AddTarget(GameObject prefabToSpawn = null)
@@ -430,26 +414,7 @@ public class ArcheryGameManager : MiniGameManager
     /// <summary>Returns the least-spawned color, preferring the scoring color on ties, and increments its counter.</summary>
     private GameObject GetBalloonType()
     {   
-        int minCount = _balloonTypesCount.Min(typeCount => typeCount.Value);
-
-        GameObject[] candidates = _balloonTypesCount
-            .Where(element => element.Value == minCount)
-            .Select(element => element.Key)
-            .ToArray();
-
-        GameObject selectedBalloon;
-
-        if (candidates.Contains(_balloonPrefabToScore))
-        {
-            selectedBalloon = _balloonPrefabToScore;
-        }
-        else
-        {
-            selectedBalloon = candidates[Utils.RandomValueInRange(0, candidates.Length)];
-        }
-
-        _balloonTypesCount[selectedBalloon]++;
-        return selectedBalloon;
+        return Utils.PickBalancedPrefab(_balloonTypesCount, _balloonPrefabToScore);
     }
 
     /// <summary>Drops back to level 0 (the <c>reset</c> cheat); no-op if already there.</summary>

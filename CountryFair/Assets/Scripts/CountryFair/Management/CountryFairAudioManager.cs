@@ -18,14 +18,15 @@ public class CountryFairAudioManager : AudioManager
    [SerializeField]
    private EventReference _scaleToGiantSound;
   
-   /// <summary>FMOD one-shot played when the player shrinks back to normal scale (<see cref="AudioManager.GameSoundEffects.SCALEToNormal"/>).</summary>
+   /// <summary>FMOD one-shot played when the player shrinks back to normal scale (<see cref="AudioManager.GameSoundEffects.ScaleToNormal"/>).</summary>
    [SerializeField]
    private EventReference _scaleToNormalSound;
 
     /// <summary>Running instance of the crowd loop, kept so it can be stopped and released in <see cref="OnDestroy"/>.</summary>
     private EventInstance  _crowdNoiseInstance;
 
-   /// <summary>Validates that the crowd and scale FMOD events are assigned (logs an error otherwise).</summary>
+   /// <summary>Validates the crowd loop and registers the giant-mode scale sounds.</summary>
+   /// <remarks>The scale sounds are played via Inspector by the <c>_onScaleToGiant</c>/<c>_onScaleToNormal</c> events of <see cref="PlayerScale"/> in the CountryFair scene.</remarks>
    protected override void Awake()
    {  
       base.Awake();
@@ -33,14 +34,10 @@ public class CountryFairAudioManager : AudioManager
       if (_crowdNoise.IsNull)
         {
             Debug.LogError("Crowd noise EventReference is not assigned in CountryFairAudioManager.");
-
-            return;
         }
 
-      if (_scaleToGiantSound.IsNull || _scaleToNormalSound.IsNull)
-        {
-            Debug.LogError("One or more scale sound EventReferences are not assigned in CountryFairAudioManager.");
-        }
+      RegisterSoundEffect(GameSoundEffects.ScaleToGiant, _scaleToGiantSound);
+      RegisterSoundEffect(GameSoundEffects.ScaleToNormal, _scaleToNormalSound);
    }
 
    /// <summary>Starts the crowd loop once the base manager (ambience music) has started.</summary>
@@ -60,53 +57,6 @@ public class CountryFairAudioManager : AudioManager
         _crowdNoiseInstance.start();
     }
 
-
-    /// <summary>Plays a non-spatial one-shot. Only the giant-mode scale sounds are handled in the hub; any other value logs an error.</summary>
-    /// <remarks>Invoked via Inspector by the <c>_onScaleToGiant</c>/<c>_onScaleToNormal</c> events of <see cref="PlayerScale"/> in the CountryFair scene.</remarks>
-    public override void PlaySoundEffect(GameSoundEffects soundEffect)
-    {
-        EventReference eventToPlay;
-
-        switch (soundEffect)
-        {  
-           case GameSoundEffects.ScaleToGiant:
-                eventToPlay = _scaleToGiantSound;
-                break;
-
-
-            case GameSoundEffects.SCALEToNormal:
-                eventToPlay = _scaleToNormalSound;
-                break;
-                
-            default:
-                Debug.LogError("Invalid sound effect: " + soundEffect);
-                return;
-        }
-
-        RuntimeManager.PlayOneShot(eventToPlay);
-    }
-
-
-    /// <summary>Plays a one-shot attached to <paramref name="target"/>. Only <c>BUTTON_PRESSED</c> is handled in the hub.</summary>
-    /// <param name="soundEffect">Effect to play.</param>
-    /// <param name="target">GameObject the sound follows (e.g. the pressed button).</param>
-    public override void PlaySpatialSoundEffect(GameSoundEffects soundEffect, GameObject target)
-    {
-        EventReference eventToPlay;
-
-        switch (soundEffect)
-        {  
-           case GameSoundEffects.ButtonPressed:
-                eventToPlay = _buttonPressedSound;
-                break;
-                
-            default:
-                Debug.LogError("Invalid sound effect: " + soundEffect);
-                return;
-        }
-
-        RuntimeManager.PlayOneShotAttached(eventToPlay, target);
-    }
 
     /// <summary>Stops the crowd loop immediately and releases its FMOD instance so it does not leak across scene loads.</summary>
     private void OnDestroy()

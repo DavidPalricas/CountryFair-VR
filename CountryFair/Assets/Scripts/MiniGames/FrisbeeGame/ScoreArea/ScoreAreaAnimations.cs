@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Handles the animation of the score area including floating, rotating, and pulsing effects, and the balloon burst
+/// Handles the animation of the score area including rotating and pulsing effects, and the balloon burst
 /// (inherited from <see cref="BalloonsSpawner"/>) played when the frisbee lands in it.
 /// </summary>
 
@@ -13,16 +13,9 @@ using System.Linq;
 public class ScoreAreaAnimations : BalloonsSpawner
 {
     /// <summary>
-    /// Duration of one cycle of the floating animation.
-    /// </summary>
-    /// <remarks>The float height is currently 0 (see <see cref="StartRotationAnimation"/>), so this tween has no visible effect.</remarks>
-    [Header("Rotate Animation Settings")]
-    [SerializeField]
-     private float _floatDuration = 2f;
-
-    /// <summary>
     /// Duration of one full rotation cycle.
     /// </summary>
+    [Header("Rotate Animation Settings")]
     [SerializeField]
      private float _rotationDuration = 3f;
 
@@ -39,19 +32,9 @@ public class ScoreAreaAnimations : BalloonsSpawner
      private float _pulseScale = 1.2f;
 
     /// <summary>
-    /// Cached starting position used as baseline for floating animation.
-    /// </summary>
-    private Vector3 _startPosition;
-
-    /// <summary>
     /// Cached starting scale used as baseline for pulse animation.
     /// </summary>
     private Vector3 _startScale;
-
-    /// <summary>
-    /// DOTween sequence controlling all active animations.
-    /// </summary>
-    private Sequence _animSequence;
 
 
     /// <summary>Sibling component notified after the burst so the area is consumed (<see cref="ScoreAreaProperties.OnPlayerScore"/>).</summary>
@@ -72,14 +55,13 @@ public class ScoreAreaAnimations : BalloonsSpawner
     private GameObject[] _balloonsPlaceHolders = null;
 
     /// <summary>
-    /// Caches the initial position and scale for animation reference, collects the balloon placeholders and caps
+    /// Caches the initial scale for animation reference, collects the balloon placeholders and caps
     /// the burst size to their count.
     /// </summary>
     protected override void Awake()
     {   
         base.Awake();
         
-        _startPosition = transform.position;
         _startScale = transform.localScale;
 
         if (_balloonsPlaceHoldersGroup == null)
@@ -97,7 +79,7 @@ public class ScoreAreaAnimations : BalloonsSpawner
     }
 
     /// <summary>
-    /// Starts the idle float/rotate/pulse loops.
+    /// Starts the idle rotate/pulse loops.
     /// </summary>
     private void Start()
     {
@@ -105,18 +87,10 @@ public class ScoreAreaAnimations : BalloonsSpawner
     }
 
     /// <summary>
-    /// Initializes and starts the floating, rotating, and pulsing animations using DOTween.
+    /// Initializes and starts the rotating and pulsing animations using DOTween.
     /// </summary>
     private void StartRotationAnimation()
     {
-        _animSequence = DOTween.Sequence();
-
-        const float FloatHeight = 0f;
-
-        transform.DOMoveY(_startPosition.y + FloatHeight, _floatDuration)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1, LoopType.Yoyo);
-
         transform.DORotate(new Vector3(0, 360, 0), _rotationDuration, RotateMode.FastBeyond360)
             .SetEase(Ease.Linear)
             .SetLoops(-1, LoopType.Restart);
@@ -132,7 +106,6 @@ public class ScoreAreaAnimations : BalloonsSpawner
     private void OnDestroy()
     {
         transform.DOKill();
-        _animSequence?.Kill();
     }
 
     /// <summary>

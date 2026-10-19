@@ -101,7 +101,7 @@ public class CarnyWise : MonoBehaviour
     /// <remarks>Any other scene logs an error and keeps the Archery behaviour (flag stays false).</remarks>
     private void SetMiniGameName()
     {
-        OrderableTentElement.MINI_GAMES? miniGame = GameManager.GetCurrentMiniGame();
+        GameManager.MiniGames? miniGame = GameManager.GetCurrentMiniGame();
 
         if (miniGame == null)
         {
@@ -109,7 +109,7 @@ public class CarnyWise : MonoBehaviour
             return;
         }
 
-        _isFrisbeeMiniGame = miniGame == OrderableTentElement.MINI_GAMES.FRISBEE;
+        _isFrisbeeMiniGame = miniGame == GameManager.MiniGames.Frisbee;
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public class CarnyWise : MonoBehaviour
     /// <remarks>
     /// Excelling (≥ <see cref="_precisionThresholdToIncreaseDiff"/>): excel +1, struggle −1, then checks for a change.
     /// Struggling (≤ <see cref="_precisionThresholdToDecreaseDiff"/>): struggle +1, excel −1, then checks for a change.
-    /// Otherwise the task is in flow and <see cref="MantainFlowState"/> drains both.
+    /// Otherwise the task is in flow and <see cref="MaintainFlowState"/> drains both.
     /// </remarks>
     private void EvaluatePerformance(float precision, float timeTaken)
     {
@@ -212,7 +212,7 @@ public class CarnyWise : MonoBehaviour
             return;
         }
 
-        MantainFlowState();
+        MaintainFlowState();
     }
 
 
@@ -220,7 +220,7 @@ public class CarnyWise : MonoBehaviour
     /// The task was in the flow band (between the two precision thresholds): decays both buffers by 1, never below 0, so
     /// the difficulty stays and earlier streaks lose weight.
     /// </summary>
-    private void MantainFlowState()
+    private void MaintainFlowState()
     {   
        // Debug.Log("Mantaining Flow State");
 
@@ -383,9 +383,9 @@ public class CarnyWise : MonoBehaviour
             AverageTaskCompletionTime = $"{averageTaskTime} segundos"
         };
 
-        OrderableTentElement.MINI_GAMES miniGame = _isFrisbeeMiniGame
-            ? OrderableTentElement.MINI_GAMES.FRISBEE
-            : OrderableTentElement.MINI_GAMES.ARCHERY;
+        GameManager.MiniGames miniGame = _isFrisbeeMiniGame
+            ? GameManager.MiniGames.Frisbee
+            : GameManager.MiniGames.Archery;
 
         DataFileManager.GetInstance().SaveSessionData(sessionData, _sessionID, miniGame);
     }

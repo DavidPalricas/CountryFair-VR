@@ -56,12 +56,12 @@ CountryFair/
 │   │   │   ├── CommonElements/       # Shared between all mini-games
 │   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameAudioManager, MiniGameCheatCodes
 │   │   │   │   ├── DDASystem/           # CarnyWise (DDA logic)
-│   │   │   │   │   └── ChangeDifficultyFeedback/  # CarnyWiseDiffFeedback, DiffcultyFeedBackData
+│   │   │   │   │   └── ChangeDifficultyFeedback/  # CarnyWiseDiffFeedback, DifficultyFeedbackData
 │   │   │   │   ├── Tutorial/            # Tutorial system, TutorialData (JSON)
 │   │   │   │   ├── UI/                  # ScoreAndStreakSystem
 │   │   │   │   │   └── Emotions/        # Emotion display system (see section 9)
 │   │   │   │   │       ├── Display/         # EmotionDisplay (base), ExpressionDisplay, SliderDisplay
-│   │   │   │   │       └── ServerConections/ # ConnectionManager, ServerListener, MainThreadDispatcher
+│   │   │   │   │       └── ServerConections/ # ConnectionManager, ServerListener
 │   │   │   │   └── ReturnToFair.cs      # Scene transition back to hub (single file, not a folder)
 │   │   │   ├── ArcheryGame/          # Archery mini-game module
 │   │   │   │   ├── GameManagment/    # ArcheryGameManager, ArcheryAudioManager, ArcheryCheatCodes
@@ -78,7 +78,8 @@ CountryFair/
 │   │   │   └── DuckGame/             # Duck mini-game (WIP — only DuckSwim ambient AI so far)
 │   │   └── Utils/                    # Core utilities
 │   │       ├── FSM/                  # Finite State Machine (FSM, State, Transition)
-│   │       └── Utils.cs              # Helper functions (CastRayMetaQuest, RandomValueInRange, GetChildren)
+│   │       └── Utils.cs              # Helper functions (CastRayMetaQuest, RandomValueInRange, GetChildren,
+│   │                                 #   PickBalancedPrefab, NavMeshAgent.HasReachedDestination())
 │   └── Plugins/                      # Third-party (FMOD, DOTween, Meta XR, Demigiant)
 ```
 
@@ -122,7 +123,7 @@ State Hierarchy:
 ```csharp
 // In State subclass
 protected override void Awake() {
-    base.Awake(); // Calls SetStateProprieties() - sets fSM reference and StateName
+    base.Awake(); // Calls SetStateProperties() - sets fSM reference and StateName
 }
 
 public override void Enter() { /* setup */ }
@@ -182,7 +183,7 @@ UIDialog (base)
 ├── Tutorial (mini-game tutorials)
 │   └── TutorialData (rules, guide, end message)
 └── CarnyWiseDiffFeedback (difficulty change feedback)
-    └── DiffcultyFeedBackData (increase/decrease texts)
+    └── DifficultyFeedbackData (increase/decrease texts)
 ```
 
 **State Machine (CountryFairDialogue):**
@@ -211,7 +212,7 @@ enables the wrist-menu button (`WristMenu.IntroCompleted()`) and the other post-
 {
   "frisbeeGame": {
     "SessionsData": { "2024-01-01_10-00-00": { "SessionGoal": "3", "AverageTaskPrecision": "85%", ... } },
-    "AdadaptiveParameters": { ... }
+    "AdaptiveParameters": { ... }
   },
   "archeryGame": { ... }
 }
@@ -251,7 +252,7 @@ MiniGameAudioManager (base)
 ```
 
 **MiniGameManager Responsibilities:**
-- Target spawning (`AddTarget`, `RemoveTarget`, `SyncTargets`)
+- Target spawning (`AddTarget`, `RemoveTarget`; `SyncTargets` is implemented once in the base)
 - Difficulty curves (AnimationCurve assets)
 - DDA integration via `CarnyWise`
 
@@ -378,7 +379,6 @@ EmotionDisplay : NetworkBehaviour       (abstract base — Display/EmotionDispla
 |-------|---------|
 | `ServerListener` | Raw TCP client (default `172.20.10.2:50050`). Background thread writes into a `volatile` latest-value buffer; `InvokeRepeating(FlushLatestMessage, pollIntervalSeconds)` drains it on the main thread via `Interlocked.Exchange`. Older unprocessed messages are intentionally discarded. Connection failure is **non-fatal** (logs a warning). |
 | `ConnectionManager` | Configures `UnityTransport` IP/port and auto-starts as Netcode **client**; `StartHost()` is Inspector-wired for the therapist device. |
-| `MainThreadDispatcher` | Marshals work from the receive thread onto the Unity main thread. |
 
 **Display mode selection:** `ServerListener.Awake()` calls `SetCurrentDisplayMode()`, which picks one of the three
 modes **at random** (≈1/3 each) and deactivates the other two. `UpdateDisplayMode(DISPLAYMODE)` switches it at runtime
@@ -443,7 +443,7 @@ or by **dragging panels inside a wrist menu**. Both surfaces are kept in sync.
 **Class Hierarchy:**
 ```
 OrderableTentElement : MonoBehaviour        (OrderableTentElement.cs — [RequireComponent(typeof(Collider))])
-├── miniGame : MINI_GAMES { ARCHERY, DUCK, FISHING, FRISBEE }   ← identity used to pair world ↔ menu
+├── MiniGame : GameManager.MINI_GAMES { ARCHERY, DUCKGAME, FISHING, FRISBEE }   ← identity used to pair world ↔ menu
 ├── currentPlaceHolder / _previousPlaceHolder
 ├── OnElementSelectionChanged : UnityEvent<bool, OrderableTentElement>
 ├── HandleGrab(bool)                        abstract-in-spirit (base logs an error)
@@ -491,7 +491,7 @@ Player drags a TentPanel in the wrist menu
 **Tag:** grabbable tent elements must carry the **`TentElement`** tag (renamed from `Tent`) and an
 `OrderableTentElement` component — `TentPlaceHolder` trigger callbacks log an error otherwise.
 
-**Mini-game availability:** `MINI_GAMES` already declares `DUCK` and `FISHING`, but `MiniGameTent.GoToMiniGame()`
+**Mini-game availability:** `GameManager.MINI_GAMES` already declares `DUCKGAME` and `FISHING`, but `GameManager.GoToMiniGame()`
 only loads scenes for `ARCHERY` and `FRISBEE`; the others log a "not implemented yet" warning.
 
 ---
@@ -514,8 +514,12 @@ grow/shrink animation. Comfort is the driving constraint — the implementation 
 `ToggleScale()` ignores input while a sequence is still playing. Fires `onScaleToGiant` / `onScaleToNormal`
 (`UnityEvent<AudioManager.GameSoundEffects>`) plus `onScaleAnimationStarted` / `onScaleAnimationCompleted`.
 
-**Audio:** `AudioManager.GameSoundEffects` gained `SCALE_TO_GIANT` and `SCALE_TO_NORMAL`; `CountryFairAudioManager`
-overrides `PlaySoundEffect` to map them to FMOD events (`scale_to_giant.wav` / `scale_to_normal.wav`).
+**Audio:** `AudioManager.GameSoundEffects` gained `ScaleToGiant` and `ScaleToNormal`; `CountryFairAudioManager`
+registers them with `RegisterSoundEffect` in `Awake` (`scale_to_giant.wav` / `scale_to_normal.wav`).
+
+**Sound effect lookup:** `AudioManager.PlaySoundEffect` / `PlaySpatialSoundEffect` are implemented once in the base and
+look the FMOD event up in a dictionary. Each scene's manager calls `RegisterSoundEffect(type, eventReference)` in `Awake`
+for the effects it supports (it also logs unassigned references); an unregistered effect logs an error when played.
 
 ---
 

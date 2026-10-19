@@ -51,7 +51,7 @@ public class Tutorial : UIDialog
     /// <summary>True once all practice tasks are done and the "ready to play" confirmation is showing.</summary>
     private bool _finishedPracticing = false;
 
-    /// <summary>True when the active scene is the Frisbee mini-game, false for Archery; set by <see cref="CheckCurrenMiniGame"/>.</summary>
+    /// <summary>True when the active scene is the Frisbee mini-game, false for Archery; set by <see cref="CheckCurrentMiniGame"/>.</summary>
     private bool _isFromFrisbeGame = false;
 
     /// <summary>Validates the practice/UI references, counts practice tasks from <see cref="_practiceElements"/>, and hides all practice/post-tutorial elements until they are needed.</summary>
@@ -119,9 +119,9 @@ public class Tutorial : UIDialog
     }
 
     /// <summary>Sets <see cref="_isFromFrisbeGame"/> from the active scene (<see cref="GameManager.GetCurrentMiniGame"/>).</summary>
-    private void CheckCurrenMiniGame()
+    private void CheckCurrentMiniGame()
     {
-        OrderableTentElement.MINI_GAMES? miniGame = GameManager.GetCurrentMiniGame();
+        GameManager.MiniGames? miniGame = GameManager.GetCurrentMiniGame();
 
         if (miniGame == null)
         {
@@ -129,7 +129,7 @@ public class Tutorial : UIDialog
             return;
         }
 
-        _isFromFrisbeGame = miniGame == OrderableTentElement.MINI_GAMES.FRISBEE;
+        _isFromFrisbeGame = miniGame == GameManager.MiniGames.Frisbee;
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public class Tutorial : UIDialog
     /// </summary>
     private bool TutorialWasCompleted()
     {
-        CheckCurrenMiniGame();
+        CheckCurrentMiniGame();
 
         GameManager gameManager = GameManager.GetInstance();
 
@@ -166,11 +166,11 @@ public class Tutorial : UIDialog
     /// <summary>Picks the Frisbee or Archery tutorial JSON based on <see cref="_isFromFrisbeGame"/>.</summary>
     /// <remarks>
     /// Called by <see cref="UIDialog"/>'s Awake, which runs before <see cref="Start"/>, so it calls
-    /// <see cref="CheckCurrenMiniGame"/> itself to resolve <see cref="_isFromFrisbeGame"/> before choosing the file.
+    /// <see cref="CheckCurrentMiniGame"/> itself to resolve <see cref="_isFromFrisbeGame"/> before choosing the file.
     /// </remarks>
     protected override void SetJSONFileName()
     {
-        CheckCurrenMiniGame();
+        CheckCurrentMiniGame();
 
         _jsonFileName = _isFromFrisbeGame ? "frisbee_tutorial.json" : "archery_tutorial.json";
     }

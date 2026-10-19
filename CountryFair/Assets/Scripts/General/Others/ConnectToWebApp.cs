@@ -288,7 +288,7 @@ public class ConnectToWebApp : MonoBehaviour
     /// <param name="score">Current score, as tracked by <c>ScoreAndStreakSystem</c>.</param>
     /// <param name="goal">Session score goal (<c>PlayerPrefs</c> key <c>SessionGoal</c>).</param>
     /// <param name="streak">Current consecutive-success streak, as tracked by <c>ScoreAndStreakSystem</c>.</param>
-    public async void UpdatePlayerProgessOnMiniGame(int score, int goal, int streak){
+    public async void UpdatePlayerProgressOnMiniGame(int score, int goal, int streak){
        
         if (_room != null)
         {

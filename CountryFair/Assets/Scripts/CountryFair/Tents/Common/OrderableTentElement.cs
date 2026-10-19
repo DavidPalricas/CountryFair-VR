@@ -29,17 +29,7 @@ public abstract class OrderableTentElement : MonoBehaviour
     protected TentPlaceHolder _previousPlaceHolder;
 
     /// <summary>Which mini-game this element represents; drives the tent's scene target and the wrist-menu panel's label/sprite.</summary>
-    public MINI_GAMES MiniGame = MINI_GAMES.ARCHERY;
-
-    /// <summary>Mini-games available for personalization. Only <see cref="ARCHERY"/> and <see cref="FRISBEE"/> currently have a scene wired up in <see cref="GameManager.GoToMiniGame"/>.
-    /// Names are matched case-insensitively against the web app's mini-game keys in <see cref="TentPlaceHolderManager.OnOtherManagerUpdate"/>, so renaming a member breaks the sync.</summary>
-    public enum MINI_GAMES
-    {
-        ARCHERY,
-        DUCKGAME,
-        FISHING,
-        FRISBEE,
-    }
+    public GameManager.MiniGames MiniGame = GameManager.MiniGames.Archery;
 
     /// <summary>Validates the starting placeholder reference, caches this element's collider, and records the starting placeholder as the initial fallback for reverts.</summary>
     protected virtual void Awake()
