@@ -94,6 +94,9 @@ public class Arrow : MonoBehaviour
         {   
             BalloonArcheryGame balloon = col.gameObject.GetComponent<BalloonArcheryGame>();
 
+            // Read before Pop: the balloon goes back to the ObjectPool and can be reused (and reset) as its own replacement.
+            int scoreValue = balloon.GetScoreValue();
+
             balloon.Pop();
 
             SetArrowToOrginalPosition();
@@ -101,8 +104,6 @@ public class Arrow : MonoBehaviour
 
             if (!IsTutorialActive)
             {
-               int scoreValue = balloon.GetScoreValue();
-
                 if (scoreValue > 0)
                 {
                     _playerScored.Invoke(scoreValue);

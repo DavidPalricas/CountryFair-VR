@@ -25,13 +25,22 @@ public class BalloonArcheryGame : MonoBehaviour
          Yellow 
     }
 
-    /// <summary>The prefab this balloon was instantiated from; stored for lifecycle management in <see cref="ArcheryGameManager"/>.</summary>
+    /// <summary>
+    /// Prefab of this balloon's color. Set by <see cref="ArcheryGameManager"/> from the real color on every spawn (the pool's
+    /// queue mixes colors), and passed back to it on pop to update its color counters.
+    /// </summary>
     public GameObject OriginalPrefab { get; set; }
 
     /// <summary>Color of this balloon prefab; decides whether hitting it scores.</summary>
     [SerializeField] private Colors _color = Colors.Red;
     /// <summary>Particle effect spawned on pop; its start color is tinted with the balloon color.</summary>
     [SerializeField] private GameObject _popEffect;
+
+    /// <summary>
+    /// This balloon's pop effect, created on the first pop and restarted on every later one (see
+    /// <see cref="Utils.PlayReusableEffect"/>); it hides itself when it finishes.
+    /// </summary>
+    private ParticleSystem _popEffectInstance;
 
 
 
@@ -101,7 +110,7 @@ public class BalloonArcheryGame : MonoBehaviour
     /// <summary>Plays the spatial pop sound; found on the <c>GameManager</c>-tagged object.</summary>
     private ArcheryAudioManager _archeryAudioManager;
 
-    /// <summary>Destroys and respawns the balloon after a non-tutorial pop; found on the <c>GameManager</c>-tagged object.</summary>
+    /// <summary>Returns the balloon to its pool and spawns a replacement after a non-tutorial pop; found on the <c>GameManager</c>-tagged object.</summary>
     private ArcheryGameManager _archeryGameManager;
 
     /// <summary>Sound played on every pop (fixed; not editable in the Inspector).</summary>
@@ -117,7 +126,6 @@ public class BalloonArcheryGame : MonoBehaviour
     {
         _renderer = GetComponent<Renderer>();
         Collider = GetComponent<Collider>();
-        _initialPosition = transform.position;
 
         _moveId = "move_" + GetInstanceID();
         _fadeId = "fade_" + GetInstanceID();
@@ -169,7 +177,40 @@ public class BalloonArcheryGame : MonoBehaviour
             Debug.LogError("ArcheryGameManager or ArcheryAudioManager component not found on GameManager GameObject.");
         }
     }
- 
+
+    /// <summary>
+    /// Resets the balloon to a static, opaque, hittable state centered on its current position. Balloons are reused
+    /// from the <see cref="ArcheryGameManager"/>'s <see cref="ObjectPool"/>, which places them before enabling them, so
+    /// this runs on every spawn and clears whatever the previous use left (flags, half-faded alpha, disabled collider).
+    /// </summary>
+    private void OnEnable()
+    {
+        _initialPosition = transform.position;
+
+        _isMoving = false;
+        _isTransparent = false;
+
+        Color color = _material.color;
+        color.a = 1f;
+        _material.color = color;
+
+        Collider.enabled = true;
+    }
+
+    /// <summary>Kills the wander and fade tweens while the balloon is in the pool.</summary>
+    /// <remarks>The flags are only reset in <see cref="OnEnable"/>, so <see cref="GetScoreValue"/> stays valid right after the balloon is returned.</remarks>
+    private void OnDisable()
+    {
+        DOTween.Kill(_moveId);
+        DOTween.Kill(_fadeId);
+        transform.DOKill();
+
+        if (_material != null)
+        {
+            _material.DOKill();
+        }
+    }
+
     /// <summary>
     /// Starts or stops the looping movement tween. Moving balloons award double score points.
     /// </summary>
@@ -296,8 +337,8 @@ public class BalloonArcheryGame : MonoBehaviour
     }
 
     /// <summary>
-    /// Kills all running tweens, spawns the pop particle effect tinted in the balloon color, plays the pop sound,
-    /// and delegates destruction to <see cref="ArcheryGameManager.DestroyTarget"/>.
+    /// Kills all running tweens, plays the (reused) pop particle effect tinted in the balloon color, plays the pop sound,
+    /// and delegates its return to the pool to <see cref="ArcheryGameManager.RemoveTarget(GameObject, GameObject)"/>.
     /// Tutorial balloons fire <c>_taskCompleted</c> instead.
     /// </summary>
     public void Pop()
@@ -307,12 +348,10 @@ public class BalloonArcheryGame : MonoBehaviour
 
         if (_popEffect != null)
         {
-            GameObject fx = Instantiate(_popEffect, transform.position, Quaternion.identity);
-            if (fx.TryGetComponent<ParticleSystem>(out var ps))
-            {
-                ParticleSystem.MainModule main = ps.main;
-                main.startColor = _originalColor;
-            }
+            _popEffectInstance = Utils.PlayReusableEffect(_popEffectInstance, _popEffect, transform.position);
+
+            ParticleSystem.MainModule main = _popEffectInstance.main;
+            main.startColor = _originalColor;
         }
 
         _archeryAudioManager.PlaySpatialSoundEffect(_popSoundEffect, gameObject);
@@ -326,7 +365,7 @@ public class BalloonArcheryGame : MonoBehaviour
             return;
         }
 
-        _archeryGameManager.DestroyTarget(transform.parent.gameObject, OriginalPrefab);
+        _archeryGameManager.RemoveTarget(transform.parent.gameObject, OriginalPrefab);
     }
 
     /// <summary>
@@ -376,11 +415,14 @@ public class BalloonArcheryGame : MonoBehaviour
     }
 
     /// <summary>
-    /// Kills this balloon's tweens so DOTween does not keep animating a destroyed transform/material, and destroys the
-    /// per-instance <see cref="_material"/>.
+    /// Kills this balloon's tweens so DOTween does not keep animating a destroyed transform/material, destroys the
+    /// per-instance <see cref="_material"/> and releases the cached pop effect (a tutorial balloon is destroyed right
+    /// after popping, so a playing effect is left to finish first).
     /// </summary>
     private void OnDestroy()
     {
+        Utils.ReleaseReusableEffect(_popEffectInstance);
+
         transform.DOKill();
 
         if (_material != null)

@@ -28,6 +28,13 @@ public class BalloonsSpawner : MonoBehaviour
     [SerializeField]
     private GameObject _yellowBalloonPrefab = null;
 
+    /// <summary>
+    /// Pool the balloons are taken from and returned to when they pop. Colors are mixed in its queue: a reused balloon
+    /// keeps its color, which is fine for these decorative balloons. Grown from <see cref="_maxBalloons"/> by
+    /// <see cref="UpdateBalloonsPoolSize"/>.
+    /// </summary>
+    private ObjectPool _balloonsPool;
+
     /// <summary>Upper bound of balloons alive at once; <c>ScoreAreaAnimations</c> overwrites it with its placeholder count.</summary>
     [Header("Balloons Spawner Settings")]
     [SerializeField]
@@ -38,7 +45,7 @@ public class BalloonsSpawner : MonoBehaviour
     protected int _minBalloons = 0;
 
     /// <summary>
-    /// Balloons currently flying. Decremented by <see cref="MoveBalloon"/> when a balloon pops; only subclasses
+    /// Balloons currently flying. Decremented by <see cref="ReleaseBalloon"/> when a balloon pops; only subclasses
     /// that cap the live count (<c>CountryFairBalloonSpawner</c>) increment it.
     /// </summary>
     protected int _currentBalloons = 0;
@@ -87,6 +94,8 @@ public class BalloonsSpawner : MonoBehaviour
             { _redBalloonPrefab, 0 },
             { _yellowBalloonPrefab, 0 }
         };
+
+        _balloonsPool = new ObjectPool(_blueBalloonPrefab);
     }
 
     /// <summary>
@@ -101,23 +110,64 @@ public class BalloonsSpawner : MonoBehaviour
 
 
     /// <summary>
-    /// Flies <paramref name="balloon"/> upward by a random height over a random duration, then pops it
-    /// and decrements <see cref="_currentBalloons"/>.
+    /// Pre-creates <see cref="_maxBalloons"/> balloons, split evenly between the colors, so the first bursts do not
+    /// instantiate. Called by the subclasses at the end of <c>Awake</c>, once <see cref="_maxBalloons"/> has its final value.
     /// </summary>
-    /// <param name="balloon">Spawned balloon instance; must have a <see cref="PopBalloon"/> component.</param>
-    /// <param name="balloonSpawnHeight">World Y the balloon was spawned at; the random rise is added on top of it.</param>
-    protected void MoveBalloon(GameObject balloon, float balloonSpawnHeight)
+    protected void UpdateBalloonsPoolSize()
     {
+        if (_balloonsPool == null)
+        {
+            return;
+        }
+
+        int balloonsPerColor = Mathf.CeilToInt(_maxBalloons / (float)_balloonTypesCount.Count);
+
+        foreach (GameObject balloonPrefab in _balloonTypesCount.Keys)
+        {
+            _balloonsPool.SetPrefab(balloonPrefab);
+            _balloonsPool.UpdatePoolSize(_balloonsPool.PoolSize + balloonsPerColor);
+        }
+    }
+
+    /// <summary>
+    /// Takes a balloon from the pool at <paramref name="position"/> and flies it upward by a random height over a random
+    /// duration; then pops it, returns it to the pool and decrements <see cref="_currentBalloons"/>.
+    /// </summary>
+    /// <param name="balloonPrefab">
+    /// Color created if the pool is empty, usually from <see cref="GetBalloonType"/>; a reused balloon keeps its own color.
+    /// Must have a <see cref="PopBalloon"/> component.
+    /// </param>
+    /// <param name="position">Spawn position; the random rise is added on top of its Y.</param>
+    /// <remarks>
+    /// If the spawner was destroyed mid-flight (a tutorial score area destroys itself on score), its pool is gone with
+    /// it, so the balloon is destroyed instead.
+    /// </remarks>
+    protected void ReleaseBalloon(GameObject balloonPrefab, Vector3 position)
+    {
+        _balloonsPool.SetPrefab(balloonPrefab);
+
+        GameObject balloon = _balloonsPool.GetObject(position, Quaternion.identity);
+
         float moveDuration = Utils.RandomValueInRange(_minFlyDuration, _maxFlyDuration);
 
         float addedHeight = Utils.RandomValueInRange(_minHeightToBalloonExplode, _maxHeightToBalloonExplode);
-        float targetY = balloonSpawnHeight + addedHeight;
+        float targetY = position.y + addedHeight;
 
         balloon.transform.DOMoveY(targetY, moveDuration)
             .SetEase(Ease.InSine)
             .OnComplete(() =>
             {
                     balloon.GetComponent<PopBalloon>().Pop();
+
+                    // Unity's destroyed-object check on the spawner itself.
+                    if (this != null)
+                    {
+                        _balloonsPool.ReturnObject(balloon);
+                    }
+                    else
+                    {
+                        Destroy(balloon);
+                    }
 
                     // Current Balloons variable maybe not used in some intherited classes
                     _currentBalloons--;
