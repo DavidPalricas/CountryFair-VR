@@ -11,7 +11,7 @@ public class DataFileManager
 {
     private const string SaveFileName = "survivorData.json";
 
-    private static DataFileManager _instance  = null;
+    private static DataFileManager _instance;
 
     /// <summary>In-memory copy of the save file; every write method mutates it and then rewrites the whole file.</summary>
     public DataFileRoot CurrentData { get; private set; }
@@ -30,10 +30,7 @@ public class DataFileManager
     }
 
     /// <summary>Returns the singleton instance, creating it on first call (which triggers an immediate file load).</summary>
-    public static DataFileManager GetInstance()
-    {
-        return _instance ??= new DataFileManager();
-    }
+    public static DataFileManager GetInstance() => _instance ??= new DataFileManager();
 
     private void SetFilePath()
     {

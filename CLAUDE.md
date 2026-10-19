@@ -37,7 +37,7 @@ CountryFair/
 ├── Assets/
 │   ├── Scripts/                      # ALL game scripts are in this folder
 │   │   ├── General/                  # Shared systems used across the game
-│   │   │   ├── GameManagment/        # GameManager, AudioManager, CheatCodes, FoveatedRenderingController
+│   │   │   ├── GameManagment/        # GameManager (also configures foveated rendering), AudioManager, CheatCodes
 │   │   │   ├── DataManagment/        # DataFileManager + DataFileStructure/ (DataFileRoot, MiniGameData, SessionData)
 │   │   │   ├── Animals/              # Animal AI system (AnimalUtility + States/: AnimalState, AnimalWalk, AnimalEat, AnimalIdle)
 │   │   │   ├── Balloons/             # BalloonsSpawner, PopBalloon
@@ -617,7 +617,7 @@ Player Action → CarnyWise.PlayerScored() / PlayerMissed()
 
 | Component | Purpose |
 |-----------|---------|
-| `FoveatedRenderingController.cs` | Sets OVRManager.foveatedRenderingLevel |
+| `GameManager.ConfigureFoveatedRendering()` | `[RuntimeInitializeOnLoadMethod]` that sets `OVRManager` dynamic foveation + level once at startup (device builds only) |
 | `FollowPlayerHead.cs` | Dynamically tracks UI in front of player eyes every `LateUpdate`. Located in `FrisbeeGame/Frisbee/`. |
 | `BowHandTracking.cs` | Hand pinch detection, controller fallback |
 | `PlayerScale.cs` | Giant-mode toggle with log-space scaling + comfort vignette (section 12) |
@@ -645,9 +645,8 @@ Python scripts in `UserTests/Results/`:
 ### Singleton Pattern (Game Managers)
 ```csharp
 private static GameManager _instance = null;
-public static GameManager GetInstance() {
-    return _instance ??= new GameManager();
-}
+private GameManager() { } // private constructor enforces the singleton
+public static GameManager GetInstance() => _instance ??= new GameManager();
 ```
 
 ### Event-Based Communication

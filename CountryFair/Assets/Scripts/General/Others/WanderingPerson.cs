@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Makes an NPC wander the NavMesh by repeatedly picking random destinations within a fixed radius.
-/// Used for ambient crowd NPCs in the CountryFair hub world.
+/// Used for ambient crowd NPCs in the CountryFair.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class WanderingPerson: MonoBehaviour
@@ -64,4 +64,4 @@ public class WanderingPerson: MonoBehaviour
         NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, _walkRadius, NavMesh.AllAreas);
         _agent.SetDestination(navHit.position);
     }
-}
+}

@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 /// <see cref="_thresholdToChangeDiff"/> tasks rather than strictly consecutive ones. If the player misses
 /// <see cref="_failingConsecutiveThreshold"/> times on the same task, difficulty drops immediately.
 /// At session end, <see cref="SessionGoalReached"/> marks the session complete in <see cref="GameManager"/>
-/// and returns to the hub scene.
+/// and returns to the plaza scene.
 /// </remarks>
 [RequireComponent(typeof(CarnyWiseDiffFeedback))]
 public class CarnyWise : MonoBehaviour
@@ -331,7 +331,7 @@ public class CarnyWise : MonoBehaviour
 
     /// <summary>
     /// Called when the player reaches the session score goal.
-    /// Saves the session summary, then flags the session as complete in <see cref="GameManager"/> and loads the hub
+    /// Saves the session summary, then flags the session as complete in <see cref="GameManager"/> and loads the plaza
     /// scene after a short delay.
     /// </summary>
     /// <remarks>Invoked via Inspector by the <c>_sessionGoalReached</c> event of <see cref="ScoreAndStreakSystem"/>.</remarks>
@@ -342,7 +342,7 @@ public class CarnyWise : MonoBehaviour
         Invoke(nameof(ReturnToFair), 1f);
     }
 
-    /// <summary>Sets the mini-game's session-completed flag (shown by the hub dialogue) and loads <c>CountryFair</c>.</summary>
+    /// <summary>Sets the mini-game's session-completed flag (shown by the plaza dialogue) and loads <c>CountryFair</c>.</summary>
     private void ReturnToFair()
     {   
         GameManager gameManager = GameManager.GetInstance();
@@ -356,9 +356,9 @@ public class CarnyWise : MonoBehaviour
             gameManager.ArcherySessionCompleted = true;
         }
 
-        SceneManager.LoadScene(GameManager.HubScene);
+        SceneManager.LoadScene(GameManager.PlazaScene);
 
-        ConnectToWebApp.Instance.UpdateScene(GameManager.HubScene.ToLower());
+        ConnectToWebApp.Instance.UpdateScene(GameManager.PlazaScene.ToLower());
     }
      
 

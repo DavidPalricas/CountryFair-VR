@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Cheat code handler for the CountryFair hub scene.
+/// Cheat code handler for the CountryFair plaza scene.
 /// Provides developer shortcuts to skip/complete the intro dialogue, jump directly into any mini-game
 /// (<see cref="GameManager.GoToMiniGame"/> only loads a scene for archery and frisbee; the duck and fishing codes just log a warning)
 /// and toggle giant mode, gating every non-intro cheat until the intro dialogue is completed.
@@ -30,14 +30,14 @@ public class CountryFairCheatCodes : CheatCodes
     /// </summary>
     private readonly string[] _cheatCodesOnIntro = new string[] {"intro", "skip"};
 
-    /// <summary>Registers the hub cheats; this class has no other setup.</summary>
+    /// <summary>Registers the plaza cheats; this class has no other setup.</summary>
     private void Awake()
     {
         RegisterBaseCheats();
     }
 
     /// <summary>
-    /// Registers every cheat available in the CountryFair hub: completing/skipping the intro,
+    /// Registers every cheat available in the CountryFair plaza: completing/skipping the intro,
     /// jumping into a mini-game scene and toggling giant mode.
     /// </summary>
     protected override void RegisterBaseCheats()
