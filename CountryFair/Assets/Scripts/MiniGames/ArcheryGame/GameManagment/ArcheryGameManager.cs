@@ -25,20 +25,20 @@ public class ArcheryGameManager : MiniGameManager
     [SerializeField] private Collider _balloonSpawnArea;
 
     /// <summary>
-    /// Prefab of the blue balloon. Its root is what gets spawned and destroyed; a child must hold a <see cref="BalloonArcheryGame"/>
+    /// Prefab of the blue balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
     /// whose color is <c>BLUE</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [Header("Balloons Prefabs")]
     [SerializeField]
      private GameObject _blueBalloonPrefab;
     /// <summary>
-    /// Prefab of the red balloon. Its root is what gets spawned and destroyed; a child must hold a <see cref="BalloonArcheryGame"/>
+    /// Prefab of the red balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
     /// whose color is <c>RED</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [SerializeField]
     private GameObject _redBalloonPrefab;
     /// <summary>
-    /// Prefab of the yellow balloon. Its root is what gets spawned and destroyed; a child must hold a <see cref="BalloonArcheryGame"/>
+    /// Prefab of the yellow balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
     /// whose color is <c>YELLOW</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [SerializeField]
@@ -82,7 +82,12 @@ public class ArcheryGameManager : MiniGameManager
 
     /// <summary>Live balloons per prefab, used by <see cref="GetBalloonType"/> to keep the colors balanced.</summary>
     private Dictionary<GameObject, int> _balloonTypesCount;
-    /// <summary>Prefab of the color that currently scores; always kept present in the scene by <see cref="DestroyTarget"/>.</summary>
+    /// <summary>
+    /// Pool the balloons are taken from and returned to. Colors are mixed in its queue (what matters is the total
+    /// number of balloons): a reused balloon keeps its color, which <see cref="AddTarget"/> accounts for.
+    /// </summary>
+    private ObjectPool _balloonsPool;
+    /// <summary>Prefab of the color that currently scores; always kept present in the scene by <see cref="RemoveTarget(GameObject, GameObject)"/>.</summary>
     private GameObject _balloonPrefabToScore;
     
     /// <summary>Fraction of balloons that move at the current level, from <see cref="_movingRatioCurve"/>.</summary>
@@ -131,6 +136,8 @@ public class ArcheryGameManager : MiniGameManager
             { _redBalloonPrefab, 0 },
             { _yellowBalloonPrefab, 0 }
         };
+
+        _balloonsPool = new ObjectPool(_blueBalloonPrefab);
 
           if (!GameManager.GetInstance().ArcheryTutorialCompleted)
         {
@@ -187,30 +194,95 @@ public class ArcheryGameManager : MiniGameManager
         // Debug.Log($"[Archery Stats] Total Balloons: {_currentDesiredCount} | Movimento Ratio: {_currentMovingRatio:P0} | Move Duration: {_currentMoveDuration:F1}s");
         
         SetBalloonColorToScore();
+        UpdateTargetsPoolSize();
         SyncTargets(_currentDesiredCount);
     }
 
-    /// <summary>Spawns a balloon at a free position; when no prefab is given, the color is chosen by <see cref="GetBalloonType"/>.</summary>
-    /// <remarks>An explicit <paramref name="prefabToSpawn"/> does not increment <see cref="_balloonTypesCount"/>.</remarks>
+    /// <summary>
+    /// Grows the pool to <see cref="MiniGameManager._currentDesiredCount"/> balloons, creating the missing ones split
+    /// evenly between the colors, so the new level's balloons are created now and not mid-aim.
+    /// </summary>
+    private void UpdateTargetsPoolSize()
+    {
+        int missingPerColor = Mathf.CeilToInt((_currentDesiredCount - _balloonsPool.PoolSize) / (float)_balloonTypesCount.Count);
+
+        if (missingPerColor <= 0)
+        {
+            return;
+        }
+
+        foreach (GameObject balloonPrefab in _balloonTypesCount.Keys)
+        {
+            _balloonsPool.SetPrefab(balloonPrefab);
+            _balloonsPool.UpdatePoolSize(_balloonsPool.PoolSize + missingPerColor);
+        }
+    }
+
+    /// <summary>
+    /// Takes a balloon from the pool at a free position; when no prefab is given, the color is chosen by
+    /// <see cref="GetBalloonType"/>. Since the pool's queue mixes colors, a reused balloon can come out with another
+    /// color than the one asked for.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A balanced pick (no prefab given) accepts whatever color comes out and moves its <see cref="_balloonTypesCount"/>
+    /// increment to that color. An explicit <paramref name="prefabToSpawn"/> (the scoring color forced by
+    /// <see cref="RemoveTarget(GameObject, GameObject)"/>) must be honored, or the player could be left with no balloon that scores: a reused
+    /// balloon of another color goes back to the pool and a new one of the right color is created instead.
+    /// </para>
+    /// <para>An explicit <paramref name="prefabToSpawn"/> does not increment <see cref="_balloonTypesCount"/>.</para>
+    /// </remarks>
     protected override void AddTarget(GameObject prefabToSpawn = null)
     {
         Vector3 pos = GetRandomTargetPosition();
-        
-        if (prefabToSpawn == null)
+
+        bool isForcedColor = prefabToSpawn != null;
+
+        if (!isForcedColor)
         {
             prefabToSpawn = GetBalloonType();
         }
 
-        GameObject newBalloon = Instantiate(prefabToSpawn, pos, Quaternion.identity);
+        _balloonsPool.SetPrefab(prefabToSpawn);
 
+        GameObject newBalloon = _balloonsPool.GetObject(pos, Quaternion.identity);
         BalloonArcheryGame balloonComponent = newBalloon.GetComponentInChildren<BalloonArcheryGame>();
-        
-        balloonComponent.OriginalPrefab = prefabToSpawn;
-            
+
+        // A reused balloon keeps the color it was created with, so its prefab comes from its real color, not from the request.
+        balloonComponent.OriginalPrefab = GetBalloonPrefab(balloonComponent.GetBalloonColorName());
+
+        if (balloonComponent.OriginalPrefab != prefabToSpawn)
+        {
+            if (isForcedColor)
+            {
+                _balloonsPool.ReturnObject(newBalloon);
+
+                newBalloon = _balloonsPool.CreateObject(pos, Quaternion.identity);
+                balloonComponent = newBalloon.GetComponentInChildren<BalloonArcheryGame>();
+                balloonComponent.OriginalPrefab = prefabToSpawn;
+            }
+            else
+            {
+                _balloonTypesCount[prefabToSpawn]--;
+                _balloonTypesCount[balloonComponent.OriginalPrefab]++;
+            }
+        }
+
         _spawnedTargets.Add(newBalloon);
     }
 
-    /// <summary>Destroys the oldest balloon.</summary>
+    /// <summary>Balloon prefab of the given lowercase color name (see <see cref="BalloonArcheryGame.GetBalloonColorName"/>).</summary>
+    private GameObject GetBalloonPrefab(string colorName)
+    {
+        return colorName switch
+        {
+            "red" => _redBalloonPrefab,
+            "blue" => _blueBalloonPrefab,
+            _ => _yellowBalloonPrefab
+        };
+    }
+
+    /// <summary>Returns the oldest balloon to the pool.</summary>
     protected override void RemoveTarget()
     {
         if (_spawnedTargets.Count > 0)
@@ -219,12 +291,12 @@ public class ArcheryGameManager : MiniGameManager
  
             BalloonArcheryGame balloonComponent = target.GetComponentInChildren<BalloonArcheryGame>();
 
-            DestroyTarget(target, balloonComponent.OriginalPrefab);
+            RemoveTarget(target, balloonComponent.OriginalPrefab);
         }  
     }
 
     /// <summary>
-    /// Destroys a balloon (popped or removed) and, if the scene is below the desired count, spawns a replacement,
+    /// Returns a balloon (popped or removed) to the pool and, if the scene is below the desired count, spawns a replacement,
     /// forcing the scoring color when none of it is left so the player always has a valid target.
     /// </summary>
     /// <param name="target">Root GameObject of the balloon instance.</param>
@@ -233,13 +305,13 @@ public class ArcheryGameManager : MiniGameManager
     /// Only the replacement gets its properties (<see cref="UpdateNewTargetProperties"/>); the other balloons are left
     /// as they are, so a pop never changes the balloon the player is aiming at mid-attempt.
     /// </remarks>
-    public override void DestroyTarget(GameObject target, GameObject targetPrefab)
+    public override void RemoveTarget(GameObject target, GameObject targetPrefab)
     {
         _balloonTypesCount[targetPrefab] = Mathf.Max(0, _balloonTypesCount[targetPrefab] - 1);
 
         _spawnedTargets.Remove(target);
 
-        Destroy(target);
+        _balloonsPool.ReturnObject(target);
 
         if (_spawnedTargets.Count < _currentDesiredCount)
         {

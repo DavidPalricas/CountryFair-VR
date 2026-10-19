@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Spawns and manages a pool of balloons within a defined area.
+/// Spawns and manages balloons (taken from an <see cref="ObjectPool"/>) within a defined area.
 /// Tracks active balloon count and respawns new balloons up to the maximum limit.
 /// </summary>
 [RequireComponent(typeof(Collider))]
@@ -44,6 +44,8 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
         {
             Debug.LogError("Spawn area GameObject must have a Collider component!");
         }
+
+        UpdateBalloonsPoolSize();
     }
 
     /// <summary>
@@ -65,16 +67,14 @@ public class CountryFairBalloonSpawner : BalloonsSpawner
     }
 
     /// <summary>
-    /// Spawns a single balloon at a random position within the collider bounds.
-    /// Delegates the balloon's movement/pop bookkeeping to <c>MoveBalloon</c>, which decrements <c>_currentBalloons</c> when it is destroyed.
+    /// Takes a single balloon from the pool at a random position within the collider bounds.
+    /// Delegates the balloon's movement/pop bookkeeping to <c>ReleaseBalloon</c>, which decrements <c>_currentBalloons</c> when it pops.
     /// </summary>
     private void SpawnBalloon()
-    {  
+    {
         GameObject balloonType = GetBalloonType();
 
-        GameObject balloon = Instantiate(balloonType, GetRandomPositionInBounds(), Quaternion.identity);
-
-        MoveBalloon(balloon, _balloonsInitialHeight);
+        ReleaseBalloon(balloonType, GetRandomPositionInBounds());
 
         _currentBalloons++;
     }

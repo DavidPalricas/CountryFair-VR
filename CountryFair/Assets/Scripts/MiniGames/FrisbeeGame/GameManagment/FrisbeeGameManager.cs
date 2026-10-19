@@ -33,7 +33,7 @@ public class FrisbeeGameManager : MiniGameManager
     [SerializeField]
     private AnimationCurve _visibilityRatioCurve;
 
-    /// <summary>Prefab instantiated for each score area target.</summary>
+    /// <summary>Prefab of the score area targets; <see cref="_scoreAreaPool"/> instantiates it when it needs more areas.</summary>
     [Header("Game Specific References")]
     [SerializeField]
     private GameObject _scoreAreaPrefab;
@@ -53,9 +53,13 @@ public class FrisbeeGameManager : MiniGameManager
     [SerializeField]
     private UnityEvent _difficultyHasChanged;
     
-    /// <summary>Ratios derived from the difficulty in <see cref="ApplyDifficultySettings"/> and applied to the score areas.</summary>
+    /// <summary>Fraction of score areas that orbit at the current level, from <see cref="_movingRatioCurve"/>.</summary>
     private float _currentMovingRatio;
+    /// <summary>Fraction of score areas that blink at the current level, from <see cref="_visibilityRatioCurve"/>.</summary>
     private float _currentVisibilityRatio;
+
+    /// <summary>Score areas are taken from and returned to this pool; grown to the target count on every difficulty change.</summary>
+    private ObjectPool _scoreAreaPool;
 
     /// <summary>Bounding radius of the score area prefab, used to keep spawned areas from overlapping.</summary>
     private float _scoreAreaRadius = 0;
@@ -84,6 +88,8 @@ public class FrisbeeGameManager : MiniGameManager
         }
 
         _scoreAreaRadius = _scoreAreaPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
+
+        _scoreAreaPool = new ObjectPool(_scoreAreaPrefab);
 
         if (!GameManager.GetInstance().FrisbeeTutorialCompleted)
         {
@@ -141,25 +147,27 @@ public class FrisbeeGameManager : MiniGameManager
         _currentMovingRatio = _movingRatioCurve.Evaluate(saturationFactor);
         _currentVisibilityRatio = _visibilityRatioCurve.Evaluate(saturationFactor);
 
+        _scoreAreaPool.UpdatePoolSize(_currentDesiredCount);
+
         // Debug.Log($"[DDA] Level {DifficultyLevel} | Dist: {finalDogDistance:F1}m | Targets: {_currentDesiredCount} | Complexity: {saturationFactor:P0}");
     }
 
-    /// <summary>Spawns one score area at a free random position; <paramref name="prefabToSpawn"/> is ignored.</summary>
+    /// <summary>Takes one score area from the pool at a free random position; <paramref name="prefabToSpawn"/> is ignored.</summary>
     protected override void AddTarget(GameObject prefabToSpawn = null)
     {
         Vector3 pos = GetRandomTargetPosition();
-        GameObject newScoreArea = Instantiate(_scoreAreaPrefab, pos, Quaternion.identity);
+        GameObject newScoreArea = _scoreAreaPool.GetObject(pos, Quaternion.identity);
         _spawnedTargets.Add(newScoreArea);
     }
 
-    /// <summary>Destroys the oldest score area.</summary>
+    /// <summary>Returns the oldest score area to the pool.</summary>
     protected override void RemoveTarget()
     {
         if (_spawnedTargets.Count > 0)
         {
             GameObject target = _spawnedTargets[0];
             _spawnedTargets.RemoveAt(0);
-            Destroy(target);
+            _scoreAreaPool.ReturnObject(target);
         }
     }
 
@@ -228,11 +236,11 @@ public class FrisbeeGameManager : MiniGameManager
     }
     
 
-    /// <summary>Destroys a score area without replacing it and redistributes the properties of the remaining ones.</summary>
-    public override void DestroyTarget(GameObject target, GameObject targetPrefab = null)
+    /// <summary>Returns a score area to the pool without replacing it and redistributes the properties of the remaining ones.</summary>
+    public override void RemoveTarget(GameObject target, GameObject targetPrefab = null)
     {
         _spawnedTargets.Remove(target);
-        Destroy(target);
+        _scoreAreaPool.ReturnObject(target);
 
         UpdateTargetsProperties();
     }
@@ -248,7 +256,7 @@ public class FrisbeeGameManager : MiniGameManager
     }
 
     /// <summary>
-    /// Destroys all active score areas and clears the spawned-targets list.
+    /// Returns all active score areas to the pool and clears the spawned-targets list.
     /// </summary>
     /// <remarks>Invoked via Inspector by the dog's <c>_removeScoreAreas</c> event and by <see cref="_difficultyHasChanged"/>, to clear the areas before a respawn.</remarks>
     public void RemoveScoreAreas()
@@ -257,7 +265,7 @@ public class FrisbeeGameManager : MiniGameManager
         {
             foreach (GameObject target in _spawnedTargets)
             {
-                Destroy(target);
+                _scoreAreaPool.ReturnObject(target);
             }
 
             _spawnedTargets.Clear();

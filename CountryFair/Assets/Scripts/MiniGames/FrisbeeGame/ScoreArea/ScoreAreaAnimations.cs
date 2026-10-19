@@ -76,14 +76,24 @@ public class ScoreAreaAnimations : BalloonsSpawner
         _maxBalloons = _balloonsPlaceHolders.Length;
 
         _scoreAreaProperties = GetComponent<ScoreAreaProperties>();
+
+        UpdateBalloonsPoolSize();
     }
 
     /// <summary>
-    /// Starts the idle rotate/pulse loops.
+    /// Starts the idle rotate/pulse loops every time the area is enabled, since areas are reused from the
+    /// <see cref="FrisbeeGameManager"/>'s <see cref="ObjectPool"/> (and the dog's area is toggled on/off).
     /// </summary>
-    private void Start()
+    private void OnEnable()
     {
         StartRotationAnimation();
+    }
+
+    /// <summary>Kills the loops while the area is in the pool and restores its scale, so the next pulse starts from <see cref="_startScale"/>.</summary>
+    private void OnDisable()
+    {
+        transform.DOKill();
+        transform.localScale = _startScale;
     }
 
     /// <summary>
@@ -129,10 +139,8 @@ public class ScoreAreaAnimations : BalloonsSpawner
 
             Vector3 spawnPosition = GetBalloonSpawnPosition(avaiblePlaceholders);
             
-            GameObject balloon = Instantiate(balloonType, spawnPosition, Quaternion.identity);
+            ReleaseBalloon(balloonType, spawnPosition);
 
-            MoveBalloon(balloon, spawnPosition.y);
-            
         }
 
         _scoreAreaProperties.OnPlayerScore();

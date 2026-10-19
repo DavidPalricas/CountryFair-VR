@@ -160,10 +160,11 @@ public class Landed: FrisbeeState
                     return false;
                 }
 
+                // Read before ScoreAnimation: it returns the area to the ObjectPool.
+                _scorePoints = scoreAreaProperties.ScorePoints;
+
                 scoreAreaAnimations.ScoreAnimation();
                 _scoreSoundEffectEvent.Invoke(_scoreSoundEffect);
-
-                _scorePoints = scoreAreaProperties.ScorePoints;
 
                 return true;
             }

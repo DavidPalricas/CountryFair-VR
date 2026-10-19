@@ -77,7 +77,7 @@ public class ScoreAreaProperties : MonoBehaviour
     private bool _isBlinking = false;
 
 
-    /// <summary>Found by the <c>GameManager</c> tag; destroys NORMAL areas when they are scored.</summary>
+    /// <summary>Found by the <c>GameManager</c> tag; returns NORMAL areas to its pool when they are scored.</summary>
     private FrisbeeGameManager _frisbeeGameManager;
 
     /// <summary>Points awarded when the frisbee lands here; read by <see cref="Landed"/>.</summary>
@@ -95,12 +95,11 @@ public class ScoreAreaProperties : MonoBehaviour
         Tutorial
     }
 
-    /// <summary>Caches components, the spawn position and the tween ids; DOG areas are worth 8 points.</summary>
+    /// <summary>Caches components and the tween ids; DOG areas are worth 8 points.</summary>
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
         _collider = GetComponent<Collider>();
-        _initialPosition = transform.position;
 
         _blinkId = "blink_" + GetInstanceID();
         _moveId = "move_" + GetInstanceID();
@@ -260,6 +259,30 @@ public class ScoreAreaProperties : MonoBehaviour
         return points;
     }
 
+    /// <summary>
+    /// Resets the area to a static, visible state centered on its current position. Areas are reused from the
+    /// <see cref="FrisbeeGameManager"/>'s <see cref="ObjectPool"/>, which places them before enabling them, so this
+    /// runs on every spawn; without it <see cref="AdjustMovement"/>/<see cref="AdjustVisibility"/> would see the flags
+    /// of the previous use and skip the change.
+    /// </summary>
+    private void OnEnable()
+    {
+        _initialPosition = transform.position;
+
+        _isMoving = false;
+        _isBlinking = false;
+
+        ToggleVisuals(true);
+    }
+
+    /// <summary>Stops the orbit and blink while the area is in the pool (or the dog's area is hidden).</summary>
+    /// <remarks>The flags are only reset in <see cref="OnEnable"/>, so <see cref="ScorePoints"/> stays valid right after the area is returned.</remarks>
+    private void OnDisable()
+    {
+        DOTween.Kill(_moveId);
+        DOTween.Kill(_blinkId);
+    }
+
     /// <summary>Kills the orbit and blink tweens, so the blink callbacks never touch a destroyed renderer/collider.</summary>
     /// <remarks>The blink sequence is not attached to the transform, so it must be killed by id.</remarks>
     private void OnDestroy()
@@ -277,7 +300,7 @@ public class ScoreAreaProperties : MonoBehaviour
     /// <summary>
     /// Called when the frisbee enters this score area.
     /// TUTORIAL areas fire <c>_tutorialTaskCompleted</c> and self-destroy.
-    /// NORMAL areas delegate destruction to <see cref="FrisbeeGameManager.DestroyTarget"/>.
+    /// NORMAL areas delegate their return to the pool to <see cref="FrisbeeGameManager.RemoveTarget(GameObject, GameObject)"/>.
     /// DOG areas simply deactivate themselves.
     /// </summary>
     /// <remarks>Called by <see cref="ScoreAreaAnimations.ScoreAnimation"/> after the balloon burst.</remarks>
@@ -293,7 +316,7 @@ public class ScoreAreaProperties : MonoBehaviour
 
         if (_areaType == AreaType.Normal)
         {
-             _frisbeeGameManager.DestroyTarget(gameObject);
+             _frisbeeGameManager.RemoveTarget(gameObject);
 
              return;
         }

@@ -171,4 +171,55 @@ public static class Utils
 
         return children;
     }
+
+    /// <summary>
+    /// Plays a one-shot particle effect that is created once and then reused: the first call instantiates
+    /// <paramref name="effectPrefab"/> and switches its stop action to <c>Disable</c>, so the effect hides itself when it
+    /// finishes instead of being destroyed; later calls only move it and restart it from the beginning.
+    /// </summary>
+    /// <param name="effect">The owner's cached effect, or null on the first call.</param>
+    /// <param name="effectPrefab">Prefab with a <see cref="ParticleSystem"/> on its root.</param>
+    /// <param name="position">World position to play the effect at.</param>
+    /// <returns>The effect to cache for the next call.</returns>
+    /// <remarks>Used by the balloon pops, which happen often and would otherwise instantiate and destroy an effect each time.</remarks>
+    public static ParticleSystem PlayReusableEffect(ParticleSystem effect, GameObject effectPrefab, Vector3 position)
+    {
+        if (effect == null)
+        {
+            effect = UnityEngine.Object.Instantiate(effectPrefab, position, Quaternion.identity).GetComponent<ParticleSystem>();
+
+            ParticleSystem.MainModule main = effect.main;
+            main.stopAction = ParticleSystemStopAction.Disable;
+        }
+
+        effect.transform.position = position;
+        effect.gameObject.SetActive(true);
+
+        effect.Clear();
+        effect.Play();
+
+        return effect;
+    }
+
+    /// <summary>
+    /// Releases an effect created by <see cref="PlayReusableEffect"/> when its owner is destroyed: a playing effect
+    /// destroys itself once it finishes (so a pop is never cut short), an idle one is destroyed right away.
+    /// </summary>
+    public static void ReleaseReusableEffect(ParticleSystem effect)
+    {
+        if (effect == null)
+        {
+            return;
+        }
+
+        if (effect.gameObject.activeSelf && effect.isPlaying)
+        {
+            ParticleSystem.MainModule main = effect.main;
+            main.stopAction = ParticleSystemStopAction.Destroy;
+
+            return;
+        }
+
+        UnityEngine.Object.Destroy(effect.gameObject);
+    }
 }
