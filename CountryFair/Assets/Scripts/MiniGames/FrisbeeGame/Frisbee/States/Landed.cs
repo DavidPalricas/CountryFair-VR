@@ -44,6 +44,12 @@ public class Landed: FrisbeeState
     /// <summary>Points of the score area the frisbee landed in, read from <see cref="ScoreAreaProperties.ScorePoints"/>.</summary>
     private int _scorePoints = 1;
 
+    /// <summary>Reused by <see cref="FrisbeeOnScoreArea"/> so a landing does not allocate a new array.</summary>
+    private readonly Collider[] _overlapResults = new Collider[10];
+
+    /// <summary>Layer mask of <see cref="ScoreAreaProperties.ScoreAreaLayer"/>, resolved once in <see cref="Awake"/>.</summary>
+    private int _scoreAreaLayerMask;
+
     /// <summary>
     /// Initializes the state by setting up physics component references and validating the mesh renderer.
     /// </summary>
@@ -55,6 +61,8 @@ public class Landed: FrisbeeState
         {
             Debug.LogError("MeshRenderer component is not assigned in Landed script.");
         }
+
+        _scoreAreaLayerMask = LayerMask.GetMask(ScoreAreaProperties.ScoreAreaLayer);
     }
 
 
@@ -131,19 +139,19 @@ public class Landed: FrisbeeState
     /// True if a <c>ScoreArea</c>-tagged collider overlaps the frisbee; in that case also plays the area's score
     /// animation and sound and stores its points in <see cref="_scorePoints"/>.
     /// </summary>
-    /// <remarks>Only the first 10 overlapping colliders are inspected.</remarks>
+    /// <remarks>Only colliders on the <c>ScoreArea</c> layer are queried, and only the first 10 of them are inspected.</remarks>
     private bool FrisbeeOnScoreArea()
-    {   
+    {
         float frisbeeRadius = _frisbeeMeshRenderer.bounds.extents.magnitude;
 
-        Collider[] overlapResults = new Collider[10];
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, frisbeeRadius, _overlapResults, _scoreAreaLayerMask);
 
-        Physics.OverlapSphereNonAlloc(transform.position, frisbeeRadius, overlapResults);
-
-        foreach (Collider collider in overlapResults)
+        for (int i = 0; i < hitCount; i++)
         {
-            if (collider != null && collider.gameObject.CompareTag(ScoreAreaProperties.ScoreAreaTag))
-            {    
+            Collider collider = _overlapResults[i];
+
+            if (collider.gameObject.CompareTag(ScoreAreaProperties.ScoreAreaTag))
+            {
                 GameObject scoreArea = collider.gameObject;
 
                 if (!scoreArea.TryGetComponent<ScoreAreaAnimations>(out var scoreAreaAnimations))

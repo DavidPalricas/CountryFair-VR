@@ -23,6 +23,13 @@ public class ArcheryGameManager : MiniGameManager
     [SerializeField] private TextMeshProUGUI _balloonColorToScoreText;
     /// <summary>Collider whose world bounds define the volume where balloons are spawned (separate from the <c>BalloonSpawn</c> box balloons wander in).</summary>
     [SerializeField] private Collider _balloonSpawnArea;
+    /// <summary>
+    /// Layer(s) checked for overlapping balloons when picking a spawn position; set it to the dedicated <c>Balloon</c> layer
+    /// (also assigned to the balloon prefabs) so the query only returns balloons and the small result buffer cannot be
+    /// filled by unrelated colliders. Hits are still filtered by the <c>Balloon</c> tag as a safety net. Defaults to every
+    /// layer, which works but is slower and can miss a balloon when more than <see cref="_overlapBuffer"/>-length colliders overlap.
+    /// </summary>
+    [SerializeField] private LayerMask _balloonOverlapLayers = ~0;
 
     /// <summary>
     /// Prefab of the blue balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
@@ -95,7 +102,10 @@ public class ArcheryGameManager : MiniGameManager
     /// <summary>Fraction of balloons with the fade cycle on at the current level, from <see cref="_transparencyRatioCurve"/>.</summary>
     private float _currentTransparencyRatio;
     /// <summary>Wander duration given to every balloon at the current level (between <see cref="_slowMoveDuration"/> and <see cref="_fastMoveDuration"/>).</summary>
-    private float _currentMoveDuration; 
+    private float _currentMoveDuration;
+
+    /// <summary>Reused by <see cref="GetRandomTargetPosition"/> so the overlap checks do not allocate an array per attempt.</summary>
+    private readonly Collider[] _overlapBuffer = new Collider[16];
 
 
     /// <summary>
@@ -396,7 +406,8 @@ public class ArcheryGameManager : MiniGameManager
     /// </summary>
     /// <remarks>
     /// The attempt limit replaced an unbounded retry that overflowed the stack when the area was crowded (e.g. a high
-    /// difficulty carried over from a previous session). Only colliders tagged <c>Balloon</c> count as overlaps.
+    /// difficulty carried over from a previous session). Only colliders on <see cref="_balloonOverlapLayers"/> tagged
+    /// <c>Balloon</c> count as overlaps, and only the first <see cref="_overlapBuffer"/>-length hits are inspected.
     /// </remarks>
     protected override Vector3 GetRandomTargetPosition()
     {
@@ -415,12 +426,12 @@ public class ArcheryGameManager : MiniGameManager
 
             candidatePos = new (x, y, z);
 
-            Collider[] hitColliders = Physics.OverlapSphere(candidatePos, SafetyRadius);
+            int hitCount = Physics.OverlapSphereNonAlloc(candidatePos, SafetyRadius, _overlapBuffer, _balloonOverlapLayers);
             bool hitBalloon = false;
 
-            foreach (Collider hit in hitColliders)
+            for (int i = 0; i < hitCount; i++)
             {
-                if (hit.CompareTag(BalloonArcheryGame.BalloonTag))
+                if (_overlapBuffer[i].CompareTag(BalloonArcheryGame.BalloonTag))
                 {
                     hitBalloon = true;
                     break;

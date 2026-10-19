@@ -67,6 +67,15 @@ public class FrisbeeGameManager : MiniGameManager
     /// <summary>Player-to-dog distance measured when the tutorial ends; level 0 keeps the dog where the scene placed it.</summary>
     private float _defaultDogDistance;
 
+    /// <summary>
+    /// Player-to-dog distance of the current level, cached from the <c>DogDistance</c> PlayerPrefs key so
+    /// <see cref="GetRandomTargetPosition"/> does not read PlayerPrefs on every spawn.
+    /// </summary>
+    private float _currentDogDistance;
+
+    /// <summary>Layer mask of <see cref="ScoreAreaProperties.ScoreAreaLayer"/>, resolved once in <see cref="Awake"/>.</summary>
+    private int _scoreAreaLayerMask;
+
 
     /// <summary>
     /// Validates references, measures the score area radius, and clears the saved difficulty if the tutorial was never
@@ -90,6 +99,11 @@ public class FrisbeeGameManager : MiniGameManager
         _scoreAreaRadius = _scoreAreaPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
 
         _scoreAreaPool = new ObjectPool(_scoreAreaPrefab);
+
+        _scoreAreaLayerMask = LayerMask.GetMask(ScoreAreaProperties.ScoreAreaLayer);
+
+        // Same value GetRandomTargetPosition read before the tutorial ends (_defaultDogDistance is still 0 here).
+        _currentDogDistance = PlayerPrefs.GetFloat(DogDistanceKey, _defaultDogDistance);
 
         if (!GameManager.GetInstance().FrisbeeTutorialCompleted)
         {
@@ -135,7 +149,8 @@ public class FrisbeeGameManager : MiniGameManager
     {
         float rawDistance = _defaultDogDistance + (DifficultyLevel * _distanceIncrement);
         float finalDogDistance = Mathf.Min(rawDistance, _maxDogDistance);
-        
+
+        _currentDogDistance = finalDogDistance;
         PlayerPrefs.SetFloat(DogDistanceKey, finalDogDistance);
 
         PlayerPrefs.SetInt(DifficultyLevelKey, DifficultyLevel);
@@ -202,15 +217,11 @@ public class FrisbeeGameManager : MiniGameManager
     /// </remarks>
     protected override Vector3 GetRandomTargetPosition()
     {
-        float currentDogDist = PlayerPrefs.GetFloat(DogDistanceKey, _defaultDogDistance);
-
         const float MinOffset = 0.2f;
         const float MaxOffset = 1f;
         const int MaxAttempts = 30;
 
         Bounds dogAreaBounds = _dogAreaCollider.bounds;
-
-        int layerMask = LayerMask.GetMask(ScoreAreaProperties.ScoreAreaLayer);
 
         Vector3 scoreAreaPosition = Vector3.zero;
 
@@ -218,13 +229,13 @@ public class FrisbeeGameManager : MiniGameManager
         {
             Vector2 randomDirection = Random.insideUnitCircle.normalized;
 
-            float scoreAreaDistance = currentDogDist * Random.Range(MinOffset, MaxOffset);
+            float scoreAreaDistance = _currentDogDistance * Random.Range(MinOffset, MaxOffset);
 
             scoreAreaPosition = _playerTransform.position + new Vector3(randomDirection.x, 0, randomDirection.y) * scoreAreaDistance;
 
             scoreAreaPosition.y = dogAreaBounds.center.y;
 
-            bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, layerMask);
+            bool collidesWithOtherAreas = Physics.CheckSphere(scoreAreaPosition, _scoreAreaRadius, _scoreAreaLayerMask);
 
             if (dogAreaBounds.Contains(scoreAreaPosition) && !collidesWithOtherAreas)
             {
