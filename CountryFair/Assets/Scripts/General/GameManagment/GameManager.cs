@@ -27,8 +27,8 @@ public class GameManager
         Frisbee,
     }
 
-    /// <summary>Name of the hub scene, loaded when a mini-game session ends.</summary>
-    public const string HubScene = "CountryFair";
+    /// <summary>Name of the plaza scene, loaded when a mini-game session ends.</summary>
+    public const string PlazaScene = "CountryFair";
     /// <summary>Name of the Archery mini-game scene.</summary>
     public const string ArcheryScene = "ArcheryGame";
     /// <summary>Name of the Frisbee mini-game scene.</summary>
@@ -41,33 +41,44 @@ public class GameManager
     /// <summary>Tag of the object holding each mini-game's <see cref="MiniGameManager"/>.</summary>
     public const string GameManagerTag = "GameManager";
 
-    /// <summary>True once the hub-world intro dialogue sequence has been completed.</summary>
+    /// <summary>True once the plaza-world intro dialogue sequence has been completed.</summary>
     public bool IntroCompleted { get; set; } = false;
     /// <summary>True once the Frisbee mini-game tutorial has been completed.</summary>
     public bool FrisbeeTutorialCompleted { get; set; } = false;
     /// <summary>True once the Archery mini-game tutorial has been completed.</summary>
     public bool ArcheryTutorialCompleted { get; set; } = false;
-    /// <summary>True when returning from the Frisbee mini-game so the hub shows the session-complete dialogue.</summary>
+    /// <summary>True when returning from the Frisbee mini-game so the plaza shows the session-complete dialogue.</summary>
     public bool FrisbeeSessionCompleted { get; set; } = false;
-    /// <summary>True when returning from the Archery mini-game so the hub shows the session-complete dialogue.</summary>
+    /// <summary>True when returning from the Archery mini-game so the plaza shows the session-complete dialogue.</summary>
     public bool ArcherySessionCompleted { get; set; } = false;
 
-    private GameManager() { }
+    private GameManager()
+    {
+        // This method is private to enforce the singleton pattern despite being empty
+    }
+
+    /// <summary>
+    /// Configures Meta Quest foveated rendering once at startup; the <see cref="OVRManager"/> values are static and
+    /// persist across scene loads. No-op in the Unity Editor to avoid OVRManager dependency errors.
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void ConfigureFoveatedRendering()
+    {
+        #if UNITY_ANDROID && !UNITY_EDITOR
+            OVRManager.useDynamicFoveatedRendering = true;
+            OVRManager.foveatedRenderingLevel = OVRManager.FoveatedRenderingLevel.HighTop;
+        #endif
+    }
 
     /// <summary>Returns the singleton instance, creating it on first call.</summary>
-    public static GameManager GetInstance()
-    {
-        _instance ??= new GameManager();
-
-        return _instance;
-    }
+    public static GameManager GetInstance() => _instance ??= new GameManager();
 
 
     /// <summary>
     /// Mini-game of the active scene, matched by exact scene name against <see cref="ArcheryScene"/> and
     /// <see cref="FrisbeeScene"/>.
     /// </summary>
-    /// <returns>The running mini-game, or null in the hub or any other scene.</returns>
+    /// <returns>The running mini-game, or null in the plaza or any other scene.</returns>
     public static MiniGames? GetCurrentMiniGame()
     {
         return SceneManager.GetActiveScene().name switch

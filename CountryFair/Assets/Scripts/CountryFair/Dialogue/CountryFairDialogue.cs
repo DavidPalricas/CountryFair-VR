@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 
 /// <summary>
-/// Drives the hub-world dialogue flow: plays the intro sequence on first visit, or
+/// Drives the plaza-world dialogue flow: plays the intro sequence on first visit, or
 /// congratulates the player after completing a mini-game session.
 /// Loads dialogue content from JSON via <see cref="UIDialog"/>. When the dialogue ends it invokes
 /// <see cref="_finishedDialogue"/> (which enables the post-intro UI, e.g. the wrist-menu tent
@@ -110,7 +110,7 @@ public class CountryFairDialogue : UIDialog
         if (_nothingToShow)
         {
             // The web app assumes a dialogue is up as soon as it sees "updateScene" land on
-            // the hub (a session-completed dialogue may be about to play here). When there
+            // the plaza (a session-completed dialogue may be about to play here). When there
             // is nothing to show, as here, tell it right away instead of leaving it waiting.
             webApp.PlayerFinishedDialogue();
 
@@ -250,7 +250,7 @@ public class CountryFairDialogue : UIDialog
     /// <summary>
     /// Picks <c>intro.json</c> while the intro is in progress; once it is completed, picks whichever
     /// mini-game's session-completed file matches the flag <see cref="GameManager"/> reports (clearing that
-    /// flag so the message isn't shown again on the next hub visit).
+    /// flag so the message isn't shown again on the next plaza visit).
     /// </summary>
     protected override void SetJSONFileName()
     {

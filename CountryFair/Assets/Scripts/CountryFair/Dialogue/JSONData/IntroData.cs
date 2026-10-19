@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// JSON structure for the hub-world intro dialogue, loaded from <c>intro.json</c>.
+/// JSON structure for the plaza-world intro dialogue, loaded from <c>intro.json</c>.
 /// </summary>
 public class IntroData : JSONData
 {

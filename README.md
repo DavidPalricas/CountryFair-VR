@@ -59,7 +59,7 @@ CountryFair/
 │   │       └── FrisbeeGame.unity      # Frisbee mini-game scene
 │   ├── Scripts/
 │   │   ├── General/
-│   │   │   ├── GameManagment/         # GameManager (singleton), AudioManager, CheatCodes, FoveatedRenderingController
+│   │   │   ├── GameManagment/         # GameManager (singleton, also configures foveated rendering), AudioManager, CheatCodes
 │   │   │   ├── Animals/               # Needs-based animal AI (AnimalUtility, AnimalState, AnimalWalk, AnimalEat, AnimalIdle)
 │   │   │   ├── Balloons/              # BalloonsSpawner, PopBalloon (hub-world decorative balloons)
 │   │   │   ├── Others/                # WanderingPerson, AnimatableState, TextAnim, ButtonPressed

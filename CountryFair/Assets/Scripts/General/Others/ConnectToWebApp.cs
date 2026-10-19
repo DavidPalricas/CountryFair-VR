@@ -81,7 +81,7 @@ public class ConnectToWebApp : MonoBehaviour
     /// <summary>Global accessor for the singleton established in <see cref="Awake"/>; null until the first <see cref="ConnectToWebApp"/> instance in the scene has run its Awake.</summary>
     public static ConnectToWebApp Instance => _instance;
 
-    /// <summary>Establishes the singleton and marks this object to persist across the hub/mini-game scene loads, so the web app connection survives scene transitions.</summary>
+    /// <summary>Establishes the singleton and marks this object to persist across the plaza/mini-game scene loads, so the web app connection survives scene transitions.</summary>
     private void Awake()
     {
         if (_instance == null)
