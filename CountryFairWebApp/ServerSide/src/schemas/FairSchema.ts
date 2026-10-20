@@ -11,9 +11,10 @@
     * `ClientSide/src/GameProps/Tents/tentOrder.ts`). `MapSchema` is required instead of a plain
     * `Map`/`Record` so Colyseus can track and patch per-key mutations to clients.
     *
-    * Not yet wired to a message handler: no `onMessage` currently writes to this map, so it is
-    * still broadcast empty. Once wired, the intent is for the web client to mutate it and the
-    * game client to read it, matching how `FairSceneRoom` prompts the web side to pick the order.
+    * Written by `FairSceneRoom`'s `"updateTentsOrder"` handler (see `applyTentOrder` in
+    * `fairRules.ts`) with the last order either side reported, keys lower-cased. Both clients
+    * still apply reorders from the `"updateTentsOrder"` message itself; this map is the room's
+    * memory of the order, so it is already part of the state a (re)joining client receives.
     */
    @type({ map: "string" }) tentOrders: MapSchema<string> = new MapSchema<string>();
 

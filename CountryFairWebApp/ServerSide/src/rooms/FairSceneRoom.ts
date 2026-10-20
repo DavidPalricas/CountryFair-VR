@@ -1,6 +1,8 @@
 import {Client } from "colyseus";
 import {CountryFairRoom} from "./CountryFairRoom.js";
 import {FairState } from "../schemas/FairSchema.js";
+import {isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeTentOrder} from "./messageValidation.js";
+import {applyProgress, applySceneChange, applyTentOrder} from "./fairRules.js";
 
 
 /**
@@ -18,15 +20,41 @@ export class FairSceneRoom extends CountryFairRoom {
   onCreate() {
       this.state = new FairState();
 
+      // Every handler below first checks the sender's platform and the payload shape (see
+      // `messageValidation.ts`) and silently drops the message otherwise, so a malformed or
+      // misdirected message can neither throw nor reach the other client.
+
+      // Both sides can reorder the tents (wrist menu / world on the headset, drag on the web).
+      // Only the validated copy is relayed, never the raw payload.
       this.onMessage("updateTentsOrder", (client, data) => {
-            this.broadcast("updateTentsOrder", data, { except: client })
+            if (!this.isSenderAllowed(client, "updateTentsOrder", ["web", "game"])) return;
+
+            const order = sanitizeTentOrder(data);
+
+            if (order === null) {
+                  console.warn(`Ignoring invalid "updateTentsOrder" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            applyTentOrder(this.state, order);
+
+            this.broadcast("updateTentsOrder", order, { except: client })
       });
 
       // Sent by the web client when the therapist types a cheat code there. Relayed to the
       // game client only (the web sender is excluded via `except`, and it's a two-client room),
       // which feeds it into `CheatCodes.OnWebCheatCode()` — the same `CheckCheatCode()` gating
       // used for keyboard-typed cheats (see `ConnectToWebApp.receiveCheatCode` in Unity).
-      this.onMessage<string>("cheatCode", (client, code) => {
+      this.onMessage("cheatCode", (client, data) => {
+            if (!this.isSenderAllowed(client, "cheatCode", ["web"])) return;
+
+            const code = sanitizeCheatCode(data);
+
+            if (code === null) {
+                  console.warn(`Ignoring invalid "cheatCode" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
             this.broadcast("cheatCode", code, { except: client })
       });
 
@@ -39,6 +67,8 @@ export class FairSceneRoom extends CountryFairRoom {
       // the next one finishes. The mini-game tutorial has its own, separate
       // "playerFinishedTutorial" message below (Unity sends them distinctly).
       this.onMessage("playerFinishedDialogue", (client) => {
+            if (!this.isSenderAllowed(client, "playerFinishedDialogue", ["game"])) return;
+
             this.broadcast("playerFinishedDialogue", {}, { except: client })
       });
 
@@ -46,6 +76,8 @@ export class FairSceneRoom extends CountryFairRoom {
       // mini-game equivalent of "playerFinishedDialogue" above, kept separate because Unity
       // sends them as distinct messages (`ConnectToWebApp.PlayerFinishedTutorial()`).
       this.onMessage("playerFinishedTutorial", (client) => {
+            if (!this.isSenderAllowed(client, "playerFinishedTutorial", ["game"])) return;
+
             this.broadcast("playerFinishedTutorial", {}, { except: client })
       });
 
@@ -54,49 +86,63 @@ export class FairSceneRoom extends CountryFairRoom {
       // one to name (see `classifyScene`/`MINI_GAME_LABELS` on the web client). Score/streak/
       // goal are reset whenever the new scene isn't the hub, so a mini-game's tutorial never
       // opens on the previous session's numbers.
-      this.onMessage<{ sceneName: string }>("updateScene", (client, data) => {
-            if (data.sceneName.toLowerCase() !== "countryfair") {
-                  this.state.score = 0;
-                  this.state.streak = 0;
-                  this.state.sessionGoal = 0;
+      this.onMessage("updateScene", (client, data) => {
+            if (!this.isSenderAllowed(client, "updateScene", ["game"])) return;
+
+            if (!isSceneUpdate(data)) {
+                  console.warn(`Ignoring invalid "updateScene" from client ${client.sessionId}:`, data);
+                  return;
             }
 
-            this.broadcast("updateScene", data, { except: client })
+            applySceneChange(this.state, data.sceneName);
+
+            this.broadcast("updateScene", { sceneName: data.sceneName }, { except: client })
       });
 
       // Score/streak/session goal while a mini-game is being played. Written to `state`
       // (rather than just relayed) so a web client that (re)connects mid-session gets the
       // current values immediately instead of waiting for the next change — see FairState.
       this.onMessage("updatePlayerProgressOnMiniGame", (client, data) => {
-            this.state.score = data.score;
-            this.state.streak = data.streak;
-            this.state.sessionGoal = data.goal;
+            if (!this.isSenderAllowed(client, "updatePlayerProgressOnMiniGame", ["game"])) return;
+
+            if (!isProgressUpdate(data)) {
+                  console.warn(`Ignoring invalid "updatePlayerProgressOnMiniGame" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            applyProgress(this.state, data);
       });
     }
  /**
   * Admits a client and, once both platforms are present, hands the fair state to the web side.
   *
   * `options.platform` must be `"web"` or `"game"`:
-  * - an unknown platform throws, which Colyseus turns into a failed join on the client;
-  * - a duplicate platform, or any client arriving after the pair is complete, is accepted by
-  *   the transport and then dropped with `client.leave()`.
+  * - it is normalized (trimmed, lower-cased) once, and only the normalized value is stored;
+  * - a missing or unknown platform throws, which Colyseus turns into a failed join on the client;
+  * - if that platform's slot is held by a dropped client still inside its reconnection window,
+  *   the newcomer takes the slot over (see `takeOverDroppedSlot`);
+  * - otherwise a duplicate platform, or any client arriving after the pair is complete, is
+  *   dropped with `client.leave()`, which Colyseus also reports as a failed join (`early_leave`).
   *
   * When the pair completes, `"gamejoined"` is sent to every client except the headset,
   * carrying the current {@link FairState}. That message is what flips the React client from
   * the waiting screen to the game screen.
   */
  onJoin(client: Client, options: any) {
-   if(this.allPlatformsentered) {
+    const clientPlatform = this.normalizePlatform(options?.platform);
+
+    if (clientPlatform === null) {
+       throw new Error(`Invalid platform: ${options?.platform}`);
+    }
+
+    // Before the "room full" check: a dropped client keeps the pair counted as complete.
+    this.takeOverDroppedSlot(clientPlatform);
+
+    if (this.allPlatformsentered) {
       console.warn(`Rejecting client ${client.sessionId} because all platforms have already joined.`);
       client.leave();
       return;
-   }
-
-    if (!this.isPlatformValid(options.platform)) {
-       throw new Error(`Invalid platform: ${options.platform}`);
     }
-
-    var clientPlatform : string = options.platform;
 
     if (this.clientsEntered[clientPlatform]) {
       console.warn(`Rejecting client ${client.sessionId} because platform ${clientPlatform} has already joined.`);
@@ -105,15 +151,14 @@ export class FairSceneRoom extends CountryFairRoom {
     }
 
     this.clientsEntered[clientPlatform] = true;
+    this.clientPlatforms[client.sessionId] = clientPlatform;
 
     if (clientPlatform === "game") {
       this.gameClientId = client.sessionId;
     }
 
-    this.state = new FairState();
-    this.message = "Seleciona a ordem das tendas";
-
-    console.log(`Client ${client.sessionId} joined with options:`, options);
+    // `state` is created once in `onCreate` and never replaced here, so a client that
+    // (re)joins mid-session receives the current score/streak/goal (see FairState).
 
     if (Object.values(this.clientsEntered).every(client => client === true)) {
       this.allPlatformsentered = true;
