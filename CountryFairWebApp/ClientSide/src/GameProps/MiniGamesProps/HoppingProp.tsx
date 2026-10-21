@@ -1,10 +1,10 @@
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { useFrame } from "@react-three/fiber";
-import type { Group, Object3D } from "three";
+import type { Group } from "three";
 
 type HoppingPropProps = {
-    /** The already-cloned GLTF scene; cloning is the caller's responsibility. */
-    object: Object3D;
+    /** The model to animate: a <primitive> of an already-cloned scene, or an instance. */
+    children: ReactNode;
     /** Rest position in the parent's local space; the hop is added on top of its Y. */
     position: [number, number, number];
     /** Base orientation of the model, in radians. */
@@ -31,7 +31,7 @@ type HoppingPropProps = {
  * pitch would be about the world X and a model with a different yaw would tilt sideways.
  */
 export function HoppingProp({
-    object,
+    children,
     position,
     rotation = [0, 0, 0],
     scale = 1,
@@ -82,7 +82,7 @@ export function HoppingProp({
         <group ref={hopRef} position={position}>
             <group rotation={rotation} scale={scale}>
                 <group ref={tiltRef}>
-                    <primitive object={object} />
+                    {children}
                 </group>
             </group>
         </group>

@@ -1,7 +1,9 @@
 import { useEffect, useMemo } from "react";
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { Group, PropertyBinding, Quaternion, Vector3 } from "three";
 import { clone as skeletonClone } from "three/examples/jsm/utils/SkeletonUtils.js";
+import { withLowCostMaterials } from "../Performance/lowCostMaterials";
+import { useThrottledAnimations } from "../Performance/useThrottledAnimations";
 
 /** Expects public/models/miniGamesProps/Frisbee/Dog.glb, with the idle clip below. */
 const DOG_MODEL = "/models/miniGamesProps/Frisbee/Dog.glb";
@@ -73,7 +75,7 @@ export function FrisbeeProps({ position, rotation = [0, 0, 0], scale = [1, 1, 1]
 
     // The dog is skinned: scene.clone() does not rebind the bones and every copy collapsed
     // into the same position. SkeletonUtils.clone fixes that.
-    const dog = useMemo(() => skeletonClone(dogScene), [dogScene]);
+    const dog = useMemo(() => withLowCostMaterials(skeletonClone(dogScene)), [dogScene]);
 
     /*
       holder carries the Unity transform (in Head space); inside it the mesh is turned back to
@@ -81,7 +83,7 @@ export function FrisbeeProps({ position, rotation = [0, 0, 0], scale = [1, 1, 1]
       export) is reset, since the Unity scale already flattens the disc.
     */
     const frisbee = useMemo(() => {
-        const mesh = frisbeeScene.clone();
+        const mesh = withLowCostMaterials(frisbeeScene.clone());
 
         mesh.traverse((node) => {
             if (node !== mesh) {
@@ -104,16 +106,16 @@ export function FrisbeeProps({ position, rotation = [0, 0, 0], scale = [1, 1, 1]
 
     // The root is the clone and not the original scene: each instance needs its own mixer
     // bound to its own bones, otherwise the animation only took on one of them.
-    const { actions } = useAnimations(dogAnimations, dog);
+    const { actions } = useThrottledAnimations(dogAnimations, dog);
 
     /*
       The animation moves the bones and not the model's root node, so parenting the frisbee to
       `dog` left it motionless relative to the body — it has to hang from the head bone. add()
       (not attach()) keeps FRISBEE_IN_HEAD as the local transform in bone space.
 
-      useEffect and not useLayoutEffect: when effects re-run (Vite hot reload), useAnimations'
-      own useEffect cleanup calls mixer.stopAllAction(). A layout effect plays the idle before
-      that cleanup and the dog froze; a passive effect declared after useAnimations always
+      useEffect and not useLayoutEffect: when effects re-run (Vite hot reload),
+      useThrottledAnimations' own useEffect cleanup calls mixer.stopAllAction(). A layout effect plays the idle before
+      that cleanup and the dog froze; a passive effect declared after that hook always
       runs after it.
     */
     useEffect(() => {

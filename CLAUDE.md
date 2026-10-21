@@ -554,6 +554,12 @@ a time without making progress:
 | 2 | `Assets/Plugins/Android/NetworkSecurityConfig.androidlib/` present and non-empty (`AndroidManifest.xml` + `project.properties` + `res/xml/network_security_config.xml` with `cleartextTrafficPermitted="true"`) | Android ≥ 9 (project targets SDK 32) blocks cleartext traffic by default. **This androidlib exists because the Meta XR SDK regenerates `Assets/Plugins/Android/AndroidManifest.xml` on every build** — any cleartext config edited directly into that file is silently lost on the next build. An empty/incomplete androidlib also breaks the Gradle build outright (`Could not find a part of the path ...aapt_friendly_merged_manifests...AndroidManifest.xml`) |
 | 3 | `insecureHttpOption` = **Always allowed** (Player Settings → Other Settings → Configuration → Allow downloads over HTTP) | `UnityWebRequest` (used internally for the Colyseus matchmaking HTTP request before the socket upgrade) refuses non-TLS URLs otherwise. **This setting is duplicated**: once in `ProjectSettings/ProjectSettings.asset` (global) and once as a full Player Settings snapshot inside `Assets/Settings/Build Profiles/Meta Quest.asset` (`m_PlayerSettingsYaml`). The build profile's copy wins whenever that profile is active — changing only the global value has no effect on the build |
 
+**Web clients on the hotspot:** the React client (`ClientSide/src/network/client.ts`) never hard-codes the server
+host — it uses the page's own `location.hostname` (override: `VITE_SERVER_URL`), so a therapist tablet that opens
+`http://192.168.137.1:5173` automatically talks to Colyseus on `192.168.137.1:2567`, the same IP the Unity build uses.
+`vite.config.ts` sets `server.host` / `preview.host: true` so Vite listens beyond `localhost`, and the Windows
+firewall must allow ports **5173** and **2567** on the hotspot network (usually classified as *Public*).
+
 Quick verification of what actually shipped in a built APK:
 ```bash
 aapt2 dump xmltree CountryFair.apk --file AndroidManifest.xml | grep -iE "cleartext|INTERNET"

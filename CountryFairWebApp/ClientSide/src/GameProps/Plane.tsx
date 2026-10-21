@@ -46,7 +46,7 @@ export function Plane({
     return (
         <mesh position={position} rotation={rotation}>
             <boxGeometry args={[size, planeHeight, size]} />
-            <meshStandardMaterial map={map} color={color} />
+            <meshLambertMaterial map={map} color={color} />
         </mesh>
     );
 }
