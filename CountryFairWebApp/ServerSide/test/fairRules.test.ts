@@ -1,6 +1,6 @@
 import assert from "assert";
 import { FairState } from "../src/schemas/FairSchema.js";
-import { applyProgress, applySceneChange, applyTentOrder, isHubScene } from "../src/rooms/fairRules.js";
+import { applyDialogueFinished, applyProgress, applySceneChange, applyTentOrder, applyTutorialFinished, isHubScene } from "../src/rooms/fairRules.js";
 
 function stateWithProgress(): FairState {
     const state = new FairState();
@@ -37,6 +37,24 @@ describe("fairRules", () => {
         applySceneChange(state, "countryfair");
 
         assert.deepStrictEqual([state.score, state.streak, state.sessionGoal], [7, 3, 10]);
+    });
+
+    it("tracks the scene, and re-arms the dialogue/tutorial flags on every scene load", () => {
+        const state = new FairState();
+
+        assert.deepStrictEqual([state.sceneName, state.dialogueActive, state.tutorialActive], ["", true, true]);
+
+        applyDialogueFinished(state);
+        applySceneChange(state, "ArcheryGame");
+        applyTutorialFinished(state);
+
+        assert.deepStrictEqual([state.sceneName, state.dialogueActive, state.tutorialActive], ["archerygame", false, false]);
+
+        applySceneChange(state, "frisbeegame");
+        assert.strictEqual(state.tutorialActive, true);
+
+        applySceneChange(state, "countryfair");
+        assert.deepStrictEqual([state.sceneName, state.dialogueActive], ["countryfair", true]);
     });
 
     it("applyTentOrder stores lower-cased keys and merges partial orders", () => {

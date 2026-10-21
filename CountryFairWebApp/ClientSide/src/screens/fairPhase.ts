@@ -54,12 +54,19 @@ export type FairPhaseState = {
 /** One action per thing the room can tell us; `useFairRoom` translates messages into these. */
 export type FairAction =
   | { type: "roomJoined" }
-  | { type: "gameJoined" }
+  | { type: "gameJoined"; snapshot?: SceneSnapshot }
   | { type: "gameDisconnected" }
   | { type: "dialogueFinished" }
   | { type: "tutorialFinished" }
   | { type: "sceneChanged"; sceneName: string }
   | { type: "progressChanged"; progress: Partial<MiniGameProgress> };
+
+/** The room's `sceneName` / `dialogueActive` / `tutorialActive` (see `FairState`) at the moment of joining. */
+export type SceneSnapshot = {
+  sceneName: string;
+  dialogueActive: boolean;
+  tutorialActive: boolean;
+};
 
 export const initialFairPhase: FairPhaseState = {
   phase: "waiting",
@@ -96,8 +103,23 @@ export function fairReducer(state: FairPhaseState, action: FairAction): FairPhas
     case "roomJoined":
       // A fresh seat knows nothing about the game yet: wait for "gamejoined" again.
       return { ...state, phase: "waiting" };
-    case "gameJoined":
-      return { ...state, phase: "hub", dialogueActive: true };
+    case "gameJoined": {
+      const { snapshot } = action;
+      const scene = snapshot?.sceneName ? classifyScene(snapshot.sceneName) : "hub";
+
+      // No scene reported yet (the game just connected): assume the intro, as before.
+      if (!snapshot || !snapshot.sceneName || scene === "hub") {
+        return { ...state, phase: "hub", miniGame: null, dialogueActive: snapshot?.sceneName ? snapshot.dialogueActive : true };
+      }
+
+      // Joined (or the game reconnected) mid-mini-game: resume from what the room remembers.
+      return {
+        ...state,
+        phase: "miniGame",
+        miniGame: scene ? MINI_GAME_LABELS[scene] : snapshot.sceneName,
+        tutorialActive: snapshot.tutorialActive,
+      };
+    }
     case "gameDisconnected":
       return { ...state, phase: "waiting" };
     case "dialogueFinished":

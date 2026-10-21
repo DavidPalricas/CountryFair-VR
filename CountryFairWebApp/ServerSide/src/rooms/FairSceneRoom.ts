@@ -1,8 +1,8 @@
 import {Client } from "colyseus";
 import {CountryFairRoom} from "./CountryFairRoom.js";
 import {FairState } from "../schemas/FairSchema.js";
-import {isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeTentOrder} from "./messageValidation.js";
-import {applyProgress, applySceneChange, applyTentOrder} from "./fairRules.js";
+import {isGameSnapshot, isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeTentOrder} from "./messageValidation.js";
+import {applyDialogueFinished, applyGameSnapshot, applyProgress, applySceneChange, applyTentOrder, applyTutorialFinished} from "./fairRules.js";
 
 
 /**
@@ -38,7 +38,11 @@ export class FairSceneRoom extends CountryFairRoom {
 
             applyTentOrder(this.state, order);
 
-            this.broadcast("updateTentsOrder", order, { except: client })
+            // Relay the room's merged order, not the sender's payload: with several clients
+            // dragging at once the payloads can be stale or partial, and relaying each one raw
+            // leaves every client holding a different order than `state.tentOrders`. The sender
+            // is skipped: its own keys were just applied, so the merge never contradicts it.
+            this.broadcast("updateTentsOrder", this.state.tentOrders.toJSON(), { except: client });
       });
 
       // Sent by the web client when the therapist types a cheat code there. Relayed to the
@@ -69,6 +73,8 @@ export class FairSceneRoom extends CountryFairRoom {
       this.onMessage("playerFinishedDialogue", (client) => {
             if (!this.isSenderAllowed(client, "playerFinishedDialogue", ["game"])) return;
 
+            applyDialogueFinished(this.state);
+
             this.broadcast("playerFinishedDialogue", {}, { except: client })
       });
 
@@ -77,6 +83,8 @@ export class FairSceneRoom extends CountryFairRoom {
       // sends them as distinct messages (`ConnectToWebApp.PlayerFinishedTutorial()`).
       this.onMessage("playerFinishedTutorial", (client) => {
             if (!this.isSenderAllowed(client, "playerFinishedTutorial", ["game"])) return;
+
+            applyTutorialFinished(this.state);
 
             this.broadcast("playerFinishedTutorial", {}, { except: client })
       });
@@ -97,6 +105,28 @@ export class FairSceneRoom extends CountryFairRoom {
             applySceneChange(this.state, data.sceneName);
 
             this.broadcast("updateScene", { sceneName: data.sceneName }, { except: client })
+      });
+
+      // Sent by `ConnectToWebApp.SyncGameState()` every time the game (re)joins. `updateScene`
+      // only fires on a scene *change*, so without this the room would never learn the scene
+      // the game started in, and would keep a stale one after the headset restarted. The web
+      // clients already got `"gamejoined"` (from `onJoin`, before this arrives), so they are
+      // sent the corrected snapshot too.
+      this.onMessage("syncGameState", (client, data) => {
+            if (!this.isSenderAllowed(client, "syncGameState", ["game"])) return;
+
+            if (!isGameSnapshot(data)) {
+                  console.warn(`Ignoring invalid "syncGameState" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            applyGameSnapshot(this.state, data);
+
+            this.broadcast("syncGameState", {
+                  sceneName: this.state.sceneName,
+                  dialogueActive: this.state.dialogueActive,
+                  tutorialActive: this.state.tutorialActive,
+            }, { except: client });
       });
 
       // Score/streak/session goal while a mini-game is being played. Written to `state`

@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
 import { getStateCallbacks } from "@colyseus/sdk";
 import { subscribeRoom, useConnectionStatus, type ConnectionStatus } from "./client";
-import { fairReducer, initialFairPhase, type FairPhaseState } from "../screens/fairPhase";
+import { fairReducer, initialFairPhase, type FairPhaseState, type SceneSnapshot } from "../screens/fairPhase";
 
 /**
  * Connects the room to `fairReducer`: every message and synced field the web client cares
@@ -35,7 +35,16 @@ export function useFairRoom(): FairPhaseState & { connectionStatus: ConnectionSt
 
       room.onMessage("gamejoined", () => {
         console.log("Received gamejoined message");
-        dispatch({ type: "gameJoined" });
+        // Read from the synced state rather than the message payload: it is what the room
+        // remembers of the scene/dialogue/tutorial, so joining mid-session lands on the right screen.
+        const { sceneName, dialogueActive, tutorialActive } = room.state;
+        dispatch({ type: "gameJoined", snapshot: { sceneName, dialogueActive, tutorialActive } });
+      }),
+      // The game's own report of where it is, sent right after it (re)joins. Arrives after
+      // "gamejoined", so it corrects whatever the room remembered from before.
+      room.onMessage("syncGameState", (snapshot: SceneSnapshot) => {
+        console.log("Received syncGameState message:", snapshot);
+        dispatch({ type: "gameJoined", snapshot });
       }),
       room.onMessage("gameDisconnected", () => {
         console.log("Received gameDisconnected message");

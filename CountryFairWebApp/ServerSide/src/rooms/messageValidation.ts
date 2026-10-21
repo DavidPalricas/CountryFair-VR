@@ -29,6 +29,12 @@ export interface ProgressUpdate {
     streak: number;
 }
 
+export interface GameSnapshot {
+    sceneName: string;
+    dialogueActive: boolean;
+    tutorialActive: boolean;
+}
+
 function isObject(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -40,6 +46,17 @@ function isNonNegativeInteger(value: unknown): value is number {
 /** `{ sceneName }` with a non-empty string, as sent by `ConnectToWebApp.UpdateScene()`. */
 export function isSceneUpdate(data: unknown): data is SceneUpdate {
     return isObject(data) && typeof data.sceneName === "string" && data.sceneName.trim() !== "";
+}
+
+/**
+ * `{ sceneName, dialogueActive, tutorialActive }` as sent by `ConnectToWebApp.SyncGameState()`
+ * right after the game joins: a non-empty scene name and two booleans.
+ */
+export function isGameSnapshot(data: unknown): data is GameSnapshot {
+    return isObject(data)
+        && isSceneUpdate(data)
+        && typeof data.dialogueActive === "boolean"
+        && typeof data.tutorialActive === "boolean";
 }
 
 /**

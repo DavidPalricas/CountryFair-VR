@@ -223,6 +223,35 @@ describe("FairSceneRoom", () => {
             assert.strictEqual(await echoed, false);
         });
 
+        it("relays the merged room order, not the sender's partial payload", async () => {
+            const { web, game } = await pair();
+
+            const first = game.waitForMessage("updateTentsOrder");
+            web.send("updateTentsOrder", { archery: "1", frisbee: "2", fishing: "3", duckgame: "4" });
+            await first;
+
+            // The game reports a partial order: the relay must be the full merged state.
+            const merged = web.waitForMessage("updateTentsOrder");
+            game.send("updateTentsOrder", { archery: "2", frisbee: "1" });
+
+            assert.deepStrictEqual(await merged, { archery: "2", frisbee: "1", fishing: "3", duckgame: "4" });
+        });
+
+        it("stores the game's snapshot without resetting progress, and relays it to the web", async () => {
+            const { web, game } = await pair();
+
+            await sendAndHandle(game, "updatePlayerProgressOnMiniGame", { score: 4, goal: 10, streak: 2 });
+
+            const relayed = web.waitForMessage("syncGameState");
+            game.send("syncGameState", { sceneName: "ArcheryGame", dialogueActive: false, tutorialActive: false });
+
+            assert.deepStrictEqual(await relayed, { sceneName: "archerygame", dialogueActive: false, tutorialActive: false });
+            assert.deepStrictEqual(
+                [room.state.sceneName, room.state.dialogueActive, room.state.tutorialActive, room.state.score],
+                ["archerygame", false, false, 4]
+            );
+        });
+
         it("relays the web's cheat code, trimmed, to the game", async () => {
             const { web, game } = await pair();
             const received = game.waitForMessage("cheatCode");

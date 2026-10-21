@@ -1,5 +1,5 @@
 import type { FairState } from "../schemas/FairSchema.js";
-import type { ProgressUpdate } from "./messageValidation.js";
+import type { GameSnapshot, ProgressUpdate } from "./messageValidation.js";
 
 /**
  * Business rules of {@link FairSceneRoom}, as pure state reducers: each one takes the room's
@@ -22,13 +22,40 @@ export function isHubScene(sceneName: string): boolean {
  * show how the last session ended.
  */
 export function applySceneChange(state: FairState, sceneName: string): void {
+    state.sceneName = sceneName.trim().toLowerCase();
+
     if (isHubScene(sceneName)) {
+        // A finished mini-game session plays a congratulations dialogue in the hub, and the
+        // game only reports the end of it (see `fairReducer` on the web client).
+        state.dialogueActive = true;
         return;
     }
 
+    state.tutorialActive = true;
     state.score = 0;
     state.streak = 0;
     state.sessionGoal = 0;
+}
+
+/**
+ * Overwrites where the survivor is with what the game reports on (re)connecting. Unlike
+ * `applySceneChange`, nothing is re-armed or reset: this is the game's actual state, not a
+ * scene load, so a reconnect mid-mini-game keeps its score and finished tutorial.
+ */
+export function applyGameSnapshot(state: FairState, snapshot: GameSnapshot): void {
+    state.sceneName = snapshot.sceneName.trim().toLowerCase();
+    state.dialogueActive = snapshot.dialogueActive;
+    state.tutorialActive = snapshot.tutorialActive;
+}
+
+/** The game dismissed a hub dialogue. */
+export function applyDialogueFinished(state: FairState): void {
+    state.dialogueActive = false;
+}
+
+/** The game dismissed the mini-game tutorial. */
+export function applyTutorialFinished(state: FairState): void {
+    state.tutorialActive = false;
 }
 
 /** Live mini-game progress, as reported by the game. */

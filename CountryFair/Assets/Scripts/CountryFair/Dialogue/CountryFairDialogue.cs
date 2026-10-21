@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -167,7 +168,13 @@ public class CountryFairDialogue : UIDialog
         }
 
         if (_currentDialogueState == DialogueState.INTRO_COMPLETED)
-        {   
+        {
+            // Cleared on dismissal rather than on load, so the flags keep reporting the message as
+            // up while it is on screen (read by ConnectToWebApp.SyncGameState on a reconnect).
+            GameManager gameManager = GameManager.GetInstance();
+            gameManager.FrisbeeSessionCompleted = false;
+            gameManager.ArcherySessionCompleted = false;
+
             _finishedDialogue.Invoke();
             Destroy(transform.parent.gameObject);
             return;
@@ -239,7 +246,7 @@ public class CountryFairDialogue : UIDialog
     }
 
     /// <summary>Returns <see cref="IntroData"/> while the intro is in progress, otherwise <see cref="SessionCompletedData"/>.</summary>
-    protected override System.Type GetJSONDataType()
+    protected override Type GetJSONDataType()
     {
         if (_currentDialogueState != DialogueState.INTRO_COMPLETED)
             return typeof(IntroData);
@@ -249,8 +256,8 @@ public class CountryFairDialogue : UIDialog
 
     /// <summary>
     /// Picks <c>intro.json</c> while the intro is in progress; once it is completed, picks whichever
-    /// mini-game's session-completed file matches the flag <see cref="GameManager"/> reports (clearing that
-    /// flag so the message isn't shown again on the next plaza visit).
+    /// mini-game's session-completed file matches the flag <see cref="GameManager"/> reports. The flag is
+    /// cleared in <see cref="NextStep"/> once the message is dismissed, so it isn't shown again on the next plaza visit.
     /// </summary>
     protected override void SetJSONFileName()
     {
@@ -265,14 +272,12 @@ public class CountryFairDialogue : UIDialog
         if (gameManager.FrisbeeSessionCompleted)
         {
             _jsonFileName = "frisbee_session_completed.json";
-            gameManager.FrisbeeSessionCompleted = false;
             return;
         }
 
         if (gameManager.ArcherySessionCompleted)
         {
             _jsonFileName = "archery_session_completed.json";
-            gameManager.ArcherySessionCompleted = false;
             return;
         }
 
