@@ -11,6 +11,12 @@ type CameraProps = {
     fov?: number;
     near?: number;
     far?: number;
+    /**
+     * Narrowest aspect ratio (width / height) the framing is designed for. On a narrower
+     * viewport (a phone held upright) the camera backs away from `lookAt` along its view line
+     * until it sees the same width it would at this aspect. Omitted: the camera never moves.
+     */
+    minAspect?: number;
 };
 
 
@@ -21,7 +27,7 @@ type CameraProps = {
  * projection be recomputed as the viewport changes; the two effects below cover the two
  * things R3F does not do for a camera it did not create itself.
  */
-export function Camera({ position, lookAt = [0, 0, 0], fov = 60, near = 0.1, far = 1000 }: CameraProps) {
+export function Camera({ position, lookAt = [0, 0, 0], fov = 60, near = 0.1, far = 1000, minAspect }: CameraProps) {
     const ref = useRef<PerspectiveCameraImpl>(null!);
     const set = useThree((state) => state.set);
     const size = useThree((state) => state.size);
@@ -39,12 +45,28 @@ export function Camera({ position, lookAt = [0, 0, 0], fov = 60, near = 0.1, far
       grows towards the edges it was the outer tents that ended up visibly deformed.
     */
     useLayoutEffect(() => {
-        ref.current.lookAt(lookAt[0], lookAt[1], lookAt[2]);
-        ref.current.aspect = size.width / size.height;
-        ref.current.updateProjectionMatrix();
-    }, [position[0], position[1], position[2], lookAt[0], lookAt[1], lookAt[2], fov, near, far, size.width, size.height]);
+        const aspect = size.width / size.height;
 
+        /*
+          The visible width at the lookAt point grows linearly with the distance to it, so
+          scaling the lookAt->position offset by minAspect / aspect restores the width lost on
+          a narrow viewport. Backing away rather than widening the FOV: an upright phone would
+          need a vertical FOV well past 100 degrees, which visibly stretches the outer tents.
+        */
+        const distanceScale = minAspect !== undefined && aspect < minAspect ? minAspect / aspect : 1;
+
+        ref.current.position.set(
+            lookAt[0] + (position[0] - lookAt[0]) * distanceScale,
+            lookAt[1] + (position[1] - lookAt[1]) * distanceScale,
+            lookAt[2] + (position[2] - lookAt[2]) * distanceScale,
+        );
+        ref.current.lookAt(lookAt[0], lookAt[1], lookAt[2]);
+        ref.current.aspect = aspect;
+        ref.current.updateProjectionMatrix();
+    }, [position[0], position[1], position[2], lookAt[0], lookAt[1], lookAt[2], fov, near, far, minAspect, size.width, size.height]);
+
+    // Position is not passed as a prop: the effect above owns it, since it depends on the aspect.
     return (
-        <perspectiveCamera ref={ref} position={position} fov={fov} near={near} far={far} />
+        <perspectiveCamera ref={ref} fov={fov} near={near} far={far} />
     );
 }

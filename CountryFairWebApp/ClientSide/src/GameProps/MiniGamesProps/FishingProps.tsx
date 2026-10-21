@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import { HoppingProp } from "./HoppingProp";
+import { withLowCostMaterials } from "../Performance/lowCostMaterials";
 
 
 /** Expects public/models/miniGamesProps/Fishing/Bucket.glb. */
@@ -33,11 +34,11 @@ export function FishingProps({ position, rotation = [0, 0, 0], scale = 1 }: Fish
 
     // Cloned so each tent gets its own node tree while sharing geometry and materials with the
     // cached original.
-    const bucketModel = useMemo(() => bucketScene.clone(), [bucketScene]);
+    const bucketModel = useMemo(() => withLowCostMaterials(bucketScene.clone()), [bucketScene]);
 
-    const fishRoadModel = useMemo(() => fishRoadScene.clone(), [fishRoadScene]);
+    const fishRoadModel = useMemo(() => withLowCostMaterials(fishRoadScene.clone()), [fishRoadScene]);
 
-    const redLionFishModel = useMemo(() => redLionFishScene.clone(), [redLionFishScene]);
+    const redLionFishModel = useMemo(() => withLowCostMaterials(redLionFishScene.clone()), [redLionFishScene]);
 
     return (
         <group position={position} rotation={rotation} scale={scale}>
@@ -47,7 +48,6 @@ export function FishingProps({ position, rotation = [0, 0, 0], scale = 1 }: Fish
             {/* The fish hops higher and faster than the ducks, with little time resting, so it
                 reads as a fish thrashing out of water. */}
             <HoppingProp
-                object={redLionFishModel}
                 position={[1, 0.12, 0]}
                 rotation={[0, Math.PI, 0]}
                 scale={0.045}
@@ -56,7 +56,9 @@ export function FishingProps({ position, rotation = [0, 0, 0], scale = 1 }: Fish
                 airTime={0.75}
                 tilt={0.4}
                 sway={0.14}
-            />
+            >
+                <primitive object={redLionFishModel} />
+            </HoppingProp>
 
         </group>
     );

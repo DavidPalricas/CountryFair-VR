@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -97,27 +98,23 @@ public class CountryFairDialogue : UIDialog
     }
 
     /// <summary>
-    /// Wires <see cref="_finishedDialogue"/> to <see cref="ConnectToWebApp.PlayerFinishedDialogue"/> (done here, after
-    /// every Awake has run, so <see cref="ConnectToWebApp.Instance"/> exists) and, when <see cref="_nothingToShow"/>,
-    /// finishes the dialogue right away and destroys the canvas.
+    /// When <see cref="_nothingToShow"/>, finishes the dialogue right away (enabling the post-dialogue UI) and destroys
+    /// the canvas. Otherwise wires <see cref="_finishedDialogue"/> to <see cref="ConnectToWebApp.PlayerFinishedDialogue"/>
+    /// (done here, after every Awake has run, so <see cref="ConnectToWebApp.Instance"/> exists).
     /// </summary>
     private void Start()
     {
-        ConnectToWebApp webApp = ConnectToWebApp.Instance;
- 
-         _finishedDialogue.AddListener(webApp.PlayerFinishedDialogue);
-        
         if (_nothingToShow)
         {
-            // The web app assumes a dialogue is up as soon as it sees "updateScene" land on
-            // the plaza (a session-completed dialogue may be about to play here). When there
-            // is nothing to show, as here, tell it right away instead of leaving it waiting.
-            webApp.PlayerFinishedDialogue();
-
+            // No web notification here: ConnectToWebApp.UpdateScene already told the room no
+            // dialogue would play, so the web app is not waiting for one to finish.
             _finishedDialogue.Invoke();
 
             Destroy(transform.parent.gameObject);
+            return;
         }
+
+        _finishedDialogue.AddListener(ConnectToWebApp.Instance.PlayerFinishedDialogue);
     }
 
     /// <summary>
@@ -167,7 +164,13 @@ public class CountryFairDialogue : UIDialog
         }
 
         if (_currentDialogueState == DialogueState.INTRO_COMPLETED)
-        {   
+        {
+            // Cleared on dismissal rather than on load, so the flags keep reporting the message as
+            // up while it is on screen (read by ConnectToWebApp.SyncGameState on a reconnect).
+            GameManager gameManager = GameManager.GetInstance();
+            gameManager.FrisbeeSessionCompleted = false;
+            gameManager.ArcherySessionCompleted = false;
+
             _finishedDialogue.Invoke();
             Destroy(transform.parent.gameObject);
             return;
@@ -239,7 +242,7 @@ public class CountryFairDialogue : UIDialog
     }
 
     /// <summary>Returns <see cref="IntroData"/> while the intro is in progress, otherwise <see cref="SessionCompletedData"/>.</summary>
-    protected override System.Type GetJSONDataType()
+    protected override Type GetJSONDataType()
     {
         if (_currentDialogueState != DialogueState.INTRO_COMPLETED)
             return typeof(IntroData);
@@ -249,8 +252,8 @@ public class CountryFairDialogue : UIDialog
 
     /// <summary>
     /// Picks <c>intro.json</c> while the intro is in progress; once it is completed, picks whichever
-    /// mini-game's session-completed file matches the flag <see cref="GameManager"/> reports (clearing that
-    /// flag so the message isn't shown again on the next plaza visit).
+    /// mini-game's session-completed file matches the flag <see cref="GameManager"/> reports. The flag is
+    /// cleared in <see cref="NextStep"/> once the message is dismissed, so it isn't shown again on the next plaza visit.
     /// </summary>
     protected override void SetJSONFileName()
     {
@@ -265,14 +268,12 @@ public class CountryFairDialogue : UIDialog
         if (gameManager.FrisbeeSessionCompleted)
         {
             _jsonFileName = "frisbee_session_completed.json";
-            gameManager.FrisbeeSessionCompleted = false;
             return;
         }
 
         if (gameManager.ArcherySessionCompleted)
         {
             _jsonFileName = "archery_session_completed.json";
-            gameManager.ArcherySessionCompleted = false;
             return;
         }
 

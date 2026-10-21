@@ -17,7 +17,7 @@ export function TentBg({ position, rotation = [0, 0, 0], dimensions = [1, 1, 1] 
     return (
         <mesh position={position} rotation={rotation} scale={1}>
             <boxGeometry args={dimensions} />
-            <meshStandardMaterial color="black" />
+            <meshLambertMaterial color="black" />
         </mesh>
 
     );
