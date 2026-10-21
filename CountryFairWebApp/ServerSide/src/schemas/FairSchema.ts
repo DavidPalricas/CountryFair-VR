@@ -31,4 +31,19 @@
    @type("number") score: number = 0;
    @type("number") streak: number = 0;
    @type("number") sessionGoal: number = 0;
+
+   /**
+    * Where the survivor is, so a web client that joins mid-session shows the right screen
+    * instead of waiting for the next `"updateScene"` / `"playerFinished*"` message (which only
+    * fire on a change). Written by `applySceneChange`, `applyDialogueFinished` and
+    * `applyTutorialFinished` in `fairRules.ts`.
+    *
+    * - `sceneName`: last scene the game reported, lower-cased; `""` until it reports one.
+    * - `dialogueActive`: a hub dialogue (intro / session completed) is assumed to be up. True
+    *   until the game says it finished, and re-armed on every return to the hub.
+    * - `tutorialActive`: same, for the mini-game tutorial; re-armed on every mini-game load.
+    */
+   @type("string") sceneName: string = "";
+   @type("boolean") dialogueActive: boolean = true;
+   @type("boolean") tutorialActive: boolean = true;
   }

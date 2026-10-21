@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using Colyseus;
 using System;
 using System.Collections.Generic;
@@ -173,6 +174,8 @@ public class ConnectToWebApp : MonoBehaviour
                     ReceiveCheatCode.Invoke(code);
                 });
 
+                SyncGameState();
+
                 // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this
                 // is being awaited would otherwise race the callback and throw on a second completion.
                 var disconnected = new TaskCompletionSource<bool>();
@@ -283,6 +286,44 @@ public class ConnectToWebApp : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Reports where the player currently is, right after every (re)join. <see cref="UpdateScene"/> only fires on a
+    /// scene change, so without this the room never learns the scene the game started in, and keeps a stale one
+    /// after a reconnect or restart. A web device that joins mid-session then lands on the right screen.
+    /// </summary>
+    /// <remarks>
+    /// Read from the <see cref="GameManager"/> session flags: a hub dialogue is up while the intro is not completed
+    /// or a session-completed message is still waiting to be dismissed (<see cref="CountryFairDialogue.NextStep"/>
+    /// clears those flags only then).
+    /// </remarks>
+    private async void SyncGameState()
+    {
+        if (_room != null)
+        {
+            GameManager gameManager = GameManager.GetInstance();
+
+            string sceneName = SceneManager.GetActiveScene().name.ToLower();
+            bool dialogueActive = !gameManager.IntroCompleted
+                                  || gameManager.FrisbeeSessionCompleted
+                                  || gameManager.ArcherySessionCompleted;
+            bool tutorialActive = GameManager.GetCurrentMiniGame() switch
+            {
+                GameManager.MiniGames.Archery => !gameManager.ArcheryTutorialCompleted,
+                GameManager.MiniGames.Frisbee => !gameManager.FrisbeeTutorialCompleted,
+                _ => false
+            };
+
+            try
+            {
+                await _room.Send("syncGameState", new { sceneName, dialogueActive, tutorialActive });
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send syncGameState ({exception.Message}).");
+            }
+        }
+    }
 
     /// <summary>Sends the player's current mini-game progress to the room, so the web app can mirror score/goal/streak live.</summary>
     /// <param name="score">Current score, as tracked by <c>ScoreAndStreakSystem</c>.</param>
