@@ -157,10 +157,12 @@ function App() {
   const showHubOverlay = phase === "waiting" || (phase === "hub" && dialogueActive);
   const showTutorialOverlay = phase === "miniGame" && tutorialActive;
   const showProgressOverlay = phase === "miniGame" && !tutorialActive;
+  // The fair scene is only on screen when no overlay covers it.
+  const sceneVisible = !showHubOverlay && !showTutorialOverlay && !showProgressOverlay;
 
   return (
     <div className="app-root">
-      <GameScreen />
+      <GameScreen active={sceneVisible} />
       <CheatCodePanel disabled={phase === "waiting"} />
       {showHubOverlay && (
         <WaitingScreen statusText={phase === "waiting" ? undefined : DIALOGUE_STATUS_TEXT} />

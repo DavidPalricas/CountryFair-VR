@@ -8,10 +8,14 @@ import { TentPlaceHolder } from "../GameProps/Tents/TentPlaceHolder";
 import { TENT_ROW_Z, TENT_SLOTS, TENT_Y, VIEWER_POSITION, type MiniGameType } from "../GameProps/Tents/tentSlots";
 import { orderFromFairState, slotIndexAtX, swapIntoSlot, type TentOrder } from "../GameProps/Tents/tentOrder";
 import { getRoom } from "../network/client";
-import{BigTop} from "../GameProps/BigTop";
+import { BigTop, BigTopInstances } from "../GameProps/BigTop";
+import { TentInstances } from "../GameProps/Tents/Tent";
+import { TentRibbonInstances } from "../GameProps/Tents/TentRibbon";
+import { DuckInstances } from "../GameProps/MiniGamesProps/DuckProps";
 import {FerrisWheel} from "../GameProps/FerrisWheel";
 import{Camera} from "../GameProps/Camera";
 import { Text3D } from "../GameProps/Text3D";
+import { DebugOverlay, DebugProbe } from "../components/DebugOverlay";
 import "./GameScreen.css";
 
 /** Left-to-right tent order the scene opens with; index is the slot index. */
@@ -42,6 +46,15 @@ const BIG_TOPS = [
     { position: [15, 6.0], rotationY: -0.9, scale: 1.95 },
 ] as const;
 
+/*
+  Test switches for GPU-limited devices (tablets), set through the page URL, e.g.
+  http://192.168.137.1:5173/?debug&dpr=1&noaa — `dpr` caps the render resolution and `noaa`
+  turns antialiasing off. Both default to the usual behaviour when absent.
+*/
+const URL_PARAMS = new URLSearchParams(location.search);
+const MAX_DPR = Number(URL_PARAMS.get("dpr")) || undefined;
+const ANTIALIAS = !URL_PARAMS.has("noaa");
+
 /** Footer shown in the bottom-right corner. */
 const COPYRIGHT = "© 2026 David Palricas";
 
@@ -57,8 +70,14 @@ const COPYRIGHT = "© 2026 David Palricas";
  * The reverse direction mirrors `PlaceHolderManager.OnOtherManagerUpdate()`: the same
  * `"updateTentsOrder"` message, broadcast by the server when the patient reorders the tents in
  * the headset, is applied here to keep this screen's `order` in sync.
+ *
+ * `active` is false while an overlay (waiting, dialogue, mini-game) covers the scene, which is
+ * most of a session. The canvas then only renders on demand — when something changes, such as
+ * a tent order arriving from the headset — instead of 60 times a second behind the overlay.
+ * That idle rendering kept the tablet hot, and a hot tablet throttles its CPU/GPU, so the scene
+ * was already slower by the time the therapist got to it.
  */
-export function GameScreen() {
+export function GameScreen({ active }: { active: boolean }) {
     const [order, setOrder] = useState<TentOrder>(INITIAL_ORDER);
     const [dragging, setDragging] = useState<MiniGameType | null>(null);
 
@@ -129,9 +148,20 @@ export function GameScreen() {
     return (
         <div className="game-screen">
 
-            <Canvas>
+            <Canvas
+                dpr={MAX_DPR ? [1, MAX_DPR] : undefined}
+                gl={{ antialias: ANTIALIAS }}
+                /* "demand" rather than "never": the hidden scene still renders once when it
+                   changes, so models get uploaded and shaders compiled behind the waiting
+                   screen, and the order stays current for when it is revealed. */
+                frameloop={active ? "always" : "demand"}
+            >
+                <DebugProbe />
                 {/* Looks at the centre of the row so all four tents are framed the same way. */}
-                <Camera position={VIEWER_POSITION} lookAt={[0, 1.4, TENT_ROW_Z]} />
+                {/* minAspect: the narrowest landscape screen tested (the 2000x1200 tablet) still frames
+                    the whole row; on anything narrower, such as a phone held upright, the
+                    camera backs away so the four tents keep fitting side by side. */}
+                <Camera position={VIEWER_POSITION} lookAt={[0, 1.4, TENT_ROW_Z]} minAspect={1.6} />
 
                 <Text3D position={[0, 4.8, TENT_ROW_Z]} fontSize={0.55} maxWidth={10}>
                     Clique e arraste nas tendas para trocar a ordem delas
@@ -148,27 +178,37 @@ export function GameScreen() {
                 <Plane position={[0, 0, 0]} size={80} texture="/textures/grass.jpg" textureRepeat={20} />
                 <FerrisWheel position={[0, 0, -10]} rotation={[0, Math.PI / 2, 0]} scale={0.4} animationSpeed={0.5} />
 
-                {BIG_TOPS.map(({ position, rotationY, scale }) => (
-                    <BigTop
-                        key={`${position[0]},${position[1]}`}
-                        position={[position[0], TENT_Y, position[1]]}
-                        rotation={[0, rotationY, 0]}
-                        scale={scale}
-                    />
-                ))}
+                {/* Models repeated across the scene are drawn as GPU instances (one draw call
+                    per mesh for every copy); each provider must wrap every use of its model. */}
+                <BigTopInstances>
+                    {BIG_TOPS.map(({ position, rotationY, scale }) => (
+                        <BigTop
+                            key={`${position[0]},${position[1]}`}
+                            position={[position[0], TENT_Y, position[1]]}
+                            rotation={[0, rotationY, 0]}
+                            scale={scale}
+                        />
+                    ))}
+                </BigTopInstances>
 
-                {order.map((type, slot) => (
-                    <MiniGameTent
-                        key={type}
-                        type={type}
-                        slot={slot}
-                        isDragging={dragging === type}
-                        hidden={dragging !== null && dragging !== type}
-                        dragPoint={dragPoint}
-                        onDragStart={setDragging}
-                        onDragEnd={handleDragEnd}
-                    />
-                ))}
+                <TentInstances>
+                    <TentRibbonInstances>
+                        <DuckInstances>
+                            {order.map((type, slot) => (
+                                <MiniGameTent
+                                    key={type}
+                                    type={type}
+                                    slot={slot}
+                                    isDragging={dragging === type}
+                                    hidden={dragging !== null && dragging !== type}
+                                    dragPoint={dragPoint}
+                                    onDragStart={setDragging}
+                                    onDragEnd={handleDragEnd}
+                                />
+                            ))}
+                        </DuckInstances>
+                    </TentRibbonInstances>
+                </TentInstances>
 
                 {dragging !== null && TENT_SLOTS.map((slot) => (
                     <TentPlaceHolder
@@ -181,6 +221,7 @@ export function GameScreen() {
 
             </Canvas>
 
+            <DebugOverlay />
             <small className="game-screen__copyright">{COPYRIGHT}</small>
         </div>
     );

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { LoopRepeat } from "three";
 import type { Group } from "three";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
+import { withLowCostMaterials } from "./Performance/lowCostMaterials";
+import { useThrottledAnimations } from "./Performance/useThrottledAnimations";
 
 /** Expects public/models/CountryFairWorker.glb, with its animation clips. */
 const FAIR_WORKER_MODEL = "/models/CountryFairWorker.glb";
@@ -42,11 +44,11 @@ export function FairWorker({
     const { scene, animations } = useGLTF(FAIR_WORKER_MODEL);
     // scene.clone() shares the skeleton between clones: every worker would be pinned to the
     // original's bones, in the same place. SkeletonUtils does the rebind.
-    const model = useMemo(() => cloneSkinned(scene), [scene]);
+    const model = useMemo(() => withLowCostMaterials(cloneSkinned(scene)), [scene]);
 
     // The mixer has to point at this clone, otherwise it animates the original skeleton.
     const modelRoot = useRef<Group>(null);
-    const { actions, names } = useAnimations(animations, modelRoot);
+    const { actions, names } = useThrottledAnimations(animations, modelRoot);
 
     useEffect(() => {
         const clipName = names.find((name) => name === animation || name.split("|").pop() === animation);

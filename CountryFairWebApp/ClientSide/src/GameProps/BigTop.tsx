@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
+import { createInstancedModel } from "./Performance/createInstancedModel";
 
 
 /** Expects public/models/BigTop.glb. */
@@ -19,6 +19,12 @@ const MODEL_SCALE = BASE_HEIGHT / MODEL_HEIGHT;
    into the ground in proportion to its scale. */
 const PIVOT_TO_BASE = 0.42 * MODEL_SCALE;
 
+/* The six big tops are drawn as instances: 4 draw calls for all of them instead of 4 each. */
+const BigTopModel = createInstancedModel(BIG_TOP_MODEL, 16);
+
+/** Must wrap every <BigTop> in the scene (see GameScreen). */
+export const BigTopInstances = BigTopModel.Provider;
+
 type BigTopProps = {
     /** World-space position of the tent base, thanks to the PIVOT_TO_BASE correction. */
     position: [number, number, number];
@@ -33,15 +39,9 @@ type BigTopProps = {
  * it stays out of R3F's interaction list and never interferes with the playable tents.
  */
 export function BigTop({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 1 }: BigTopProps) {
-    const { scene } = useGLTF(BIG_TOP_MODEL);
-
-    /* clone() shares geometry and materials with the original, so each extra tent costs a draw
-       call and not a copy of the mesh on the GPU. */
-    const model = useMemo(() => scene.clone(), [scene]);
-
     return (
         <group position={position} rotation={rotation} scale={scale}>
-            <primitive object={model} position={[0, PIVOT_TO_BASE, 0]} scale={MODEL_SCALE} />
+            <BigTopModel.Instance position={[0, PIVOT_TO_BASE, 0]} scale={MODEL_SCALE} />
         </group>
     );
 }

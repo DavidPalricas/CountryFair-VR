@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
+import { withLowCostMaterials } from "../Performance/lowCostMaterials";
 
 
 /** Expects public/models/miniGamesProps/Archery/Bow.glb. */
@@ -32,11 +33,11 @@ export function ArcheryProps({ position, rotation = [0, 0, 0], scale = 1 }: Arch
 
     // Cloned so each tent gets its own node tree while sharing geometry and materials with the
     // cached original.
-    const bowModel = useMemo(() => bowScene.clone(), [bowScene]);
+    const bowModel = useMemo(() => withLowCostMaterials(bowScene.clone()), [bowScene]);
 
-    const balloonModel = useMemo(() => balloonScene.clone(), [balloonScene]);
+    const balloonModel = useMemo(() => withLowCostMaterials(balloonScene.clone()), [balloonScene]);
 
-    const arrowModel = useMemo(() => arrowScene.clone(), [arrowScene]);
+    const arrowModel = useMemo(() => withLowCostMaterials(arrowScene.clone()), [arrowScene]);
 
     return (
         <group position={position} rotation={rotation} scale={scale}>

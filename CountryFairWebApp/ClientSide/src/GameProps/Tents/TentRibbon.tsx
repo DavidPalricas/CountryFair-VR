@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
+import { createInstancedModel } from "../Performance/createInstancedModel";
 import {Text3D} from "../Text3D";
 
 
@@ -22,6 +22,12 @@ const TEXT_Z = 0.03;
 // X) is 0.5196, so the centre falls at y ~ -0.008. With the primitive at y = 1 that gives this.
 const TEXT_Y = 0.99;
 
+/* One ribbon per tent, drawn as instances: 6 draw calls for all of them instead of 6 each. */
+const RibbonModel = createInstancedModel(RIBBON__MODEL, 8);
+
+/** Must wrap every <TentRibbon> in the scene (see GameScreen). */
+export const TentRibbonInstances = RibbonModel.Provider;
+
 
 type TentRibbon = {
     /** Position in the parent tent's local space. */
@@ -36,16 +42,11 @@ type TentRibbon = {
 
 /** Ribbon badge hanging on a tent, showing the number of the slot the tent currently occupies. */
 export function TentRibbon({ position, number, rotation = [0, 0, 0], scale = 1 }: TentRibbon) {
-    const { scene: scene } = useGLTF(RIBBON__MODEL);
-
-    // Cloning shares geometry and materials with the cached original: one ribbon per tent
-    // costs a draw call, not another mesh upload.
-    const model = useMemo(() => scene.clone(), [scene]);
-
     return (
         <group position={position} rotation={rotation} scale={scale}>
 
-            <primitive object={model} position={[0, 1, 0]} scale={MODEL_SCALE} rotation={[0, Math.PI, 0]} />
+            {/* hittable: the ribbon is part of the tent and starts a drag when grabbed. */}
+            <RibbonModel.Instance hittable position={[0, 1, 0]} scale={MODEL_SCALE} rotation={[0, Math.PI, 0]} />
 
             {/* x = 0 because the model is already centred on its origin (X bounding box: -0.5196 to +0.5196). */}
             <Text3D position={[0, TEXT_Y, TEXT_Z]} fontSize={0.3} maxWidth={1.5} anchorX="center" anchorY="middle">
