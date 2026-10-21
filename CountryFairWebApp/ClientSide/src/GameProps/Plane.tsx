@@ -2,6 +2,8 @@ import { useTexture } from "@react-three/drei";
 import { RepeatWrapping, SRGBColorSpace } from "three";
 import { useMemo } from "react";
 
+const GRASS_TEXTURE = "/textures/grass.jpg";
+
 type PlaneProps = {
     /** World-space position of the slab centre. */
     position: [number, number, number];
@@ -26,7 +28,7 @@ export function Plane({
     rotation = [0, 0, 0],
     size = 1,
     color,
-    texture = "/textures/grass.jpg",
+    texture = GRASS_TEXTURE,
     textureRepeat = 10,
 }: PlaneProps) {
     const planeHeight: number = 0.1;
@@ -50,3 +52,7 @@ export function Plane({
         </mesh>
     );
 }
+
+// Same as the models' `useGLTF.preload`: the download starts when this module is imported,
+// before the first render.
+useTexture.preload(GRASS_TEXTURE);
