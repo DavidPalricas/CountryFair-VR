@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using Colyseus;
 using System;
 using System.Collections.Generic;
@@ -173,6 +174,8 @@ public class ConnectToWebApp : MonoBehaviour
                     ReceiveCheatCode.Invoke(code);
                 });
 
+                SyncGameState();
+
                 // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this
                 // is being awaited would otherwise race the callback and throw on a second completion.
                 var disconnected = new TaskCompletionSource<bool>();
@@ -266,15 +269,21 @@ public class ConnectToWebApp : MonoBehaviour
     }
 
 
-    /// <summary>Notifies the room which Unity scene is now active, so the web app can mirror the player's location in the fair/mini-games.</summary>
+    /// <summary>
+    /// Notifies the room which Unity scene is now active, so the web app can mirror the player's location in the fair/mini-games.
+    /// Also reports whether a plaza dialogue is about to play, so returning to the plaza without one shows the fair right away
+    /// instead of a "dialogue" screen until <see cref="PlayerFinishedDialogue"/> arrives.
+    /// </summary>
     /// <param name="sceneName">Lower-case scene name (e.g. <c>"archerygame"</c>, <c>"frisbeegame"</c>).</param>
     public async void UpdateScene(string sceneName)
     {
         if (_room != null)
         {
+            bool dialogueActive = IsPlazaDialogueActive();
+
             try
             {
-                await _room.Send("updateScene", new { sceneName });
+                await _room.Send("updateScene", new { sceneName, dialogueActive });
             }
             catch (Exception exception)
             {
@@ -283,6 +292,52 @@ public class ConnectToWebApp : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Reports where the player currently is, right after every (re)join. <see cref="UpdateScene"/> only fires on a
+    /// scene change, so without this the room never learns the scene the game started in, and keeps a stale one
+    /// after a reconnect or restart. A web device that joins mid-session then lands on the right screen.
+    /// </summary>
+    private async void SyncGameState()
+    {
+        if (_room != null)
+        {
+            GameManager gameManager = GameManager.GetInstance();
+
+            string sceneName = SceneManager.GetActiveScene().name.ToLower();
+            
+            bool plazaDialogueActive = IsPlazaDialogueActive();
+            bool tutorialActive = GameManager.GetCurrentMiniGame() switch
+            {
+                GameManager.MiniGames.Archery => !gameManager.ArcheryTutorialCompleted,
+                GameManager.MiniGames.Frisbee => !gameManager.FrisbeeTutorialCompleted,
+                _ => false
+            };
+
+            try
+            {
+                await _room.Send("syncGameState", new { sceneName, dialogueActive = plazaDialogueActive, tutorialActive });
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send syncGameState ({exception.Message}).");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Whether a plaza dialogue is (or is about to be) up, read from the <see cref="GameManager"/> session flags: the intro
+    /// is not completed yet, or a session-completed message is still waiting to be dismissed
+    /// (<see cref="CountryFairDialogue.NextStep"/> clears those flags only then).
+    /// </summary>
+    private static bool IsPlazaDialogueActive()
+    {
+        GameManager gameManager = GameManager.GetInstance();
+
+        return !gameManager.IntroCompleted
+               || gameManager.FrisbeeSessionCompleted
+               || gameManager.ArcherySessionCompleted;
+    }
 
     /// <summary>Sends the player's current mini-game progress to the room, so the web app can mirror score/goal/streak live.</summary>
     /// <param name="score">Current score, as tracked by <c>ScoreAndStreakSystem</c>.</param>

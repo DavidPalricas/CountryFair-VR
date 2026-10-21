@@ -11,4 +11,9 @@ export default defineConfig({
 
   // Por defeito o Vite so expoe as variaveis VITE_*; SERVER_PORT precisa do prefixo SERVER_.
   envPrefix: ['VITE_', 'SERVER_'],
+
+  // Escuta em 0.0.0.0 para que o tablet do terapeuta, ligado ao hotspot do PC, consiga abrir
+  // a pagina em http://<IP do hotspot>:5173 (por defeito o Vite so aceita localhost).
+  server: { host: true },
+  preview: { host: true },
 })

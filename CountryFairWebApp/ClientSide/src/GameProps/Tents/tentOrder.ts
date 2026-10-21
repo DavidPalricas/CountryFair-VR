@@ -4,7 +4,7 @@
  * Unity's `PlaceHolderManager.UpdateElementPosition()`.
  */
 
-import { DROP_RADIUS, TENT_SLOTS, type MiniGameType } from "./tentSlots";
+import { DROP_RADIUS, TENT_NAMES, TENT_SLOTS, type MiniGameType } from "./tentSlots";
 
 /** The array index is the slot index: `order[2]` is the tent occupying slot 3. */
 export type TentOrder = MiniGameType[];
@@ -60,17 +60,39 @@ export function swapIntoSlot(order: TentOrder, tent: MiniGameType, targetSlot: n
  * Unity's `MINI_GAMES` enum serialises as SCREAMING_SNAKE_CASE (`element.miniGame.ToString()`),
  * while `MiniGameType` is lowercase, so the key is lower-cased here the same way
  * `PlaceHolderManager.OnOtherManagerUpdate()` lower-cases both sides before comparing.
+ *
+ * The payload comes off the network, so nothing in it is trusted: unknown tents and slots that
+ * are not a whole number in range are skipped. Each entry is applied as a swap (`swapIntoSlot`)
+ * rather than written over the slot, so the result is always a permutation of `current` — a
+ * duplicate or partial payload can never put one tent in two slots (duplicate React keys in
+ * `GameScreen`) or lose one. For a complete, valid payload the swaps land exactly on its order,
+ * because a tent already placed is never displaced by a later entry for a different slot.
+ *
+ * Returns the SAME reference when nothing changes, like `swapIntoSlot`.
  */
-export function orderFromFairState(fairState: Record<string, string>, current: TentOrder): TentOrder {
-    const next = [...current];
+export function orderFromFairState(fairState: unknown, current: TentOrder): TentOrder {
+    if (typeof fairState !== "object" || fairState === null) {
+        console.warn("Ignoring invalid tent order:", fairState);
+        return current;
+    }
 
-    Object.entries(fairState).forEach(([type, slot]) => {
+    let next = current;
+
+    Object.entries(fairState).forEach(([key, slot]) => {
+        const type = key.toLowerCase();
         const index = Number(slot) - 1;
 
-        if (index >= 0 && index < next.length) {
-            next[index] = type.toLowerCase() as MiniGameType;
+        if (!isMiniGameType(type) || !Number.isInteger(index)) {
+            console.warn(`Ignoring invalid tent order entry ${key}: ${slot}`);
+            return;
         }
+
+        next = swapIntoSlot(next, type, index);
     });
 
     return next;
+}
+
+function isMiniGameType(type: string): type is MiniGameType {
+    return Object.hasOwn(TENT_NAMES, type);
 }
