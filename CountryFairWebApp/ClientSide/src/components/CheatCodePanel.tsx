@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { getRoom } from "../network/client";
+import { sendToRoom } from "../network/client";
 import "./CheatCodePanel.css";
 
 type CheatCodePanelProps = {
@@ -41,9 +41,7 @@ export function CheatCodePanel({ disabled = false }: CheatCodePanelProps) {
             return;
         }
 
-        getRoom()
-            .then((room) => room.send("cheatCode", trimmed))
-            .catch((err) => console.error("Falha ao enviar o cheat code:", err));
+        sendToRoom("cheatCode", trimmed);
 
         setCode("");
     };
