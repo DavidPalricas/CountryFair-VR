@@ -58,9 +58,9 @@ export function useFairRoom(): FairPhaseState & { connectionStatus: ConnectionSt
         console.log("Received playerFinishedTutorial message");
         dispatch({ type: "tutorialFinished" });
       }),
-      room.onMessage("updateScene", (data: { sceneName: string }) => {
-        console.log("Received updateScene message:", data.sceneName);
-        dispatch({ type: "sceneChanged", sceneName: data.sceneName });
+      room.onMessage("updateScene", (data: { sceneName: string; dialogueActive?: boolean }) => {
+        console.log("Received updateScene message:", data);
+        dispatch({ type: "sceneChanged", sceneName: data.sceneName, dialogueActive: data.dialogueActive });
       }),
     ];
 

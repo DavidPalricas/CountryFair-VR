@@ -8,26 +8,28 @@ import type { GameSnapshot, ProgressUpdate } from "./messageValidation.js";
  * closures means they can be unit-tested on a bare `new FairState()`, without booting a server.
  */
 
-/** Unity scene name of the fair hub (`ConnectToWebApp.UpdateScene()` sends it lower-cased). */
+/** Unity scene name of the plaza (`ConnectToWebApp.UpdateScene()` sends it lower-cased). */
 export const HUB_SCENE = "countryfair";
 
-/** Whether `sceneName` is the fair hub rather than a mini-game. Case- and whitespace-insensitive. */
+/** Whether `sceneName` is the plaza rather than a mini-game. Case- and whitespace-insensitive. */
 export function isHubScene(sceneName: string): boolean {
     return sceneName.trim().toLowerCase() === HUB_SCENE;
 }
 
 /**
  * Resets score/streak/goal when the player enters a mini-game, so its tutorial never opens on
- * the previous session's numbers. Returning to the hub keeps them, so the web client can still
+ * the previous session's numbers. Returning to the plaza keeps them, so the web client can still
  * show how the last session ended.
+ *
+ * `dialogueActive` is the game's own answer to "will a plaza dialogue play now?" (a finished
+ * session's congratulations message), read from `GameManager` before the scene loads. When the
+ * game does not say, a dialogue is assumed, and its `"playerFinishedDialogue"` clears it later.
  */
-export function applySceneChange(state: FairState, sceneName: string): void {
+export function applySceneChange(state: FairState, sceneName: string, dialogueActive: boolean = true): void {
     state.sceneName = sceneName.trim().toLowerCase();
 
     if (isHubScene(sceneName)) {
-        // A finished mini-game session plays a congratulations dialogue in the hub, and the
-        // game only reports the end of it (see `fairReducer` on the web client).
-        state.dialogueActive = true;
+        state.dialogueActive = dialogueActive;
         return;
     }
 
@@ -48,7 +50,7 @@ export function applyGameSnapshot(state: FairState, snapshot: GameSnapshot): voi
     state.tutorialActive = snapshot.tutorialActive;
 }
 
-/** The game dismissed a hub dialogue. */
+/** The game dismissed a plaza dialogue. */
 export function applyDialogueFinished(state: FairState): void {
     state.dialogueActive = false;
 }

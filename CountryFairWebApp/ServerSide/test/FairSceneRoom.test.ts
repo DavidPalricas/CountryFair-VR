@@ -190,7 +190,7 @@ describe("FairSceneRoom", () => {
             assert.deepStrictEqual([room.state.score, room.state.streak, room.state.sessionGoal], [5, 3, 10]);
         });
 
-        it("resets progress when the game enters a mini-game, not the hub", async () => {
+        it("resets progress when the game enters a mini-game, not the plaza", async () => {
             const { game } = await pair();
 
             await sendAndHandle(game, "updatePlayerProgressOnMiniGame", { score: 5, goal: 10, streak: 3 });
@@ -274,7 +274,17 @@ describe("FairSceneRoom", () => {
 
             const scene = web.waitForMessage("updateScene");
             game.send("updateScene", { sceneName: "frisbeegame", extra: "dropped" });
-            assert.deepStrictEqual(await scene, { sceneName: "frisbeegame" });
+            assert.deepStrictEqual(await scene, { sceneName: "frisbeegame", dialogueActive: false });
+        });
+
+        it("relays the game's word on whether a plaza dialogue plays on return", async () => {
+            const { web, game } = await pair();
+
+            const scene = web.waitForMessage("updateScene");
+            game.send("updateScene", { sceneName: "countryfair", dialogueActive: false });
+
+            assert.deepStrictEqual(await scene, { sceneName: "countryfair", dialogueActive: false });
+            assert.strictEqual(room.state.dialogueActive, false);
         });
 
         it("ignores invalid payloads", async () => {

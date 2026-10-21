@@ -2,7 +2,7 @@
  import { Schema, type, MapSchema } from "@colyseus/schema";
 
  /**
-  * Synced state of the fair hub scene ({@link FairSceneRoom}) — the network contract between
+  * Synced state of the plaza scene ({@link FairSceneRoom}) — the network contract between
   * the Unity headset (`platform: "game"`) and the React client (`platform: "web"`).
   */
  export class FairState extends Schema {
@@ -25,7 +25,7 @@
     * (re)connects mid-session receives the current values immediately on join instead of
     * waiting for the next score/streak change.
     *
-    * Reset to 0 whenever `"updateScene"` reports a non-hub scene, so a new mini-game never
+    * Reset to 0 whenever `"updateScene"` reports a non-plaza scene, so a new mini-game never
     * opens on the previous one's numbers while its tutorial is still playing.
     */
    @type("number") score: number = 0;
@@ -39,8 +39,8 @@
     * `applyTutorialFinished` in `fairRules.ts`.
     *
     * - `sceneName`: last scene the game reported, lower-cased; `""` until it reports one.
-    * - `dialogueActive`: a hub dialogue (intro / session completed) is assumed to be up. True
-    *   until the game says it finished, and re-armed on every return to the hub.
+    * - `dialogueActive`: a plaza dialogue (intro / session completed) is assumed to be up. True
+    *   until the game says it finished, and re-armed on every return to the plaza.
     * - `tutorialActive`: same, for the mini-game tutorial; re-armed on every mini-game load.
     */
    @type("string") sceneName: string = "";

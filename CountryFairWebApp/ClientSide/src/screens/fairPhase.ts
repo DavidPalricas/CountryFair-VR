@@ -2,7 +2,7 @@ import type { ConnectionStatus } from "../network/client";
 import type { MiniGameProgress } from "./WatingScreen";
 import { classifyScene, MINI_GAME_LABELS } from "./miniGameScene";
 
-/** Status line shown while the survivor is on the hub's own dialogue (intro, session-completed
+/** Status line shown while the survivor is on the plaza's own dialogue (intro, session-completed
  * message, or a future per-mini-game cutscene) instead of looking at the fair — the tents on
  * screen would not reflect what the headset shows during that time, so the therapist gets
  * this instead of a stale/empty scene. Deliberately generic: which dialogue is playing does
@@ -35,14 +35,14 @@ export type Phase = "waiting" | "hub" | "miniGame";
 
 export type FairPhaseState = {
   phase: Phase;
-  // True while the hub's own dialogue (intro/session-completed) is assumed to be up.
+  // True while the plaza's own dialogue (intro/session-completed) is assumed to be up.
   // Irrelevant during "waiting" (the waiting overlay is already shown for a different reason)
   // or "miniGame" (see `tutorialActive` instead), so its value doesn't matter there.
   dialogueActive: boolean;
   // True while the current mini-game's tutorial is assumed to be up. Only meaningful once
-  // `phase` is "miniGame" (see `dialogueActive` for the hub's own dialogues).
+  // `phase` is "miniGame" (see `dialogueActive` for the plaza's own dialogues).
   tutorialActive: boolean;
-  // Label of the mini-game currently loaded (e.g. "Arco e Flecha"), or null in the hub. Drives
+  // Label of the mini-game currently loaded (e.g. "Arco e Flecha"), or null in the plaza. Drives
   // the mini-game overlay's status text.
   miniGame: string | null;
   // Score/streak/session goal for the mini-game currently being played. Kept up to date via
@@ -58,7 +58,7 @@ export type FairAction =
   | { type: "gameDisconnected" }
   | { type: "dialogueFinished" }
   | { type: "tutorialFinished" }
-  | { type: "sceneChanged"; sceneName: string }
+  | { type: "sceneChanged"; sceneName: string; dialogueActive?: boolean }
   | { type: "progressChanged"; progress: Partial<MiniGameProgress> };
 
 /** The room's `sceneName` / `dialogueActive` / `tutorialActive` (see `FairState`) at the moment of joining. */
@@ -79,7 +79,7 @@ export const initialFairPhase: FairPhaseState = {
 /**
  * The web client's view of where the survivor is, as a pure function of the room's messages.
  *
- * `"gamejoined"` (sent once both platforms are in the room) moves to the hub. The game shows
+ * `"gamejoined"` (sent once both platforms are in the room) moves to the plaza. The game shows
  * its intro dialogue right after connecting, so `dialogueActive` starts `true` there and stays
  * so until `"playerFinishedDialogue"` — there is no matching "started" message; the game is the
  * source of truth for when the *next* dialogue begins and simply does not send this until it
@@ -87,16 +87,14 @@ export const initialFairPhase: FairPhaseState = {
  * phase goes back to "waiting" until it rejoins.
  *
  * `"updateScene"` (`ConnectToWebApp.UpdateScene`, sent on every scene load) is what actually
- * drives `phase`: `classifyScene` tells the fair hub apart from the four mini-games. Entering a
+ * drives `phase`: `classifyScene` tells the plaza apart from the four mini-games. Entering a
  * mini-game starts on the tutorial assumption (`tutorialActive`, mirroring `dialogueActive` in
- * the hub — the tutorial is a UIDialog too, just relayed through its own
+ * the plaza — the tutorial is a UIDialog too, just relayed through its own
  * `"playerFinishedTutorial"` message) and switches to the live progress panel once that
- * arrives. Moving back to the hub re-arms `dialogueActive`, because a mini-game session that
- * just finished plays a congratulations dialogue there — `CountryFairDialogue` only knows which
- * case it is once its `Awake()` runs, after the scene (and this message) already loaded. When
- * nothing is going to play, it sends `"playerFinishedDialogue"` immediately instead of a
- * separate "no dialogue" message — from the web's perspective an instantly-finished dialogue
- * and no dialogue at all are the same thing: stop waiting now.
+ * arrives. Moving back to the plaza takes `dialogueActive` from the message itself: the game
+ * reads its `GameManager` flags before loading the scene and says whether a finished session's
+ * congratulations dialogue is about to play, so returning without one shows the fair straight
+ * away. A message without it (older game build) falls back to assuming a dialogue.
  */
 export function fairReducer(state: FairPhaseState, action: FairAction): FairPhaseState {
   switch (action.type) {
@@ -130,7 +128,7 @@ export function fairReducer(state: FairPhaseState, action: FairAction): FairPhas
       const scene = classifyScene(action.sceneName);
 
       if (scene === "hub") {
-        return { ...state, phase: "hub", miniGame: null, dialogueActive: true };
+        return { ...state, phase: "hub", miniGame: null, dialogueActive: action.dialogueActive ?? true };
       }
 
       return {
@@ -157,7 +155,7 @@ export type Overlay = {
 
 /**
  * Picks the overlay for the current phase. While the server connection itself is down,
- * nothing on screen can be trusted to be current, so the hub overlay covers everything,
+ * nothing on screen can be trusted to be current, so the plaza overlay covers everything,
  * whatever `phase` was.
  */
 export function overlayFor(state: FairPhaseState, connectionStatus: ConnectionStatus): Overlay | null {
