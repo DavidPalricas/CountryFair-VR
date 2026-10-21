@@ -27,12 +27,12 @@ const MINI_GAME_SCENE_NAMES: Partial<Record<MiniGameType, string>> = {
     frisbee: "frisbeegame",
 };
 
-/** Lower-cased hub scene name, matching `SceneManager.LoadScene("CountryFair")`. */
+/** Lower-cased plaza scene name, matching `SceneManager.LoadScene("CountryFair")`. */
 const HUB_SCENE_NAME = "countryfair";
 
 /**
  * Classifies a Unity scene name — as sent in the room's `"updateScene"` message
- * (`ConnectToWebApp.UpdateScene`) — into the fair hub or one of the mini-games
+ * (`ConnectToWebApp.UpdateScene`) — into the plaza or one of the mini-games
  * `GameManager.GoToMiniGame` actually implements. Lower-cases the input before comparing
  * (`GameManager` already sends it lower-cased, but this stays exact-match-safe either way).
  */

@@ -31,7 +31,7 @@ describe("fairRules", () => {
         assert.deepStrictEqual([state.score, state.streak, state.sessionGoal], [0, 0, 0]);
     });
 
-    it("applySceneChange keeps progress when returning to the hub", () => {
+    it("applySceneChange keeps progress when returning to the plaza", () => {
         const state = stateWithProgress();
 
         applySceneChange(state, "countryfair");
@@ -55,6 +55,16 @@ describe("fairRules", () => {
 
         applySceneChange(state, "countryfair");
         assert.deepStrictEqual([state.sceneName, state.dialogueActive], ["countryfair", true]);
+    });
+
+    it("applySceneChange takes the game's word on whether a plaza dialogue plays", () => {
+        const state = new FairState();
+
+        applySceneChange(state, "countryfair", false);
+        assert.strictEqual(state.dialogueActive, false);
+
+        applySceneChange(state, "countryfair", true);
+        assert.strictEqual(state.dialogueActive, true);
     });
 
     it("applyTentOrder stores lower-cased keys and merges partial orders", () => {

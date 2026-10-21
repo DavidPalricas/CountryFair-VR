@@ -21,6 +21,9 @@ export const MAX_CHEAT_CODE_LENGTH = 32;
 
 export interface SceneUpdate {
     sceneName: string;
+    // Whether a plaza dialogue (session-completed message) is about to play. Optional so an
+    // older build that only sends `sceneName` still falls back to assuming one is.
+    dialogueActive?: boolean;
 }
 
 export interface ProgressUpdate {
@@ -43,9 +46,14 @@ function isNonNegativeInteger(value: unknown): value is number {
     return typeof value === "number" && Number.isInteger(value) && value >= 0;
 }
 
-/** `{ sceneName }` with a non-empty string, as sent by `ConnectToWebApp.UpdateScene()`. */
+/**
+ * `{ sceneName, dialogueActive? }` with a non-empty scene name and, if present, a boolean
+ * `dialogueActive`, as sent by `ConnectToWebApp.UpdateScene()`.
+ */
 export function isSceneUpdate(data: unknown): data is SceneUpdate {
-    return isObject(data) && typeof data.sceneName === "string" && data.sceneName.trim() !== "";
+    return isObject(data)
+        && typeof data.sceneName === "string" && data.sceneName.trim() !== ""
+        && (data.dialogueActive === undefined || typeof data.dialogueActive === "boolean");
 }
 
 /**

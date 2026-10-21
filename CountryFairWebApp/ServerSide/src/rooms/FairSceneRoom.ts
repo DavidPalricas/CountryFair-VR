@@ -6,7 +6,7 @@ import {applyDialogueFinished, applyGameSnapshot, applyProgress, applySceneChang
 
 
 /**
- * Room for the fair hub scene, where the patient picks the order of the mini-game tents.
+ * Room for the plaza scene, where the patient picks the order of the mini-game tents.
  *
  * Registered as `fairsceneroom` (see `app.config.ts`) and joined by one Unity headset build
  * (`platform: "game"`) and up to three React clients (`platform: "web"`).
@@ -89,11 +89,12 @@ export class FairSceneRoom extends CountryFairRoom {
             this.broadcast("playerFinishedTutorial", {}, { except: client })
       });
 
-      // Sent by `ConnectToWebApp.UpdateScene()` on every scene load (hub or mini-game). This
+      // Sent by `ConnectToWebApp.UpdateScene()` on every scene load (plaza or mini-game). This
       // is what tells the web client which screen to show — and, for a mini-game scene, which
       // one to name (see `classifyScene`/`MINI_GAME_LABELS` on the web client). Score/streak/
-      // goal are reset whenever the new scene isn't the hub, so a mini-game's tutorial never
-      // opens on the previous session's numbers.
+      // goal are reset whenever the new scene isn't the plaza, so a mini-game's tutorial never
+      // opens on the previous session's numbers. For the plaza, the game also says whether a
+      // dialogue is about to play, so the web shows the fair right away when none is.
       this.onMessage("updateScene", (client, data) => {
             if (!this.isSenderAllowed(client, "updateScene", ["game"])) return;
 
@@ -102,9 +103,12 @@ export class FairSceneRoom extends CountryFairRoom {
                   return;
             }
 
-            applySceneChange(this.state, data.sceneName);
+            applySceneChange(this.state, data.sceneName, data.dialogueActive);
 
-            this.broadcast("updateScene", { sceneName: data.sceneName }, { except: client })
+            this.broadcast("updateScene", {
+                  sceneName: data.sceneName,
+                  dialogueActive: this.state.dialogueActive,
+            }, { except: client })
       });
 
       // Sent by `ConnectToWebApp.SyncGameState()` every time the game (re)joins. `updateScene`

@@ -8,7 +8,7 @@ const DEFAULT_STATUS_TEXT = "Esperando que ligue ao jogo";
 /** Default signboard title, used everywhere except the mini-game overlays (see `title` below). */
 const DEFAULT_TITLE = "Bem vindo ao Country Fair VR";
 
-/** Which host character illustrates the overlay. Zeca hosts the fair hub, Carny Wise hosts everything mini-game-related (tutorial, live progress) — matching who greets the patient on each screen in the headset. */
+/** Which host character illustrates the overlay. Zeca hosts the plaza, Carny Wise hosts everything mini-game-related (tutorial, live progress) — matching who greets the patient on each screen in the headset. */
 type Character = "zeca" | "carnyWise";
 
 const CHARACTER_IMAGES: Record<Character, string> = {
@@ -36,11 +36,11 @@ type WaitingScreenProps = {
      * duplicating markup.
      */
     statusText?: string;
-    /** Host character shown next to the status text/progress. Defaults to Zeca (fair hub). */
+    /** Host character shown next to the status text/progress. Defaults to Zeca (plaza). */
     character?: Character;
     /**
      * Overrides the signboard title, e.g. "Mini Jogo: Frisbee" — lets the mini-game overlay
-     * name which game is loaded in place of the generic hub greeting.
+     * name which game is loaded in place of the generic plaza greeting.
      */
     title?: string;
     /**
@@ -57,7 +57,7 @@ type WaitingScreenProps = {
  * Purely presentational — `App` decides when it is visible, which `statusText`/`character` to
  * pass, and whether to pass `progress`. Zeca Bigodes and Carny Wise are the same host
  * characters that appear in the VR game itself, so the patient and therapist see a consistent
- * guide on both devices: Zeca for the fair hub, Carny Wise for anything mini-game-related.
+ * guide on both devices: Zeca for the plaza, Carny Wise for anything mini-game-related.
  */
 export function WaitingScreen({ statusText = DEFAULT_STATUS_TEXT, character = "zeca", title = DEFAULT_TITLE, progress }: WaitingScreenProps) {
    return (

@@ -22,7 +22,7 @@ type CheatCodePanelProps = {
  *
  * The input field is always visible (no toggle button to reveal it first) so it does not
  * compete with the fair scene for attention; it is not tied to `phase` in `App.tsx` beyond
- * `disabled` because a cheat code can be relevant in the hub, a mini-game's tutorial or a
+ * `disabled` because a cheat code can be relevant in the plaza, a mini-game's tutorial or a
  * mini-game session alike.
  */
 export function CheatCodePanel({ disabled = false }: CheatCodePanelProps) {

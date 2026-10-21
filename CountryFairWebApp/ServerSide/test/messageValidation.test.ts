@@ -60,6 +60,11 @@ describe("messageValidation", () => {
             assert.strictEqual(isSceneUpdate({}), false);
             assert.strictEqual(isSceneUpdate(undefined), false);
         });
+
+        it("accepts an optional boolean dialogueActive", () => {
+            assert.strictEqual(isSceneUpdate({ sceneName: "countryfair", dialogueActive: false }), true);
+            assert.strictEqual(isSceneUpdate({ sceneName: "countryfair", dialogueActive: "no" }), false);
+        });
     });
 
     describe("isProgressUpdate", () => {

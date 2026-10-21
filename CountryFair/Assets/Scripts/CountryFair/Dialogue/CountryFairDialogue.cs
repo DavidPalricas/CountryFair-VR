@@ -98,27 +98,23 @@ public class CountryFairDialogue : UIDialog
     }
 
     /// <summary>
-    /// Wires <see cref="_finishedDialogue"/> to <see cref="ConnectToWebApp.PlayerFinishedDialogue"/> (done here, after
-    /// every Awake has run, so <see cref="ConnectToWebApp.Instance"/> exists) and, when <see cref="_nothingToShow"/>,
-    /// finishes the dialogue right away and destroys the canvas.
+    /// When <see cref="_nothingToShow"/>, finishes the dialogue right away (enabling the post-dialogue UI) and destroys
+    /// the canvas. Otherwise wires <see cref="_finishedDialogue"/> to <see cref="ConnectToWebApp.PlayerFinishedDialogue"/>
+    /// (done here, after every Awake has run, so <see cref="ConnectToWebApp.Instance"/> exists).
     /// </summary>
     private void Start()
     {
-        ConnectToWebApp webApp = ConnectToWebApp.Instance;
- 
-         _finishedDialogue.AddListener(webApp.PlayerFinishedDialogue);
-        
         if (_nothingToShow)
         {
-            // The web app assumes a dialogue is up as soon as it sees "updateScene" land on
-            // the plaza (a session-completed dialogue may be about to play here). When there
-            // is nothing to show, as here, tell it right away instead of leaving it waiting.
-            webApp.PlayerFinishedDialogue();
-
+            // No web notification here: ConnectToWebApp.UpdateScene already told the room no
+            // dialogue would play, so the web app is not waiting for one to finish.
             _finishedDialogue.Invoke();
 
             Destroy(transform.parent.gameObject);
+            return;
         }
+
+        _finishedDialogue.AddListener(ConnectToWebApp.Instance.PlayerFinishedDialogue);
     }
 
     /// <summary>

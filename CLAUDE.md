@@ -44,7 +44,7 @@ CountryFair/
 │   │   │   ├── FerrisWheel/          # CabinScript, RotateWheel
 │   │   │   ├── Others/               # Utility behaviors (WanderingPerson, AnimatableState, TextAnim, ButtonPressed, ConnectToWebApp)
 │   │   │   └── UIDialog/             # JSON-driven dialogue system base class (UIDialog, JSONData)
-│   │   ├── CountryFair/              # Hub world (central fair area)
+│   │   ├── CountryFair/              # Plaza (central fair area)
 │   │   │   ├── Management/           # CountryFairAudioManager, CountryFairCheatCodes
 │   │   │   ├── Dialogue/             # CountryFairDialogue, JSONData/ (IntroData, SessionCompletedData)
 │   │   │   ├── Tents/                # Tent personalization system (see section 11)
@@ -62,7 +62,7 @@ CountryFair/
 │   │   │   │   │   └── Emotions/        # Emotion display system (see section 9)
 │   │   │   │   │       ├── Display/         # EmotionDisplay (base), ExpressionDisplay, SliderDisplay
 │   │   │   │   │       └── ServerConections/ # ConnectionManager, ServerListener
-│   │   │   │   └── ReturnToFair.cs      # Scene transition back to hub (single file, not a folder)
+│   │   │   │   └── ReturnToFair.cs      # Scene transition back to the plaza (single file, not a folder)
 │   │   │   ├── ArcheryGame/          # Archery mini-game module
 │   │   │   │   ├── GameManagment/    # ArcheryGameManager, ArcheryAudioManager, ArcheryCheatCodes
 │   │   │   │   ├── ArcheryStuff/     # BowHandTracking, Arrow, TrajectoryLine
@@ -177,7 +177,7 @@ AnimalState (base for all animal states)
 **Dialog Flow:**
 ```
 UIDialog (base)
-├── CountryFairDialogue (hub world intro/session complete)
+├── CountryFairDialogue (plaza intro/session complete)
 │   ├── IntroData (Zeca Bigodes + Carny Wise dialogue)
 │   └── SessionCompletedData (congratulations message)
 ├── Tutorial (mini-game tutorials)
@@ -408,7 +408,7 @@ is a small floating panel (mounted unconditionally in `App.tsx`) where the thera
 via `room.send("cheatCode", code)`.
 
 **Gating:** in mini-games every cheat except `return` and `tutorial` is ignored until the tutorial is completed.
-In the hub, every `CountryFairCheatCodes` cheat except `intro` requires the intro to be completed.
+In the plaza, every `CountryFairCheatCodes` cheat except `intro` requires the intro to be completed.
 
 **Registered Cheats (all mini-games):**
 | Code | Effect |
@@ -424,7 +424,7 @@ In the hub, every `CountryFairCheatCodes` cheat except `intro` requires the intr
 | `f` + expression | Switch to FACE mode and show it — `fhappy`, `fneutral`, `fsad`, `fangry`, `fdisgust`, `fsurprise`, `ffear` |
 | `positive` / `negative` | Switch to SLIDER mode and nudge the mood bar |
 
-**Registered Cheats (CountryFair hub):**
+**Registered Cheats (CountryFair plaza):**
 | Code | Effect |
 |------|--------|
 | `intro` | Complete the intro dialogue |
@@ -450,7 +450,7 @@ OrderableTentElement : MonoBehaviour        (OrderableTentElement.cs — [Requir
 ├── SnapToCurrentPlaceHolder()              virtual
 ├── SnapToPlaceHolderNextFixedUpdate()      coroutine: waits one FixedUpdate so the Grabbable
 │                                           finishes writing throw velocity, then snaps
-├── MiniGameTent                            the 3D tent in the hub world
+├── MiniGameTent                            the 3D tent in the plaza
 └── TentPanel                               the 2D card inside the wrist menu
 
 TentPlaceHolder : MonoBehaviour             slot marker; `number` drives the ribbon badge
@@ -571,7 +571,7 @@ aapt2 dump xmltree CountryFair.apk --file AndroidManifest.xml | grep -iE "cleart
 
 ### Scene Flow
 ```
-CountryFair (Hub)
+CountryFair (Plaza)
 ├── CountryFairDialogue (intro) ──playerFinishedIntro──> WristMenu + post-intro elements
 ├── Animal AI (wandering NPCs)
 ├── PlayerScale (giant mode toggle)
@@ -678,7 +678,7 @@ public bool IntroCompleted { get; set; } = false;
 public bool FrisbeeTutorialCompleted { get; set; } = false;
 public bool ArcheryTutorialCompleted { get; set; } = false;
 public bool FrisbeeSessionCompleted { get; set; } = false;  // set on return from the mini-game,
-public bool ArcherySessionCompleted { get; set; } = false;  // triggers the hub's session-complete dialogue
+public bool ArcherySessionCompleted { get; set; } = false;  // triggers the plaza's session-complete dialogue
 ```
 
 ### Serializable Enum Naming
