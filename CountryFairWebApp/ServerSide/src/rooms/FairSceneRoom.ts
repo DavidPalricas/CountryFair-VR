@@ -8,8 +8,8 @@ import {applyProgress, applySceneChange, applyTentOrder} from "./fairRules.js";
 /**
  * Room for the fair hub scene, where the patient picks the order of the mini-game tents.
  *
- * Registered as `fairsceneroom` (see `app.config.ts`) and joined by exactly two clients:
- * the Unity headset build (`platform: "game"`) and the React client (`platform: "web"`).
+ * Registered as `fairsceneroom` (see `app.config.ts`) and joined by one Unity headset build
+ * (`platform: "game"`) and up to three React clients (`platform: "web"`).
  * Its synced state is a {@link FairState}.
  */
 export class FairSceneRoom extends CountryFairRoom {
@@ -114,19 +114,18 @@ export class FairSceneRoom extends CountryFairRoom {
       });
     }
  /**
-  * Admits a client and, once both platforms are present, hands the fair state to the web side.
+  * Admits a client and, whenever the game and a web client are both present, hands the fair state to that web client.
   *
   * `options.platform` must be `"web"` or `"game"`:
   * - it is normalized (trimmed, lower-cased) once, and only the normalized value is stored;
   * - a missing or unknown platform throws, which Colyseus turns into a failed join on the client;
   * - if that platform's slot is held by a dropped client still inside its reconnection window,
   *   the newcomer takes the slot over (see `takeOverDroppedSlot`);
-  * - otherwise a duplicate platform, or any client arriving after the pair is complete, is
-  *   dropped with `client.leave()`, which Colyseus also reports as a failed join (`early_leave`).
+  * - otherwise a client whose platform has no free slot (1 game, 3 web) is dropped with `client.leave()`, which Colyseus also reports as a failed join (`early_leave`).
   *
-  * When the pair completes, `"gamejoined"` is sent to every client except the headset,
-  * carrying the current {@link FairState}. That message is what flips the React client from
-  * the waiting screen to the game screen.
+  * `"gamejoined"` carries the current {@link FairState} and goes to each web client: all of
+  * them when the game arrives, or just the newcomer when the game is already there. That message
+  * is what flips the React client from the waiting screen to the game screen.
   */
  onJoin(client: Client, options: any) {
     const clientPlatform = this.normalizePlatform(options?.platform);
@@ -138,19 +137,12 @@ export class FairSceneRoom extends CountryFairRoom {
     // Before the "room full" check: a dropped client keeps the pair counted as complete.
     this.takeOverDroppedSlot(clientPlatform);
 
-    if (this.allPlatformsentered) {
-      console.warn(`Rejecting client ${client.sessionId} because all platforms have already joined.`);
+    if (this.isPlatformFull(clientPlatform)) {
+      console.warn(`Rejecting client ${client.sessionId} because all ${clientPlatform} slots are taken.`);
       client.leave();
       return;
     }
 
-    if (this.clientsEntered[clientPlatform]) {
-      console.warn(`Rejecting client ${client.sessionId} because platform ${clientPlatform} has already joined.`);
-      client.leave();
-      return;
-    }
-
-    this.clientsEntered[clientPlatform] = true;
     this.clientPlatforms[client.sessionId] = clientPlatform;
 
     if (clientPlatform === "game") {
@@ -160,16 +152,24 @@ export class FairSceneRoom extends CountryFairRoom {
     // `state` is created once in `onCreate` and never replaced here, so a client that
     // (re)joins mid-session receives the current score/streak/goal (see FairState).
 
-    if (Object.values(this.clientsEntered).every(client => client === true)) {
-      this.allPlatformsentered = true;
-      console.log('All platforms have joined. Streaming the game state to web device');
+    if (this.gameClientId === '') {
+      return;
+    }
 
-      this.clients.forEach((client) => {
-        if (client.sessionId !== this.gameClientId) {
-          console.log(`Sending game state to client ${client.sessionId}`);
-          client.send("gamejoined", this.state);
+    if (clientPlatform === "game") {
+      // The game just arrived: every web client already waiting gets the state.
+      console.log('Game joined. Streaming the game state to the web devices');
+
+      this.clients.forEach((other) => {
+        if (this.platformOf(other) === "web") {
+          console.log(`Sending game state to client ${other.sessionId}`);
+          other.send("gamejoined", this.state);
         }
       });
+    } else {
+      // A web device joined a session whose game is already connected.
+      console.log(`Sending game state to client ${client.sessionId}`);
+      client.send("gamejoined", this.state);
     }
    }
 }

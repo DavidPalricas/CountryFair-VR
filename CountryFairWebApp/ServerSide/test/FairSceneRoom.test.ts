@@ -75,20 +75,37 @@ describe("FairSceneRoom", () => {
             await assert.rejects(colyseus.connectTo(room, { platform: 42 }));
         });
 
-        it("fails the join of a second client of a platform that already joined", async () => {
+        it("admits up to three web clients and fails the fourth", async () => {
+            await join("web");
+            await join("web");
             await join("web");
 
             await assert.rejects(join("web"));
             await wait(100);
-            assert.strictEqual(room.clients.length, 1);
+            assert.strictEqual(room.clients.length, 3);
         });
 
-        it("fails the join of any client arriving after the pair is complete", async () => {
+        it("fails the join of a second game client", async () => {
             await pair();
 
             await assert.rejects(join("game"));
             await wait(100);
             assert.strictEqual(room.clients.length, 2);
+        });
+
+        it("sends \"gamejoined\" to every web client, whether they joined before or after the game", async () => {
+            const web1 = await join("web");
+            const web2 = await join("web");
+            const joined1 = web1.waitForMessage("gamejoined");
+            const joined2 = web2.waitForMessage("gamejoined");
+
+            await join("game");
+            await joined1;
+            await joined2;
+
+            const web3 = await join("web");
+
+            await web3.waitForMessage("gamejoined");
         });
     });
 

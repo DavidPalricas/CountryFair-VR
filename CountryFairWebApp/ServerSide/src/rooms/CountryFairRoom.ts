@@ -3,9 +3,8 @@ import { Room, type Client, type Deferred } from "colyseus";
 /**
  * Base room for every Country Fair scene.
  *
- * The session is a pairing between exactly two devices: the Meta Quest headset running the
- * Unity game (`platform: "game"`) and the therapist's browser running the React client
- * (`platform: "web"`). This class only holds the pairing bookkeeping; the concrete rooms
+ * The session is one Meta Quest headset running the Unity game (`platform: "game"`) plus up to
+ * three therapist browsers running the React client (`platform: "web"`). This class only holds the pairing bookkeeping; the concrete rooms
  * (see {@link FairSceneRoom}) enforce it in their lifecycle hooks.
  */
 export class CountryFairRoom extends Room {
@@ -20,16 +19,23 @@ export class CountryFairRoom extends Room {
     static reconnectionSeconds: number = 20;
 
     /**
-     * Which platforms are already in the room. Guards against a second browser tab or a
-     * second headset stealing a slot that belongs to the other half of the pair.
+     * How many clients of each platform the room admits. A second headset can never steal the
+     * game slot, while several therapist devices (PC, tablet, phone) may watch the same session.
      */
-     protected clientsEntered: Record<string, boolean> = {
-        ['web']: false,
-        ['game']: false
+    protected static platformCapacity: Record<string, number> = {
+        ['web']: 3,
+        ['game']: 1
     };
 
-    /** True once every platform in {@link platforms} has joined; the room is then closed to newcomers. */
-    protected allPlatformsentered: boolean = false;
+    /** How many admitted clients (including dropped ones still holding a slot) are of `platform`. */
+    protected countOf(platform: string) : number {
+        return Object.values(this.clientPlatforms).filter((p) => p === platform).length;
+    }
+
+    /** Whether every slot of `platform` is taken. */
+    protected isPlatformFull(platform: string) : boolean {
+        return this.countOf(platform) >= CountryFairRoom.platformCapacity[platform];
+    }
 
     /**
      * Session id of the headset client, so state broadcasts can target everyone *but* the
@@ -49,13 +55,13 @@ export class CountryFairRoom extends Room {
      */
     protected pendingReconnections: Record<string, Deferred<Client>> = {};
 
-    maxClients = 10;
+    maxClients = Object.values(CountryFairRoom.platformCapacity).reduce((a, b) => a + b, 0);
 
     /**
      * Canonical form of a raw `options.platform`, or `null` when it is missing, not a string or
      * not one the room accepts. The value arrives verbatim from the client join options, so it is
      * trimmed and lower-cased; callers must use the returned value for all bookkeeping, so that
-     * e.g. `"Game"` and `"game"` share the same slot in {@link clientsEntered}.
+     * e.g. `"Game"` and `"game"` share the same slots in {@link platformCapacity}.
      */
     protected normalizePlatform(platform: unknown) : string | null {
         if (typeof platform !== "string") {
@@ -171,10 +177,6 @@ export class CountryFairRoom extends Room {
 
         delete this.clientPlatforms[sessionId];
         delete this.pendingReconnections[sessionId];
-
-        this.clientsEntered[platform] = false;
-
-        this.allPlatformsentered = false;
 
         if (platform === "game") {
             this.gameClientId = '';
