@@ -80,6 +80,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentPersonalizationMenu
   _menu: {fileID: 6164811303617022347}
+  _toggleDistanceGrab:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7295901922328504591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -998,6 +1001,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4702036808029770243}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Size.x
+      value: 298.14597
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.x
+      value: 3.3298876
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.y
+      value: 0.0000028127129
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.z
+      value: 0.000008060062
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1196,6 +1215,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4702036808029770243}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Size.x
+      value: 293.69135
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.x
+      value: 0.6446801
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.y
+      value: 0.0000005583968
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.z
+      value: 0.0000015604859
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1386,6 +1421,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7812301607991243422}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Size.x
+      value: 292.83896
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.x
+      value: 0.59718287
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.y
+      value: -13.789743
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.z
+      value: -11.688862
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1511,6 +1562,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7812301607991243422}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Size.x
+      value: 297.51474
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.x
+      value: 1.2931664
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.y
+      value: -13.792012
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.z
+      value: -11.688861
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1636,6 +1703,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7812301607991243422}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Size.x
+      value: 289.99106
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.x
+      value: -1.0043566
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.y
+      value: -13.789628
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.z
+      value: -11.688867
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1761,6 +1844,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4702036808029770243}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Size.x
+      value: 295.53375
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.x
+      value: 1.2234721
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.y
+      value: 0.0000009702939
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.z
+      value: 0.000002961439
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1967,6 +2066,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4702036808029770243}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Size.x
+      value: 295.03384
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.x
+      value: 0.09424363
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.y
+      value: 0.00000007969833
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
+      propertyPath: m_Center.z
+      value: 0.0000002281555
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: 2fc8095224e63154cb7f5403e069f51e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2175,6 +2290,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7812301607991243422}
     m_Modifications:
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Size.x
+      value: 286.4553
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.x
+      value: 0.5046963
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.y
+      value: -13.789743
+      objectReference: {fileID: 0}
+    - target: {fileID: 229354859357865816, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
+      propertyPath: m_Center.z
+      value: -11.688863
+      objectReference: {fileID: 0}
     - target: {fileID: 1589122911957050386, guid: dbaa0b039d4e8c04989669343df067c1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
