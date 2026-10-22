@@ -1,8 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Keeps a world-space UI panel positioned in front of the player's center eye every LateUpdate.
-/// Replaces the deleted static <c>DisplayInPlayerFront</c> component for the Frisbee scene UI.
+/// Locks an object to the player's view: every LateUpdate it is placed at a fixed offset from the center eye and turned
+/// with it. Used on the Frisbee prefab and on the archery Bow prefab, so both stay in front of the player.
+/// Replaces the deleted static <c>DisplayInPlayerFront</c> component.
 /// </summary>
 /// <remarks>Execution order 1000 guarantees this runs after all VR camera updates.</remarks>
 [DefaultExecutionOrder(1000)]
@@ -12,7 +13,7 @@ public class FollowPlayerHead : MonoBehaviour
     [SerializeField]
     private Transform _centerEyeTransform;
 
-    /// <summary>Distance in front of the player at which the panel is placed.</summary>
+    /// <summary>Distance in front of the player at which the object is placed.</summary>
     [Header("Positioning Settings")]
     [SerializeField]
      private float _distanceFromPlayer = 2.0f;
@@ -24,38 +25,42 @@ public class FollowPlayerHead : MonoBehaviour
     /// <summary>Lateral offset relative to the eye's right direction.</summary>
     [SerializeField]
     private float _horizontalOffset = 0f;
-    
-    /// <summary>Validates the eye reference and snaps the panel to its target so it does not slide in on the first frame.</summary>
+
+    /// <summary>
+    /// Rotation relative to the head: the authored rotation, captured in <see cref="Awake"/>. Taken as-is rather
+    /// than relative to the head's pose at that moment, so it does not depend on where the player happened to be looking.
+    /// </summary>
+    private Quaternion _rotationOffset = Quaternion.identity;
+
+    /// <summary>Validates the eye reference and snaps the object to its target so it does not slide in on the first frame.</summary>
     private void Awake()
     {
-           if (_centerEyeTransform == null)
+        if (_centerEyeTransform == null)
         {
             Debug.LogError("Center Eye Transform is not assigned in the inspector.");
+            enabled = false;
             return;
         }
 
-        transform.SetPositionAndRotation(CalculateBaseTarget(), Quaternion.identity);
+        _rotationOffset = transform.rotation;
+
+        HandlePosition();
     }
 
-    /// <summary>Repositions the panel after the camera rig has updated the head pose this frame.</summary>
+    /// <summary>Repositions the object after the camera rig has updated the head pose this frame.</summary>
     private void LateUpdate()
     {
         HandlePosition();
     }
 
+    /// <summary>
+    /// Locks the object to the head: the offset is expressed in the eye's local space and the rotation follows the eye,
+    /// so it stays at the same spot in the player's view whichever way they turn or tilt the head.
+    /// </summary>
     private void HandlePosition()
     {
-        transform.position = CalculateBaseTarget();
-    }
-
-    /// <summary>Eye position offset along the eye's own right/forward/up axes, so the panel follows head pitch and roll too.</summary>
-    /// <remarks>Only the position follows the head; the rotation stays at the identity set in <see cref="Awake"/>.</remarks>
-    private Vector3 CalculateBaseTarget()
-    {
-        Vector3 target = _centerEyeTransform.position;
-        target += _centerEyeTransform.right * _horizontalOffset;
-        target += _centerEyeTransform.forward * _distanceFromPlayer;
-        target += _centerEyeTransform.up * _heightOffset;
-        return target;
+        Vector3 offset = new(_horizontalOffset, _heightOffset, _distanceFromPlayer);
+        transform.SetPositionAndRotation(_centerEyeTransform.TransformPoint(offset),
+            _centerEyeTransform.rotation * _rotationOffset);
     }
 }
