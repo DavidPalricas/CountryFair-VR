@@ -571,6 +571,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8081419596165574741, guid: eedd57c97e812504a80d240556d7d421, type: 3}
   m_PrefabInstance: {fileID: 23941418}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &27331749
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 27331750}
+  m_Layer: 0
+  m_Name: BowPlaceHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &27331750
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27331749}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.104, z: 0.1321}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1070428901}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &27974100
 GameObject:
   m_ObjectHideFlags: 0
@@ -1594,6 +1625,21 @@ MonoBehaviour:
       - m_Target: {fileID: 1754926365}
         m_TargetAssemblyTypeName: Arrow, Assembly-CSharp
         m_MethodName: Launch
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _setBowPositioningMode:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2384919264122894294}
+        m_TargetAssemblyTypeName: Bow, Assembly-CSharp
+        m_MethodName: SetBowPositioningMode
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4242,8 +4288,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.41974, b: 0.24827647, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.41975138, b: 0.24828786, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4197331, b: 0.24826959, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.41973397, b: 0.24827045, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -9243,6 +9289,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8081419596165574741, guid: eedd57c97e812504a80d240556d7d421, type: 3}
   m_PrefabInstance: {fileID: 1069141541}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1070428901 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8214833762145513999, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+  m_PrefabInstance: {fileID: 2135016402}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1077984581
 GameObject:
   m_ObjectHideFlags: 0
@@ -10737,6 +10788,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 18b6927b63ca33940b04d66275525969, type: 3}
   m_PrefabInstance: {fileID: 1291058959}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1293215571 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8214833762145502731, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+  m_PrefabInstance: {fileID: 2135016402}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1295375180
 GameObject:
   m_ObjectHideFlags: 0
@@ -11000,6 +11056,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6856789205069589247, guid: 6cb9acbccf4dd53458d86697126f70f0, type: 3}
   m_PrefabInstance: {fileID: 1308559411}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1311811838
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1311811839}
+  m_Layer: 0
+  m_Name: BowPlaceHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1311811839
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311811838}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.104, z: 0.1321}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1293215571}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1316263873 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3627744151775195504, guid: 934888f31daa0a640a011e1c14bd969f, type: 3}
@@ -18137,7 +18224,13 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 8214833762151515641, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8214833762145502731, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1311811839}
+    - targetCorrespondingSourceObject: {fileID: 8214833762145513999, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 27331750}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8214833762145885179, guid: 1563ddbf54fb0eb42bf9222eb9aa39a5, type: 3}
       insertIndex: -1
@@ -18564,9 +18657,21 @@ PrefabInstance:
       value: -0.308
       objectReference: {fileID: 0}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: _followPlayerHead
+      value: 
+      objectReference: {fileID: 2384919264122894295}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: _leftHandTransform
+      value: 
+      objectReference: {fileID: 1311811839}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: _maxStringBackward
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+      propertyPath: _rightHandTransform
+      value: 
+      objectReference: {fileID: 27331750}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: ArrowShot.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -18736,6 +18841,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93e07390a1a4d34aaf24571d46bd693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BowHandTracking
+--- !u!114 &2384919264122894295 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5184861773215436639, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
+  m_PrefabInstance: {fileID: 2384919264122894291}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2384919264122894292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a23b169318f99489043e9c141cb86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FollowPlayerHead
 --- !u!1001 &2958073876862485484
 PrefabInstance:
   m_ObjectHideFlags: 0

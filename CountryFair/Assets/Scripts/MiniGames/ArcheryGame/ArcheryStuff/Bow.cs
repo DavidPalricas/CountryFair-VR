@@ -13,11 +13,12 @@ using UnityEngine.Events;
 /// interactables' select/unselect events, like the frisbee's <c>OnPlayerFront.ThrowFrisbee</c>.
 /// </para>
 /// <para>
-/// The Bow prefab also carries a <see cref="FollowPlayerHead"/>, so this transform moves and turns with the head every
-/// frame; that is why the string's rest point is always recomputed from local space instead of cached in world space.
+/// The bow is either locked to the player's view by a <see cref="FollowPlayerHead"/> or parented to one of the hands
+/// (see <see cref="SetBowPositioningMode"/>); in every mode this transform moves and turns every frame, which is why the
+/// string's rest point is always recomputed from local space instead of cached in world space.
 /// </para>
 /// <para>
-/// Marked <c>[ExecuteAlways]</c> so the bow string is drawn in the Editor too; <see cref="Start"/> and
+/// Marked <c>[ExecuteAlways]</c> so the bow string is drawn in the Editor too; <see cref="Awake"/> and
 /// <see cref="Update"/> therefore also run outside Play Mode.
 /// </para>
 /// </remarks>
@@ -35,6 +36,22 @@ public class Bow : MonoBehaviour
     [SerializeField]
     private Arrow _arrow;
 
+    [Header("References for Bow Positioning")]
+    /// <summary>
+    /// View-locking component on the bow; enabled only in <see cref="BowPositioningMode.FollowHead"/> and disabled while
+    /// the bow is parented to a hand, otherwise it would keep pulling the bow back in front of the eyes. Required.
+    /// </summary>
+    [SerializeField]
+    private FollowPlayerHead _followPlayerHead;
+
+    /// <summary>Parent of the bow in <see cref="BowPositioningMode.LeftHand"/>; the bow is snapped to its origin. Required.</summary>
+    [SerializeField]
+    private Transform _leftHandTransform;
+
+    /// <summary>Parent of the bow in <see cref="BowPositioningMode.RightHand"/>; the bow is snapped to its origin. Required.</summary>
+    [SerializeField]
+    private Transform _rightHandTransform;
+
     /// <summary>
     /// Object the player grabs to draw the string (carries the Meta <c>Grabbable</c>). Its position drives the pull, and
     /// while no hand holds it, it is pinned to the string's rest point every frame. Required.
@@ -47,21 +64,21 @@ public class Bow : MonoBehaviour
     [SerializeField]
     private TrajectoryLine _trajectoryLine;
 
+    /// <summary>Color applied to the trajectory line every frame while aiming.</summary>
     [SerializeField]
     private Color _trajectoryColor = Color.blue;
     
 
     [Header("Line Renderer Settings")]
   
-
-    /// <summary>LineRenderer for the string; its point count is forced to 3 (top, mid, bottom) in <see cref="Start"/> and redrawn every frame.</summary>
+    /// <summary>LineRenderer for the string; its point count is forced to 3 (top, mid, bottom) in <see cref="Awake"/> and redrawn every frame.</summary>
     [SerializeField]
     private LineRenderer _bowString;
 
      [Header("String Anchor Settings")]
     /// <summary>
     /// Midpoint of the string, moved back along the bow's axis as the pull grows; the arrow is placed relative to it.
-    /// Optional: if empty, a <c>StringMidPoint_Runtime</c> child of <see cref="transform"/> is created in <see cref="Start"/>.
+    /// Required: if empty, <see cref="Awake"/> logs an error and stops initializing the bow.
     /// </summary>
     [SerializeField]
     private Transform _stringMidPoint;
@@ -155,6 +172,7 @@ public class Bow : MonoBehaviour
     /// <summary>Renderer of <see cref="_bowModel"/> whose shared material alpha is changed while aiming.</summary>
     private MeshRenderer _bowRenderer;
 
+    /// <summary>Renderer of <see cref="_trajectoryLine"/>, recolored with <see cref="_trajectoryColor"/> while aiming.</summary>
     private Renderer _trajectoryLineRenderer;
 
     /// <summary>Bow material color at start; its alpha is restored when the player is not aiming.</summary>
@@ -162,12 +180,35 @@ public class Bow : MonoBehaviour
     /// <summary>True between <see cref="GrabString"/> and <see cref="ReleaseString"/>, i.e. while a hand holds the string handle.</summary>
     private bool _isHandleGrabbed = false;
 
-    /// <summary>
-    /// Creates a runtime string midpoint if none was assigned, places it between the string anchors, puts the handle on
-    /// it and caches the bow's original color.
-    /// </summary>
-    private void Awake()
+    /// <summary>Where the bow is held; switched at runtime by the <c>head</c>/<c>left</c>/<c>right</c> cheat codes.</summary>
+    public enum BowPositioningMode
     {
+        /// <summary>Locked in front of the player's view by <see cref="FollowPlayerHead"/>; the default at startup.</summary>
+        FollowHead,
+
+        /// <summary>Parented to <see cref="_leftHandTransform"/>, so the player aims by moving the left hand.</summary>
+        LeftHand,
+        /// <summary>Parented to <see cref="_rightHandTransform"/>, so the player aims by moving the right hand.</summary>
+        RightHand
+    }
+
+    /// <summary>
+    /// Validates the references, places the string midpoint between the string anchors, puts the handle on it, caches the
+    /// bow's original color and starts in <see cref="BowPositioningMode.FollowHead"/>.
+    /// </summary>
+    /// <remarks>
+    /// Stops at the first missing reference, leaving the bow partially initialized. The final unparenting reproduces
+    /// exactly the state <see cref="SetBowPositioningMode"/> sets up for <see cref="BowPositioningMode.FollowHead"/>.
+    /// </remarks>
+    private void Awake()
+    {   
+        if (_followPlayerHead == null || _leftHandTransform == null || _rightHandTransform == null)
+        {
+            Debug.LogError("FollowPlayerHead or hand transforms are not assigned in Bow script.");
+            return;
+        }
+
+
         if (_stringHandle == null)
         {
             Debug.LogError("String handle is not assigned in BowHandTracking script.");
@@ -207,6 +248,11 @@ public class Bow : MonoBehaviour
         }
 
         _originalColor = _bowRenderer.sharedMaterial.color;
+         
+         // Default mode is FollowHead, so the bow is visible in front of the player when the scene starts.
+        _followPlayerHead.enabled = true;
+
+        transform.SetParent(null);
     }
 
     /// <summary>
@@ -397,5 +443,38 @@ public class Bow : MonoBehaviour
         Color c = _bowRenderer.sharedMaterial.color;
         c.a = alpha;
         _bowRenderer.sharedMaterial.color = c;
+    }
+
+
+    /// <summary>
+    /// Moves the bow to the given positioning mode: in front of the head (world-space, driven by
+    /// <see cref="FollowPlayerHead"/>) or parented to a hand and snapped to its origin.
+    /// </summary>
+    /// <param name="mode">Target mode; an unknown value only logs an error.</param>
+    /// <remarks>Invoked via Inspector in the ArcheryGame scene, by <c>ArcheryCheatCodes._setBowPositioningMode</c>.</remarks>
+    public void SetBowPositioningMode(BowPositioningMode mode)
+    {
+        switch (mode)
+        {
+            case BowPositioningMode.FollowHead:
+                _followPlayerHead.enabled = true;
+                transform.SetParent(null);
+                return;
+
+            case BowPositioningMode.LeftHand:
+                _followPlayerHead.enabled = false;
+                transform.SetParent(_leftHandTransform);
+                transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                return;
+
+            case BowPositioningMode.RightHand:
+                _followPlayerHead.enabled = false;
+                transform.SetParent(_rightHandTransform);
+                transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                return;
+            default:
+                Debug.LogError("Invalid BowPositioningMode: " + mode);
+                return;
+        }
     }
 }
