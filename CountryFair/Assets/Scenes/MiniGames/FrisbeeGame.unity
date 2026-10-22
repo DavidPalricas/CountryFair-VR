@@ -21972,9 +21972,17 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7940597355804798802, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _heightOffset
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7940597355804798802, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _centerEyeTransform
       value: 
       objectReference: {fileID: 2099040610}
+    - target: {fileID: 7940597355804798802, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _distanceFromPlayer
+      value: 0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 8121850238840429237, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

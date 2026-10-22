@@ -15,7 +15,7 @@ public class Arrow : MonoBehaviour
     /// <summary>Kinematic while the arrow rests on the bow; switched to dynamic only for the flight in <see cref="Launch"/>.</summary>
     private Rigidbody _rb;
 
-    /// <summary>Set by <see cref="BowHandTracking"/> when the player grabs the string; allows the arrow to be fired.</summary>
+    /// <summary>Set by <see cref="Bow"/> when the player grabs the string; allows the arrow to be fired.</summary>
     [HideInInspector]
     public bool ReadyToLaunch = false;
 
@@ -61,7 +61,7 @@ public class Arrow : MonoBehaviour
     /// <param name="launchForce">Force magnitude via <see cref="ForceMode.VelocityChange"/>; pass 0 for a drop-miss cheat.</param>
     /// <param name="targetPosition">Optional world position to move the arrow to after launching; <c>null</c> keeps the current position.</param>
     /// <remarks>
-    /// Called by <see cref="BowHandTracking"/> on string release, and invoked via Inspector (ArcheryGame scene) by
+    /// Called by <see cref="Bow"/> on string release, and invoked via Inspector (ArcheryGame scene) by
     /// <c>ArcheryCheatCodes._launchArrow</c> for the <c>miss</c>/<c>score</c> cheats.
     /// </remarks>
     public void Launch(float launchForce, Vector3? targetPosition = null)
