@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Wrist-menu root that hosts the <see cref="TentPanel"/> reordering UI. Stays disabled until the
@@ -12,6 +13,10 @@ public class WristMenu : MonoBehaviour
 
     /// <summary>Whether the menu panel is currently shown.</summary>
     private bool _menuActive = false;
+
+
+    [SerializeField]
+    private UnityEvent<bool> _toggleDistanceGrab;
 
     /// <summary>Validates the menu reference and hides both the panel and this whole wrist menu until the intro completes.</summary>
     private void Awake()
@@ -32,6 +37,8 @@ public class WristMenu : MonoBehaviour
     public void ButtonClicked()
     {
         _menuActive = !_menuActive;
+
+        _toggleDistanceGrab.Invoke(!_menuActive);
 
         _menu.SetActive(_menuActive);
     }
