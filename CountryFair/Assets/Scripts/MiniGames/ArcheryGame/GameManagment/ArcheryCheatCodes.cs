@@ -5,7 +5,8 @@ using UnityEngine.Events;
 /// <summary>
 /// Archery-specific cheat code handler. Extends <see cref="MiniGameCheatCodes"/> with miss/score
 /// cheats that operate on the <see cref="Arrow"/> component — launching the arrow with zero force
-/// (miss) or teleporting it onto the correct balloon (score).
+/// (miss) or teleporting it onto the correct balloon (score) — and adds the <c>head</c>, <c>left</c> and <c>right</c>
+/// cheats that switch where the bow is held (see <see cref="Bow.BowPositioningMode"/>).
 /// </summary>
 public class ArcheryCheatCodes : MiniGameCheatCodes
 {
@@ -23,16 +24,27 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     [SerializeField]
     private UnityEvent<float, Vector3?> _launchArrow;
 
+    /// <summary>
+    /// Raised with the new bow positioning mode by the <c>head</c>/<c>left</c>/<c>right</c> cheats. Wired in the
+    /// Inspector to <see cref="Bow.SetBowPositioningMode"/>.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent <Bow.BowPositioningMode> _setBowPositioningMode;
 
     /// <summary>
-    /// Registers the shared cheats and reads whether the archery tutorial is already completed,
-    /// which gates every cheat except <c>return</c> and <c>tutorial</c>.
+    /// Registers the shared cheats plus the bow positioning cheats (<c>head</c>, <c>left</c>, <c>right</c>), and reads
+    /// whether the archery tutorial is already completed, which gates every cheat except <c>return</c> and <c>tutorial</c>
+    /// (the bow positioning cheats included).
     /// </summary>
     protected override void Awake()
     {
         base.Awake();
 
         _tutorialCompleted = GameManager.GetInstance().ArcheryTutorialCompleted;
+
+        RegisterCheat("head", () => _setBowPositioningMode.Invoke(Bow.BowPositioningMode.FollowHead));
+        RegisterCheat("left", () => _setBowPositioningMode.Invoke(Bow.BowPositioningMode.LeftHand));
+        RegisterCheat("right", () => _setBowPositioningMode.Invoke(Bow.BowPositioningMode.RightHand));
     }
 
     /// <summary>
