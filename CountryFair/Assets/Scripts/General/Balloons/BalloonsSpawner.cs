@@ -81,10 +81,10 @@ public class BalloonsSpawner : MonoBehaviour
     /// <summary>Validates the three prefabs and initializes the per-color spawn counters.</summary>
     protected virtual void Awake()
     {
-        if (_blueBalloonPrefab == null || _redBalloonPrefab == null || _yellowBalloonPrefab == null)
+        if (!Utils.RequireAssigned(_blueBalloonPrefab, nameof(_blueBalloonPrefab), this) ||
+            !Utils.RequireAssigned(_redBalloonPrefab, nameof(_redBalloonPrefab), this) ||
+            !Utils.RequireAssigned(_yellowBalloonPrefab, nameof(_yellowBalloonPrefab), this))
         {
-            Debug.LogError("One or more balloon prefabs are not assigned in SpawnBalloons script.");
-
             return;
         }
 

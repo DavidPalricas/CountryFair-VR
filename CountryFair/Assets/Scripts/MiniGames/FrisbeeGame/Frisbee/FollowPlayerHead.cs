@@ -35,9 +35,8 @@ public class FollowPlayerHead : MonoBehaviour
     /// <summary>Validates the eye reference and snaps the object to its target so it does not slide in on the first frame.</summary>
     private void Awake()
     {
-        if (_centerEyeTransform == null)
+        if (!Utils.RequireAssigned(_centerEyeTransform, nameof(_centerEyeTransform), this))
         {
-            Debug.LogError("Center Eye Transform is not assigned in the inspector.");
             enabled = false;
             return;
         }

@@ -56,10 +56,9 @@ public class MiniGameTentPlaceHolder : TentPlaceHolder
     /// <summary>Caches the model's original scale and local position as the animation baseline.</summary>
     private void Awake()
     {
-        if (MiniGameButtonPlaceHolderTransform == null || _modelTransform == null)
+        if (!Utils.RequireAssigned(MiniGameButtonPlaceHolderTransform, nameof(MiniGameButtonPlaceHolderTransform), this) ||
+            !Utils.RequireAssigned(_modelTransform, nameof(_modelTransform), this))
         {
-            Debug.LogError("One or more required transforms are not assigned in TentPlaceHolder script.");
-
             return;
         }
 

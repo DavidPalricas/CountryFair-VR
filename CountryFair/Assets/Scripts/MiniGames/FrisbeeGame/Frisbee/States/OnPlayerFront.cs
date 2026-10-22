@@ -94,17 +94,13 @@ public class OnPlayerFront : FrisbeeState
     {  
         base.Awake();
     
-        if (_frisbeeRenderer == null)
+        if (!Utils.RequireAssigned(_frisbeeRenderer, nameof(_frisbeeRenderer), this))
         {
-            Debug.LogError("Component Renderer is not assigned in OnPlayerFront script.");
-
             return;
         }
 
-        if (_handInteractables.Length == 0)
+        if (!Utils.RequireNotEmpty(_handInteractables, nameof(_handInteractables), this))
         {
-            Debug.LogError("HandGrabInteractors are not assigned in OnPlayerFront script.");
-
             return;
         }
 

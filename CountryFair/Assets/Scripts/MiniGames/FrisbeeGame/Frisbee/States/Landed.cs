@@ -57,10 +57,7 @@ public class Landed: FrisbeeState
     {  
         base.Awake();
 
-        if (_frisbeeMeshRenderer == null)
-        {
-            Debug.LogError("MeshRenderer component is not assigned in Landed script.");
-        }
+        Utils.RequireAssigned(_frisbeeMeshRenderer, nameof(_frisbeeMeshRenderer), this);
 
         _scoreAreaLayerMask = LayerMask.GetMask(ScoreAreaProperties.ScoreAreaLayer);
     }

@@ -116,27 +116,26 @@ public class ArcheryGameManager : MiniGameManager
     {   
         base.Awake(); 
 
-        if (_balloonColorToScoreText == null)
+        if (!Utils.RequireAssigned(_balloonColorToScoreText, nameof(_balloonColorToScoreText), this))
         {
-            Debug.LogError("Balloon Color To Score Text reference is missing.");
             return;
         }
 
-        if (_balloonSpawnArea == null)
+        if (!Utils.RequireAssigned(_balloonSpawnArea, nameof(_balloonSpawnArea), this))
         {
-            Debug.LogError("Balloon Spawn Area reference is missing.");
             return;
         }
 
-        if (_blueBalloonPrefab == null || _yellowBalloonPrefab == null || _redBalloonPrefab == null)
+        if (!Utils.RequireAssigned(_blueBalloonPrefab, nameof(_blueBalloonPrefab), this) ||
+            !Utils.RequireAssigned(_yellowBalloonPrefab, nameof(_yellowBalloonPrefab), this) ||
+            !Utils.RequireAssigned(_redBalloonPrefab, nameof(_redBalloonPrefab), this))
         {
-            Debug.LogError("One or more balloon prefab references are missing.");
             return;
         }
 
-        if (_movingRatioCurve.length == 0 || _transparencyRatioCurve.length == 0)
+        if (!Utils.RequireNotEmpty(_movingRatioCurve, nameof(_movingRatioCurve), this) ||
+            !Utils.RequireNotEmpty(_transparencyRatioCurve, nameof(_transparencyRatioCurve), this))
         {
-            Debug.LogError("One or more difficulty curves are not set.");
             return;
         }
 

@@ -76,9 +76,10 @@ public class ServerListener : MonoBehaviour
     /// <summary>Validates the three displays and picks the random display mode for this session.</summary>
     private void Awake()
     {
-        if (_sliderDisplay == null || _emojiDisplay == null || _faceDisplay == null)
+        if (!Utils.RequireAssigned(_sliderDisplay, nameof(_sliderDisplay), this) ||
+            !Utils.RequireAssigned(_emojiDisplay, nameof(_emojiDisplay), this) ||
+            !Utils.RequireAssigned(_faceDisplay, nameof(_faceDisplay), this))
         {
-            Debug.LogError("One or more types of emotion display are missing in ServerListener");
             return;
         }
 

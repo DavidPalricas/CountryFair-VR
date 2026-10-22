@@ -61,9 +61,8 @@ using DG.Tweening;
     {    
         base.Awake();
 
-        if (_playerTransform == null)
+        if (!Utils.RequireAssigned(_playerTransform, nameof(_playerTransform), this))
         {
-            Debug.LogError("Player Transform not assigned. Please assign it in the inspector.");
             return;
         }
 

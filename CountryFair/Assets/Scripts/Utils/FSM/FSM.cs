@@ -53,10 +53,8 @@ public class FSM : MonoBehaviour
     /// </remarks>
     private void Start()
     {
-        if (_states.Count == 0)
+        if (!Utils.RequireNotEmpty(_states, nameof(_states), this))
         {
-            Debug.LogError("FSM has no states defined.");
-
             return;
         }
 

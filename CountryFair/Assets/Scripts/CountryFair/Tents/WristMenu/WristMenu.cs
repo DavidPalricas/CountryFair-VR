@@ -21,10 +21,8 @@ public class WristMenu : MonoBehaviour
     /// <summary>Validates the menu reference and hides both the panel and this whole wrist menu until the intro completes.</summary>
     private void Awake()
     {
-        if (_menu == null)
+        if (!Utils.RequireAssigned(_menu, nameof(_menu), this))
         {
-            Debug.LogError("Menu reference is null in TentPersonalizationMenu");
-
             return;
         }
 

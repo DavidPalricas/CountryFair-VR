@@ -89,27 +89,22 @@ public abstract class AudioManager: MonoBehaviour
     /// <summary>Validates the ambience music and registers the button pressed sound shared by every scene.</summary>
     protected virtual void Awake()
     {
-        if (_ambienceMusic.IsNull)
-        {
-            Debug.LogError("Ambience music EventReference is not assigned in AudioManager.");
-        }
+        Utils.RequireAssigned(_ambienceMusic, nameof(_ambienceMusic), this);
 
         RegisterSoundEffect(GameSoundEffects.ButtonPressed, _buttonPressedSound);
     }
 
     /// <summary>
     /// Makes <paramref name="soundEffect"/> playable through <see cref="PlaySoundEffect"/> and
-    /// <see cref="PlaySpatialSoundEffect"/>. Logs an error and skips it when <paramref name="eventReference"/> is not
+    /// <see cref="PlaySpatialSoundEffect"/>. Reports it through <see cref="Utils.RequireAssigned(FMODUnity.EventReference, string, UnityEngine.Object)"/> and skips it when <paramref name="eventReference"/> is not
     /// assigned in the Inspector.
     /// </summary>
     /// <param name="soundEffect">The sound effect type.</param>
     /// <param name="eventReference">The FMOD event played for it.</param>
     protected void RegisterSoundEffect(GameSoundEffects soundEffect, EventReference eventReference)
     {
-        if (eventReference.IsNull)
+        if (!Utils.RequireAssigned(eventReference, $"{soundEffect} sound", this))
         {
-            Debug.LogError($"{soundEffect} sound EventReference is not assigned in {GetType().Name}.");
-
             return;
         }
 

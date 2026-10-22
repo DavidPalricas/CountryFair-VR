@@ -81,30 +81,25 @@ public class MiniGameTent : OrderableTentElement
         _textToShow = GetTextToShow(MiniGame);
         _tentText.text = _textToShow;
 
-        if (_buttonToPlayMiniGame == null)
+        if (!Utils.RequireAssigned(_buttonToPlayMiniGame, nameof(_buttonToPlayMiniGame), this))
         {
-            Debug.LogError("Red Button is not assigned in MiniGameTent script.");
             return;
         }
 
         _buttonToPlayMiniGame.SetActive(false);
 
-        if (_miniGamePropPrefab == null)
+        if (!Utils.RequireAssigned(_miniGamePropPrefab, nameof(_miniGamePropPrefab), this))
         {
-            Debug.LogError("Mini Game Object is not assigned in MiniGameTent script.");
             return;
         }
 
-        if (_tentNumber == null)
+        if (!Utils.RequireAssigned(_tentNumber, nameof(_tentNumber), this))
         {
-            Debug.LogError("Ribbon Number Text is not assigned in MiniGameTent script.");
             return;
         }
 
-        if (_miniGamePropPlaceHolderTransform == null)
+        if (!Utils.RequireAssigned(_miniGamePropPlaceHolderTransform, nameof(_miniGamePropPlaceHolderTransform), this))
         {
-            Debug.LogError("One or more required transforms are not assigned in MiniGameTent script.");
-
             return;
         }
 
@@ -278,9 +273,9 @@ public class MiniGameTent : OrderableTentElement
 
         MiniGameTentPlaceHolder currentTentPlaceHolder = _currentPlaceHolder as MiniGameTentPlaceHolder;
 
-        if (currentTentPlaceHolder == null)
+        if (!Utils.RequireThat(currentTentPlaceHolder != null,
+            $"{nameof(_currentPlaceHolder)} of {GetType().Name} on '{name}' is '{_currentPlaceHolder.name}', which is not a {nameof(MiniGameTentPlaceHolder)}.", this))
         {
-            Debug.LogError($"Current PlaceHolder '{_currentPlaceHolder.name}' is not a TentPlaceHolder.");
             return;
         }
 

@@ -89,21 +89,21 @@ public class SliderDisplay: EmotionDisplay
     /// <summary>Validates the references and resets the slider to a hidden neutral state.</summary>
     private void Awake()
     {  
-        if (_slider == null ||  _fillImage  == null)
+        if (!Utils.RequireAssigned(_slider, nameof(_slider), this) ||
+            !Utils.RequireAssigned(_fillImage, nameof(_fillImage), this))
         {
-            Debug.LogError("Slider and/or its fill image is not reference is not assigned in EmojiSlider.");
             return;
         }
 
-        if (_handleImage == null)
+        if (!Utils.RequireAssigned(_handleImage, nameof(_handleImage), this))
         {
-            Debug.LogError("Handle Image reference is not assigned in EmojiSlider.");
             return;
         }
 
-        if (_neutralEmoji == null || _happyEmoji == null || _angryEmoji == null)
+        if (!Utils.RequireAssigned(_neutralEmoji, nameof(_neutralEmoji), this) ||
+            !Utils.RequireAssigned(_happyEmoji, nameof(_happyEmoji), this) ||
+            !Utils.RequireAssigned(_angryEmoji, nameof(_angryEmoji), this))
         {
-            Debug.LogError("One or more emoji GameObjects are not assigned in EmojiSlider.");
             return;
         }
 

@@ -29,24 +29,19 @@ public class TentPanel : OrderableTentElement
     {
         base.Awake();
 
-        if (TentNameText == null || _tentNumberText == null)
+        if (!Utils.RequireAssigned(TentNameText, nameof(TentNameText), this) ||
+            !Utils.RequireAssigned(_tentNumberText, nameof(_tentNumberText), this))
         {
-            Debug.LogError("One or more Texts Components are null in TentPanel");
-
             return;
         }
 
-        if (_tentImage == null)
+        if (!Utils.RequireAssigned(_tentImage, nameof(_tentImage), this))
         {
-            Debug.LogError("Tent Image Component is null in TentPanel");
-
             return;
         }
 
-        if (_miniGameSprite == null)
+        if (!Utils.RequireAssigned(_miniGameSprite, nameof(_miniGameSprite), this))
         {
-            Debug.LogError("MiniGame Sprite is null in TentPanel");
-
             return;
         }
 

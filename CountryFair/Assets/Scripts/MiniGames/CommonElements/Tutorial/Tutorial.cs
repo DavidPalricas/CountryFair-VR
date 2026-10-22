@@ -59,27 +59,25 @@ public class Tutorial : UIDialog
     {
         base.Awake();
 
-        if (_practiceElements == null || _postTutorialElements == null)
+        if (!Utils.RequireAssigned(_practiceElements, nameof(_practiceElements), this) ||
+            !Utils.RequireAssigned(_postTutorialElements, nameof(_postTutorialElements), this))
         {
-            Debug.LogError("Practice or Post elements are not assigned in the inspector.");
             return;
         }
 
-        if (_tutorialButton == null)
+        if (!Utils.RequireAssigned(_tutorialButton, nameof(_tutorialButton), this))
         {
-            Debug.LogError("Tutorial button is not assigned in the inspector.");
             return;
         }
 
-        if (_miniGameProp == null)
+        if (!Utils.RequireAssigned(_miniGameProp, nameof(_miniGameProp), this))
         {
-            Debug.LogError("Mini game prop is not assigned in the inspector.");
             return;
         }
 
-        if (_videoScreen == null || _miniGameVideo == null)
+        if (!Utils.RequireAssigned(_videoScreen, nameof(_videoScreen), this) ||
+            !Utils.RequireAssigned(_miniGameVideo, nameof(_miniGameVideo), this))
         {
-            Debug.LogError("Video screen or mini game video is not assigned in the inspector.");
             return;
         }
 

@@ -74,17 +74,13 @@ public class DogIdle : DogState
     {   
         base.Awake();
 
-        if (_scoreArea == null)
+        if (!Utils.RequireAssigned(_scoreArea, nameof(_scoreArea), this))
         {
-            Debug.LogError("DogIdle: Score Area GameObject reference is not assigned in the inspector.");
-
             return;
         }
 
-        if(_name == null)
+        if (!Utils.RequireAssigned(_name, nameof(_name), this))
         {
-            Debug.LogError("DogIdle: Name GameObject reference is not assigned in the inspector.");
-
             return;
         }
  

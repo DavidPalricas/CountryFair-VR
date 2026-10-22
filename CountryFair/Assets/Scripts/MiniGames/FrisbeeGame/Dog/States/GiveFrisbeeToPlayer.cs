@@ -55,16 +55,13 @@ public class GiveFrisbeeToPlayer : DogState
     {  
         base.Awake();
 
-        if(_frisbeeInDogMouth == null)
+        if (!Utils.RequireAssigned(_frisbeeInDogMouth, nameof(_frisbeeInDogMouth), this))
         {
-            Debug.LogError("Frisbee reference not set in ChooseNewPosition state.");
-
             return;
         }
 
-        if (_frisbee == null)
+        if (!Utils.RequireAssigned(_frisbee, nameof(_frisbee), this))
         {
-            Debug.LogError("Frisbee reference not set in ChooseNewPosition state.");
             return;
         }
 

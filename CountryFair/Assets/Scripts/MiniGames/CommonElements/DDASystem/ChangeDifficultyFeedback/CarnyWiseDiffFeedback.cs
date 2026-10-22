@@ -53,15 +53,14 @@ public class CarnyWiseDiffFeedback : UIDialog
     {
         base.Awake();
 
-        if (_increaseDiffExpression == null || _decreaseDiffExpression == null)
+        if (!Utils.RequireAssigned(_increaseDiffExpression, nameof(_increaseDiffExpression), this) ||
+            !Utils.RequireAssigned(_decreaseDiffExpression, nameof(_decreaseDiffExpression), this))
         {
-            Debug.LogError("ERROR: Carny Wise expressions are not assigned.");
             return;
         }
 
-        if (_carnyUI == null)
+        if (!Utils.RequireAssigned(_carnyUI, nameof(_carnyUI), this))
         {
-            Debug.LogError("ERROR: Carny Wise UI GameObject is not assigned.");
             return;
         }
 

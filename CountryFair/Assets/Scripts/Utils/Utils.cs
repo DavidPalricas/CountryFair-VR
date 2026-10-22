@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FMODUnity;
 
 /// <summary>
 /// Utility class providing helper methods for common game mechanics and calculations.
@@ -221,5 +222,139 @@ public static class Utils
         }
 
         UnityEngine.Object.Destroy(effect.gameObject);
+    }
+
+    /// <summary>
+    /// Checks that a field meant to be assigned in the Inspector is not null, reporting which field of which script is
+    /// missing when it is.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Debug.Assert(bool, object)"/> is stripped from release builds, so a scene shipped with an unassigned
+    /// reference would only fail later with a <see cref="NullReferenceException"/> and no hint of what is missing. This
+    /// check logs an error that is still there in the build and then stops the game: in the Editor it pauses play mode
+    /// on the spot, in a build it quits the application.
+    ///
+    /// Call it where the dependency is first needed (typically <c>Awake</c>) so the missing reference is reported as soon
+    /// as the scene loads. It returns whether the check passed, so a caller that cannot run without the dependency can
+    /// stop early instead of carrying on half-initialised.
+    ///
+    /// Typical usage:
+    /// <code>
+    /// if (!Utils.RequireAssigned(scoreText, nameof(scoreText), this))
+    /// {
+    ///     return;
+    /// }
+    /// </code>
+    /// </remarks>
+    /// <param name="value">The field to check. Unassigned Unity objects are detected through Unity's null check.</param>
+    /// <param name="fieldName">The field's name, preferably given with <c>nameof</c> so it follows renames.</param>
+    /// <param name="owner">The script the field belongs to; used in the message and selected when the log is clicked.</param>
+    /// <returns>True while the field is assigned; otherwise, false.</returns>
+    public static bool RequireAssigned(object value, string fieldName, UnityEngine.Object owner)
+    {
+        // A missing Inspector reference is a "fake null" UnityEngine.Object, which only Unity's == operator reports as null.
+        bool isAssigned = value is UnityEngine.Object unityObject ? unityObject != null : value != null;
+
+        return RequireThat(isAssigned, NotAssignedMessage(fieldName, owner), owner);
+    }
+
+    /// <summary>
+    /// <see cref="RequireAssigned(object, string, UnityEngine.Object)"/> for FMOD events: an <see cref="EventReference"/>
+    /// is a struct, so an unassigned one is never null and is detected through <see cref="EventReference.IsNull"/> instead.
+    /// </summary>
+    /// <param name="value">The event reference to check.</param>
+    /// <param name="fieldName">The field's name, preferably given with <c>nameof</c> so it follows renames.</param>
+    /// <param name="owner">The script the field belongs to; used in the message and selected when the log is clicked.</param>
+    /// <returns>True while the event is assigned; otherwise, false.</returns>
+    public static bool RequireAssigned(EventReference value, string fieldName, UnityEngine.Object owner)
+    {
+        return RequireThat(!value.IsNull, NotAssignedMessage(fieldName, owner), owner);
+    }
+
+    /// <summary>
+    /// Checks that an array or list filled in the Inspector has at least one element and that none of its elements is
+    /// unassigned, reporting the first problem found.
+    /// </summary>
+    /// <remarks>
+    /// Works with any <see cref="System.Collections.IList"/>, which covers both arrays and <see cref="List{T}"/>. An empty
+    /// slot is reported with its index (e.g. <c>_handInteractables[2]</c>).
+    /// </remarks>
+    /// <param name="collection">The array or list to check.</param>
+    /// <param name="fieldName">The field's name, preferably given with <c>nameof</c> so it follows renames.</param>
+    /// <param name="owner">The script the field belongs to; used in the message and selected when the log is clicked.</param>
+    /// <returns>True while the collection has elements and all of them are assigned; otherwise, false.</returns>
+    public static bool RequireNotEmpty(System.Collections.IList collection, string fieldName, UnityEngine.Object owner)
+    {
+        if (!RequireThat(collection != null && collection.Count > 0, EmptyMessage(fieldName, owner), owner))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < collection.Count; i++)
+        {
+            if (!RequireAssigned(collection[i], $"{fieldName}[{i}]", owner))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>Checks that an <see cref="AnimationCurve"/> set in the Inspector has at least one key.</summary>
+    /// <param name="curve">The curve to check.</param>
+    /// <param name="fieldName">The field's name, preferably given with <c>nameof</c> so it follows renames.</param>
+    /// <param name="owner">The script the field belongs to; used in the message and selected when the log is clicked.</param>
+    /// <returns>True while the curve has keys; otherwise, false.</returns>
+    public static bool RequireNotEmpty(AnimationCurve curve, string fieldName, UnityEngine.Object owner)
+    {
+        return RequireThat(curve != null && curve.length > 0, EmptyMessage(fieldName, owner), owner);
+    }
+
+    /// <summary>
+    /// Checks <paramref name="condition"/>, logging <paramref name="message"/> as an error when it does not hold and then
+    /// stopping the game: in the Editor play mode is paused, in a build the application quits.
+    /// </summary>
+    /// <remarks>
+    /// For setup rules the other <c>Require</c> methods cannot express, such as a reference that is assigned but of the
+    /// wrong type. Not meant for errors in the game's own logic (an unknown key, an unexpected state), which should not
+    /// stop a session.
+    ///
+    /// The error is logged before stopping so it reaches the Console (or <c>adb logcat</c> on the Quest).
+    /// <see cref="Application.Quit()"/> only takes effect at the end of the frame, so the caller still gets false back and
+    /// should stop early instead of using the missing dependency in the meantime.
+    /// </remarks>
+    /// <param name="condition">The condition that must hold.</param>
+    /// <param name="message">The error to log when it does not.</param>
+    /// <param name="context">Object selected when the log is clicked in the Console.</param>
+    /// <returns><paramref name="condition"/> itself.</returns>
+    public static bool RequireThat(bool condition, string message, UnityEngine.Object context)
+    {
+        if (condition)
+        {
+            return true;
+        }
+
+        Debug.LogError(message, context);
+
+#if UNITY_EDITOR
+        Debug.Break();
+#else
+        Application.Quit();
+#endif
+
+        return false;
+    }
+
+    /// <summary>Error message for an Inspector field left unassigned.</summary>
+    private static string NotAssignedMessage(string fieldName, UnityEngine.Object owner)
+    {
+        return $"{fieldName} was not assigned in the Inspector of {owner.GetType().Name} on '{owner.name}'.";
+    }
+
+    /// <summary>Error message for an Inspector array, list or curve left empty.</summary>
+    private static string EmptyMessage(string fieldName, UnityEngine.Object owner)
+    {
+        return $"{fieldName} is empty in the Inspector of {owner.GetType().Name} on '{owner.name}'.";
     }
 }

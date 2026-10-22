@@ -37,9 +37,9 @@ public abstract class UIDialog : MonoBehaviour
     {
        SetJSONFileName();
 
-       if (_dialogueBoxGameObject == null || _dialogueBoxText == null)
+       if (!Utils.RequireAssigned(_dialogueBoxGameObject, nameof(_dialogueBoxGameObject), this) ||
+           !Utils.RequireAssigned(_dialogueBoxText, nameof(_dialogueBoxText), this))
        {
-          Debug.LogError("Dialogue box or text is not assigned.");
           return;
        }
 
