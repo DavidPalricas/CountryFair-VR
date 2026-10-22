@@ -27,9 +27,8 @@ public class WanderingPerson: MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        if (_animator == null)
+        if (!Utils.RequireAssigned(_animator, nameof(_animator), this))
         {
-            Debug.LogError("Animator reference is missing in Walkable Person.");
             return;
         }
 

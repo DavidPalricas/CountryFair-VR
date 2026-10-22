@@ -85,16 +85,13 @@ public class FrisbeeGameManager : MiniGameManager
     {
         base.Awake();
   
-        if (_playerTransform == null)
+        if (!Utils.RequireAssigned(_playerTransform, nameof(_playerTransform), this))
         {
-            Debug.LogError("Player not found. The rehabilitation system cannot start.");
             return;
         }
 
-        if (_movingRatioCurve.length == 0 || _visibilityRatioCurve.length == 0)
-        {
-            Debug.LogError("One or more animation curves are not assigned in the inspector.");
-        }
+        Utils.RequireNotEmpty(_movingRatioCurve, nameof(_movingRatioCurve), this);
+        Utils.RequireNotEmpty(_visibilityRatioCurve, nameof(_visibilityRatioCurve), this);
 
         _scoreAreaRadius = _scoreAreaPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
 

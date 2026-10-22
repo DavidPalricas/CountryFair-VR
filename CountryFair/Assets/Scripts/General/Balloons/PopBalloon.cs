@@ -21,10 +21,8 @@ public class PopBalloon : MonoBehaviour
     /// <summary>Logs an error if the pop effect is not assigned, since <see cref="Pop"/> would instantiate null.</summary>
     protected void Awake()
     {
-        if (_popBalloonEffect == null)
+        if (!Utils.RequireAssigned(_popBalloonEffect, nameof(_popBalloonEffect), this))
         {
-            Debug.LogError("Pop Balloon Effect is not assigned in ScoreAreaAnim script.");
-
             return;
         }
     }

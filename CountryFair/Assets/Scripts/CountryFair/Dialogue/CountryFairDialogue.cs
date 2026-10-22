@@ -73,9 +73,10 @@ public class CountryFairDialogue : UIDialog
     /// </remarks>
     protected override void Awake()
     {
-        if (_zeca == null || _carnyWise == null || _characterNameText == null )
+        if (!Utils.RequireAssigned(_zeca, nameof(_zeca), this) ||
+            !Utils.RequireAssigned(_carnyWise, nameof(_carnyWise), this) ||
+            !Utils.RequireAssigned(_characterNameText, nameof(_characterNameText), this))
         {
-            Debug.LogError("Characters missing.");
             return;
         }
 

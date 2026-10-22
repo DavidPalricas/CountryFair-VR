@@ -34,10 +34,8 @@ public abstract class OrderableTentElement : MonoBehaviour
     /// <summary>Validates the starting placeholder reference, caches this element's collider, and records the starting placeholder as the initial fallback for reverts.</summary>
     protected virtual void Awake()
     {
-        if (_currentPlaceHolder == null)
+        if (!Utils.RequireAssigned(_currentPlaceHolder, nameof(_currentPlaceHolder), this))
         {
-            Debug.LogError("Current Tent PlaceHolder reference is null in OrderableTentElement");
-
             return;
         }
 

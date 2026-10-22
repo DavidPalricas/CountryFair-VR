@@ -31,10 +31,7 @@ public class CountryFairAudioManager : AudioManager
    {  
       base.Awake();
 
-      if (_crowdNoise.IsNull)
-        {
-            Debug.LogError("Crowd noise EventReference is not assigned in CountryFairAudioManager.");
-        }
+      Utils.RequireAssigned(_crowdNoise, nameof(_crowdNoise), this);
 
       RegisterSoundEffect(GameSoundEffects.ScaleToGiant, _scaleToGiantSound);
       RegisterSoundEffect(GameSoundEffects.ScaleToNormal, _scaleToNormalSound);

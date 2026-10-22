@@ -202,22 +202,18 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// </remarks>
     private void Awake()
     {
-        if (_scoreText == null)
+        if (!Utils.RequireAssigned(_scoreText, nameof(_scoreText), this))
         {
-            Debug.LogError("Score TextMeshProUGUI reference is not assigned.");
             return;
         }
 
-        if (_streakText == null)
+        if (!Utils.RequireAssigned(_streakText, nameof(_streakText), this))
         {
-            Debug.LogError("Streak TextMeshProUGUI reference is not assigned.");
             return;
         }
 
-        if (_streakSymbol == null)
+        if (!Utils.RequireAssigned(_streakSymbol, nameof(_streakSymbol), this))
         {
-            Debug.LogError("Streak Symbol GameObject reference is not assigned.");
-
             return;
         }
 

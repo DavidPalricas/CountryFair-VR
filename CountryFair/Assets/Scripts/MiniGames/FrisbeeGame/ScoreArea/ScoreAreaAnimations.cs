@@ -64,10 +64,8 @@ public class ScoreAreaAnimations : BalloonsSpawner
         
         _startScale = transform.localScale;
 
-        if (_balloonsPlaceHoldersGroup == null)
+        if (!Utils.RequireAssigned(_balloonsPlaceHoldersGroup, nameof(_balloonsPlaceHoldersGroup), this))
         {
-            Debug.LogError("Balloons PlaceHolders Group is not assigned in ScoreAreaAnim script.");
-
             return; 
         }
 

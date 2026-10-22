@@ -30,10 +30,8 @@ public class CatchFrisbee : DogState
     {  
         base.Awake();
 
-        if (_frisbeeTransform == null)
+        if (!Utils.RequireAssigned(_frisbeeTransform, nameof(_frisbeeTransform), this))
         {
-            Debug.LogError("Frisbee GameObject not found in the scene.");
-
             return;
         }
     }

@@ -49,9 +49,8 @@ public class TentDuckAnim : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        if (_model == null)
+        if (!Utils.RequireAssigned(_model, nameof(_model), this))
         {
-            Debug.LogError("Model is not assigned in TentDuckAnim.");
             return;
         }
 

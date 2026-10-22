@@ -37,10 +37,8 @@ public class TentPlaceHolderManager : MonoBehaviour
      /// </summary>
      private void Awake()
      {
-        if (_elementsTransform == null)
+        if (!Utils.RequireAssigned(_elementsTransform, nameof(_elementsTransform), this))
         {
-            Debug.LogError("Elements Transform reference is null in PlaceHolderManager");
-
             return;
         }
 

@@ -202,23 +202,21 @@ public class Bow : MonoBehaviour
     /// </remarks>
     private void Awake()
     {   
-        if (_followPlayerHead == null || _leftHandTransform == null || _rightHandTransform == null)
+        if (!Utils.RequireAssigned(_followPlayerHead, nameof(_followPlayerHead), this) ||
+            !Utils.RequireAssigned(_leftHandTransform, nameof(_leftHandTransform), this) ||
+            !Utils.RequireAssigned(_rightHandTransform, nameof(_rightHandTransform), this))
         {
-            Debug.LogError("FollowPlayerHead or hand transforms are not assigned in Bow script.");
             return;
         }
 
 
-        if (_stringHandle == null)
+        if (!Utils.RequireAssigned(_stringHandle, nameof(_stringHandle), this))
         {
-            Debug.LogError("String handle is not assigned in BowHandTracking script.");
-
             return;
         }
 
-        if (_stringMidPoint == null)
+        if (!Utils.RequireAssigned(_stringMidPoint, nameof(_stringMidPoint), this))
         {
-            Debug.LogError("String midpoint is not assigned in BowHandTracking script. A runtime midpoint will be created in Start().");
             return;      
         }
        
@@ -228,10 +226,8 @@ public class Bow : MonoBehaviour
 
         ResetStringHandle();
 
-        if (_bowString == null)
+        if (!Utils.RequireAssigned(_bowString, nameof(_bowString), this))
         {
-            Debug.LogError("Bow string LineRenderer is not assigned in BowHandTracking script.");
-
             return;
         }
     

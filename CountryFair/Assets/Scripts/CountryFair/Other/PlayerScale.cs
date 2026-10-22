@@ -110,9 +110,8 @@ public class PlayerScale : MonoBehaviour
   /// </summary>
   private void Awake()
    {
-       if (_cameraRigTransform == null)
+       if (!Utils.RequireAssigned(_cameraRigTransform, nameof(_cameraRigTransform), this))
        {
-           Debug.LogError("Camera Rig Transform reference is null in PlayerScale");
            return;
        }
 

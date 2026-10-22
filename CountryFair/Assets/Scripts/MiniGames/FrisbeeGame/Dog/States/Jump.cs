@@ -17,9 +17,8 @@ public class Jump: DogState
     {   
         base.Awake();
 
-        if (animator == null)
+        if (!Utils.RequireAssigned(animator, nameof(animator), this))
         {
-            Debug.LogError("Animator reference is null in Jump state.");
             return;
         }
     }

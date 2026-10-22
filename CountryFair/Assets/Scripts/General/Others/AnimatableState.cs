@@ -22,9 +22,8 @@ public class AnimatableState : State
     /// </summary>
     protected virtual void Awake()
     {
-        if (animator == null)
+        if (!Utils.RequireAssigned(animator, nameof(animator), this))
         {
-            Debug.LogError("Animator reference is null in AnimatableState.");
             return;
         }
 
