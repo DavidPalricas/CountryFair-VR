@@ -4288,8 +4288,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4197331, b: 0.24826959, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.41973397, b: 0.24827045, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4197327, b: 0.24826917, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.41973308, b: 0.24826956, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -13072,8 +13072,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Cor para fazer pontos:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
-  m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
+  m_sharedMaterial: {fileID: 6722005148866074646, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13097,8 +13097,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 64
-  m_fontSizeBase: 64
+  m_fontSize: 62
+  m_fontSizeBase: 62
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14008,8 +14008,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Vermelho
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
-  m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
+  m_sharedMaterial: {fileID: 6722005148866074646, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -14033,8 +14033,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 64
-  m_fontSizeBase: 64
+  m_fontSize: 62
+  m_fontSizeBase: 62
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -15789,6 +15789,10 @@ PrefabInstance:
     - target: {fileID: 2086781719957038937, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954826737046482097, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: m_text
+      value: "Carregue no bot\xE3o para voltar para a feira\n"
       objectReference: {fileID: 0}
     - target: {fileID: 6101149908030897170, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
       propertyPath: buttonPressed.m_PersistentCalls.m_Calls.Array.size
