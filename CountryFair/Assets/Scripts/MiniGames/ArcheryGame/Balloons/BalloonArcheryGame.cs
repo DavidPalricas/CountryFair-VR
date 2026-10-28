@@ -97,6 +97,11 @@ public class BalloonArcheryGame : MonoBehaviour
     private Color _originalColor;
     /// <summary>Spawn position; where the balloon eases back to when movement stops.</summary>
     private Vector3 _initialPosition;
+    /// <summary>
+    /// Prefab local position of this balloon under its pooled root, cached in <see cref="Awake"/>. The wander tween moves this
+    /// child, not the root the <see cref="ObjectPool"/> places, so <see cref="OnEnable"/> restores it on every reuse.
+    /// </summary>
+    private Vector3 _spawnLocalPosition;
     /// <summary>Lower-case <see cref="_color"/> name, cached for the comparison with <c>BalloonColorToScore</c>.</summary>
     private string _colorName;
 
@@ -131,6 +136,8 @@ public class BalloonArcheryGame : MonoBehaviour
         _fadeId = "fade_" + GetInstanceID();
 
         _colorName = _color.ToString().ToLower();
+
+        _spawnLocalPosition = transform.localPosition;
 
         _material = _renderer.material;
 
@@ -185,6 +192,8 @@ public class BalloonArcheryGame : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
+        // A balloon that wandered in its previous use would otherwise keep that offset from the root and appear outside the spawn area.
+        transform.localPosition = _spawnLocalPosition;
         _initialPosition = transform.position;
 
         _isMoving = false;

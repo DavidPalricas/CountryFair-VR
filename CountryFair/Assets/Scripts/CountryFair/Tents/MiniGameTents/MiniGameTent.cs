@@ -179,16 +179,16 @@ public class MiniGameTent : OrderableTentElement
         switch (miniGame)
         {
             case GameManager.MiniGames.Archery:
-                return "Carregue no botao para jogar arco e flecha";
+                return "Carregue no botão para jogar arco e flecha";
 
             case GameManager.MiniGames.DuckGame:
-                return "Carregue no botao para jogar o jogo do pato";
+                return "Carregue no botão para jogar o jogo do pato";
 
             case GameManager.MiniGames.Fishing:
-                return "Carregue no botao para pescar";
+                return "Carregue no botão para pescar";
 
             case GameManager.MiniGames.Frisbee:
-                return "Carregue no botao para jogar frisbee";
+                return "Carregue no botão para jogar frisbee";
 
             default:
                 Debug.LogWarning($"MiniGame '{miniGame}' has no tent text assigned.");

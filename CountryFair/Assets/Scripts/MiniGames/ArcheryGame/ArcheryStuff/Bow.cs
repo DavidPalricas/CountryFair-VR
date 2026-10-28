@@ -67,7 +67,10 @@ public class Bow : MonoBehaviour
     /// <summary>Color applied to the trajectory line every frame while aiming.</summary>
     [SerializeField]
     private Color _trajectoryColor = Color.blue;
-    
+
+    /// <summary>Width of the trajectory line.</summary>
+    [SerializeField]
+    private float _trajectoryWidth = 0.05f;
 
     [Header("Line Renderer Settings")]
   
@@ -284,6 +287,8 @@ public class Bow : MonoBehaviour
             _trajectoryLine.ShowTrajectory(_arrow.transform.position, startVel);
 
             _trajectoryLineRenderer.material.color = _trajectoryColor;
+            _trajectoryLine.lineRenderer.startWidth = _trajectoryWidth;
+            _trajectoryLine.lineRenderer.endWidth = _trajectoryWidth;
 
             SetBowTransparency(0.35f);
         }
