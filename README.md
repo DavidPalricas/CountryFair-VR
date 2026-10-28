@@ -221,6 +221,9 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 | `score` | Simulates a successful player score | Both mini-games | Tutorial completed |
 | `miss` | Simulates a player miss | Both mini-games | Tutorial completed |
 | `dog` | Simulates a score by landing the frisbee in the dog's surrounding area | Frisbee only | Tutorial completed |
+| `head` | Makes the bow follow the player's head | Archery only | Tutorial completed |
+| `left` | Holds the bow in the left hand | Archery only | Tutorial completed |
+| `right` | Holds the bow in the right hand | Archery only | Tutorial completed |
 
 ---
 

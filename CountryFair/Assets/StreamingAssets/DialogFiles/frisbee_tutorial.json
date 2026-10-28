@@ -1,10 +1,10 @@
 {
-    "Rules":["Neste jogo, tem de lancar o frisbee\npara a area laranja a volta do cao\npara fazer pontos.\n\n\tPressione no Botao Para Continuar.",
-              "Pode lancar o frisbee para as outras\nareas laranjas, e o cao ira apanha-lo.\nMas nao ira marcar tantos pontos.\n\n\tPressione no Botao Para Continuar.",
-              "Mas tenha em atencao: a medida que vai progredindo,\nestas areas podem girar, desaparecer\nou as duas coisas em simultaneo!\n\n\tPressione no Botao Para Continuar.",
-              "Quando estiver pronto para praticar o\nlancamento do frisbee,\n\n\t Pressione no Botao Para Continuar."],
+    "Rules":["Neste jogo, tem de lançar o frisbee\npara a área laranja à volta do cão\npara fazer pontos.\n\n\tPressione o botão para continuar.",
+              "Pode lançar o frisbee para as outras\náreas laranja e o cão irá apanhá-lo,\nmas não vai marcar tantos pontos.\n\n\tPressione o botão para continuar.",
+              "Mas tenha atenção: à medida que vai progredindo,\nestas áreas podem girar, desaparecer\nou as duas coisas em simultâneo!\n\n\tPressione o botão para continuar.",
+              "Quando estiver pronto para praticar o\nlançamento do frisbee,\n\n\t pressione o botão para continuar."],
     
-    "Guide": "Antes de chamar o cao para aqui,\nexperimente lancar o frisbee para esses alvos,\ncomo no video apresentado em cima.",
+    "Guide": "Antes de chamar o cão para aqui,\nexperimente lançar o frisbee para esses alvos,\ncomo no vídeo apresentado acima.",
 
-    "End": "Otimo trabalho! Agora esta pronto para jogar\ncom o cao! Ainda se vai tornar\nnum jogador profissional! Quando estiver pronto,\n\n\tPressione o botao para comecar o jogo."
+    "End": "Ótimo trabalho! Agora está pronto para jogar\ncom o cão! Ainda se vai tornar\num jogador profissional! Quando estiver pronto,\n\n\tpressione o botão para começar o jogo."
 }

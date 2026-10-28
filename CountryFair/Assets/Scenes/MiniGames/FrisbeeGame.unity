@@ -22508,6 +22508,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 4954826737046482097, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
+      propertyPath: m_text
+      value: "Carregue no bot\xE3o para voltar para a feira\n"
+      objectReference: {fileID: 0}
     - target: {fileID: 5100851017524019869, guid: 3f3d937219aee9b48b44a37fc13a182a, type: 3}
       propertyPath: m_Layer
       value: 11

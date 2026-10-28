@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 111.1, y: 0.000061035156}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 107.55752, y: 0.000061035156}
+  m_SizeDelta: {x: 200, y: 54.251}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8696695649062945653
 CanvasRenderer:
@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Tenda de Pesca
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
-  m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
+  m_sharedMaterial: {fileID: 6722005148866074646, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -203,8 +203,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
-  m_sharedMaterial: {fileID: 5622284678756272066, guid: a63981dc04d309d4789e73bc4fc79069, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
+  m_sharedMaterial: {fileID: 6722005148866074646, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -228,8 +228,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

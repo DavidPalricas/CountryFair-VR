@@ -1,10 +1,10 @@
 {
-    "Rules":["Neste jogo, tem de acertar com as flechas\nnos baloes da cor correta para fazer pontos.\n\n\tPressione no Botao Para Continuar.",
-              "Mas tenha em atencao: a medida que vai progredindo,\nestes baloes podem mover-se em diferentes direcoes,\nficar transparentes, ou as duas coisas em simultaneo!\n\n\tPressione no Botao Para Continuar.",
-              "Tome nota que, se acertar num balao translucido,\nmesmo que seja da cor correta, nao vai fazer pontos!\n\n\tPressione no Botao Para Continuar.",
-              "Quando estiver pronto para praticar com o arco,\n\n\t Pressione no Botao Para Continuar."],
+    "Rules":["Neste jogo, tem de acertar com as flechas\nnos balões da cor correta para fazer pontos.\n\n\tPressione o botão para continuar.",
+              "Mas tenha atenção: à medida que vai progredindo,\nestes balões podem mover-se em diferentes direções,\nficar transparentes ou as duas coisas em simultâneo!\n\n\tPressione o botão para continuar.",
+              "Tome nota de que, se acertar num balão transparente,\nmesmo que seja da cor correta, não vai fazer pontos!\n\n\tPressione o botão para continuar.",
+              "Quando estiver pronto para praticar com o arco,\n\n\t pressione o botão para continuar."],
     
-    "Guide": "Agora nao se preocupe em acertar num balao\ncom uma cor especifica.\nPode arrebenta-los a todos. Para isso,\ntente fazer um gesto como no video apresentado em cima.",
+    "Guide": "Agora não se preocupe em acertar num balão\ncom uma cor específica.\nPode rebentá-los a todos. Para isso,\ntente fazer um gesto como o do vídeo apresentado acima.",
 
-    "End": "Boa pontaria! Agora esta pronto para\nse tornar num arqueiro! Quando lhe apetecer,\n\n\tPressione o botao para comecar o jogo."
+    "End": "Boa pontaria! Agora está pronto para\nse tornar um arqueiro! Quando lhe apetecer,\n\n\tpressione o botão para começar o jogo."
 }

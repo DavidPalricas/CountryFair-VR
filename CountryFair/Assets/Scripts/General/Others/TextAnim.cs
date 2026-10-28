@@ -55,4 +55,11 @@ public class TextAnim : MonoBehaviour
 
         _animationSequence.SetLoops(-1, LoopType.Yoyo);
     }
+
+    /// <summary>Kills the float sequence and any stray tweens on the text to prevent tweens running on a destroyed transform after a scene change.</summary>
+    private void OnDestroy()
+    {
+        _animationSequence?.Kill();
+        transform.DOKill();
+    }
 }
