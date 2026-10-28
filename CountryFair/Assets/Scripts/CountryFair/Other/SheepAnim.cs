@@ -64,4 +64,11 @@ public class SheepAnimation : MonoBehaviour
         _bounceSequence.SetLoops(-1, LoopType.Restart);
         _bounceSequence.SetEase(Ease.OutQuad);
     }
+
+    /// <summary>Kills the bounce sequence and any stray tweens on the sheep to prevent tweens running on a destroyed transform after a scene change.</summary>
+    private void OnDestroy()
+    {
+        _bounceSequence?.Kill();
+        transform.DOKill();
+    }
 }

@@ -153,8 +153,10 @@ public class BalloonsSpawner : MonoBehaviour
         float addedHeight = Utils.RandomValueInRange(_minHeightToBalloonExplode, _maxHeightToBalloonExplode);
         float targetY = position.y + addedHeight;
 
+        // Linked to the balloon so the tween dies with it when the scene unloads mid-flight.
         balloon.transform.DOMoveY(targetY, moveDuration)
             .SetEase(Ease.InSine)
+            .SetLink(balloon)
             .OnComplete(() =>
             {
                     balloon.GetComponent<PopBalloon>().Pop();
