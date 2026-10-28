@@ -424,6 +424,16 @@ In the plaza, every `CountryFairCheatCodes` cheat except `intro` requires the in
 | `f` + expression | Switch to FACE mode and show it — `fhappy`, `fneutral`, `fsad`, `fangry`, `fdisgust`, `fsurprise`, `ffear` |
 | `positive` / `negative` | Switch to SLIDER mode and nudge the mood bar |
 
+**Registered Cheats (Archery only — `ArcheryCheatCodes`):**
+| Code | Effect |
+|------|--------|
+| `head` | Bow follows the head (`Bow.BowPositioningMode.FollowHead`) |
+| `left` | Bow held in the left hand (`Bow.BowPositioningMode.LeftHand`) |
+| `right` | Bow held in the right hand (`Bow.BowPositioningMode.RightHand`) |
+
+These go through `_setBowPositioningMode` (wired to `Bow.SetBowPositioningMode`) and, like the other mini-game cheats,
+are ignored until the archery tutorial is completed.
+
 **Registered Cheats (CountryFair plaza):**
 | Code | Effect |
 |------|--------|
