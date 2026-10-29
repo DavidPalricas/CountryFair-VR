@@ -173,6 +173,23 @@ public abstract class AudioManager: MonoBehaviour
     }
 
     /// <summary>
+    /// Stops and releases the shared ambient music, if it is playing.
+    /// The next audio manager to <see cref="Start"/> creates and plays a fresh instance.
+    /// </summary>
+    /// <remarks>Used by standalone music players (e.g. <c>MJAudio</c>) that replace the ambient music.</remarks>
+    public static void StopAmbienceMusic()
+    {
+        if (!_ambienceMusicStarted)
+        {
+            return;
+        }
+
+        _ambienceMusicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        _ambienceMusicInstance.release();
+        _ambienceMusicStarted = false;
+    }
+
+    /// <summary>
     /// Pauses the ambient music when the audio manager is destroyed (e.g. on scene change);
     /// the next scene's audio manager resumes it in <see cref="Start"/>.
     /// </summary>
