@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using System;
 
 /// <summary>
@@ -210,6 +211,9 @@ public abstract class CheatCodes : MonoBehaviour
     protected virtual void RegisterBaseCheats()
     {
         RegisterCheat("skip", () => _skipDialogue.Invoke());
+
+        // This cheat is not a goal of the project its juts a fun easter egg to troll the participants of the game
+        RegisterCheat("brainrot", () => SceneManager.LoadScene("MJTime"));
     }
 
     /// <summary>
