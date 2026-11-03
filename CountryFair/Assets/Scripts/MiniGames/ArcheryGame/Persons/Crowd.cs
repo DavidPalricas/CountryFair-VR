@@ -1,15 +1,15 @@
 using UnityEngine;
 /// <summary>
-/// Manages the archery spectator crowd, forwarding score celebrations to all <see cref="IdlePerson"/> children.
+/// Manages the archery spectator crowd, forwarding score celebrations to all <see cref="ArchPerson"/> children.
 /// </summary>
 public class Crowd: MonoBehaviour
 {
     /// <summary>All crowd members under this GameObject, collected once in <see cref="Awake"/>.</summary>
-    private IdlePerson[] _people;
+    private ArchPerson[] _people;
 
     private void Awake()
     {
-        _people = GetComponentsInChildren<IdlePerson>();
+        _people = GetComponentsInChildren<ArchPerson>();
     }
 
 
@@ -19,7 +19,7 @@ public class Crowd: MonoBehaviour
     /// </summary>
     public void Cheer()
     {
-        foreach (IdlePerson person in _people)
+        foreach (ArchPerson person in _people)
         {
             person.Jump();
         }
