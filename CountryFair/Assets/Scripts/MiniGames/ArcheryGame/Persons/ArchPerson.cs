@@ -2,9 +2,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Crowd member that performs a DOTween jump with a full 360° Y-axis spin when <see cref="Jump"/> is called.
-/// Used by <see cref="Crowd"/> to celebrate player scores.
+/// Archery mini-game NPC animated entirely with DOTween (no Animator clips).
+/// It performs a jump with a full 360° Y-axis spin when <see cref="Jump"/> is called (used by <see cref="Crowd"/>
+/// to celebrate player scores), and falls over and gets back up when hit by an arrow.
 /// </summary>
+/// <remarks>
+/// Hits are detected in <see cref="OnTriggerEnter"/> against objects tagged <c>Arrow</c>, so either the attached
+/// <see cref="Collider"/> or the arrow's collider must be a trigger.
+/// </remarks>
 
 [RequireComponent(typeof(Collider))]
 public class ArchPerson : MonoBehaviour
@@ -64,14 +69,23 @@ public class ArchPerson : MonoBehaviour
     [SerializeField]
     private float _getUpLandingDuration = 0.3f;
 
+    /// <summary>Current animation phase; gates which reactions (<see cref="Jump"/>, a new hit) are allowed.</summary>
     private ArchPersonState _currentState = ArchPersonState.OnGround;
 
 
+    /// <summary>Animation phases of the person.</summary>
     private enum ArchPersonState
     {
+        /// <summary>Standing still; can jump or be hit.</summary>
         OnGround,
+
+        /// <summary>Celebrating with a jump; can still be hit (the jump is completed instantly first).</summary>
         Jumping,
+
+        /// <summary>Falling or lying on the floor after a hit; further hits are ignored.</summary>
         Hitted,
+
+        /// <summary>Getting back up; can be hit again, which knocks the person down before standing up.</summary>
         GetUp
     }
 
@@ -99,6 +113,14 @@ public class ArchPerson : MonoBehaviour
 
 
 
+    /// <summary>
+    /// Starts the hit reaction when an arrow enters the trigger, unless the person is already falling or lying down.
+    /// </summary>
+    /// <remarks>
+    /// Hits during <see cref="ArchPersonState.GetUp"/> are allowed on purpose, so a player shooting repeatedly at the
+    /// same NPC can keep it from getting up.
+    /// </remarks>
+    /// <param name="other">Collider that entered the trigger.</param>
     private void OnTriggerEnter(Collider other) {
 
         if(other.CompareTag("Arrow") && _currentState != ArchPersonState.Hitted)
@@ -110,8 +132,14 @@ public class ArchPerson : MonoBehaviour
 
     /// <summary>
     /// Wii Bowling pin style reaction: squash on impact, tip over away from the arrow while sliding back,
-    /// bounce on the floor, stay down for a moment and then spring back up to the original pose.
+    /// bounce on the floor and stay down for <see cref="_timeOnGround"/>, then hand over to
+    /// <see cref="PlayGetUpAnimation"/>.
     /// </summary>
+    /// <remarks>
+    /// Any running sequence (jump or get-up) is completed instantly, not killed, so its <c>OnComplete</c> restores
+    /// the standing pose. The start pose captured right after it is therefore always the standing one, and repeated
+    /// hits do not add up the knockback offsets.
+    /// </remarks>
     /// <param name="arrow">Transform of the arrow that hit the person, used to compute the knockback direction.</param>
     private void PlayHittedAnimation(Transform arrow)
     {
