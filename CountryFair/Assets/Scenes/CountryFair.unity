@@ -16919,6 +16919,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1894166784}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _typewriterSettings.charactersPerSecond
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: _introCompleted.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
