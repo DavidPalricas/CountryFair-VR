@@ -183,6 +183,12 @@ public class Tutorial : UIDialog
              return;
         }
 
+        // First press while a line is still being typed just reveals it entirely.
+        if (SkipTypewriter())
+        {
+            return;
+        }
+
         if (_finishedPracticing)
         {
             ReadyToPlay();
@@ -232,7 +238,7 @@ public class Tutorial : UIDialog
             return;
         }
 
-        _dialogueBoxText.text = rules[0];
+        ShowTextWithTypewriter(rules[0]);
         _tutorialData.Rules.RemoveAt(0);
     }
 
@@ -245,13 +251,13 @@ public class Tutorial : UIDialog
         _videoScreen.SetActive(true);
         _miniGameVideo.SetActive(true);
 
-        _dialogueBoxText.text = _tutorialData.Guide;
+        ShowTextWithTypewriter(_tutorialData.Guide);
     }
 
     /// <summary>Shows the tutorial's end message and switches back to the dialogue button, hiding the practice prop and video.</summary>
     private void PractiseCompleted()
     {
-        _dialogueBoxText.text = _tutorialData.End;
+        ShowTextWithTypewriter(_tutorialData.End);
 
         _tutorialButton.SetActive(true);
         _miniGameProp.SetActive(false);

@@ -164,6 +164,12 @@ public class CountryFairDialogue : UIDialog
             return;
         }
 
+        // First press while a line is still being typed just reveals it entirely.
+        if (SkipTypewriter())
+        {
+            return;
+        }
+
         if (_currentDialogueState == DialogueState.INTRO_COMPLETED)
         {
             // Cleared on dismissal rather than on load, so the flags keep reporting the message as
@@ -286,7 +292,7 @@ public class CountryFairDialogue : UIDialog
     {
         if (_currentDialogueState != DialogueState.INTRO_COMPLETED && _currentDialogueLines != null && _currentDialogueLines.Count > 0) 
         {
-             _dialogueBoxText.text = _currentDialogueLines[0];
+             ShowTextWithTypewriter(_currentDialogueLines[0]);
             _currentDialogueLines.RemoveAt(0);
         }
     }
@@ -298,7 +304,7 @@ public class CountryFairDialogue : UIDialog
 
         if(_sessionCompleteData != null && _sessionCompleteData.Congrats != null)
         {
-             _dialogueBoxText.text = _sessionCompleteData.Congrats[Utils.RandomValueInRange(0, _sessionCompleteData.Congrats.Count)];
+             ShowTextWithTypewriter(_sessionCompleteData.Congrats[Utils.RandomValueInRange(0, _sessionCompleteData.Congrats.Count)]);
         }
            
     }

@@ -26,6 +26,14 @@ public abstract class UIDialog : MonoBehaviour
     [SerializeField]
     protected TextMeshProUGUI _dialogueBoxText;
 
+    [Header("Typewriter Effect")]
+    /// <summary>Speed and punctuation-pause timings of lines shown through <see cref="ShowTextWithTypewriter"/>.</summary>
+    [SerializeField]
+    private TypewriterSettings _typewriterSettings = new();
+
+    /// <summary>Typewriter helper bound to <see cref="_dialogueBoxText"/>; created lazily by <see cref="ShowTextWithTypewriter"/>.</summary>
+    private TypewriterEffect _typewriter;
+
     /// <summary>Dialogue data deserialized from JSON by <see cref="LoadJSONDataRoutine"/>; concrete type is picked by the subclass via <see cref="GetJSONDataType"/>.</summary>
     protected JSONData _data;
 
@@ -110,6 +118,28 @@ public abstract class UIDialog : MonoBehaviour
         {
             Debug.LogError("Error in JSON format: " + e.Message);
         }
+    }
+
+    /// <summary>Shows <paramref name="content"/> in <see cref="_dialogueBoxText"/> with a typewriter effect.</summary>
+    /// <param name="content">Line to show.</param>
+    /// <param name="narrationDuration">
+    /// Optional length (seconds) of the narration audio for this line; when &gt; 0 the reveal is stretched/compressed
+    /// to end together with the audio. Leave at -1 while there is no narration.
+    /// </param>
+    /// <param name="onCompleted">Invoked once the whole line is visible (also when skipped).</param>
+    protected void ShowTextWithTypewriter(string content, float narrationDuration = -1f, System.Action onCompleted = null)
+    {
+        _typewriter ??= new TypewriterEffect(gameObject, _dialogueBoxText, _typewriterSettings);
+        _typewriter.Play(content, narrationDuration, onCompleted);
+    }
+
+    /// <summary>
+    /// If a line is still being typed, reveals it entirely and returns true. Call at the start of
+    /// <see cref="NextStep"/> so the first press completes the line and only the next one advances.
+    /// </summary>
+    protected bool SkipTypewriter()
+    {
+        return _typewriter != null && _typewriter.Skip();
     }
 
     /// <summary>Sets <see cref="_jsonFileName"/> to the dialogue file this instance should load.</summary>
