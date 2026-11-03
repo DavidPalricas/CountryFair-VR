@@ -164,8 +164,8 @@ public class CountryFairDialogue : UIDialog
             return;
         }
 
-        // First press while a line is still being typed just reveals it entirely.
-        if (SkipTypewriter())
+        // The button is hidden while typing; ignore any press that still gets through.
+        if (IsTyping)
         {
             return;
         }

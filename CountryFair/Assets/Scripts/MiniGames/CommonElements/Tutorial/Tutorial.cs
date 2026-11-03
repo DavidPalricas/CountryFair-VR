@@ -30,12 +30,8 @@ public class Tutorial : UIDialog
     [SerializeField]
     private GameObject _practiceElements;
 
-    /// <summary>Button the player presses to advance through rule slides and to confirm practice completion.</summary>
-    [Header("Game Elements")]
-    [SerializeField]
-    private GameObject _tutorialButton;
-
     /// <summary>UI elements activated after the tutorial completes (e.g. score display).</summary>
+    [Header("Game Elements")]
     [SerializeField]
     private GameObject _postTutorialElements;
 
@@ -47,6 +43,9 @@ public class Tutorial : UIDialog
 
     /// <summary>Number of practice tasks completed so far in the current session.</summary>
     private int _currentTasksCompleted = 0;
+
+    /// <summary>True during the practice phase, when the advance button must stay hidden (the dialogue advances via <see cref="TaskCompleted"/>).</summary>
+    private bool _isPracticing = false;
 
     /// <summary>True once all practice tasks are done and the "ready to play" confirmation is showing.</summary>
     private bool _finishedPracticing = false;
@@ -65,7 +64,8 @@ public class Tutorial : UIDialog
             return;
         }
 
-        if (!Utils.RequireAssigned(_tutorialButton, nameof(_tutorialButton), this))
+        // The advance button is the base class's _nextButton (migrated from the old _tutorialButton field).
+        if (!Utils.RequireAssigned(_nextButton, nameof(_nextButton), this))
         {
             return;
         }
@@ -183,8 +183,8 @@ public class Tutorial : UIDialog
              return;
         }
 
-        // First press while a line is still being typed just reveals it entirely.
-        if (SkipTypewriter())
+        // The button is hidden while typing; ignore any press that still gets through.
+        if (IsTyping)
         {
             return;
         }
@@ -242,10 +242,14 @@ public class Tutorial : UIDialog
         _tutorialData.Rules.RemoveAt(0);
     }
 
+    /// <summary>Keeps the advance button hidden during the practice phase.</summary>
+    protected override bool ShouldShowNextButton() => !_isPracticing;
+
     /// <summary>Hides the rule dialogue button and reveals the practice score areas, prop, and instructional video.</summary>
     private void StartPractice()
     {
-        _tutorialButton.SetActive(false);
+        _isPracticing = true;
+        SetNextButtonVisible(false);
         _practiceElements.SetActive(true);
         _miniGameProp.SetActive(true);
         _videoScreen.SetActive(true);
@@ -254,12 +258,13 @@ public class Tutorial : UIDialog
         ShowTextWithTypewriter(_tutorialData.Guide);
     }
 
-    /// <summary>Shows the tutorial's end message and switches back to the dialogue button, hiding the practice prop and video.</summary>
+    /// <summary>Shows the tutorial's end message and lets the dialogue button reappear once it is typed, hiding the practice prop and video.</summary>
     private void PractiseCompleted()
     {
+        // Cleared before typing so the button appears once the end message finishes.
+        _isPracticing = false;
         ShowTextWithTypewriter(_tutorialData.End);
 
-        _tutorialButton.SetActive(true);
         _miniGameProp.SetActive(false);
         _videoScreen.SetActive(false);
         _finishedPracticing = true;
