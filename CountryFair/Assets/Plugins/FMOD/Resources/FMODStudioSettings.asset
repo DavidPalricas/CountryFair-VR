@@ -492,6 +492,7 @@ MonoBehaviour:
   - CountryFair
   - FrisbbeeGame
   - MiniGames
+  - "\u30D6\u30EC\u30A4\u30F3\u30ED\u30C3\u30C8"
   BanksToLoad: []
   LiveUpdatePort: 9264
   EnableMemoryTracking: 0
