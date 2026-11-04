@@ -205,6 +205,13 @@ public abstract class UIDialog : MonoBehaviour
     /// <summary>True while a line is still being typed; <see cref="NextStep"/> implementations ignore presses meanwhile.</summary>
     protected bool IsTyping => _typewriter != null && _typewriter.IsTyping;
 
+    /// <summary>
+    /// If a line is still being typed, reveals it entirely (which fires <see cref="OnLineCompleted"/>, so the next button appears)
+    /// and returns true; otherwise returns false. <see cref="NextStep"/> implementations call it first so that the "skip" cheat
+    /// completes the line on the first use and only advances on the next one.
+    /// </summary>
+    protected bool SkipTyping() => _typewriter != null && _typewriter.Skip();
+
     /// <summary>Hook called right before a line starts being typed; base does nothing.</summary>
     protected virtual void OnLineStarted() { }
 

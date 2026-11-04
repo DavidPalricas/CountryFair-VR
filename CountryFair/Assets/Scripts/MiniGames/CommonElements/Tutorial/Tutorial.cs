@@ -180,8 +180,8 @@ public class Tutorial : InteractableDialogue
              return;
         }
 
-        // The button is hidden while typing; ignore any press that still gets through.
-        if (IsTyping)
+        // While a line is typing, a call (e.g. the "skip" cheat) only completes the line; the next one advances.
+        if (SkipTyping())
         {
             return;
         }
