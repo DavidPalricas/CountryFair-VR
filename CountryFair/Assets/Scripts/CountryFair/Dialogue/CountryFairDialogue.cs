@@ -12,7 +12,7 @@ using UnityEngine.Events;
 /// <see cref="_finishedDialogue"/> (which enables the post-intro UI, e.g. the wrist-menu tent
 /// personalization, and notifies <see cref="ConnectToWebApp"/>) and destroys the dialogue canvas.
 /// </summary>
-public class CountryFairDialogue : UIDialog
+public class CountryFairDialogue : InteractableDialogue
 {
     [Header("Characters")]
     /// <summary>Zeca Bigodes character GameObject, shown during his parts of the intro.</summary>
@@ -40,6 +40,12 @@ public class CountryFairDialogue : UIDialog
 
     /// <summary>Remaining lines of the intro section currently being shown; consumed one at a time by <see cref="ShowIntroLines"/>.</summary>
     private List<string> _currentDialogueLines = null;
+
+    /// <summary>JSON property of the intro section being shown (e.g. <c>ZecaPart1</c>); used to build narration keys.</summary>
+    private string _currentSection;
+
+    /// <summary>Index (in the original JSON list) of the next line of <see cref="_currentSection"/>; used to build narration keys.</summary>
+    private int _currentLineIndex;
 
     /// <summary>Steps of the intro sequence, one character section at a time, ending with <see cref="INTRO_COMPLETED"/> once the intro is done (or reused to display a session-completed message instead).</summary>
     private enum DialogueState
@@ -202,6 +208,7 @@ public class CountryFairDialogue : UIDialog
         {
             case DialogueState.BEGIN_INTRO:
                 _currentDialogueLines = _introData.ZecaPart1;
+                SetCurrentSection(nameof(IntroData.ZecaPart1));
                 _characterNameText.text = "Zeca Bigodes";
                 _currentDialogueState = DialogueState.ZECA_INTRO_PART1;
                 _zeca.SetActive(true);
@@ -210,6 +217,7 @@ public class CountryFairDialogue : UIDialog
 
             case DialogueState.ZECA_INTRO_PART1:
                 _currentDialogueLines = _introData.CarnyWise;
+                SetCurrentSection(nameof(IntroData.CarnyWise));
                 _characterNameText.text = "Carny Wise";
                 _currentDialogueState = DialogueState.CARNY_WISE_INTRO;
                 _zeca.SetActive(false);
@@ -218,6 +226,7 @@ public class CountryFairDialogue : UIDialog
 
             case DialogueState.CARNY_WISE_INTRO:
                 _currentDialogueLines = _introData.ZecaPart2;
+                SetCurrentSection(nameof(IntroData.ZecaPart2));
                 _characterNameText.text = "Zeca Bigodes";
                 _currentDialogueState = DialogueState.ZECA_INTRO_PART2;
                 _zeca.SetActive(true);
@@ -287,25 +296,33 @@ public class CountryFairDialogue : UIDialog
         Debug.LogError("No session completed to show.");
     }
 
-    /// <summary>Displays and consumes the first remaining line of <see cref="_currentDialogueLines"/>, if any.</summary>
+    /// <summary>Starts a new intro section: its lines are narrated with keys <c>intro_{section}_{0..n}</c>.</summary>
+    private void SetCurrentSection(string section)
+    {
+        _currentSection = section;
+        _currentLineIndex = 0;
+    }
+
+    /// <summary>Displays (narrated) and consumes the first remaining line of <see cref="_currentDialogueLines"/>, if any.</summary>
     private void ShowIntroLines()
     {
-        if (_currentDialogueState != DialogueState.INTRO_COMPLETED && _currentDialogueLines != null && _currentDialogueLines.Count > 0) 
+        if (_currentDialogueState != DialogueState.INTRO_COMPLETED && _currentDialogueLines != null && _currentDialogueLines.Count > 0)
         {
-             ShowTextWithTypewriter(_currentDialogueLines[0]);
+            ShowNarratedLine(_currentDialogueLines[0], GetNarrationKey(_currentSection, _currentLineIndex));
             _currentDialogueLines.RemoveAt(0);
+            _currentLineIndex++;
         }
     }
 
-    /// <summary>Displays a random congratulation line from <see cref="_sessionCompleteData"/>, attributed to Zeca Bigodes.</summary>
+    /// <summary>Displays (narrated) a random congratulation line from <see cref="_sessionCompleteData"/>, attributed to Zeca Bigodes.</summary>
     private void ShowSessionCompletedLine()
     {
         _characterNameText.text = "Zeca Bigodes";
 
-        if(_sessionCompleteData != null && _sessionCompleteData.Congrats != null)
+        if(_sessionCompleteData != null && _sessionCompleteData.Congrats != null && _sessionCompleteData.Congrats.Count > 0)
         {
-             ShowTextWithTypewriter(_sessionCompleteData.Congrats[Utils.RandomValueInRange(0, _sessionCompleteData.Congrats.Count)]);
+            int index = Utils.RandomValueInRange(0, _sessionCompleteData.Congrats.Count);
+            ShowNarratedLine(_sessionCompleteData.Congrats[index], GetNarrationKey(nameof(SessionCompletedData.Congrats), index));
         }
-           
     }
 }

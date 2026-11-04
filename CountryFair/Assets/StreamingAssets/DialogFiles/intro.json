@@ -1,12 +1,12 @@
 {
     "ZecaPart1": [
-            "Olá! Bem-vindo à feira! Eu sou o dono disto tudo,\nmas pode tratar-me por Zeca Bigodes!\n\n\tPressione o botão para continuar.",
-            "Aqui vai encontrar desafios para exercitar o corpo\n e a mente enquanto se diverte.\n\n\tPressione o botão para continuar.",
-            "Temos alguns jogos, como o tiro com arco e o lançamento\n de frisbee com o meu cão.\n\n\tPressione o botão para continuar.",
-            "Antes de começar, deixe-me apresentar-lhe o\nCarny Wise. Ele vai ajudá-lo a aprender os jogos!\n\n\tPressione o botão para continuar."
+            "Olá! Bem-vindo à feira! Eu sou o dono disto tudo,\nmas pode tratar-me por Zeca Bigodes!",
+            "Aqui vai encontrar desafios para exercitar o corpo\n e a mente enquanto se diverte.",
+            "Temos alguns jogos, como o tiro com arco e o lançamento\n de frisbee com o meu cão.",
+            "Antes de começar, deixe-me apresentar-lhe o\nCarny Wise. Ele vai ajudá-lo a aprender os jogos!"
         ],
 
-    "CarnyWise": ["Prazer em conhecê-lo! Estou aqui para explicar as regras\n e garantir que o desafio está sempre à sua altura.\nNem fácil demais, nem impossível.\n\n\tPressione o botão para continuar."],
+    "CarnyWise": ["Prazer em conhecê-lo! Estou aqui para explicar as regras\n e garantir que o desafio está sempre à sua altura.\nNem fácil demais, nem impossível."],
 
-    "ZecaPart2": ["Impecável! Agora que já conhece o Carny,\nquando estiver pronto para jogar, pressione\nos botões à frente de cada barraca de jogo!\n\n\tPressione o botão para continuar."]
+    "ZecaPart2": ["Impecável! Agora que já conhece o Carny,\nquando estiver pronto para jogar, pressione\nos botões à frente de cada barraca de jogo!"]
 }

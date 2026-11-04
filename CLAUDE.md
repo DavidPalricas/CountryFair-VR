@@ -54,7 +54,7 @@ CountryFair/
 │   │   │                             #   + PlayerScale (giant mode, section 12)
 │   │   ├── MiniGames/                # Mini-game modules
 │   │   │   ├── CommonElements/       # Shared between all mini-games
-│   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameAudioManager, MiniGameCheatCodes
+│   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameCheatCodes
 │   │   │   │   ├── DDASystem/           # CarnyWise (DDA logic)
 │   │   │   │   │   └── ChangeDifficultyFeedback/  # CarnyWiseDiffFeedback, DifficultyFeedbackData
 │   │   │   │   ├── Tutorial/            # Tutorial system, TutorialData (JSON)
@@ -176,14 +176,11 @@ AnimalState (base for all animal states)
 
 **Dialog Flow:**
 ```
-UIDialog (base)
-├── CountryFairDialogue (plaza intro/session complete)
-│   ├── IntroData (Zeca Bigodes + Carny Wise dialogue)
-│   └── SessionCompletedData (congratulations message)
-├── Tutorial (mini-game tutorials)
-│   └── TutorialData (rules, guide, end message)
-└── CarnyWiseDiffFeedback (difficulty change feedback)
-    └── DifficultyFeedbackData (increase/decrease texts)
+UIDialog (base: JSON loading, typewriter, FMOD narration; hooks OnLineStarted/OnLineCompleted)
+├── CarnyWiseDiffFeedback (no player input → no button; DifficultyFeedbackData)
+└── InteractableDialogue (adds _nextButton, _continueDialogue, ShouldShowNextButton())
+    ├── Tutorial (TutorialData: rules, guide, end message)
+    └── CountryFairDialogue (IntroData, SessionCompletedData)
 ```
 
 **State Machine (CountryFairDialogue):**
@@ -196,6 +193,16 @@ enum DialogueState {
     INTRO_COMPLETED
 }
 ```
+
+**Narration (per line):** `UIDialog.ShowNarratedLine(text, key)` plays the line's voice clip through `DialogueNarration`
+(FMOD Programmer Instrument event `_narrationEvent` + an FMOD **Audio Table** in the FMOD project, not in Unity `Assets/`)
+and stretches the typewriter to the clip length so text and voice end together. Keys come from
+`GetNarrationKey(section, index)` → `{jsonFileWithoutExt}_{JsonProperty}[_{index}]` (e.g. `intro_ZecaPart1_0`,
+`frisbee_tutorial_Guide`, `change_difficulty_IncreaseDiff_3`). A key missing from the loaded banks logs a
+`[Narration]` warning and the line is typed at normal speed with no audio. The "Pressione o botão para continuar."
+prompt is **not** in the JSON lines (so it is never narrated): it is the `_continueDialogue` GameObject, shown and
+hidden together with `_nextButton`. `_narrationEvent` is **required** on every `UIDialog`; `_nextButton` and the continue prompt
+(`_continueDialogue`) are required only on `InteractableDialogue` subclasses (checked with `Utils.RequireAssigned` in `Awake`).
 
 **Post-intro hand-off:** `CountryFairDialogue` no longer holds a direct `postIntroElements` GameObject reference.
 When the intro finishes it invokes the `playerFinishedIntro` UnityEvent (wired in the Inspector), which is what
@@ -246,10 +253,16 @@ MiniGameCheatCodes (base)
 ├── FrisbeeCheatCodes
 └── ArcheryCheatCodes
 
-MiniGameAudioManager (base)
+AudioManager (base, General/GameManagment/)
 ├── FrisbeeAudioManager
-└── ArcheryAudioManager
+├── ArcheryAudioManager
+└── CountryFairAudioManager
 ```
+
+There is **no** mini-game-specific audio base class: the games share no sound effects beyond the button-pressed
+sound registered by `AudioManager` itself, so each mini-game's audio manager inherits `AudioManager` directly.
+Carny Wise's difficulty-change feedback has no sound effects; it is voiced only by the narration event of
+`CarnyWiseDiffFeedback` (see section 3).
 
 **MiniGameManager Responsibilities:**
 - Target spawning (`AddTarget`, `RemoveTarget`; `SyncTargets` is implemented once in the base)
@@ -530,6 +543,7 @@ registers them with `RegisterSoundEffect` in `Awake` (`scale_to_giant.wav` / `sc
 **Sound effect lookup:** `AudioManager.PlaySoundEffect` / `PlaySpatialSoundEffect` are implemented once in the base and
 look the FMOD event up in a dictionary. Each scene's manager calls `RegisterSoundEffect(type, eventReference)` in `Awake`
 for the effects it supports (it also logs unassigned references); an unregistered effect logs an error when played.
+The base `AudioManager.Awake` registers only `ButtonPressed`; every other effect belongs to a single scene.
 
 ---
 

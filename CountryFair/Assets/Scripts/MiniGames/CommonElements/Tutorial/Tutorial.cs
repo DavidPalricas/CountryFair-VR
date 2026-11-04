@@ -7,7 +7,7 @@ using UnityEngine.Events;
 /// and fires <see cref="_tutorialCompleted"/> when the player is ready to play for real.
 /// Skips itself immediately if <see cref="GameManager"/> reports the tutorial was already completed.
 /// </summary>
-public class Tutorial : UIDialog
+public class Tutorial : InteractableDialogue
 {
     /// <summary>Fired when the tutorial ends — wired to <see cref="MiniGameManager.TutorialCompleted"/>.</summary>
     [SerializeField]
@@ -53,6 +53,9 @@ public class Tutorial : UIDialog
     /// <summary>True when the active scene is the Frisbee mini-game, false for Archery; set by <see cref="CheckCurrentMiniGame"/>.</summary>
     private bool _isFromFrisbeGame = false;
 
+    /// <summary>Index (in the original JSON list) of the next rule slide; used to build its narration key.</summary>
+    private int _ruleIndex = 0;
+
     /// <summary>Validates the practice/UI references, counts practice tasks from <see cref="_practiceElements"/>, and hides all practice/post-tutorial elements until they are needed.</summary>
     protected override void Awake()
     {
@@ -60,12 +63,6 @@ public class Tutorial : UIDialog
 
         if (!Utils.RequireAssigned(_practiceElements, nameof(_practiceElements), this) ||
             !Utils.RequireAssigned(_postTutorialElements, nameof(_postTutorialElements), this))
-        {
-            return;
-        }
-
-        // The advance button is the base class's _nextButton (migrated from the old _tutorialButton field).
-        if (!Utils.RequireAssigned(_nextButton, nameof(_nextButton), this))
         {
             return;
         }
@@ -238,8 +235,9 @@ public class Tutorial : UIDialog
             return;
         }
 
-        ShowTextWithTypewriter(rules[0]);
+        ShowNarratedLine(rules[0], GetNarrationKey(nameof(TutorialData.Rules), _ruleIndex));
         _tutorialData.Rules.RemoveAt(0);
+        _ruleIndex++;
     }
 
     /// <summary>Keeps the advance button hidden during the practice phase.</summary>
@@ -255,7 +253,7 @@ public class Tutorial : UIDialog
         _videoScreen.SetActive(true);
         _miniGameVideo.SetActive(true);
 
-        ShowTextWithTypewriter(_tutorialData.Guide);
+        ShowNarratedLine(_tutorialData.Guide, GetNarrationKey(nameof(TutorialData.Guide)));
     }
 
     /// <summary>Shows the tutorial's end message and lets the dialogue button reappear once it is typed, hiding the practice prop and video.</summary>
@@ -263,7 +261,7 @@ public class Tutorial : UIDialog
     {
         // Cleared before typing so the button appears once the end message finishes.
         _isPracticing = false;
-        ShowTextWithTypewriter(_tutorialData.End);
+        ShowNarratedLine(_tutorialData.End, GetNarrationKey(nameof(TutorialData.End)));
 
         _miniGameProp.SetActive(false);
         _videoScreen.SetActive(false);
