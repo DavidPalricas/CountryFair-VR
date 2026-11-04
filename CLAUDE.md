@@ -54,7 +54,7 @@ CountryFair/
 │   │   │                             #   + PlayerScale (giant mode, section 12)
 │   │   ├── MiniGames/                # Mini-game modules
 │   │   │   ├── CommonElements/       # Shared between all mini-games
-│   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameAudioManager, MiniGameCheatCodes
+│   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameCheatCodes
 │   │   │   │   ├── DDASystem/           # CarnyWise (DDA logic)
 │   │   │   │   │   └── ChangeDifficultyFeedback/  # CarnyWiseDiffFeedback, DifficultyFeedbackData
 │   │   │   │   ├── Tutorial/            # Tutorial system, TutorialData (JSON)
@@ -253,10 +253,16 @@ MiniGameCheatCodes (base)
 ├── FrisbeeCheatCodes
 └── ArcheryCheatCodes
 
-MiniGameAudioManager (base)
+AudioManager (base, General/GameManagment/)
 ├── FrisbeeAudioManager
-└── ArcheryAudioManager
+├── ArcheryAudioManager
+└── CountryFairAudioManager
 ```
+
+There is **no** mini-game-specific audio base class: the games share no sound effects beyond the button-pressed
+sound registered by `AudioManager` itself, so each mini-game's audio manager inherits `AudioManager` directly.
+Carny Wise's difficulty-change feedback has no sound effects; it is voiced only by the narration event of
+`CarnyWiseDiffFeedback` (see section 3).
 
 **MiniGameManager Responsibilities:**
 - Target spawning (`AddTarget`, `RemoveTarget`; `SyncTargets` is implemented once in the base)
@@ -537,6 +543,7 @@ registers them with `RegisterSoundEffect` in `Awake` (`scale_to_giant.wav` / `sc
 **Sound effect lookup:** `AudioManager.PlaySoundEffect` / `PlaySpatialSoundEffect` are implemented once in the base and
 look the FMOD event up in a dictionary. Each scene's manager calls `RegisterSoundEffect(type, eventReference)` in `Awake`
 for the effects it supports (it also logs unassigned references); an unregistered effect logs an error when played.
+The base `AudioManager.Awake` registers only `ButtonPressed`; every other effect belongs to a single scene.
 
 ---
 
