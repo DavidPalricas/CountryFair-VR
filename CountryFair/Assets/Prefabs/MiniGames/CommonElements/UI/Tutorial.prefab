@@ -452,6 +452,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial
   _dialogueBoxGameObject: {fileID: 5757763422182818401}
   _dialogueBoxText: {fileID: 3866530826254779555}
+  _nextButton: {fileID: 6457992072635077231}
+  _nextButtonDelaySeconds: 0.3
+  _continueDialogue: {fileID: 8241692789038372800}
+  _narrationEvent:
+    Guid:
+      Data1: -1413876888
+      Data2: 1249643137
+      Data3: -934872410
+      Data4: -30891645
+    Path: event:/Narration/DialogueLine
+  _typewriterSettings:
+    charactersPerSecond: 35
+    shortPauseSeconds: 0.08
+    longPauseSeconds: 0.2
+    shortPauseCharacters: ',;:'
+    longPauseCharacters: ".!?\u2026"
+    narrationDurationScale: 0.7
   _tutorialCompleted:
     m_PersistentCalls:
       m_Calls: []
@@ -459,7 +476,6 @@ MonoBehaviour:
   _miniGameVideo: {fileID: 1734110149491692014}
   _miniGameProp: {fileID: 0}
   _practiceElements: {fileID: 2723779426521911518}
-  _tutorialButton: {fileID: 6457992072635077231}
   _postTutorialElements: {fileID: 0}
 --- !u!1 &9204777700519121405
 GameObject:
@@ -669,6 +685,11 @@ GameObject:
 --- !u!4 &5841738734838277535 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4785945408561029625, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
+  m_PrefabInstance: {fileID: 1403172070268716134}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8241692789038372800 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6996709793156699046, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
   m_PrefabInstance: {fileID: 1403172070268716134}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3589038915725303271

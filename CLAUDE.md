@@ -176,14 +176,11 @@ AnimalState (base for all animal states)
 
 **Dialog Flow:**
 ```
-UIDialog (base)
-├── CountryFairDialogue (plaza intro/session complete)
-│   ├── IntroData (Zeca Bigodes + Carny Wise dialogue)
-│   └── SessionCompletedData (congratulations message)
-├── Tutorial (mini-game tutorials)
-│   └── TutorialData (rules, guide, end message)
-└── CarnyWiseDiffFeedback (difficulty change feedback)
-    └── DifficultyFeedbackData (increase/decrease texts)
+UIDialog (base: JSON loading, typewriter, FMOD narration; hooks OnLineStarted/OnLineCompleted)
+├── CarnyWiseDiffFeedback (no player input → no button; DifficultyFeedbackData)
+└── InteractableDialogue (adds _nextButton, _continueDialogue, ShouldShowNextButton())
+    ├── Tutorial (TutorialData: rules, guide, end message)
+    └── CountryFairDialogue (IntroData, SessionCompletedData)
 ```
 
 **State Machine (CountryFairDialogue):**
@@ -196,6 +193,16 @@ enum DialogueState {
     INTRO_COMPLETED
 }
 ```
+
+**Narration (per line):** `UIDialog.ShowNarratedLine(text, key)` plays the line's voice clip through `DialogueNarration`
+(FMOD Programmer Instrument event `_narrationEvent` + an FMOD **Audio Table** in the FMOD project, not in Unity `Assets/`)
+and stretches the typewriter to the clip length so text and voice end together. Keys come from
+`GetNarrationKey(section, index)` → `{jsonFileWithoutExt}_{JsonProperty}[_{index}]` (e.g. `intro_ZecaPart1_0`,
+`frisbee_tutorial_Guide`, `change_difficulty_IncreaseDiff_3`). A key missing from the loaded banks logs a
+`[Narration]` warning and the line is typed at normal speed with no audio. The "Pressione o botão para continuar."
+prompt is **not** in the JSON lines (so it is never narrated): it is the `_continueDialogue` GameObject, shown and
+hidden together with `_nextButton`. `_narrationEvent` is **required** on every `UIDialog`; `_nextButton` and the continue prompt
+(`_continueDialogue`) are required only on `InteractableDialogue` subclasses (checked with `Utils.RequireAssigned` in `Awake`).
 
 **Post-intro hand-off:** `CountryFairDialogue` no longer holds a direct `postIntroElements` GameObject reference.
 When the intro finishes it invokes the `playerFinishedIntro` UnityEvent (wired in the Inspector), which is what

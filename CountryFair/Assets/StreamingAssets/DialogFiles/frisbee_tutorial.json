@@ -1,10 +1,10 @@
 {
-    "Rules":["Neste jogo, tem de lançar o frisbee\npara a área laranja à volta do cão\npara fazer pontos.\n\n\tPressione o botão para continuar.",
-              "Pode lançar o frisbee para as outras\náreas laranja e o cão irá apanhá-lo,\nmas não vai marcar tantos pontos.\n\n\tPressione o botão para continuar.",
-              "Mas tenha atenção: à medida que vai progredindo,\nestas áreas podem girar, desaparecer\nou as duas coisas em simultâneo!\n\n\tPressione o botão para continuar.",
+    "Rules":["Neste jogo, tem de lançar o frisbee\npara a área laranja à volta do cão\npara fazer pontos.",
+              "Pode lançar o frisbee para as outras\náreas laranja e o cão irá apanhá-lo,\nmas não vai marcar tantos pontos.",
+              "Mas tenha atenção: à medida que vai progredindo,\nestas áreas podem girar, desaparecer\nou as duas coisas em simultâneo!",
               "Quando estiver pronto para praticar o\nlançamento do frisbee,\n\n\t pressione o botão para continuar."],
     
     "Guide": "Antes de chamar o cão para aqui,\nexperimente lançar o frisbee para esses alvos,\ncomo no vídeo apresentado acima.",
 
-    "End": "Ótimo trabalho! Agora está pronto para jogar\ncom o cão! Ainda se vai tornar\num jogador profissional! Quando estiver pronto,\n\n\tpressione o botão para começar o jogo."
+    "End": "Ótimo trabalho! Agora está pronto para jogar\ncom o cão! Ainda se vai tornar\nnum jogador profissional! Quando estiver pronto,\n\n\tpressione o botão para começar o jogo."
 }
