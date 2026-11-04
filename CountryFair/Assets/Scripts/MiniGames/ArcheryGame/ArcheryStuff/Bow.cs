@@ -5,7 +5,8 @@ using UnityEngine.Events;
 /// Implements the bow string mechanics for the Archery mini-game.
 /// The grab itself is handled by the Meta XR Interaction SDK (a <c>Grabbable</c> on <see cref="_stringHandle"/>, with one
 /// hand grab interactable per hand); this script only reads where the handle was pulled to, deforms the bow string via a
-/// three-point <see cref="LineRenderer"/>, shows a parabolic trajectory preview and launches the arrow.
+/// three-point <see cref="LineRenderer"/>, shows a parabolic trajectory preview (tinted with the scoring balloon color,
+/// see <see cref="SetTrajectoryColor"/>) and launches the arrow.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -64,7 +65,10 @@ public class Bow : MonoBehaviour
     [SerializeField]
     private TrajectoryLine _trajectoryLine;
 
-    /// <summary>Color applied to the trajectory line every frame while aiming.</summary>
+    /// <summary>
+    /// Color applied to the trajectory line every frame while aiming. The Inspector value is only the initial color: it is
+    /// overwritten by <see cref="SetTrajectoryColor"/> each time a new scoring balloon color is rolled.
+    /// </summary>
     [SerializeField]
     private Color _trajectoryColor = Color.blue;
 
@@ -194,6 +198,20 @@ public class Bow : MonoBehaviour
         /// <summary>Parented to <see cref="_rightHandTransform"/>, so the player aims by moving the right hand.</summary>
         RightHand
     }
+
+    /// <summary>
+    /// Trajectory color while blue balloons score. Like the other two trajectory colors, it uses alpha 150/255 so the
+    /// preview arc stays semi-transparent and does not hide the balloons behind it.
+    /// </summary>
+    private readonly Color _blueColor = new  Color32(0x29, 0x24, 0xF5, 150);
+
+
+    /// <summary>Trajectory color while red balloons score (semi-transparent, see <see cref="_blueColor"/>).</summary>
+    private readonly  Color _redColor = new  Color32(0xFF, 0x8, 0x8, 150);
+
+
+    /// <summary>Trajectory color while yellow balloons score (semi-transparent, see <see cref="_blueColor"/>).</summary>
+    private readonly  Color _yellowColor = new  Color32(0xFC, 0xFC, 0x49, 150);
 
     /// <summary>
     /// Validates the references, places the string midpoint between the string anchors, puts the handle on it, caches the
@@ -446,6 +464,34 @@ public class Bow : MonoBehaviour
         _bowRenderer.sharedMaterial.color = c;
     }
 
+    /// <summary>
+    /// Tints the trajectory preview with the color of the balloon that currently scores, so the arc itself reminds the
+    /// player which balloons to aim at. Takes effect on the next frame the trajectory is drawn (see <see cref="Update"/>).
+    /// </summary>
+    /// <param name="color">Scoring balloon color; a value outside <see cref="BalloonArcheryGame.Colors"/> only logs an error and keeps the previous color.</param>
+    /// <remarks>
+    /// Invoked via Inspector in the ArcheryGame scene, by <c>ArcheryGameManager._updateTrajectoryColor</c>, every time
+    /// a new scoring color is rolled.
+    /// </remarks>
+    public void SetTrajectoryColor(BalloonArcheryGame.Colors color)
+    {
+        switch (color)
+        {
+            case BalloonArcheryGame.Colors.Blue:
+                _trajectoryColor = _blueColor;
+                return;
+            case BalloonArcheryGame.Colors.Red:
+                _trajectoryColor = _redColor;
+                return;
+            case BalloonArcheryGame.Colors.Yellow:
+                _trajectoryColor = _yellowColor;
+                return;
+            default:
+                Debug.LogError("Invalid trajectory color: " + color);
+                return;
+        }
+        
+    }
 
     /// <summary>
     /// Moves the bow to the given positioning mode: in front of the head (world-space, driven by
