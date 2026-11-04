@@ -937,7 +937,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!1 &46444669
 GameObject:
   m_ObjectHideFlags: 0
@@ -2035,7 +2039,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &136683321
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4363,8 +4371,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.4196751, b: 0.24821159, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.41972074, b: 0.24825722, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.41967344, b: 0.24820992, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.41967508, b: 0.24821156, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -4502,7 +4510,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &468411320
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5186,7 +5198,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &550172550
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10068,7 +10084,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &1104777012
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12271,7 +12291,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &1415784887
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14020,7 +14044,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &1664032623
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16099,7 +16127,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &1876279497
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16882,7 +16914,11 @@ MonoBehaviour:
   _impactDuration: 0.15
   _fallDuration: 0.6
   _timeOnGround: 1
+  _getUpWobbleDuration: 0.4
+  _getUpWobbleStrength: 8
   _getUpDuration: 0.8
+  _getUpHopPower: 0.4
+  _getUpLandingDuration: 0.3
 --- !u!65 &2012921748
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19415,6 +19451,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1644963512}
     - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _narrationEvent.Path
+      value: event:/Narration/DialogueLine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: dialogueBoxGameObject
       value: 
       objectReference: {fileID: 2083708028}
@@ -19430,6 +19470,22 @@ PrefabInstance:
       propertyPath: _increaseDiffExpression
       value: 
       objectReference: {fileID: 704795671}
+    - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _narrationEvent.Guid.Data1
+      value: -1413876888
+      objectReference: {fileID: 0}
+    - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _narrationEvent.Guid.Data2
+      value: 1249643137
+      objectReference: {fileID: 0}
+    - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _narrationEvent.Guid.Data3
+      value: -934872410
+      objectReference: {fileID: 0}
+    - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
+      propertyPath: _narrationEvent.Guid.Data4
+      value: -30891645
+      objectReference: {fileID: 0}
     - target: {fileID: 7493010183662220579, guid: 6f6ab0cc342376441891b286a09a552b, type: 3}
       propertyPath: _soundFeedback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

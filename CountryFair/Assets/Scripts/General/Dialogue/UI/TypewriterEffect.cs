@@ -16,8 +16,9 @@ using UnityEngine;
 /// <b>Timeline design (narration-ready):</b> before animating, the reveal time of every character is precomputed
 /// (base per-character delay + punctuation pauses). A single linear tween then drives "elapsed time" over that
 /// timeline, so the whole line has a known <see cref="CurrentDuration"/>. When a narration clip exists, pass its
-/// length as <c>targetDuration</c> to <see cref="Play"/>: the timeline is stretched/compressed uniformly
-/// (punctuation pauses included, so the rhythm is preserved) and the text finishes exactly when the audio does.
+/// length as <c>targetDuration</c> to <see cref="Play"/>: the timeline is stretched/compressed uniformly to
+/// <see cref="TypewriterSettings.narrationDurationScale"/> of that length
+/// (punctuation pauses included, so the rhythm is preserved), so the text finishes just before the audio does.
 /// </para>
 /// </remarks>
 public class TypewriterEffect
@@ -90,8 +91,10 @@ public class TypewriterEffect
 
         if (targetDuration > 0f)
         {
-            ScaleTimeline(targetDuration / naturalDuration);
-            CurrentDuration = targetDuration;
+            // Fitted to a fraction of the clip so the text stays slightly ahead of the voice (see narrationDurationScale).
+            float fittedDuration = targetDuration * _settings.narrationDurationScale;
+            ScaleTimeline(fittedDuration / naturalDuration);
+            CurrentDuration = fittedDuration;
         }
         else
         {

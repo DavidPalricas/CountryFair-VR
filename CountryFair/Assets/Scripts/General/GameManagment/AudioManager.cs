@@ -57,13 +57,6 @@ public abstract class AudioManager: MonoBehaviour
         /// <summary>Played when giant mode shrinks the player back (<c>PlayerScale</c>).</summary>
         ScaleToNormal,
 
-        /* Carny Wise Sound Effects */
-        /// <summary>Carny Wise feedback when the DDA raises the difficulty.</summary>
-        CarnyWiseIncreaseDiff,
-
-        /// <summary>Carny Wise feedback when the DDA lowers the difficulty.</summary>
-        CarnyWiseDecreaseDiff,
-
         /* Frisbee Game Sound Effects*/
         /// <summary>Dog barking sound effect.</summary>
         DogBark,

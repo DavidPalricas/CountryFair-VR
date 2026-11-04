@@ -47,7 +47,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarnyWiseDiffFeedback
   _dialogueBoxGameObject: {fileID: 0}
   _dialogueBoxText: {fileID: 0}
+  _narrationEvent:
+    Guid:
+      Data1: -1413876888
+      Data2: 1249643137
+      Data3: -934872410
+      Data4: -30891645
+    Path: event:/Narration/DialogueLine
+  _typewriterSettings:
+    charactersPerSecond: 35
+    shortPauseSeconds: 0.08
+    longPauseSeconds: 0.2
+    shortPauseCharacters: ',;:'
+    longPauseCharacters: ".!?\u2026"
+    narrationDurationScale: 0.7
   _displayDuration: 6
+  _hideDelayAfterNarration: 1
   _increaseDiffExpression: {fileID: 0}
   _decreaseDiffExpression: {fileID: 0}
   _carnyUI: {fileID: 0}
@@ -93,6 +108,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _resetDifficulty:
+    m_PersistentCalls:
+      m_Calls: []
   _precisionThresholdToIncreaseDiff: 0.6
   _precisionThresholdToDecreaseDiff: 0.4
   _thresholdToChangeDiff: 3

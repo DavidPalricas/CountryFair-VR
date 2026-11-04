@@ -1,18 +1,26 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 /// <summary>
 /// Displays a Carny Wise feedback message and expression when the difficulty changes.
 /// Loads feedback lines from <c>change_difficulty.json</c> via <see cref="UIDialog"/>.
 /// Requests that arrive before the JSON loads are queued and replayed after loading completes.
 /// </summary>
+/// <remarks>
+/// Each line is voiced through the narration event inherited from <see cref="UIDialog"/>, which replaced the old
+/// increase/decrease sound effects; there is no separate audio cue for a difficulty change.
+/// </remarks>
 public class CarnyWiseDiffFeedback : UIDialog
 {
     /// <summary>Duration in seconds the feedback panel stays visible before auto-hiding.</summary>
     [Header("Display Configuration")]
     [SerializeField]
     private float _displayDuration = 6f;
+
+    /// <summary>Extra seconds the panel stays open after the narration ends, when the narration outlasts <see cref="_displayDuration"/>.</summary>
+    [SerializeField]
+    [Min(0f)]
+    private float _hideDelayAfterNarration = 1f;
 
     /// <summary>Carny Wise face shown when the difficulty goes up.</summary>
     [Header("Carny Wise Expressions")]
@@ -28,22 +36,12 @@ public class CarnyWiseDiffFeedback : UIDialog
     [SerializeField]
     private GameObject _carnyUI;
 
-    /// <summary>Wired to the scene audio manager's <c>PlaySoundEffect</c> to play the increase/decrease jingle.</summary>
-    [Header("Sound Feedback")]
-    [SerializeField]
-    private UnityEvent <AudioManager.GameSoundEffects> _soundFeedback;
-
     /// <summary>
     /// Typed copy of the base <see cref="UIDialog._data"/>, holding the increase/decrease lines. Null until the JSON has
     /// loaded; <see cref="ShowNewDiffFeedback"/> uses that to decide whether to queue a request.
     /// </summary>
     /// <remarks>If the JSON never loads (missing file or bad format), it stays null and queued requests are never shown.</remarks>
     private DifficultyFeedbackData _feedbackData;
-
-    /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes up (fixed; not editable in the Inspector).</summary>
-    private readonly AudioManager.GameSoundEffects _increaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseIncreaseDiff;
-    /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes down (fixed; not editable in the Inspector).</summary>
-    private readonly AudioManager.GameSoundEffects _decreaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseDecreaseDiff;
 
     /// <summary>Difficulty changes requested before the JSON finished loading (true = increase), replayed in <see cref="OnDataLoaded"/>.</summary>
     private Queue<bool> _pendingRequests = new ();
@@ -120,8 +118,7 @@ public class CarnyWiseDiffFeedback : UIDialog
         _carnyUI.SetActive(true);
 
         List<string> feedbackTexts;
-
-        AudioManager.GameSoundEffects soundToPlay;
+        string section;
 
         _increaseDiffExpression.SetActive(isToIncrease);
         _decreaseDiffExpression.SetActive(!isToIncrease);
@@ -129,28 +126,32 @@ public class CarnyWiseDiffFeedback : UIDialog
         if (isToIncrease)
         {
             feedbackTexts = _feedbackData.IncreaseDiff;
-            soundToPlay = _increaseDiffSound;
+            section = nameof(DifficultyFeedbackData.IncreaseDiff);
         }
         else
         {
             feedbackTexts = _feedbackData.DecreaseDiff;
-            soundToPlay = _decreaseDiffSound;
-        }
-
-        _soundFeedback.Invoke(soundToPlay);
-
-        if (feedbackTexts != null && feedbackTexts.Count > 0)
-        {
-            _dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
-        }
-        else
-        {
-            _dialogueBoxText.text = "...";
-            Debug.LogError("List of feedback texts is null or empty.");
+            section = nameof(DifficultyFeedbackData.DecreaseDiff);
         }
 
         CancelInvoke(nameof(HideFeedback));
-        Invoke(nameof(HideFeedback), _displayDuration);
+
+        if (feedbackTexts == null || feedbackTexts.Count == 0)
+        {
+            StopNarration();
+            _dialogueBoxText.text = "...";
+            Debug.LogError("List of feedback texts is null or empty.");
+            Invoke(nameof(HideFeedback), _displayDuration);
+            return;
+        }
+
+        int index = Utils.RandomValueInRange(0, feedbackTexts.Count);
+
+        // The hide countdown starts once the clip length is known, so a long narration is never cut off.
+        ShowNarratedLine(feedbackTexts[index], GetNarrationKey(section, index), onNarrationDuration: duration =>
+        {
+            Invoke(nameof(HideFeedback), Mathf.Max(_displayDuration, duration + _hideDelayAfterNarration));
+        });
     }
 
     /// <summary>
@@ -166,6 +167,7 @@ public class CarnyWiseDiffFeedback : UIDialog
     /// <summary>Hides the panel; scheduled with <c>Invoke</c> by <see cref="ShowNewDiffFeedback"/>.</summary>
     private  void HideFeedback()
     {
+        StopNarration();
         _carnyUI.SetActive(false);
     }
 }

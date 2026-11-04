@@ -3,9 +3,13 @@ using FMODUnity;
 
 /// <summary>
 /// Manages audio playback for the Frisbee mini-game, including dog sounds, frisbee throws, and scoring effects.
-/// Inherits the Carny Wise feedback sounds from <see cref="MiniGameAudioManager"/>.
+/// The ambience music and button-pressed sound are handled by <see cref="AudioManager"/>.
 /// </summary>
-public class FrisbeeAudioManager : MiniGameAudioManager
+/// <remarks>
+/// Carny Wise's difficulty-change feedback no longer has sound effects here: it is voiced by the narration event of
+/// <see cref="CarnyWiseDiffFeedback"/>.
+/// </remarks>
+public class FrisbeeAudioManager : AudioManager
 {   
     /// <summary>
     /// FMOD event reference for the dog bark sound effect.
@@ -38,7 +42,7 @@ public class FrisbeeAudioManager : MiniGameAudioManager
     [SerializeField]
     private EventReference _dogFootstepsSound;
 
-    /// <summary>Registers the inherited sound effects and the Frisbee FMOD events.</summary>
+    /// <summary>Registers the shared button-pressed sound (base) and the Frisbee FMOD events.</summary>
     protected override void Awake()
     {
         base.Awake();
@@ -50,9 +54,7 @@ public class FrisbeeAudioManager : MiniGameAudioManager
         RegisterSoundEffect(GameSoundEffects.DogFootSteps, _dogFootstepsSound);
     }
 
-    /// <summary>
-    /// Initializes the Frisbee audio manager.
-    /// </summary>
+    /// <summary>Starts or resumes the shared ambience music (base); the Frisbee scene adds no start-up audio of its own.</summary>
     protected override void Start()
     {
         base.Start();

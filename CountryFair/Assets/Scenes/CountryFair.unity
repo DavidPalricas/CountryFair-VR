@@ -7464,6 +7464,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7189019485154658934, guid: 5cb48fce16e2d744c9fb7c4f831b44be, type: 3}
   m_PrefabInstance: {fileID: 517299091}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &521973151 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 186362358412429044, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+  m_PrefabInstance: {fileID: 1289485911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &523595618
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11809,6 +11814,11 @@ Transform:
   - {fileID: 1661533873}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &861287909 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4135025479891811854, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+  m_PrefabInstance: {fileID: 1289485911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &862439144
 GameObject:
   m_ObjectHideFlags: 0
@@ -16887,9 +16897,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _nextButton
+      value: 
+      objectReference: {fileID: 521973151}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: heightOffset
       value: -3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _continuePrompt
+      value: 
+      objectReference: {fileID: 521973151}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: _dialogueBoxText
       value: 
@@ -16898,6 +16916,10 @@ PrefabInstance:
       propertyPath: horizontalOffset
       value: -5
       objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _continueDialogue
+      value: 
+      objectReference: {fileID: 861287909}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: postIntroElements
       value: 
@@ -16915,12 +16937,36 @@ PrefabInstance:
       value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _narrationEvent.Path
+      value: event:/Narration/DialogueLine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: _dialogueBoxGameObject
       value: 
       objectReference: {fileID: 1894166784}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _narrationEvent.Guid.Data1
+      value: -1413876888
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _narrationEvent.Guid.Data2
+      value: 1249643137
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _narrationEvent.Guid.Data3
+      value: -934872410
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _narrationEvent.Guid.Data4
+      value: -30891645
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: _typewriterSettings.charactersPerSecond
       value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: _typewriterSettings.narrationDurationScale
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 1983537196744767392, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: _introCompleted.m_PersistentCalls.m_Calls.Array.size
@@ -17317,6 +17363,11 @@ PrefabInstance:
     - target: {fileID: 8878798017660467077, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127245463817792877, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
+      propertyPath: m_text
+      value: "Antes de come\xE7ar, deixe-me apresento-te \\nCarny Wise, ele vai ajudar
+        voc\xEA a aprender os jogos!\n"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

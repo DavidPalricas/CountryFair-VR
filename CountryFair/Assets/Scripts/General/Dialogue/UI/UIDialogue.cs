@@ -4,11 +4,10 @@ using System.Collections;
 using Newtonsoft.Json;
 using System.IO;
 using TMPro;
-using DG.Tweening;
-using UnityEngine.Serialization;
 
 /// <summary>
-/// Abstract base class for all in-game dialogue UIs.
+/// Abstract base class for all in-game dialogue UIs (JSON loading, typewriter, narration).
+/// Dialogues advanced by the player through a button derive from <see cref="InteractableDialogue"/> instead.
 /// Loads a JSON file from <c>StreamingAssets/DialogFiles/</c> at runtime and drives a step-by-step dialogue flow.
 /// Uses <see cref="UnityWebRequest"/> on Android (required for Quest StreamingAssets) and
 /// <see cref="System.IO.File"/> on PC.
@@ -28,22 +27,15 @@ public abstract class UIDialog : MonoBehaviour
     [SerializeField]
     protected TextMeshProUGUI _dialogueBoxText;
 
+    [Header("Narration")]
     /// <summary>
-    /// Button that advances the dialogue (calls <see cref="NextStep"/>). Hidden while a line is being typed and only
-    /// shown <see cref="_nextButtonDelaySeconds"/> after it finishes, to prevent accidental skips. Optional: when
-    /// unassigned the button is left as configured in the scene.
+    /// FMOD event with a Programmer Instrument that plays the narration clips from the audio table.
     /// </summary>
     [SerializeField]
-    [FormerlySerializedAs("_tutorialButton")]
-    protected GameObject _nextButton;
+    private FMODUnity.EventReference _narrationEvent;
 
-    /// <summary>Delay (seconds) between a line finishing and <see cref="_nextButton"/> appearing, so a hand already resting on its spot doesn't press it straight away.</summary>
-    [SerializeField]
-    [Min(0f)]
-    private float _nextButtonDelaySeconds = 0.3f;
-
-    /// <summary>Pending delayed call that shows <see cref="_nextButton"/>, killed when a new line starts.</summary>
-    private Tween _showNextButtonTween;
+    /// <summary>Narration helper bound to <see cref="_narrationEvent"/>; created in <see cref="Awake"/>.</summary>
+    private DialogueNarration _narration;
 
     [Header("Typewriter Effect")]
     /// <summary>Speed and punctuation-pause timings of lines shown through <see cref="ShowTextWithTypewriter"/>.</summary>
@@ -65,21 +57,60 @@ public abstract class UIDialog : MonoBehaviour
        SetJSONFileName();
 
        if (!Utils.RequireAssigned(_dialogueBoxGameObject, nameof(_dialogueBoxGameObject), this) ||
-           !Utils.RequireAssigned(_dialogueBoxText, nameof(_dialogueBoxText), this))
+           !Utils.RequireAssigned(_dialogueBoxText, nameof(_dialogueBoxText), this) ||
+           !Utils.RequireAssigned(_narrationEvent, nameof(_narrationEvent), this))
        {
           return;
        }
 
-       if (_nextButton == null)
-       {
-          Debug.LogWarning($"{nameof(_nextButton)} is not assigned on {name}; it won't be hidden while text is being typed.", this);
-       }
-       else
-       {
-          _nextButton.SetActive(false);
-       }
+       _narration = new DialogueNarration(_narrationEvent);
 
        StartCoroutine(LoadJSONDataRoutine());
+    }
+
+    /// <summary>Stops any narration still playing when the dialogue is destroyed (e.g. on scene change or when it ends).</summary>
+    protected virtual void OnDestroy()
+    {
+        StopNarration();
+    }
+
+    /// <summary>
+    /// Builds the narration key of a line: <c>{json file name without extension}_{section}</c>, plus <c>_{index}</c>
+    /// for lines that come from a list. E.g. <c>intro_ZecaPart1_0</c>, <c>frisbee_tutorial_Guide</c>.
+    /// </summary>
+    /// <param name="section">JSON property the line comes from.</param>
+    /// <param name="index">Position of the line in that property's list, or -1 for single-string properties.</param>
+    protected string GetNarrationKey(string section, int index = -1)
+    {
+        string key = $"{Path.GetFileNameWithoutExtension(_jsonFileName)}_{section}";
+
+        return index >= 0 ? $"{key}_{index}" : key;
+    }
+
+    /// <summary>
+    /// Shows <paramref name="content"/> narrated by the audio-table clip <paramref name="narrationKey"/>: the clip is
+    /// loaded (synchronously) and the typewriter is stretched/compressed to its length, so text and voice end together.
+    /// Any line still being narrated is stopped first.
+    /// When there is no clip for that key, a warning is logged and the line is typed at normal speed with no audio.
+    /// </summary>
+    /// <param name="content">Line to show.</param>
+    /// <param name="narrationKey">Audio table key, usually from <see cref="GetNarrationKey"/>.</param>
+    /// <param name="onCompleted">Invoked once the whole line is visible.</param>
+    /// <param name="onNarrationDuration">Receives the clip length in seconds, or -1 when the line has no narration.</param>
+    protected void ShowNarratedLine(string content, string narrationKey, System.Action onCompleted = null, System.Action<float> onNarrationDuration = null)
+    {
+        float duration = _narration.Prepare(narrationKey);
+
+        // Started in the same frame as the typewriter so the voice and the text begin together.
+        _narration.Play();
+        onNarrationDuration?.Invoke(duration);
+        ShowTextWithTypewriter(content, duration, onCompleted);
+    }
+
+    /// <summary>Stops the line being narrated (with fade-out).</summary>
+    protected void StopNarration()
+    {
+        _narration?.Stop();
     }
 
     /// <summary>Called once <see cref="_data"/> has been populated; base implementation does nothing, subclasses cast <see cref="_data"/> to their concrete type and show the first line.</summary>
@@ -149,9 +180,8 @@ public abstract class UIDialog : MonoBehaviour
     }
 
     /// <summary>
-    /// Shows <paramref name="content"/> in <see cref="_dialogueBoxText"/> with a typewriter effect. <see cref="_nextButton"/>
-    /// is hidden while typing and shown after <see cref="_nextButtonDelaySeconds"/> once the line is complete
-    /// (if <see cref="ShouldShowNextButton"/> allows it).
+    /// Shows <paramref name="content"/> in <see cref="_dialogueBoxText"/> with a typewriter effect, calling
+    /// <see cref="OnLineStarted"/> before typing and <see cref="OnLineCompleted"/> once the line is fully visible.
     /// </summary>
     /// <param name="content">Line to show.</param>
     /// <param name="narrationDuration">
@@ -163,11 +193,11 @@ public abstract class UIDialog : MonoBehaviour
     {
         _typewriter ??= new TypewriterEffect(gameObject, _dialogueBoxText, _typewriterSettings);
 
-        SetNextButtonVisible(false);
+        OnLineStarted();
 
         _typewriter.Play(content, narrationDuration, () =>
         {
-            ScheduleNextButton();
+            OnLineCompleted();
             onCompleted?.Invoke();
         });
     }
@@ -175,39 +205,11 @@ public abstract class UIDialog : MonoBehaviour
     /// <summary>True while a line is still being typed; <see cref="NextStep"/> implementations ignore presses meanwhile.</summary>
     protected bool IsTyping => _typewriter != null && _typewriter.IsTyping;
 
-    /// <summary>
-    /// Whether <see cref="_nextButton"/> should appear when the current line finishes. Subclasses override it for
-    /// phases where the dialogue must not be advanced by the button (e.g. the tutorial practice phase).
-    /// </summary>
-    protected virtual bool ShouldShowNextButton() => true;
+    /// <summary>Hook called right before a line starts being typed; base does nothing.</summary>
+    protected virtual void OnLineStarted() { }
 
-    /// <summary>Shows or hides <see cref="_nextButton"/> right away, cancelling any pending delayed show.</summary>
-    protected void SetNextButtonVisible(bool visible)
-    {
-        _showNextButtonTween?.Kill();
-        _showNextButtonTween = null;
-
-        if (_nextButton != null)
-        {
-            _nextButton.SetActive(visible);
-        }
-    }
-
-    /// <summary>Shows <see cref="_nextButton"/> after <see cref="_nextButtonDelaySeconds"/>, if <see cref="ShouldShowNextButton"/> allows it.</summary>
-    private void ScheduleNextButton()
-    {
-        if (_nextButton == null || !ShouldShowNextButton())
-        {
-            return;
-        }
-
-        _showNextButtonTween?.Kill();
-        _showNextButtonTween = DOVirtual.DelayedCall(_nextButtonDelaySeconds, () =>
-        {
-            _showNextButtonTween = null;
-            _nextButton.SetActive(true);
-        }).SetLink(gameObject);
-    }
+    /// <summary>Hook called when a line has been fully typed; base does nothing.</summary>
+    protected virtual void OnLineCompleted() { }
 
     /// <summary>Sets <see cref="_jsonFileName"/> to the dialogue file this instance should load.</summary>
     protected abstract void SetJSONFileName();
