@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 /// <summary>
 /// Displays a Carny Wise feedback message and expression when the difficulty changes.
 /// Loads feedback lines from <c>change_difficulty.json</c> via <see cref="UIDialog"/>.
 /// Requests that arrive before the JSON loads are queued and replayed after loading completes.
 /// </summary>
+/// <remarks>
+/// Each line is voiced through the narration event inherited from <see cref="UIDialog"/>, which replaced the old
+/// increase/decrease sound effects; there is no separate audio cue for a difficulty change.
+/// </remarks>
 public class CarnyWiseDiffFeedback : UIDialog
 {
     /// <summary>Duration in seconds the feedback panel stays visible before auto-hiding.</summary>
@@ -33,22 +36,12 @@ public class CarnyWiseDiffFeedback : UIDialog
     [SerializeField]
     private GameObject _carnyUI;
 
-    /// <summary>Wired to the scene audio manager's <c>PlaySoundEffect</c> to play the increase/decrease jingle.</summary>
-    [Header("Sound Feedback")]
-    [SerializeField]
-    private UnityEvent <AudioManager.GameSoundEffects> _soundFeedback;
-
     /// <summary>
     /// Typed copy of the base <see cref="UIDialog._data"/>, holding the increase/decrease lines. Null until the JSON has
     /// loaded; <see cref="ShowNewDiffFeedback"/> uses that to decide whether to queue a request.
     /// </summary>
     /// <remarks>If the JSON never loads (missing file or bad format), it stays null and queued requests are never shown.</remarks>
     private DifficultyFeedbackData _feedbackData;
-
-    /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes up (fixed; not editable in the Inspector).</summary>
-    private readonly AudioManager.GameSoundEffects _increaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseIncreaseDiff;
-    /// <summary>Jingle sent through <see cref="_soundFeedback"/> when the difficulty goes down (fixed; not editable in the Inspector).</summary>
-    private readonly AudioManager.GameSoundEffects _decreaseDiffSound = AudioManager.GameSoundEffects.CarnyWiseDecreaseDiff;
 
     /// <summary>Difficulty changes requested before the JSON finished loading (true = increase), replayed in <see cref="OnDataLoaded"/>.</summary>
     private Queue<bool> _pendingRequests = new ();
@@ -127,8 +120,6 @@ public class CarnyWiseDiffFeedback : UIDialog
         List<string> feedbackTexts;
         string section;
 
-        AudioManager.GameSoundEffects soundToPlay;
-
         _increaseDiffExpression.SetActive(isToIncrease);
         _decreaseDiffExpression.SetActive(!isToIncrease);
 
@@ -136,16 +127,12 @@ public class CarnyWiseDiffFeedback : UIDialog
         {
             feedbackTexts = _feedbackData.IncreaseDiff;
             section = nameof(DifficultyFeedbackData.IncreaseDiff);
-            soundToPlay = _increaseDiffSound;
         }
         else
         {
             feedbackTexts = _feedbackData.DecreaseDiff;
             section = nameof(DifficultyFeedbackData.DecreaseDiff);
-            soundToPlay = _decreaseDiffSound;
         }
-
-        _soundFeedback.Invoke(soundToPlay);
 
         CancelInvoke(nameof(HideFeedback));
 
