@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 
 /// <summary>
 /// Manages the Archery mini-game: spawns colored balloons inside the spawn area, applies DDA difficulty
-/// curves for movement and transparency ratios, and randomly selects the scoring balloon color each round.
+/// curves for movement and transparency ratios, and randomly selects the scoring balloon color each round
+/// (broadcast through <see cref="_updateTrajectoryColor"/> so the bow's trajectory preview matches it).
 /// Inherits target lifecycle from <see cref="MiniGameManager"/>.
 /// </summary>
 public class ArcheryGameManager : MiniGameManager
@@ -33,20 +35,20 @@ public class ArcheryGameManager : MiniGameManager
 
     /// <summary>
     /// Prefab of the blue balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
-    /// whose color is <c>BLUE</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
+    /// whose color is <c>Blue</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [Header("Balloons Prefabs")]
     [SerializeField]
      private GameObject _blueBalloonPrefab;
     /// <summary>
     /// Prefab of the red balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
-    /// whose color is <c>RED</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
+    /// whose color is <c>Red</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [SerializeField]
     private GameObject _redBalloonPrefab;
     /// <summary>
     /// Prefab of the yellow balloon. Its root is what is taken from and returned to the pool; a child must hold a <see cref="BalloonArcheryGame"/>
-    /// whose color is <c>YELLOW</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
+    /// whose color is <c>Yellow</c>, otherwise the scoring color shown on screen and the balloon that actually scores disagree.
     /// </summary>
     [SerializeField]
     private GameObject _yellowBalloonPrefab;
@@ -87,6 +89,14 @@ public class ArcheryGameManager : MiniGameManager
     [SerializeField]
     private float _punchDuration = 0.5f;
 
+    /// <summary>
+    /// Fired with the new scoring color every time one is rolled (see <see cref="SetBalloonColorToScore"/>); wired in the
+    /// ArcheryGame scene to <c>Bow.SetTrajectoryColor</c>, so the aiming arc is tinted with the color the player must hit.
+    /// </summary>
+    [Header("Events")]
+    [SerializeField]
+    private UnityEvent <BalloonArcheryGame.Colors> _updateTrajectoryColor;
+
     /// <summary>Live balloons per prefab, used by <see cref="GetBalloonType"/> to keep the colors balanced.</summary>
     private Dictionary<GameObject, int> _balloonTypesCount;
     /// <summary>
@@ -109,9 +119,10 @@ public class ArcheryGameManager : MiniGameManager
 
 
     /// <summary>
-    /// Validates references, initializes the color counters, clears the saved difficulty if the tutorial was
-    /// never completed (first session starts at level 0), and picks the first scoring color.
+    /// Validates references, initializes the color counters and the balloon pool, and clears the saved difficulty if the
+    /// tutorial was never completed (first session starts at level 0).
     /// </summary>
+    /// <remarks>No scoring color is picked here: the first one is rolled in <see cref="TutorialCompleted"/>.</remarks>
     protected override void Awake()
     {   
         base.Awake(); 
@@ -152,14 +163,17 @@ public class ArcheryGameManager : MiniGameManager
         {
             PlayerPrefs.DeleteKey(DifficultyLevelKey);
         }
-
-        SetBalloonColorToScore();
     }
 
     /// <summary>Restores the saved archery difficulty and spawns the balloons for it.</summary>
+    /// <remarks>
+    /// The scoring color is rolled twice in a row (here and again inside <see cref="ApplyDifficultySettings"/>), so
+    /// <see cref="_updateTrajectoryColor"/> fires twice; only the second roll is what the player sees.
+    /// </remarks>
     public override void TutorialCompleted()
     {   
         DifficultyLevel = PlayerPrefs.GetInt(DifficultyLevelKey, 0);
+        SetBalloonColorToScore();
         ApplyDifficultySettings();
     }
 
@@ -199,9 +213,6 @@ public class ArcheryGameManager : MiniGameManager
         _currentMoveDuration = Mathf.Lerp(_slowMoveDuration, _fastMoveDuration, saturationFactor);
 
         PlayerPrefs.SetInt(DifficultyLevelKey, DifficultyLevel);
-        
-        // Debug.Log($"[Archery Stats] Total Balloons: {_currentDesiredCount} | Movimento Ratio: {_currentMovingRatio:P0} | Move Duration: {_currentMoveDuration:F1}s");
-        
         SetBalloonColorToScore();
         UpdateTargetsPoolSize();
         SyncTargets(_currentDesiredCount);
@@ -447,19 +458,26 @@ public class ArcheryGameManager : MiniGameManager
     }
 
     /// <summary>
-    /// Picks a random scoring color, shows its Portuguese name in that color with a punch animation, and stores it in
-    /// the <c>BalloonColorToScore</c> PlayerPrefs key read by <see cref="BalloonArcheryGame.GetScoreValue"/>.
+    /// Picks a random scoring color, raises <see cref="_updateTrajectoryColor"/> with it, shows its Portuguese name in that
+    /// color with a punch animation, and stores it in the <c>BalloonColorToScore</c> PlayerPrefs key read by
+    /// <see cref="BalloonArcheryGame.GetScoreValue"/>.
     /// </summary>
     /// <remarks>
-    /// The color can repeat the previous one. Running tweens on the text are killed first so repeated calls do not
+    /// <see cref="_updateTrajectoryColor"/> is raised before the color is validated, so the trajectory tint is updated
+    /// even on the (unreachable) invalid-color branch. The color can repeat the previous one. Running tweens on the text are killed first so repeated calls do not
     /// stack punches; the punch uses 5 vibrations and 0.5 elasticity.
     /// </remarks>
     private void SetBalloonColorToScore()
     {   
         int randomColorIndex = Utils.RandomValueInRange(0, Enum.GetValues(typeof(BalloonArcheryGame.Colors)).Length);
-        string colorToScore = ((BalloonArcheryGame.Colors)randomColorIndex).ToString().ToLower();
+       
+        BalloonArcheryGame.Colors randomColor = (BalloonArcheryGame.Colors)randomColorIndex;
+        
+        _updateTrajectoryColor.Invoke(randomColor);
 
-        switch (colorToScore)
+        string colorToScoreName = randomColor.ToString().ToLower();
+          
+        switch (colorToScoreName)
         {
             case "red": 
                 _balloonColorToScoreText.text = "Vermelho"; 
@@ -490,7 +508,7 @@ public class ArcheryGameManager : MiniGameManager
         _balloonColorToScoreText.transform.DOPunchScale(Vector3.one * _punchScale, _punchDuration, 5, 0.5f);
 
 
-        PlayerPrefs.SetString(BalloonColorToScoreKey, colorToScore); 
+        PlayerPrefs.SetString(BalloonColorToScoreKey, colorToScoreName); 
     }
 
     /// <summary>Returns the least-spawned color, preferring the scoring color on ties, and increments its counter.</summary>

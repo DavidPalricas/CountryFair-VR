@@ -1428,6 +1428,21 @@ MonoBehaviour:
   _fastMoveDuration: 1.5
   _punchScale: 1.2
   _punchDuration: 0.5
+  _updateTrajectoryColor:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2384919264122894294}
+        m_TargetAssemblyTypeName: Bow, Assembly-CSharp
+        m_MethodName: SetTrajectoryColor
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &106628085
 Transform:
   m_ObjectHideFlags: 0
@@ -1469,20 +1484,6 @@ MonoBehaviour:
       Data3: -385448515
       Data4: 192746226
     Path: event:/ButtonPressed
-  _carnyWiseIncreaseDiffSound:
-    Guid:
-      Data1: -678776880
-      Data2: 1274082137
-      Data3: 1157704078
-      Data4: 1715619348
-    Path: event:/MiniGames/CommonStuff/IncreaseDiffFeedBack
-  _carnyWiseDecreaseDiffSound:
-    Guid:
-      Data1: 256732501
-      Data2: 1186802053
-      Data3: -324501598
-      Data4: -857868640
-    Path: event:/MiniGames/CommonStuff/DecreaseDiffFeedBack
   _balloonPopSound:
     Guid:
       Data1: -1789323876
@@ -4371,8 +4372,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5566037, g: 0.41967344, b: 0.24820992, a: 0.35}
-    - _Color: {r: 0.5566037, g: 0.41967508, b: 0.24821156, a: 0.35}
+    - _BaseColor: {r: 0.5566037, g: 0.4196669, b: 0.24820337, a: 0.35}
+    - _Color: {r: 0.5566037, g: 0.4196691, b: 0.24820557, a: 0.35}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -19195,15 +19196,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: _trajectoryColor.b
-      value: 0.9607843
+      value: 0.10943389
       objectReference: {fileID: 0}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: _trajectoryColor.g
-      value: 0.14117648
+      value: 0.10798854
       objectReference: {fileID: 0}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: _trajectoryColor.r
-      value: 0.16078432
+      value: 0.108023115
       objectReference: {fileID: 0}
     - target: {fileID: 8297660622430166171, guid: 9ee4543ae737d6e4a942564c7152f3f5, type: 3}
       propertyPath: _rightHandTransform
@@ -19541,7 +19542,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2475175040049790958, guid: 2d56f081cddb67947933c0949930c62b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -95
+      value: -54
       objectReference: {fileID: 0}
     - target: {fileID: 2475175040049790958, guid: 2d56f081cddb67947933c0949930c62b, type: 3}
       propertyPath: m_AnchoredPosition.y
