@@ -36,7 +36,7 @@ We propose a solution set in a VR Country Fair environment, designed to enhance 
 - **Hand-tracking interaction** on Meta Quest 3 — pinch gestures detected in `BowHandTracking.cs` with controller fallback — enabling natural gesture-based gameplay without controllers.
 - **Personalized hub layout** — healthcare professionals can grab and rearrange mini-game tents (`MiniGameTent.cs`, `TentsPlaceHolderManager.cs`) before each session to set the desired activity order for the stroke survivor, using the Meta XR Distance Grab interaction.
 - **Hybrid difficulty personalization via cheat codes** — beyond automated DDA, healthcare professionals can manually adjust the difficulty level at runtime using a keyboard cheat code system (`CheatCodes.cs`, `MiniGameCheatCodes.cs`), creating a **hybrid personalization model** that combines automatic adaptation with direct clinician control. The same system also exposes additional session management capabilities (skipping tutorial phases, triggering score/miss events, controlling the emotion display), though these fall outside the scope of personalization itself.
-- **Networked emotion display** — a therapist-facing system streams stroke survivor emotional state in real time via TCP (`ServerListener.cs`) and Unity Netcode (`ExpressionDisplay.cs`, `SliderDisplay.cs`), with three randomly-selected display modes per session: emoji faces, facial expressions, and a cumulative mood slider.
+- **Emotion Recognition Module (complementary work)** — a proof-of-concept integration of a colleague's master's research that relays a user's recognized emotional state into the VR mini-games via TCP (`ServerListener.cs`) and Unity Netcode (`ExpressionDisplay.cs`, `SliderDisplay.cs`), using one of three randomly-selected representations per session: emoji, facial expression, or a cumulative mood slider. See [🧠 Emotion Recognition Module](#-emotion-recognition-module-complementary-work) below.
 - **Score and streak system** (`ScoreAndStreakSystem.cs`) with DOTween-animated UI feedback and session goal tracking.
 - **JSON-driven dialogue system** (`UIDialog.cs`) for onboarding dialogues and tutorial flows, loading from `StreamingAssets/DialogFiles/`.
 
@@ -44,6 +44,135 @@ We propose a solution set in a VR Country Fair environment, designed to enhance 
 
 - 🏹🎈 **Archery (`ArcheryGame.unity`):** A balloon-target shooting game where the player uses a virtual bow (hand-tracking via `BowHandTracking.cs`, trajectory preview via `TrajectoryLine.cs`). `ArcheryGameManager.cs` spawns colored balloons inside a defined volume and uses AnimationCurves to scale balloon count, movement ratio, transparency ratio, and movement speed with difficulty.
 - 🥏🐶 **Frisbee (`FrisbeeGame.unity`):** A throwing game where the player tosses a frisbee for a dog to catch. `FrisbeeGameManager.cs` spawns score areas around the player at adaptive distances and uses AnimationCurves to control movement and visibility ratios. Dog AI is driven by a five-state FSM (`DogIdle`, `GoToTarget`, `Jump`, `CatchFrisbee`, `GiveFrisbeeToPlayer`).
+
+---
+
+# 🧪 User Testing
+
+The prototype was evaluated in two testing waves. In both, participants played seated, wearing a Meta Quest 3.
+
+## First Wave: Informal Usability Testing
+
+- **Context:** demo sessions in the Virtual and Augmented Reality course at the **VAR Lab, IEETA** (University of Aveiro), with about **6–8 students and teachers**. Participants wore Sony WH-CH500 headphones so they could hear the 3D spatial audio.
+- **Prototype state:** the fair scene, tents and both mini-games were working, but there was **no personalization module yet**, no session goal, a HUD fixed in world space, and no emotion module.
+- **Findings:** participants were engaged, needed little help, and showed no cybersickness. The audio and the fair atmosphere were praised. The main problems were:
+  - no in-game tutorial;
+  - the frisbee curved too much toward the throwing hand, and the dog's way of bringing it back felt unnatural;
+  - the arrow sometimes fired while the string was still being drawn;
+  - scoring balloons were told apart by color alone.
+- **What changed afterwards:** a tutorial and practice phase was added before each mini-game, and the early-arrow bug was fixed. The color-only scoring was replaced by a **target-color rule**: the player must hit the requested color, which turns scoring into a selective-attention exercise.
+
+## Second Wave: Formal Usability & Personalization Testing
+
+A formal study with **38 participants** (ages 21–57; 6 female, 32 male; 17 had used VR before). Most were students, mainly in computer science. The others included two nurses, a personal trainer, an XR university professor and an AI engineer. Most sessions ran at the VAR Lab, IEETA, and some in private homes.
+
+- **Prototype state:** the **personalization module was fully implemented** (DDA via `CarnyWise`), except that its feedback text was still fixed in world space. The intro by Zeca Bigodes, the tutorials, the session goals and the final scoring were all in place. Only the emoji form of the emotion module existed, and it was not used in this wave.
+- **Setup:** a SteelSeries Nova 3 headset (optional this time) and a **Bluetooth keyboard connected to the HMD**, so the observer could type cheat codes. The observer used them to skip tutorials and to **force difficulty changes** (`increase` / `decrease`). Forcing changes was needed because the DDA could match a player's performance so well that they never saw a noticeable change in difficulty.
+- **Tasks:** pick a mini-game, complete the Frisbee mini-game, complete the Archery mini-game.
+- **Measurements:** one or two observers noted difficulties and spoken comments. Afterwards participants filled in a 7-point Likert questionnaire with these sections: Demographics, About Personalization, Engagement & Motivation, Comfort & Trust, Feedback & Understanding, **SUS**, optional Acceptance and Effectiveness & Perceived Value sections, and open-ended suggestions.
+
+### Personalization Results
+
+| Statement | Agree | Neutral | Disagree |
+|---|---|---|---|
+| Noticed the system adapting the mini-games during the session | **31 (82%)** | 2 | 5 (13%) |
+| "The system adapted the mini-games to my specific abilities and needs" | **33 (87%)** | 4 | 1 |
+
+These results show the DDA worked and that most players **noticed it**. They measure what players *perceived*, not the adaptation's measured effect on performance. Measuring that effect would need a controlled comparison against a version without adaptation.
+
+### Other Results
+
+| Metric | Result |
+|---|---|
+| **SUS score** | **82 / 100** ("Excellent", grade A- to A per Bangor et al.) |
+| Wanted to keep playing after the test (observed) | 26 (68%) |
+| Instructions and objectives were clear | 31 (82%) |
+| Did not feel overly tired or overwhelmed | 37 (98%) |
+| Felt immersed in a country fair | 34 (90%), no disagreements |
+| Fair environment was fun, motivating and engaging | 37 (98%) |
+| Spatial sound helped guide actions | 25 (65%), 11 neutral, 2 negative |
+| Personalized VR could help stroke rehabilitation *(optional, n = 37)* | 32 (86%), no disagreements |
+| Could complement traditional rehabilitation by reducing monotony *(optional, n = 37)* | 36 (97%) |
+| Personalized XR could support my rehabilitation progress *(optional, n = 27)* | 22 (81%), no disagreements |
+
+**Issues found:**
+- **Frisbee:** 13 participants (34%) struggled with the frisbee mechanics (grabbing, releasing, throwing). The throw velocity comes from the Meta XR SDK and air resistance from Unity physics, so the game has limited control over them.
+- **Archery:** 4 participants (11%) had trouble nocking the arrow or pulling the string, and 9 (24%) didn't notice the target-color rule.
+- **Text:** in the written feedback, 7 participants (23%) found the on-screen text hard to read or too long.
+- **Buttons:** 5 participants (16%) had trouble pressing in-game buttons.
+- **Stability:** 7 participants (18%) ran into bugs or crashes.
+
+**Suggestions about personalization:**
+- Clearer audio cues when difficulty changes (e.g. a level-up sound).
+- Bonus points for keeping a streak.
+- A frisbee trajectory line that fades out at higher difficulties.
+- A summary of difficulty progression at the end of the session.
+
+Later iterations acted on several of these points:
+- the HUD and the DDA feedback text now follow the player's head;
+- the target-color text is drawn in the balloon's color;
+- narration was added to the dialogue (see 🎙️ Character Voices);
+- the arrow trajectory now changes color.
+
+### Limitations
+
+- **No clinical participants:** both waves were run with healthy adults, not stroke survivors. The planned clinical validation at the **Rovisco Pais Rehabilitation Center** could not happen within the dissertation's timeline, so therapeutic efficacy, accessibility for motor-impaired users and clinical safety have **not been validated yet**.
+- **Bow hand:** in the tested prototype the bow was attached to the left arm. A later change added the `left` / `right` / `head` positioning modes.
+
+---
+
+# 🧠 Emotion Recognition Module (Complementary Work)
+
+The Emotion Recognition Module is **not a primary objective of this dissertation** — the personalization module (DDA + tent ordering + cheat codes) is. It is a complementary integration of the practical work of a colleague from the same research group, **Bianca Guerreiro**, whose master's dissertation, *"Exploring Emotion Recognition for Stroke Rehabilitation: Towards Personalized Virtual Reality Serious Game"*, studies how detecting a user's emotional state can foster a more adaptive and engaging therapeutic experience in personalized VR for post-stroke rehabilitation.
+
+The integration served two purposes:
+
+1. **Proof of concept for shared emotional awareness** — showing that a stroke survivor's emotional state can be captured, sent to a remote server, and relayed into *another* survivor's mini-game environment, extending the system beyond motor and cognitive training toward mitigating social isolation.
+2. **Validation of the architecture's modularity** — Country Fair VR consumes the emotional state as a representation-agnostic output, so an independently developed module was plugged in **without changes to the game's core**.
+
+### How it works
+
+```
+Webcam (laptop) → colleague's emotion-recognition pipeline → TCP server
+  → ServerListener (Unity, "EXPRESSION;CATEGORY" messages)
+  → EmotionDisplay (Netcode NetworkBehaviour) → one of three in-game representations
+```
+
+- **Capture:** the original concept was to read facial expressions through the HMD's internal sensors, but no headset with internal face-tracking cameras was available, so a **laptop webcam** captures the participant's face instead.
+- **Transport:** `ServerListener.cs` is a raw TCP client that keeps only the latest message (older unprocessed ones are discarded) and flushes it on the main thread every `pollIntervalSeconds`. A failed connection is non-fatal — the game keeps running without emotion data.
+- **Sync:** each display inherits `EmotionDisplay : NetworkBehaviour` and stores its state in a server-authoritative `NetworkVariable<T>`, so the therapist's device (`ConnectionManager.StartHost()`) and the headset show the same state.
+
+### Representations
+
+One representation is **chosen at random when entering a mini-game** (`ServerListener.SetCurrentDisplayMode()`) and can be switched at runtime with the `e…`, `f…`, `positive` / `negative` cheat codes:
+
+| Mode | Component | What it shows |
+|---|---|---|
+| **Emoji** | `ExpressionDisplay` | A simplified symbolic cue for the recognized emotion — quick and intuitive to interpret |
+| **Facial expression** | `ExpressionDisplay` (second instance) | A reference face image for the detected expression — a more concrete, recognizable cue |
+| **Slider** | `SliderDisplay` | A positive ↔ negative bar initialized at neutral; positive emotions push it one way, negative the other, neutral leaves it unchanged |
+
+| Emotion | Category |
+|---|---|
+| Happy | Positive |
+| Surprise | Positive |
+| Sad | Negative |
+| Angry | Negative |
+| Fear | Negative |
+| Disgust | Negative |
+| Neutral | Neutral |
+
+### Parallel evaluation
+
+The three representations were compared in a dedicated study run by Bianca Guerreiro at the **VAR Lab, IEETA** (University of Aveiro) as part of her dissertation. This project's author integrated Country Fair VR as a client of the emotion-recognition pipeline, adapted the in-game UI to support the three formats, and attended the sessions as an observer to keep the integrated system working.
+
+- **17 participants**, within-subjects design, 7-point Likert scale, 14 items in four dimensions (usability, ease of interpretation, social-emotional connection, perceived accuracy).
+- All three formats scored above the neutral midpoint in every dimension.
+- Emoji and slider performed similarly on usability and ease of interpretation; the **facial-expression** format scored notably higher on **social-emotional connection** (empathy, perceived connectedness).
+- Preferences were split almost evenly: slider 6, facial expression 6, emoji 5.
+- Qualitative feedback pointed to richer future representations, such as avatars or hybrid formats.
+
+**Related publication:** B. Guerreiro, D. Palricas, I. Figueiredo, S. Oliveira, B. Marques, S. Brás, P. Amorim and B. S. Santos (2026). *"Visualization Framework for Shared Emotional Awareness in Personalized VR for Stroke Recovery"*. Proceedings of the International Conference on Information Visualisation (IV), 1–6.
 
 ---
 
@@ -153,7 +282,7 @@ Immediate decrease also fires if the player misses `failingConsecutiveThreshold`
 
 ### Emotion Display System
 
-`ServerListener` connects via TCP to an external emotion-recognition server, polling at `pollIntervalSeconds` (default 0.5 s). One of three display modes is randomly selected per session:
+Client side of the colleague's Emotion Recognition Module (see [🧠 Emotion Recognition Module](#-emotion-recognition-module-complementary-work)). `ServerListener` connects via TCP to the external emotion-recognition server, polling at `pollIntervalSeconds` (default 0.5 s). One of three display modes is randomly selected per session:
 - **Emoji mode** `ExpressionDisplay` shows one of 7 expression GameObjects (SAD, HAPPY, ANGRY, DISGUST, SURPRISE, FEAR, NEUTRAL)
 - **Face mode** second `ExpressionDisplay` instance with a different visual set
 - **Slider mode** `SliderDisplay` nudges a cumulative mood bar up (POSITIVE) or down (NEGATIVE)
@@ -274,4 +403,5 @@ The following 3D assets were sourced from [Poly Pizza](https://poly.pizza/) and 
 # 📝 Extra Notes
 
 - Part of this project was developed for the [Virtual And Augmented Reality](https://www.ua.pt/en/uc/12023) and [Serious Games](https://www.ua.pt/en/uc/15477) courses at the **University of Aveiro**.
+- The Emotion Recognition Module is the work of **Bianca Guerreiro** (same research group), integrated here as a complementary proof of concept.
 - Development period: 2025–Present.
