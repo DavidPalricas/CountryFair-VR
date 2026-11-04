@@ -2,10 +2,14 @@ using UnityEngine;
 using FMODUnity;
 
 /// <summary>
-/// Archery-scene audio manager. Handles spatial balloon-pop and arrow-shot sounds in addition to
-/// the Carny Wise DDA feedback sounds inherited from <see cref="MiniGameAudioManager"/>.
+/// Archery-scene audio manager. Registers the spatial balloon-pop and arrow-shot sounds on top of the
+/// ambience music and button-pressed sound handled by <see cref="AudioManager"/>.
 /// </summary>
-public class ArcheryAudioManager :MiniGameAudioManager
+/// <remarks>
+/// Carny Wise's difficulty-change feedback no longer has sound effects here: it is voiced by the narration event of
+/// <see cref="CarnyWiseDiffFeedback"/>.
+/// </remarks>
+public class ArcheryAudioManager : AudioManager
 {
     /// <summary>FMOD event played when a balloon is popped by an arrow.</summary>
     [SerializeField]
@@ -15,7 +19,7 @@ public class ArcheryAudioManager :MiniGameAudioManager
     [SerializeField]
     private EventReference _arrowShotSound;
 
-    /// <summary>Registers the inherited sound effects and the two archery FMOD events.</summary>
+    /// <summary>Registers the shared button-pressed sound (base) and the two archery FMOD events.</summary>
     protected override void Awake()
     {
         base.Awake();
@@ -24,6 +28,7 @@ public class ArcheryAudioManager :MiniGameAudioManager
         RegisterSoundEffect(GameSoundEffects.ArrowShot, _arrowShotSound);
     }
 
+    /// <summary>Starts or resumes the shared ambience music (base); the archery scene adds no start-up audio of its own.</summary>
     protected override void Start()
     {
         base.Start();
