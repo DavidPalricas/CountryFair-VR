@@ -14,6 +14,11 @@ public class CarnyWiseDiffFeedback : UIDialog
     [SerializeField]
     private float _displayDuration = 6f;
 
+    /// <summary>Extra seconds the panel stays open after the narration ends, when the narration outlasts <see cref="_displayDuration"/>.</summary>
+    [SerializeField]
+    [Min(0f)]
+    private float _hideDelayAfterNarration = 1f;
+
     /// <summary>Carny Wise face shown when the difficulty goes up.</summary>
     [Header("Carny Wise Expressions")]
     [SerializeField]
@@ -120,6 +125,7 @@ public class CarnyWiseDiffFeedback : UIDialog
         _carnyUI.SetActive(true);
 
         List<string> feedbackTexts;
+        string section;
 
         AudioManager.GameSoundEffects soundToPlay;
 
@@ -129,28 +135,36 @@ public class CarnyWiseDiffFeedback : UIDialog
         if (isToIncrease)
         {
             feedbackTexts = _feedbackData.IncreaseDiff;
+            section = nameof(DifficultyFeedbackData.IncreaseDiff);
             soundToPlay = _increaseDiffSound;
         }
         else
         {
             feedbackTexts = _feedbackData.DecreaseDiff;
+            section = nameof(DifficultyFeedbackData.DecreaseDiff);
             soundToPlay = _decreaseDiffSound;
         }
 
         _soundFeedback.Invoke(soundToPlay);
 
-        if (feedbackTexts != null && feedbackTexts.Count > 0)
+        CancelInvoke(nameof(HideFeedback));
+
+        if (feedbackTexts == null || feedbackTexts.Count == 0)
         {
-            _dialogueBoxText.text = feedbackTexts[Utils.RandomValueInRange(0, feedbackTexts.Count)];
-        }
-        else
-        {
+            StopNarration();
             _dialogueBoxText.text = "...";
             Debug.LogError("List of feedback texts is null or empty.");
+            Invoke(nameof(HideFeedback), _displayDuration);
+            return;
         }
 
-        CancelInvoke(nameof(HideFeedback));
-        Invoke(nameof(HideFeedback), _displayDuration);
+        int index = Utils.RandomValueInRange(0, feedbackTexts.Count);
+
+        // The hide countdown starts once the clip length is known, so a long narration is never cut off.
+        ShowNarratedLine(feedbackTexts[index], GetNarrationKey(section, index), onNarrationDuration: duration =>
+        {
+            Invoke(nameof(HideFeedback), Mathf.Max(_displayDuration, duration + _hideDelayAfterNarration));
+        });
     }
 
     /// <summary>
@@ -166,6 +180,7 @@ public class CarnyWiseDiffFeedback : UIDialog
     /// <summary>Hides the panel; scheduled with <c>Invoke</c> by <see cref="ShowNewDiffFeedback"/>.</summary>
     private  void HideFeedback()
     {
+        StopNarration();
         _carnyUI.SetActive(false);
     }
 }

@@ -1,7 +1,7 @@
 {
-    "Rules":["Neste jogo, tem de acertar com as flechas\nnos balões da cor correta para fazer pontos.\n\n\tPressione o botão para continuar.",
-              "Mas tenha atenção: à medida que vai progredindo,\nestes balões podem mover-se em diferentes direções,\nficar transparentes ou as duas coisas em simultâneo!\n\n\tPressione o botão para continuar.",
-              "Tome nota de que, se acertar num balão transparente,\nmesmo que seja da cor correta, não vai fazer pontos!\n\n\tPressione o botão para continuar.",
+    "Rules":["Neste jogo, tem de acertar com as flechas\nnos balões da cor correta para fazer pontos.",
+              "Mas tenha atenção: à medida que vai progredindo,\nestes balões podem mover-se em diferentes direções,\nficar transparentes ou as duas coisas em simultâneo!",
+              "Tome nota de que, se acertar num balão transparente,\nmesmo que seja da cor correta, não vai fazer pontos!",
               "Quando estiver pronto para praticar com o arco,\n\n\t pressione o botão para continuar."],
     
     "Guide": "Agora não se preocupe em acertar num balão\ncom uma cor específica.\nPode rebentá-los a todos. Para isso,\ntente fazer um gesto como o do vídeo apresentado acima.",

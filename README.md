@@ -227,6 +227,17 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 
 ---
 
+# 🎙️ Character Voices
+
+The characters' narrated dialogue lines were generated with [ElevenLabs](https://elevenlabs.io/) using **free-tier voice models in European Portuguese (Portugal)**, so every character speaks in the same language and accent as the on-screen text. The generated clips are played in-game through FMOD (see the narration system in `UIDialog`).
+
+| Character | ElevenLabs Voice | Stability | Similarity |
+|---|---|---|---|
+| **Zeca Bigodes** | Vicente – *Warm and Raspy* | 40% | 75% |
+| **Carny Wise** | Diogo – *Warm and Conversational* | 65% | 75% |
+
+---
+
 # 🛠️ Tools Used
 
 | Tool | Purpose |
@@ -234,6 +245,7 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 | **Unity 6** | Game engine and XR runtime |
 | **Blender** | 3D modeling and animation |
 | **FMOD Studio** | 3D spatial audio design |
+| **ElevenLabs** | Text-to-speech for the characters' narrated dialogue (European Portuguese) |
 | **Meta XR SDK** | Hand-tracking and Quest 3 integration |
 
 ---

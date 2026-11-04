@@ -26,4 +26,12 @@ public class TypewriterSettings
 
     /// <summary>Characters that trigger <see cref="longPauseSeconds"/>.</summary>
     public string longPauseCharacters = ".!?…";
+
+    /// <summary>
+    /// Fraction of the narration clip length the reveal is fitted to (only for lines with narration). Below 1 the text
+    /// finishes before the voice, so the reader is never left waiting for the text, and it absorbs any silence left at
+    /// the end of the clip. 1 = text and clip end together.
+    /// </summary>
+    [Range(0.5f, 1f)]
+    public float narrationDurationScale = 0.7f;
 }
