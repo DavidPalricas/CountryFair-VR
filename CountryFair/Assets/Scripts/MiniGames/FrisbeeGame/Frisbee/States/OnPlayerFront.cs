@@ -359,13 +359,14 @@ public class OnPlayerFront : FrisbeeState
 
     /// <summary>
     /// Cheat shortcut: unparents the waiting frisbee, places it at <paramref name="targetPosition"/> and fires
-    /// "ForcedPoint", skipping the throw. Ignored unless this state is active and the dog is ready to catch.
+    /// "ForcedPoint", skipping the throw. Ignored unless this state is active and the dog is ready to catch (or the
+    /// tutorial is active, which has no dog).
     /// </summary>
     /// <param name="targetPosition">World position of the score area to land in (the frisbee has no parent at that point).</param>
     /// <remarks>Invoked via Inspector (FrisbeeGame scene) by <c>FrisbeeCheatCodes._forceScorePoint</c>.</remarks>
     public void ForceScorePoint(Vector3 targetPosition)
     {
-        if (_fsm.CurrentState == this && _isDogReadyToCatch)
+        if (_fsm.CurrentState == this && (_isDogReadyToCatch || TutorialActive))
         {    
             transform.parent = null;
             transform.localPosition = targetPosition;

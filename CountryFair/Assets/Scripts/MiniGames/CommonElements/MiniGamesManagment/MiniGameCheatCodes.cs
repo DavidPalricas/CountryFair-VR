@@ -9,7 +9,10 @@ using UnityEngine.Events;
 /// emotion-display test codes. Subclasses (<see cref="ArcheryCheatCodes"/>, <see cref="FrisbeeCheatCodes"/>) supply
 /// the game-specific <c>miss</c>/<c>score</c> behaviour.
 /// </summary>
-/// <remarks>Until the tutorial is completed, only the codes in <see cref="_cheatCodesOnTutorial"/> are accepted.</remarks>
+/// <remarks>
+/// Until the tutorial is completed, only the codes in <see cref="_cheatCodesOnTutorial"/> are accepted, plus those in
+/// <see cref="_cheatCodesOnPractice"/> while the tutorial's practice phase is running.
+/// </remarks>
 [RequireComponent(typeof(MiniGameManager))]
 public class MiniGameCheatCodes : CheatCodes
 {   
@@ -65,11 +68,25 @@ public class MiniGameCheatCodes : CheatCodes
     private UnityEvent <int> _newGoal;
 
 
-    /// <summary>Set by subclasses from <see cref="GameManager"/> and by <see cref="SkipTutorial"/>; gates most cheats.</summary>
-    protected bool _tutorialCompleted = false;
+    /// <summary>Whether this mini-game's tutorial is completed; gates most cheats.</summary>
+    /// <remarks>
+    /// Set to true only via Inspector by <c>Tutorial._tutorialCompleted</c>, which fires when the player finishes (or
+    /// skips) the tutorial and also in <c>Tutorial.Start</c> when it was already completed earlier in the session.
+    /// </remarks>
+    public bool TutorialCompleted { get; set; } = false;
 
     /// <summary>Codes that work before the tutorial is completed.</summary>
     private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial"};
+
+    /// <summary>Extra codes that also work during the tutorial's practice phase (see <see cref="IsPracticing"/>).</summary>
+    private readonly string[] _cheatCodesOnPractice = new string[] {"miss", "score"};
+
+    /// <summary>
+    /// True while the tutorial's practice phase is running; enables the codes in <see cref="_cheatCodesOnPractice"/>
+    /// before the tutorial is completed, and lets subclasses target the practice objects instead of the game ones.
+    /// </summary>
+    /// <remarks>Set via Inspector by <c>Tutorial._practiceStateChanged</c> (true when practice starts, false when it ends).</remarks>
+    public bool IsPracticing { get; set; } = false;
 
     /// <summary>Registers the shared cheats; subclasses then add their own and read the tutorial flag.</summary>
     protected virtual void Awake()
@@ -156,8 +173,10 @@ public class MiniGameCheatCodes : CheatCodes
                 _playerInput = string.Empty;
 
                 // Most cheats depend on objects that only exist after the tutorial (targets, dog, DDA), so only the
-                // codes in _cheatCodesOnTutorial are allowed before it is completed.
-                if (!_tutorialCompleted && !_cheatCodesOnTutorial.Contains(code))
+                // codes in _cheatCodesOnTutorial are allowed before it is completed (plus _cheatCodesOnPractice during
+                // the practice phase, which has its own targets).
+                if (!TutorialCompleted && !_cheatCodesOnTutorial.Contains(code) &&
+                    !(IsPracticing && _cheatCodesOnPractice.Contains(code)))
                 {
                     Debug.LogWarning($"Cheat code '{code}' entered but tutorial not completed. Cheat ignored.");
 
@@ -175,16 +194,15 @@ public class MiniGameCheatCodes : CheatCodes
     /// <summary>Finishes the tutorial immediately via <see cref="Tutorial.ReadyToPlay"/>.</summary>
     private void SkipTutorial()
     {    
-        if (_tutorialCompleted)
+        if (TutorialCompleted)
         {
             Debug.LogWarning("Cheat code 'tutorial' entered but tutorial already completed. Cheat ignored.");
 
             return;
         }
 
+        // Tutorial.ReadyToPlay fires _tutorialCompleted, which sets TutorialCompleted.
         _skipTutorial.Invoke();
-
-        _tutorialCompleted = true;
     }
 
     /// <summary>Switches to the emoji display and shows <paramref name="type"/> (also synced over the network).</summary>

@@ -32,15 +32,12 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     private UnityEvent <Bow.BowPositioningMode> _setBowPositioningMode;
 
     /// <summary>
-    /// Registers the shared cheats plus the bow positioning cheats (<c>head</c>, <c>left</c>, <c>right</c>), and reads
-    /// whether the archery tutorial is already completed, which gates every cheat except <c>return</c> and <c>tutorial</c>
-    /// (the bow positioning cheats included).
+    /// Registers the shared cheats plus the bow positioning cheats (<c>head</c>, <c>left</c>, <c>right</c>). Like every
+    /// cheat except <c>return</c> and <c>tutorial</c>, the bow positioning cheats are gated by <see cref="TutorialCompleted"/>.
     /// </summary>
     protected override void Awake()
     {
         base.Awake();
-
-        _tutorialCompleted = GameManager.GetInstance().ArcheryTutorialCompleted;
 
         RegisterCheat("head", () => _setBowPositioningMode.Invoke(Bow.BowPositioningMode.FollowHead));
         RegisterCheat("left", () => _setBowPositioningMode.Invoke(Bow.BowPositioningMode.LeftHand));
@@ -66,19 +63,23 @@ public class ArcheryCheatCodes : MiniGameCheatCodes
     }
 
     /// <summary>
-    /// Position of the first balloon whose color matches <c>BalloonColorToScore</c>; also re-enables its collider in case
-    /// it is in the faded phase. Returns <see cref="Vector3.zero"/> if none exists.
+    /// Position of the first balloon whose color matches <c>BalloonColorToScore</c> (during the tutorial's practice phase,
+    /// the first practice balloon, whatever its color); also re-enables its collider in case it is in the faded phase.
+    /// Returns <see cref="Vector3.zero"/> if none exists.
     /// </summary>
     private Vector3 GetCorrectBalloonPosition()
     {
         string balloonColorToScore = PlayerPrefs.GetString(ArcheryGameManager.BalloonColorToScoreKey, "red").ToLower();
-        
+
+        // Any practice balloon completes a tutorial task, so the color only matters in the real game.
         BalloonArcheryGame balloon = FindObjectsByType<BalloonArcheryGame>(FindObjectsSortMode.None)
-            .FirstOrDefault(candidate => candidate.GetBalloonColorName().ToLower() == balloonColorToScore);
+            .FirstOrDefault(candidate => IsPracticing
+                ? candidate.IsFromTutorial
+                : candidate.GetBalloonColorName().ToLower() == balloonColorToScore);
 
         if (balloon == null)
         {
-            Debug.LogError($"No balloon found with color '{balloonColorToScore}'");
+            Debug.LogError(IsPracticing ? "No practice balloon found" : $"No balloon found with color '{balloonColorToScore}'");
             return Vector3.zero;
         }
 

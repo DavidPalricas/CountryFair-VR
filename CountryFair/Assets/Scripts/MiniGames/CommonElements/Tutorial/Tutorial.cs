@@ -13,6 +13,13 @@ public class Tutorial : InteractableDialogue
     [SerializeField]
     private UnityEvent _tutorialCompleted;
 
+    /// <summary>
+    /// Raised with true when the practice phase starts and false when it ends (all tasks done or tutorial skipped).
+    /// Wired to <see cref="MiniGameCheatCodes.IsPracticing"/>, enabling the <c>miss</c>/<c>score</c> cheats during practice.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent<bool> _practiceStateChanged;
+
     /// <summary>Video screen container shown during the practice phase.</summary>
     [Header("Practise Elements")]
     [SerializeField]
@@ -55,6 +62,16 @@ public class Tutorial : InteractableDialogue
 
     /// <summary>Index (in the original JSON list) of the next rule slide; used to build its narration key.</summary>
     private int _ruleIndex = 0;
+
+       /// <summary>Keeps the advance button hidden during the practice phase.</summary>
+    protected override bool ShouldShowNextButton() => !_isPracticing;
+
+    /// <summary>
+    /// Hides the "press the button to continue" prompt once every rule slide has been consumed: the last rule and the
+    /// <see cref="TutorialData.End"/> message already tell the player (in text and narration) to press the button.
+    /// The <see cref="TutorialData.Guide"/> line falls in between but never shows the button (practice phase).
+    /// </summary>
+    protected override bool ShouldShowContinuePrompt() => _tutorialData != null && _tutorialData.Rules.Count > 0;
 
     /// <summary>Validates the practice/UI references, counts practice tasks from <see cref="_practiceElements"/>, and hides all practice/post-tutorial elements until they are needed.</summary>
     protected override void Awake()
@@ -202,6 +219,12 @@ public class Tutorial : InteractableDialogue
     /// <remarks>Invoked via Inspector by the "Estou Pronto" ("I'm ready") button at the end of the tutorial.</remarks>
     public void ReadyToPlay()
     {
+        // The "tutorial" cheat can skip straight here from the middle of the practice phase.
+        if (_isPracticing)
+        {
+            SetPracticing(false);
+        }
+
         ActivatePostTutorialElements();
         _tutorialCompleted.Invoke();
 
@@ -240,13 +263,12 @@ public class Tutorial : InteractableDialogue
         _ruleIndex++;
     }
 
-    /// <summary>Keeps the advance button hidden during the practice phase.</summary>
-    protected override bool ShouldShowNextButton() => !_isPracticing;
+ 
 
     /// <summary>Hides the rule dialogue button and reveals the practice score areas, prop, and instructional video.</summary>
     private void StartPractice()
     {
-        _isPracticing = true;
+        SetPracticing(true);
         SetNextButtonVisible(false);
         _practiceElements.SetActive(true);
         _miniGameProp.SetActive(true);
@@ -260,12 +282,19 @@ public class Tutorial : InteractableDialogue
     private void PractiseCompleted()
     {
         // Cleared before typing so the button appears once the end message finishes.
-        _isPracticing = false;
+        SetPracticing(false);
         ShowNarratedLine(_tutorialData.End, GetNarrationKey(nameof(TutorialData.End)));
 
         _miniGameProp.SetActive(false);
         _videoScreen.SetActive(false);
         _finishedPracticing = true;
+    }
+
+    /// <summary>Updates <see cref="_isPracticing"/> and notifies <see cref="_practiceStateChanged"/>.</summary>
+    private void SetPracticing(bool isPracticing)
+    {
+        _isPracticing = isPracticing;
+        _practiceStateChanged.Invoke(isPracticing);
     }
 
     /// <summary>
