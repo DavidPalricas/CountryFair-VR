@@ -25,6 +25,8 @@ using UnityEngine.Events;
 /// same effort produce throws that dropped, shot off, or even flew backwards.
 /// </para>
 /// </remarks>
+
+[RequireComponent(typeof(OnPlayerFront))]
 public class OnMovement : FrisbeeState
 {
     /// <summary>FSM transition fired when the frisbee has touched the ground and slowed down enough to count as landed.</summary>
@@ -51,10 +53,15 @@ public class OnMovement : FrisbeeState
     [Range(1f, 3f)]
     private float _effortExponent = 2f;
 
-    /// <summary>Logs the tracked hand speed and resulting launch speed of every throw, to calibrate the ranges above.</summary>
-    [Tooltip("Log hand speed and launch speed of each throw (for calibration).")]
+    /// <summary>
+    /// Speed (m/s) that the Meta XR <c>RANSACVelocity</c> caps its synthetic poses at (<c>_maxSyntheticSpeed</c>,
+    /// 5 m/s). A release velocity at exactly this speed means hand tracking lost confidence just before the release
+    /// and the estimate is an artifact, not the gesture; the averaged velocity from <see cref="OnPlayerFront"/> is
+    /// used instead.
+    /// </summary>
+    [Tooltip("RANSAC synthetic speed cap (m/s). A release at exactly this speed is a tracking artifact.")]
     [SerializeField]
-    private bool _logLaunches = false;
+    private float _syntheticSpeedCap = 5f;
 
     /// <summary>
     /// Launch speed (m/s) of the weakest throw. At 0, a release below <see cref="_minHandSpeed"/> simply drops the
@@ -149,6 +156,12 @@ public class OnMovement : FrisbeeState
     /// <summary>Head reference used to keep the throw facing forwards (from <see cref="FollowPlayerHead"/>).</summary>
     private FollowPlayerHead _followPlayerHead;
 
+    /// <summary>Provides the averaged release velocity used when the Grabbable's estimate is a tracking artifact.</summary>
+    private OnPlayerFront _onPlayerFront;
+
+    /// <summary>Tolerance (m/s) when comparing the release speed with <see cref="_syntheticSpeedCap"/>.</summary>
+    private const float SyntheticSpeedTolerance = 0.01f;
+
     /// <summary>Speed (m/s) below which a frisbee that has touched the ground counts as stopped.</summary>
     private const float StopThreshold = 0.1f;
 
@@ -160,6 +173,7 @@ public class OnMovement : FrisbeeState
         base.Awake();
         _defaultAngularDrag = _rigidbody.angularDamping;
         _followPlayerHead = GetComponent<FollowPlayerHead>();
+        _onPlayerFront = GetComponent<OnPlayerFront>();
     }
 
     /// <summary>
@@ -241,7 +255,7 @@ public class OnMovement : FrisbeeState
     /// </remarks>
     private void NormalizeLaunch()
     {
-        Vector3 handVelocity = _rigidbody.linearVelocity;
+        Vector3 handVelocity = GetReleaseVelocity(out _);
         Vector3 flatHandVelocity = Vector3.ProjectOnPlane(handVelocity, Vector3.up);
 
         Vector3 headForward = GetHeadForward(flatHandVelocity);
@@ -259,12 +273,6 @@ public class OnMovement : FrisbeeState
         float effort = Mathf.InverseLerp(_minHandSpeed, _maxHandSpeed, handVelocity.magnitude);
         float launchSpeed = Mathf.Lerp(_minLaunchSpeed, _maxLaunchSpeed, Mathf.Pow(effort, _effortExponent));
 
-        if (_logLaunches)
-        {
-            Debug.Log($"[Frisbee] Hand speed: {handVelocity.magnitude:F2} m/s | Effort: {effort:P0} | " +
-                      $"Launch speed: {launchSpeed:F2} m/s | Elevation: {elevation * Mathf.Rad2Deg:F0}°");
-        }
-
         Quaternion levelRotation = Quaternion.LookRotation(flatDirection, Vector3.up);
         _rigidbody.rotation = levelRotation;
         transform.rotation = levelRotation;
@@ -277,13 +285,40 @@ public class OnMovement : FrisbeeState
     }
 
     /// <summary>
+    /// Release velocity to normalize: the Grabbable's RANSAC estimate (already written to the Rigidbody), unless its
+    /// speed equals <see cref="_syntheticSpeedCap"/>, in which case the averaged velocity from
+    /// <see cref="OnPlayerFront.AverageReleaseVelocity"/> replaces it (when available).
+    /// </summary>
+    /// <param name="source">Which estimate was used, for the calibration log.</param>
+    private Vector3 GetReleaseVelocity(out string source)
+    {
+        Vector3 ransacVelocity = _rigidbody.linearVelocity;
+        bool isSyntheticArtifact = Mathf.Abs(ransacVelocity.magnitude - _syntheticSpeedCap) < SyntheticSpeedTolerance;
+
+        if (!isSyntheticArtifact)
+        {
+            source = "RANSAC";
+            return ransacVelocity;
+        }
+
+        if (_onPlayerFront.HasAverageReleaseVelocity)
+        {
+            source = $"média, RANSAC deu {ransacVelocity.magnitude:F2} (artefacto)";
+            return _onPlayerFront.AverageReleaseVelocity;
+        }
+
+        source = "RANSAC, artefacto sem média disponível";
+        return ransacVelocity;
+    }
+
+    /// <summary>
     /// Horizontal forward direction of the player's head. Falls back to the gesture direction, then to the frisbee's own
     /// forward, if no head reference is available.
     /// </summary>
     /// <param name="flatHandVelocity">Horizontal part of the tracked release velocity.</param>
     private Vector3 GetHeadForward(Vector3 flatHandVelocity)
     {
-        if (_followPlayerHead != null && _followPlayerHead.CenterEyeTransform != null)
+        if (_followPlayerHead.CenterEyeTransform != null)
         {
             Vector3 flatHead = Vector3.ProjectOnPlane(_followPlayerHead.CenterEyeTransform.forward, Vector3.up);
 
