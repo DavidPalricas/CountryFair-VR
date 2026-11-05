@@ -181,7 +181,7 @@ Three self-contained scenes connected by `SceneManager.LoadScene`:
 
 ### Communication Patterns
 
-- **`UnityEvent<T>`** primary cross-component wiring done in Inspector (e.g., `CarnyWise.changeDifficulty` → `MiniGameManager.ChangeDifficulty`, `ScoreAndStreakSystem.sessionGoalReached` → `CarnyWise.SessionGoalReached`)
+- **Observer pattern (`UnityEvent<T>`)** primary cross-component wiring done in Inspector: a subject raises an event when its state changes and every listener wired to it is notified, without the subject knowing who they are (e.g., `Tutorial._tutorialCompleted` is a **1:N** relation: when the tutorial ends it fires a single event and three listeners react independently: the mini-game prop is updated (e.g. `Arrow`), `MiniGameManager.TutorialCompleted()` starts the real game, and the cheat codes are told the tutorial is over, which unlocks the ones that only make sense in the real game (e.g. `increase` / `decrease`, which manually change the difficulty in both mini-games). The tutorial knows none of them)
 - **`PlayerPrefs`** cross-scene persistence for difficulty levels (`FrisbeeDifficultyLevel`, `ArcheryDifficultyLevel`), dog distance (`DogDistance`), session goal (`SessionGoal`), and scoring color (`BalloonColorToScore`)
 - **`NetworkVariable<T>`** (Unity Netcode) server-authoritative sync for `ExpressionDisplay` and `SliderDisplay`
 
