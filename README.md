@@ -107,6 +107,15 @@ This work contributed to the following publications:
 
 ---
 
+# 🎤 Events
+
+The project was also presented at the following events:
+
+- **RECPAD 2026** (32nd Portuguese Conference on Pattern Recognition): October 30, 2026, at the School of Technology and Management of Viseu (ESTGV), organized by the Portuguese Association for Pattern Recognition (APRP)
+- **ACM SIGGRAPH FSSW** (Faculty Submitted Student Work): ACM SIGGRAPH Education Committee program showcasing exceptional student projects from around the world
+
+---
+
 # 📁 Project Structure
 
 ```
