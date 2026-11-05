@@ -21955,15 +21955,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _maxHandSpeed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _minHandSpeed
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _effortExponent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _maxLaunchSpeed
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _minLaunchSpeed

@@ -89,6 +89,41 @@ public class OnPlayerFront : FrisbeeState
     public bool IsBeingGrabbedByRightHand {get; set;} = false;
 
     /// <summary>
+    /// Time window (s) over which <see cref="ThrowFrisbee"/> averages the frisbee's movement to estimate the release
+    /// velocity (<see cref="AverageReleaseVelocity"/>).
+    /// </summary>
+    [Header("Release Velocity Sampling")]
+    [Tooltip("Window (s) over which the release velocity is averaged.")]
+    [SerializeField]
+    [Range(0.05f, 0.3f)]
+    private float _releaseVelocityWindow = 0.12f;
+
+    /// <summary>Capacity of the position ring buffer (enough for 0.3 s at 120 Hz).</summary>
+    private const int MaxPositionSamples = 40;
+
+    /// <summary>Ring buffer of recent world positions, sampled every frame while this state is active.</summary>
+    private readonly Vector3[] _positionSamples = new Vector3[MaxPositionSamples];
+
+    /// <summary>Timestamps (<c>Time.time</c>) of <see cref="_positionSamples"/>.</summary>
+    private readonly float[] _sampleTimes = new float[MaxPositionSamples];
+
+    /// <summary>Index where the next sample is written in the ring buffer.</summary>
+    private int _nextSampleIndex = 0;
+
+    /// <summary>Number of valid samples in the ring buffer.</summary>
+    private int _sampleCount = 0;
+
+    /// <summary>
+    /// Average velocity of the frisbee over the last <see cref="_releaseVelocityWindow"/> seconds before the release,
+    /// computed in <see cref="ThrowFrisbee"/>. Used by <see cref="OnMovement"/> as a fallback when the Grabbable's
+    /// RANSAC estimate is unreliable. Only meaningful when <see cref="HasAverageReleaseVelocity"/> is true.
+    /// </summary>
+    public Vector3 AverageReleaseVelocity { get; private set; } = Vector3.zero;
+
+    /// <summary>Whether enough samples covered the window to compute <see cref="AverageReleaseVelocity"/> on the last release.</summary>
+    public bool HasAverageReleaseVelocity { get; private set; } = false;
+
+    /// <summary>
     /// Validates the references, caches <see cref="FollowPlayerHead"/> and switches the frisbee materials to
     /// transparent mode so their alpha can be changed at runtime.
     /// </summary>
@@ -127,18 +162,88 @@ public class OnPlayerFront : FrisbeeState
         base.Enter();
         
        ChangeMaterialsOpacity();
-        
-     
+
+
         InPlayerFront();
+
+        _sampleCount = 0;
+        _nextSampleIndex = 0;
    }
 
     /// <summary>
-    /// Called every frame while in the OnPlayerFront state. No per-frame logic: the throw is event-driven through
-    /// <see cref="ThrowFrisbee"/>.
+    /// Called every frame while in the OnPlayerFront state. Records the frisbee's position for the release velocity
+    /// average; the throw itself is event-driven through <see cref="ThrowFrisbee"/>.
     /// </summary>
     public override void Execute()
-    {   
+    {
          base.Execute();
+         RecordPositionSample();
+    }
+
+    /// <summary>Adds the current world position and time to the ring buffer.</summary>
+    private void RecordPositionSample()
+    {
+        float now = Time.time;
+
+        // Skip duplicates in the same frame (e.g. the release sample taken in ThrowFrisbee after Execute).
+        if (_sampleCount > 0)
+        {
+            int lastIndex = (_nextSampleIndex - 1 + MaxPositionSamples) % MaxPositionSamples;
+
+            if (Mathf.Approximately(_sampleTimes[lastIndex], now))
+            {
+                _positionSamples[lastIndex] = transform.position;
+                return;
+            }
+        }
+
+        _positionSamples[_nextSampleIndex] = transform.position;
+        _sampleTimes[_nextSampleIndex] = now;
+        _nextSampleIndex = (_nextSampleIndex + 1) % MaxPositionSamples;
+        _sampleCount = Mathf.Min(_sampleCount + 1, MaxPositionSamples);
+    }
+
+    /// <summary>
+    /// Average velocity over the last <see cref="_releaseVelocityWindow"/> seconds: displacement between the newest
+    /// sample and the newest sample at least one window older, divided by the time between them. A one-frame tracking
+    /// jump only shifts the total displacement, so it weighs little in the average.
+    /// </summary>
+    /// <param name="velocity">The averaged velocity (zero when there is not enough data).</param>
+    /// <returns>False when fewer than two samples exist or they span less than half the window.</returns>
+    private bool TryGetAverageVelocity(out Vector3 velocity)
+    {
+        velocity = Vector3.zero;
+
+        if (_sampleCount < 2)
+        {
+            return false;
+        }
+
+        int newestIndex = (_nextSampleIndex - 1 + MaxPositionSamples) % MaxPositionSamples;
+        float newestTime = _sampleTimes[newestIndex];
+        int oldestIndex = newestIndex;
+
+        for (int i = 1; i < _sampleCount; i++)
+        {
+            int index = (newestIndex - i + MaxPositionSamples) % MaxPositionSamples;
+            oldestIndex = index;
+
+            if (newestTime - _sampleTimes[index] >= _releaseVelocityWindow)
+            {
+                break;
+            }
+        }
+
+        float elapsed = newestTime - _sampleTimes[oldestIndex];
+
+        if (elapsed < _releaseVelocityWindow * 0.5f)
+        {
+            return false;
+        }
+
+        velocity = (_positionSamples[newestIndex] - _positionSamples[oldestIndex]) / elapsed;
+
+        return true;
     }
 
     /// <summary>
@@ -157,6 +262,7 @@ public class OnPlayerFront : FrisbeeState
     /// <para>
     /// The throw sequence:
     /// <list type="number">
+    /// <item><description>Records the release position and computes <see cref="AverageReleaseVelocity"/></description></item>
     /// <item><description>Stops following the head</description></item>
     /// <item><description>Enables physics simulation (non-kinematic, with gravity)</description></item>
     /// <item><description>Disables trigger mode on collider for physical interactions</description></item>
@@ -173,7 +279,12 @@ public class OnPlayerFront : FrisbeeState
     public void ThrowFrisbee(bool thrownByRightHand)
     {   
         if (_fsm.CurrentState == this && thrownByRightHand == IsBeingGrabbedByRightHand)
-        {   
+        {
+            // The Grabbable moves the frisbee to its final pose before the release event, so this is the release position.
+            RecordPositionSample();
+            HasAverageReleaseVelocity = TryGetAverageVelocity(out Vector3 averageVelocity);
+            AverageReleaseVelocity = averageVelocity;
+
             _followPlayerHead.enabled = false;
             
             _rigidbody.isKinematic = false;
