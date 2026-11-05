@@ -1,22 +1,14 @@
 # 🎡 Personalized CountryFair VR
 
-A VR serious game for stroke rehabilitation, featuring adaptive mini-games in an immersive country fair environment built for Meta Quest 3 with hand-tracking support.
+A VR serious game for stroke rehabilitation, featuring adaptive mini-games in an immersive country fair environment built for Meta Quest 3 with hand-tracking support. It aims to enhance post-stroke rehabilitation through gamified exercises targeting upper-limb motor recovery, with a difficulty that continuously adapts to the player's performance.
 
-This repository contains the source code developed as part of a Master's Thesis titled *"Exploring the Effect of a Personalized Virtual Reality Serious Game for Stroke Rehabilitation"*, focused on stroke survivor rehabilitation using Virtual Reality Serious Games.
+This repository contains the source code developed as part of a Master's Thesis titled *"Exploring the Effect of a Personalized Virtual Reality Serious Game for Stroke Rehabilitation"*, focused on stroke survivor rehabilitation using Virtual Reality Serious Games. The system was developed using a Human-Centered Design methodology in collaboration with the **Rovisco Pais Rehabilitation Center**. A usability study was run with **38 healthy adults**; clinical validation with stroke survivors has not been carried out yet (see [🧪 User Testing](#-user-testing)).
 
 ---
 
 # 📺 Demo
 
 ### [CountryFair VR Demo](https://www.youtube.com/watch?v=bDXMD0OPzRI)
-
----
-
-# 🔍 Overview
-
-CountryFair VR is a VR serious game designed to enhance post-stroke rehabilitation through immersive, gamified exercises targeting upper-limb motor recovery. The project targets **Meta Quest 3** with hand-tracking support and was developed in **Unity 6000.2.5f1**. It features two rehabilitation mini-games set within an interactive country fair hub (`CountryFair.unity`) with 3D spatial audio, and incorporates a rule-based Dynamic Difficulty Adjustment (DDA) system **CarnyWise** (`CarnyWise.cs`) that continuously adapts challenge parameters to the player's performance, maintaining an optimal flow state during rehabilitation sessions.
-
-The system was developed using a Human-Centered Design (HCD) methodology in collaboration with the **Rovisco Pais Rehabilitation Center** and validated through user testing with **38 participants**.
 
 ---
 
@@ -28,17 +20,16 @@ Traditional post-stroke rehabilitation often suffers from low patient adherence 
 
 # 💡 Our Approach
 
-We propose a solution set in a VR Country Fair environment, designed to enhance stroke survivor motivation and engagement. The system utilizes:
+We propose a solution set in a VR Country Fair environment, designed to enhance stroke survivor motivation and engagement. The system offers:
 
-- **Immersive Virtual Reality** and serious mini-games to combat demotivation and increase engagement among stroke survivors.
-- A **rule-based Dynamic Difficulty Adjustment (DDA)** system `CarnyWise` that adapts game parameters in real time based on stroke survivor performance (precision and time), promoting an optimal flow state via consecutive-attempt counters and configurable thresholds.
-- **3D spatial audio** (via FMOD) to reinforce environmental immersion and provide directional feedback.
-- **Hand-tracking interaction** on Meta Quest 3 — pinch gestures detected in `BowHandTracking.cs` with controller fallback — enabling natural gesture-based gameplay without controllers.
-- **Personalized hub layout** — healthcare professionals can grab and rearrange mini-game tents (`MiniGameTent.cs`, `TentsPlaceHolderManager.cs`) before each session to set the desired activity order for the stroke survivor, using the Meta XR Distance Grab interaction.
-- **Hybrid difficulty personalization via cheat codes** — beyond automated DDA, healthcare professionals can manually adjust the difficulty level at runtime using a keyboard cheat code system (`CheatCodes.cs`, `MiniGameCheatCodes.cs`), creating a **hybrid personalization model** that combines automatic adaptation with direct clinician control. The same system also exposes additional session management capabilities (skipping tutorial phases, triggering score/miss events, controlling the emotion display), though these fall outside the scope of personalization itself.
-- **Emotion Recognition Module (complementary work)** — a proof-of-concept integration of a colleague's master's research that relays a user's recognized emotional state into the VR mini-games via TCP (`ServerListener.cs`) and Unity Netcode (`ExpressionDisplay.cs`, `SliderDisplay.cs`), using one of three randomly-selected representations per session: emoji, facial expression, or a cumulative mood slider. See [🧠 Emotion Recognition Module](#-emotion-recognition-module-complementary-work) below.
-- **Score and streak system** (`ScoreAndStreakSystem.cs`) with DOTween-animated UI feedback and session goal tracking.
-- **JSON-driven dialogue system** (`UIDialog.cs`) for onboarding dialogues and tutorial flows, loading from `StreamingAssets/DialogFiles/`.
+- **Immersive virtual reality mini-games** that make repetitive exercises more fun and motivating.
+- **Automatic difficulty adjustment** (CarnyWise): the games get easier or harder in real time depending on how the player is doing, keeping the challenge at the right level.
+- **Natural hand-tracking interaction** on Meta Quest 3, so players can play with their own hands, without controllers.
+- **Immersive 3D sound** that reinforces the fair atmosphere and helps guide the player.
+- **A personalized fair** where healthcare professionals can rearrange the mini-game tents before each session to choose the order of the activities.
+- **Hybrid personalization**: besides the automatic adjustment, healthcare professionals can also change the difficulty and manage the session manually, combining automatic adaptation with direct clinician control.
+- **Emotion recognition (complementary work)**: a proof of concept that shows the player's recognized emotional state inside the games, as an emoji, a facial expression or a mood bar. See [🧠 Emotion Recognition Module](#-emotion-recognition-module-complementary-work) below.
+- **Guided onboarding** with narrated dialogues and tutorials, plus score and streak feedback to keep players motivated.
 
 ## Implemented Mini-games
 
