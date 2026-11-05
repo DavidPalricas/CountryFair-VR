@@ -412,6 +412,9 @@ public class BalloonArcheryGame : MonoBehaviour
         return _colorName;
     }
 
+    /// <summary>True for the tutorial's practice balloons; used by <see cref="ArcheryCheatCodes"/> to target them during practice.</summary>
+    public bool IsFromTutorial => _isFromTutorial;
+
 
     /// <summary>
     /// Updates the wander duration. A moving balloon is not restarted: the current leg finishes and the next one

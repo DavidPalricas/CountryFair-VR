@@ -1676,7 +1676,7 @@ GameObject:
   - component: {fileID: 147053875}
   - component: {fileID: 147053876}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: MiniGameManager
   m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1829,20 +1829,6 @@ MonoBehaviour:
       Data3: -385448515
       Data4: 192746226
     Path: event:/ButtonPressed
-  _carnyWiseIncreaseDiffSound:
-    Guid:
-      Data1: -678776880
-      Data2: 1274082137
-      Data3: 1157704078
-      Data4: 1715619348
-    Path: event:/MiniGames/CommonStuff/IncreaseDiffFeedBack
-  _carnyWiseDecreaseDiffSound:
-    Guid:
-      Data1: 256732501
-      Data2: 1186802053
-      Data3: -324501598
-      Data4: -857868640
-    Path: event:/MiniGames/CommonStuff/DecreaseDiffFeedBack
   _dogBarkSound:
     Guid:
       Data1: -645732235
@@ -20621,7 +20607,11 @@ PrefabInstance:
       objectReference: {fileID: 476691671}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _practiceStateChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -20645,7 +20635,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -20674,7 +20664,11 @@ PrefabInstance:
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
-      objectReference: {fileID: 7903971523121746712}
+      objectReference: {fileID: 147053876}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _practiceStateChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 147053876}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -20717,7 +20711,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
-      value: 
+      value: set_TutorialCompleted
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _practiceStateChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _practiceStateChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: set_IsPracticing
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -20745,7 +20747,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
-      value: FrisbeeGameManager, Assembly-CSharp
+      value: FrisbeeCheatCodes, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
@@ -20758,6 +20760,14 @@ PrefabInstance:
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_BoolArgument
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _practiceStateChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FrisbeeCheatCodes, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -20773,6 +20783,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
       propertyPath: _tutorialCompleted.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267223960734963794, guid: 316faa56be726824192d355461c86468, type: 3}
+      propertyPath: _practiceStateChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8793027267861171804, guid: 316faa56be726824192d355461c86468, type: 3}

@@ -36,7 +36,7 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     public bool IsDogReadyToCatch { get; set; } = false;
 
     /// <summary>
-    /// Registers the shared cheats and the <c>dog</c> cheat, and reads whether the Frisbee tutorial is completed.
+    /// Registers the shared cheats and the <c>dog</c> cheat.
     /// </summary>
     protected override void Awake()
     {   
@@ -44,18 +44,15 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
         
         // Register frisbee-specific cheat
         RegisterCheat("dog", () => ForceScorePoint(true));
-
-        _tutorialCompleted = GameManager.GetInstance().FrisbeeTutorialCompleted;
-
     }
 
     /// <summary>
     /// Throws the frisbee from where it is (as a right-hand release, see <see cref="_throwFrisbee"/>); it falls short and
-    /// counts as a miss. Requires <see cref="IsDogReadyToCatch"/>.
+    /// counts as a miss. Requires <see cref="IsDogReadyToCatch"/>, except during the tutorial's practice phase (no dog).
     /// </summary>
     protected override void OnMissCheat()
     {   
-        if (IsDogReadyToCatch)
+        if (IsDogReadyToCatch || IsPracticing)
         {
             _throwFrisbee.Invoke();
         }
@@ -63,11 +60,12 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
     }
 
     /// <summary>
-    /// Teleports the frisbee to a random extra score area, forcing a score point. Requires <see cref="IsDogReadyToCatch"/>.
+    /// Teleports the frisbee to a random extra score area (a practice area during the tutorial's practice phase), forcing
+    /// a score point. Requires <see cref="IsDogReadyToCatch"/>, except during practice (no dog).
     /// </summary>
     protected override void OnScoreCheat()
     {   
-        if (IsDogReadyToCatch)
+        if (IsDogReadyToCatch || IsPracticing)
         {
             ForceScorePoint(false);
         }
@@ -95,7 +93,8 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
         }
         else
         {
-            targetPosition = GetExtraScoreAreaPosition();
+            targetPosition = GetExtraScoreAreaPosition(IsPracticing ? ScoreAreaProperties.AreaType.Tutorial
+                                                                    : ScoreAreaProperties.AreaType.Normal);
         }
 
         _forceScorePoint.Invoke(targetPosition);
@@ -124,11 +123,14 @@ public class FrisbeeCheatCodes : MiniGameCheatCodes
         return dogScoreArea.transform.position;
     }
 
-    /// <summary>Position of a random <c>ScoreArea</c>-tagged object other than the dog's catch area, or <see cref="Vector3.zero"/> if none exist.</summary>
-    private Vector3 GetExtraScoreAreaPosition()
+    /// <summary>
+    /// Position of a random active <c>ScoreArea</c>-tagged object of type <paramref name="areaType"/> (NORMAL in the game,
+    /// TUTORIAL during practice), or <see cref="Vector3.zero"/> if none exist.
+    /// </summary>
+    private Vector3 GetExtraScoreAreaPosition(ScoreAreaProperties.AreaType areaType)
     {
         GameObject[] scoreAreas = GameObject.FindGameObjectsWithTag(ScoreAreaProperties.ScoreAreaTag)
-                                  .Where(scoreArea => scoreArea.GetComponent<ScoreAreaProperties>().GetAreaType() == ScoreAreaProperties.AreaType.Normal)
+                                  .Where(scoreArea => scoreArea.GetComponent<ScoreAreaProperties>().GetAreaType() == areaType)
                                   .ToArray();
 
         if (scoreAreas.Length == 0)

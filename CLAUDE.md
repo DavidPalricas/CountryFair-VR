@@ -201,7 +201,8 @@ and stretches the typewriter to the clip length so text and voice end together. 
 `frisbee_tutorial_Guide`, `change_difficulty_IncreaseDiff_3`). A key missing from the loaded banks logs a
 `[Narration]` warning and the line is typed at normal speed with no audio. The "Pressione o botão para continuar."
 prompt is **not** in the JSON lines (so it is never narrated): it is the `_continueDialogue` GameObject, shown and
-hidden together with `_nextButton`. `_narrationEvent` is **required** on every `UIDialog`; `_nextButton` and the continue prompt
+hidden together with `_nextButton`, unless `ShouldShowContinuePrompt()` returns false (`Tutorial` hides it on the last
+rule and on the `End` line, whose text already says "pressione o botão..."). `_narrationEvent` is **required** on every `UIDialog`; `_nextButton` and the continue prompt
 (`_continueDialogue`) are required only on `InteractableDialogue` subclasses (checked with `Utils.RequireAssigned` in `Awake`).
 
 **Post-intro hand-off:** `CountryFairDialogue` no longer holds a direct `postIntroElements` GameObject reference.
@@ -420,7 +421,12 @@ existing keyboard cleanup. On the web side, `CountryFairWebApp/ClientSide/src/co
 is a small floating panel (mounted unconditionally in `App.tsx`) where the therapist types a code and sends it
 via `room.send("cheatCode", code)`.
 
-**Gating:** in mini-games every cheat except `return` and `tutorial` is ignored until the tutorial is completed.
+**Gating:** in mini-games every cheat except `return` and `tutorial` is ignored until the tutorial is completed —
+except `miss` and `score`, which also work during the tutorial's **practice phase**. `Tutorial._practiceStateChanged`
+(`UnityEvent<bool>`, Inspector-wired to `MiniGameCheatCodes.IsPracticing`) fires `true` in `StartPractice()` and `false`
+when practice ends (or the tutorial is skipped mid-practice). While practicing, `score` targets the practice objects:
+any `BalloonArcheryGame.IsFromTutorial` balloon (Archery) or a `ScoreAreaProperties.AreaType.Tutorial` area (Frisbee,
+which also skips the dog-ready check since the tutorial has no dog).
 In the plaza, every `CountryFairCheatCodes` cheat except `intro` requires the intro to be completed.
 
 **Registered Cheats (all mini-games):**

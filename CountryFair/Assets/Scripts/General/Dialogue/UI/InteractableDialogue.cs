@@ -60,6 +60,13 @@ public abstract class InteractableDialogue : UIDialog
     /// </summary>
     protected virtual bool ShouldShowNextButton() => true;
 
+    /// <summary>
+    /// Whether the <see cref="_continueDialogue"/> prompt should appear together with <see cref="_nextButton"/>.
+    /// Subclasses override it for lines whose text (and narration) already tells the player to press the button,
+    /// so the prompt is not shown twice.
+    /// </summary>
+    protected virtual bool ShouldShowContinuePrompt() => true;
+
     /// <summary>Shows or hides <see cref="_nextButton"/> right away, cancelling any pending delayed show.</summary>
     protected void SetNextButtonVisible(bool visible)
     {
@@ -67,7 +74,7 @@ public abstract class InteractableDialogue : UIDialog
         _showNextButtonTween = null;
 
         _nextButton.SetActive(visible);
-        _continueDialogue.SetActive(visible);
+        _continueDialogue.SetActive(visible && ShouldShowContinuePrompt());
     }
 
     /// <summary>Shows <see cref="_nextButton"/> after <see cref="_nextButtonDelaySeconds"/>, if <see cref="ShouldShowNextButton"/> allows it.</summary>
@@ -83,7 +90,7 @@ public abstract class InteractableDialogue : UIDialog
         {
             _showNextButtonTween = null;
             _nextButton.SetActive(true);
-            _continueDialogue.SetActive(true);
+            _continueDialogue.SetActive(ShouldShowContinuePrompt());
         }).SetLink(gameObject);
     }
 }
