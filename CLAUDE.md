@@ -421,19 +421,25 @@ existing keyboard cleanup. On the web side, `CountryFairWebApp/ClientSide/src/co
 is a small floating panel (mounted unconditionally in `App.tsx`) where the therapist types a code and sends it
 via `room.send("cheatCode", code)`.
 
-**Gating:** in mini-games every cheat except `return` and `tutorial` is ignored until the tutorial is completed —
+**Shared cheat (all scenes — `CheatCodes.RegisterBaseCheats`):** `skip` advances the current dialogue by one line
+(`_skipDialogue`). It is never gated.
+
+**Gating:** in mini-games every cheat except `return`, `skip` and `tutorial` is ignored until the tutorial is completed —
 except `miss` and `score`, which also work during the tutorial's **practice phase**. `Tutorial._practiceStateChanged`
 (`UnityEvent<bool>`, Inspector-wired to `MiniGameCheatCodes.IsPracticing`) fires `true` in `StartPractice()` and `false`
 when practice ends (or the tutorial is skipped mid-practice). While practicing, `score` targets the practice objects:
 any `BalloonArcheryGame.IsFromTutorial` balloon (Archery) or a `ScoreAreaProperties.AreaType.Tutorial` area (Frisbee,
 which also skips the dog-ready check since the tutorial has no dog).
-In the plaza, every `CountryFairCheatCodes` cheat except `intro` requires the intro to be completed.
+The numeric `goal<N>` cheat is matched before the gating check, so it works at any time.
+In the plaza, every `CountryFairCheatCodes` cheat except `intro` and `skip` requires the intro to be completed
+(and `intro` is ignored once the intro is already completed).
 
 **Registered Cheats (all mini-games):**
 | Code | Effect |
 |------|--------|
 | `return` | Return to CountryFair scene |
 | `tutorial` | Skip tutorial |
+| `goal<N>` + Enter | Set the session goal to `N` (`RegisterNumericCheat`; `goal` alone → `_defaultUpdateGoalValue`, 10). From the web app it is committed immediately, no Enter needed |
 | `reset` | Reset difficulty to 0 |
 | `miss` | Trigger miss event |
 | `score` | Trigger score event |
@@ -442,6 +448,11 @@ In the plaza, every `CountryFairCheatCodes` cheat except `intro` requires the in
 | `e` + expression | Switch to EMOJI mode and show it — `ehappy`, `eneutral`, `esad`, `eangry`, `edisgust`, `esurprise`, `efear` |
 | `f` + expression | Switch to FACE mode and show it — `fhappy`, `fneutral`, `fsad`, `fangry`, `fdisgust`, `fsurprise`, `ffear` |
 | `positive` / `negative` | Switch to SLIDER mode and nudge the mood bar |
+
+**Registered Cheats (Frisbee only — `FrisbeeCheatCodes`):**
+| Code | Effect |
+|------|--------|
+| `dog` | Force a score by teleporting the frisbee to the dog's catch area |
 
 **Registered Cheats (Archery only — `ArcheryCheatCodes`):**
 | Code | Effect |
@@ -458,6 +469,7 @@ are ignored until the archery tutorial is completed.
 |------|--------|
 | `intro` | Complete the intro dialogue |
 | `frisbee` / `archery` | Jump straight into the mini-game scene |
+| `duck` / `fishing` | Registered, but `GameManager.GoToMiniGame()` only logs "not implemented yet" |
 | `giant` | Toggle giant mode (`PlayerScale.ToggleScale()`) |
 
 ---
