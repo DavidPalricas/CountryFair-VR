@@ -20,7 +20,9 @@ using UnityEngine.Events;
 /// </list>
 /// </para>
 /// <para>
-/// The release velocity comes from the Grabbable's throw handling; this state does not set velocity or spin itself.
+/// The raw release velocity comes from the Grabbable's throw handling; this state does not set velocity or spin itself.
+/// <see cref="OnMovement"/> then replaces it on its first physics step with a normalized launch (forward-facing,
+/// levelled disc, speed mapped to a fixed range).
 /// </para>
 /// </remarks>
 [RequireComponent(typeof(FollowPlayerHead))]
