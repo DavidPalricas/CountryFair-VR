@@ -195,6 +195,7 @@ CountryFair/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Prope
 CountryFair/[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
 CountryFair/.vscode/
+.vscode/
 
 # A folder for testing scenes
 CountryFair/Assets/Scenes/TestScenes/
