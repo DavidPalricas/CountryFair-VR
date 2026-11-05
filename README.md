@@ -185,6 +185,13 @@ Three self-contained scenes connected by `SceneManager.LoadScene`:
 - **`PlayerPrefs`** cross-scene persistence for difficulty levels (`FrisbeeDifficultyLevel`, `ArcheryDifficultyLevel`), dog distance (`DogDistance`), session goal (`SessionGoal`), and scoring color (`BalloonColorToScore`)
 - **`NetworkVariable<T>`** (Unity Netcode) server-authoritative sync for `ExpressionDisplay` and `SliderDisplay`
 
+### Performance Patterns
+
+Two optimizations keep the frame rate stable on the Quest 3's mobile hardware:
+
+- **Object Pool (`Utils/ObjectPool.cs`)** a queue of inactive `GameObject`s that are reused instead of being instantiated and destroyed, which avoids garbage-collection hitches mid-game. `GetObject()` dequeues an instance (or instantiates one if the queue is empty), places it **before** activating it so `OnEnable` already sees the final position, and `ReturnObject()` deactivates it and queues it again. `UpdatePoolSize(n)` pre-creates the instances a higher difficulty needs, so they are built at the difficulty change and not while the player is aiming. It is used by `MiniGameManager` for the targets (e.g. the Frisbee score areas in `FrisbeeGameManager`) and by `BalloonsSpawner` for the decorative balloons
+- **Foveated Rendering (`GameManager.ConfigureFoveatedRendering()`)** a `[RuntimeInitializeOnLoadMethod]` that enables `OVRManager.useDynamicFoveatedRendering` with level `HighTop` once at startup (values persist across scene loads). The Quest renders the periphery of the view at a lower resolution, where the eye is less sensitive, saving GPU time. It only runs in device builds (`UNITY_ANDROID && !UNITY_EDITOR`), so the Editor has no `OVRManager` dependency
+
 ### Finite State Machine (FSM)
 
 `FSM.cs` / `State.cs` / `Transition.cs` a serializable FSM used by both animal ambients and mini-game actors:
@@ -197,19 +204,20 @@ State (abstract)
     └── FrisbeeState → OnPlayerFront / OnMovement / Landed
 ```
 
-### DDA Loop (`CarnyWise.cs`)
+### Hybrid Personalization Model (CarnyWise (DDA) + Cheat Codes (Healthcare Professional Manual Override))
 
-```
-Player scores / misses → PlayerScored() / PlayerMissed()
-  → precision = 1 / attempts_until_score
-  → EvaluatePerformance(precision, time)
-  → _excelCounter / _struggleCounter updated
-  → CheckToChangeDifficulty() (threshold: 3 consecutive)
-  → changeDifficulty.Invoke(bool) → MiniGameManager.ChangeDifficulty()
-  → ApplyDifficultySettings() → SyncTargets() + UpdateTargetsProperties()
-```
+![CarnyWise DDA Flow Chart](FlowCharts/CarnyWiseFlowChart.png)
 
-Immediate decrease also fires if the player misses `failingConsecutiveThreshold` (default 4) times consecutively.
+#### Consecutive Misses (Safety Net)
+
+When the player misses `failingConsecutiveThreshold` times in a row (default 4) on the same task, the difficulty drops immediately. This may not only mean the level is out of step with the player's performance, but also be a sign of **fatigue** in stroke survivors.
+
+#### Difficulty Change Feedback (`CarnyWiseDiffFeedback.cs`)
+
+Whenever `CarnyWise` changes the difficulty, the player is told through two channels (only when the difficulty actually changes):
+
+- **Visual:** the character (Carny Wise) appears with a text box anchored to the player's field of view. The text is randomized and loaded from `change_difficulty.json`. It never says explicitly that the difficulty changed: it uses subtle hints in common Portuguese colloquial expressions (e.g. *"Isso foi canja. Vamos passar às coisas sérias"* when it gets harder, *"Vamos aliviar um bocado. O importante é não parar"* when it gets easier). The goal is for the player to notice the adjustment, so they do not keep playing against an outdated difficulty and get frustrated by a mismatch between their performance and the challenge they believe they face.
+- **Auditory:** the text is **narrated** by the character's voice (FMOD Programmer Instrument + Audio Table, see 🎙️ Character Voices), so the player is aware of the change even when not looking at the text box. This replaced the sound cue used in earlier iterations (and described in the dissertation).
 
 ### Emotion Display System
 

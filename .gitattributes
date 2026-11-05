@@ -1,3 +1,5 @@
 FMODProject/CountryFair/Assets/ambienceMusic.wav filter=lfs diff=lfs merge=lfs -text
 Dissertation/DissertationLatexProject.zip filter=lfs diff=lfs merge=lfs -text
 Presentations/Dissertation/Final/Final.pptx filter=lfs diff=lfs merge=lfs -text
+Dissertation/Final/DissertationLatexProject.zip filter=lfs diff=lfs merge=lfs -text
+Dissertation/Final/Presentation/DissertationPresentation.pptx filter=lfs diff=lfs merge=lfs -text
