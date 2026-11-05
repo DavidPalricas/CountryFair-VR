@@ -8301,11 +8301,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3348699294070839182, guid: 8c1b6fe4eab02ab48be94ac117ff2b50, type: 3}
       propertyPath: m_Size.y
-      value: 0
+      value: 0.056355797
       objectReference: {fileID: 0}
     - target: {fileID: 3348699294070839182, guid: 8c1b6fe4eab02ab48be94ac117ff2b50, type: 3}
       propertyPath: m_Center.y
-      value: 0.5
+      value: 0.4718221
       objectReference: {fileID: 0}
     - target: {fileID: 5782430961909950002, guid: 8c1b6fe4eab02ab48be94ac117ff2b50, type: 3}
       propertyPath: m_LocalScale.x
@@ -21950,6 +21950,42 @@ PrefabInstance:
       value: ReturnToPlayer
       objectReference: {fileID: 0}
     - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _logLaunches
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _maxHandSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _minHandSpeed
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _effortExponent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _maxLaunchSpeed
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _minLaunchSpeed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _liftCoefficient
+      value: 0.008
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _maxLaunchElevation
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: _maxLiftToWeightRatio
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903582697595146957, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _playerMissed.m_PersistentCalls.m_Calls.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -21989,6 +22025,10 @@ PrefabInstance:
       propertyPath: _heightOffset
       value: -0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 7940597355804798802, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
+      propertyPath: CenterEyeTransform
+      value: 
+      objectReference: {fileID: 2099040610}
     - target: {fileID: 7940597355804798802, guid: 1edc10d79b4c65c4d94adfcb0e4cafa3, type: 3}
       propertyPath: _centerEyeTransform
       value: 

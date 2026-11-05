@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Locks an object to the player's view: every LateUpdate it is placed at a fixed offset from the center eye and turned
@@ -9,9 +10,11 @@ using UnityEngine;
 [DefaultExecutionOrder(1000)]
 public class FollowPlayerHead : MonoBehaviour
 {
-    /// <summary>The VR center eye anchor transform (OVRCameraRig.centerEyeAnchor or equivalent).</summary>
-    [SerializeField]
-    private Transform _centerEyeTransform;
+    /// <summary>
+    /// The VR center eye anchor transform (OVRCameraRig.centerEyeAnchor or equivalent). Public so <see cref="OnMovement"/>
+    /// can align throws with the head.
+    /// </summary>
+    public Transform CenterEyeTransform;
 
     /// <summary>Distance in front of the player at which the object is placed.</summary>
     [Header("Positioning Settings")]
@@ -35,7 +38,7 @@ public class FollowPlayerHead : MonoBehaviour
     /// <summary>Validates the eye reference and snaps the object to its target so it does not slide in on the first frame.</summary>
     private void Awake()
     {
-        if (!Utils.RequireAssigned(_centerEyeTransform, nameof(_centerEyeTransform), this))
+        if (!Utils.RequireAssigned(CenterEyeTransform, nameof(CenterEyeTransform), this))
         {
             enabled = false;
             return;
@@ -59,7 +62,7 @@ public class FollowPlayerHead : MonoBehaviour
     private void HandlePosition()
     {
         Vector3 offset = new(_horizontalOffset, _heightOffset, _distanceFromPlayer);
-        transform.SetPositionAndRotation(_centerEyeTransform.TransformPoint(offset),
-            _centerEyeTransform.rotation * _rotationOffset);
+        transform.SetPositionAndRotation(CenterEyeTransform.TransformPoint(offset),
+            CenterEyeTransform.rotation * _rotationOffset);
     }
 }

@@ -261,25 +261,30 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 | Draw bow | Pinch (index + middle + ring > 0.25 strength) or primary index trigger > 0.2 |
 | Release arrow | Open hand (release pinch) |
 | Throw frisbee | Wrist flick gesture detected by `FrisbeeTrajectory.cs` |
-| Cheat codes (keyboard) | Type code in Editor see table below |
+| Cheat codes | Type the code on a keyboard (Editor or Bluetooth keyboard on the Quest) or send it from the web app's cheat code panel — see table below |
 
 ### Keyboard Cheat Codes (available to healthcare professionals at runtime)
 
 | Input | Function | Context | Precondition |
 |---|---|---|---|
+| `skip` | Advances the current dialogue by a single line | All scenes | None |
 | `intro` | Skips the fair introduction sequence | Fair Scene | Intro not completed |
 | `archery` | Loads the Archery mini-game | Fair Scene | Intro completed |
 | `frisbee` | Loads the Frisbee mini-game | Fair Scene | Intro completed |
+| `duck` / `fishing` | Reserved for the Duck / Fishing mini-games (not implemented yet — only logs a warning) | Fair Scene | Intro completed |
+| `giant` | Toggles giant mode (player scaled up/down with a comfort vignette) | Fair Scene | Intro completed |
 | `return` | Returns to the Fair Scene | Both mini-games | None |
 | `tutorial` | Skips the mini-game tutorial sequence | Both mini-games | Tutorial not completed |
+| `goal<N>` + Enter | Sets the session goal to `N` (e.g. `goal15`); `goal` alone uses the default value (10) | Both mini-games | None |
 | `increase` | Signals *CarnyWise* to raise the difficulty by one level | Both mini-games | Tutorial completed |
 | `decrease` | Signals *CarnyWise* to lower the difficulty by one level | Both mini-games | Tutorial completed |
 | `reset` | Resets the difficulty to the first level | Both mini-games | Tutorial completed |
+| `complete` | Marks the session goal as reached | Both mini-games | Tutorial completed |
 | `e(expression_name)` | Displays the specified emotion via the emoji representation | Both mini-games | Tutorial completed |
 | `positive` / `negative` | Shifts the emotion slider right or left, triggering the slider representation | Both mini-games | Tutorial completed |
 | `f(expression_name)` | Displays the specified emotion via the facial expression representation | Both mini-games | Tutorial completed |
-| `score` | Simulates a successful player score | Both mini-games | Tutorial completed |
-| `miss` | Simulates a player miss | Both mini-games | Tutorial completed |
+| `score` | Simulates a successful player score (targets the practice objects during the tutorial's practice phase) | Both mini-games | Tutorial completed or practice phase |
+| `miss` | Simulates a player miss | Both mini-games | Tutorial completed or practice phase |
 | `dog` | Simulates a score by landing the frisbee in the dog's surrounding area | Frisbee only | Tutorial completed |
 | `head` | Makes the bow follow the player's head | Archery only | Tutorial completed |
 | `left` | Holds the bow in the left hand | Archery only | Tutorial completed |
