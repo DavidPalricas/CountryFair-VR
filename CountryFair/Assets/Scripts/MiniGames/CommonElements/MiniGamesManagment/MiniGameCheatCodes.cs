@@ -59,9 +59,16 @@ public class MiniGameCheatCodes : CheatCodes
     [SerializeField]
     private UnityEvent _returnToFair;
 
-    /// <summary>Tutorial skipped by the <c>tutorial</c> cheat.</summary>
+    /// <summary>Raised by the <c>tutorial</c> cheat to finish the tutorial at once; wired to <see cref="Tutorial.ReadyToPlay"/>.</summary>
     [SerializeField]
     private UnityEvent _skipTutorial;
+
+    /// <summary>
+    /// Raised by the <c>practise</c> cheat to make the tutorial skip its remaining rule slides and jump to the practice
+    /// phase; wired to <see cref="Tutorial.StartPractice"/>.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent _goToPractise;
 
     /// <summary>Raised by the <c>goal</c> cheat with the new session goal (wired to the score system).</summary>
     [SerializeField]
@@ -76,7 +83,7 @@ public class MiniGameCheatCodes : CheatCodes
     public bool TutorialCompleted { get; set; } = false;
 
     /// <summary>Codes that work before the tutorial is completed.</summary>
-    private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial"};
+    private readonly string[] _cheatCodesOnTutorial = new string[] {"return", "skip", "tutorial", "practise"};
 
     /// <summary>Extra codes that also work during the tutorial's practice phase (see <see cref="IsPracticing"/>).</summary>
     private readonly string[] _cheatCodesOnPractice = new string[] {"miss", "score"};
@@ -105,6 +112,8 @@ public class MiniGameCheatCodes : CheatCodes
         RegisterCheat("return", () => _returnToFair.Invoke());
 
         RegisterCheat("tutorial", () => SkipTutorial());
+
+        RegisterCheat("practise", GoToPractise);
 
         RegisterCheat("reset",  () => _resetDifficulty.Invoke());
         
@@ -203,6 +212,23 @@ public class MiniGameCheatCodes : CheatCodes
 
         // Tutorial.ReadyToPlay fires _tutorialCompleted, which sets TutorialCompleted.
         _skipTutorial.Invoke();
+    }
+
+    /// <summary>Signals the tutorial to jump to the practice phase; only valid during the tutorial's rules part.</summary>
+    /// <remarks>
+    /// Ignored once practice has started (or the tutorial is done): calling <see cref="Tutorial.StartPractice"/> again
+    /// would re-show the guide line and re-raise <c>_practiceStateChanged</c> mid-practice.
+    /// </remarks>
+    private void GoToPractise()
+    {
+        if (TutorialCompleted || IsPracticing)
+        {
+            Debug.LogWarning("Cheat code 'practise' only works during the tutorial, before the practice phase. Cheat ignored.");
+
+            return;
+        }
+
+        _goToPractise.Invoke();
     }
 
     /// <summary>Switches to the emoji display and shows <paramref name="type"/> (also synced over the network).</summary>

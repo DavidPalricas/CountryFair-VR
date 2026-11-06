@@ -54,14 +54,12 @@ VideoPlayer:
   m_TimeUpdateMode: 2
   m_PlaybackSpeed: 1
   m_AudioOutputMode: 2
-  m_TargetAudioSources:
-  - {fileID: 0}
-  m_DirectAudioVolumes:
-  - 1
+  m_TargetAudioSources: []
+  m_DirectAudioVolumes: []
   m_Url: 
-  m_EnabledAudioTracks: 01
-  m_DirectAudioMutes: 01
-  m_ControlledAudioTrackCount: 1
+  m_EnabledAudioTracks: 
+  m_DirectAudioMutes: 
+  m_ControlledAudioTrackCount: 0
   m_PlayOnAwake: 1
   m_SkipOnDrop: 1
   m_Looping: 1
@@ -122,14 +120,12 @@ VideoPlayer:
   m_TimeUpdateMode: 2
   m_PlaybackSpeed: 1
   m_AudioOutputMode: 2
-  m_TargetAudioSources:
-  - {fileID: 0}
-  m_DirectAudioVolumes:
-  - 1
+  m_TargetAudioSources: []
+  m_DirectAudioVolumes: []
   m_Url: 
-  m_EnabledAudioTracks: 01
-  m_DirectAudioMutes: 01
-  m_ControlledAudioTrackCount: 1
+  m_EnabledAudioTracks: 
+  m_DirectAudioMutes: 
+  m_ControlledAudioTrackCount: 0
   m_PlayOnAwake: 1
   m_SkipOnDrop: 1
   m_Looping: 1
@@ -452,9 +448,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial
   _dialogueBoxGameObject: {fileID: 5757763422182818401}
   _dialogueBoxText: {fileID: 3866530826254779555}
-  _nextButton: {fileID: 6457992072635077231}
-  _nextButtonDelaySeconds: 0.3
-  _continueDialogue: {fileID: 8241692789038372800}
   _narrationEvent:
     Guid:
       Data1: -1413876888
@@ -469,7 +462,13 @@ MonoBehaviour:
     shortPauseCharacters: ',;:'
     longPauseCharacters: ".!?\u2026"
     narrationDurationScale: 0.7
+  _nextButton: {fileID: 6457992072635077231}
+  _nextButtonDelaySeconds: 0.3
+  _continueDialogue: {fileID: 8241692789038372800}
   _tutorialCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  _practiceStateChanged:
     m_PersistentCalls:
       m_Calls: []
   _videoScreen: {fileID: 9204777700519121405}
@@ -571,7 +570,7 @@ PrefabInstance:
       propertyPath: m_text
       value: "Para atirar o frisbee, agarre-o com uma das suas m\xE3o e\\n lance-o
         com o gesto aprsentado no video em cima.\\n\\n\\tQuando estiver pronto para
-        experimentar \\n\\t\\tprressione no Botao"
+        experimentar"
       objectReference: {fileID: 0}
     - target: {fileID: 2797224499791937733, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
       propertyPath: m_isRightToLeft
@@ -649,9 +648,13 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7927277439255945617, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 8379552006922625528, guid: e0d8ffbe570497b408083bf01c24f1c2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

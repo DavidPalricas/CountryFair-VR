@@ -43,7 +43,6 @@ public class BalloonArcheryGame : MonoBehaviour
     private ParticleSystem _popEffectInstance;
 
 
-
     /// <summary>Tutorial balloons raise <see cref="_taskCompleted"/> and destroy themselves instead of going through <see cref="ArcheryGameManager"/>.</summary>
     [Header("Settings")]
     [SerializeField] private bool _isFromTutorial = false;
@@ -121,11 +120,12 @@ public class BalloonArcheryGame : MonoBehaviour
     /// <summary>Sound played on every pop (fixed; not editable in the Inspector).</summary>
     private readonly AudioManager.GameSoundEffects _popSoundEffect = AudioManager.GameSoundEffects.BalloonPop;
     /// <summary>Box (tagged <c>BalloonSpawn</c>) whose bounds limit the wander points.</summary>
+    /// <remarks>Stays null on tutorial balloons: they never wander, so <see cref="Awake"/> does not look the box up for them.</remarks>
     private BoxCollider _spawnArea;
 
     /// <summary>
     /// Caches components and tween ids, reads the original material color (<c>_Color</c> or URP <c>_BaseColor</c>),
-    /// and finds the spawn area and the archery managers by tag.
+    /// and finds the spawn area (game balloons only) and the archery managers by tag.
     /// </summary>
     private void Awake()
     {
@@ -150,39 +150,36 @@ public class BalloonArcheryGame : MonoBehaviour
             _originalColor = _material.GetColor("_BaseColor");
         }
 
-        GameObject spawner = GameObject.FindGameObjectWithTag(BalloonSpawnTag);
 
-        if (spawner == null)
+        if (!_isFromTutorial)
         {
-            Debug.LogError("BalloonSpawner GameObject not found in the scene.");
-            return;
+              GameObject spawner = GameObject.FindGameObjectWithTag(BalloonSpawnTag);
+
+            if (!Utils.RequireAssigned(spawner, "BalloonSpawn-tagged GameObject", this))
+            {
+                return;
+            }
+
+            _spawnArea = spawner.GetComponent<BoxCollider>();
+
+            if (!Utils.RequireAssigned(_spawnArea, nameof(_spawnArea), this))
+            {
+                return;
+            }
         }
 
-        _spawnArea = spawner.GetComponent<BoxCollider>();
-
-        if (_spawnArea == null)
-        {
-            Debug.LogError("BoxCollider component not found on BalloonSpawner GameObject.");
-            return;
-        }
-
-    
         GameObject gameManager = GameObject.FindGameObjectWithTag(GameManager.GameManagerTag);
 
-
-        if (gameManager == null)
+        if (!Utils.RequireAssigned(gameManager, "GameManager-tagged GameObject", this))
         {
-            Debug.LogError("ArcheryGameManager GameObject not found in the scene.");
             return;
         }
 
         _archeryAudioManager = gameManager.GetComponent<ArcheryAudioManager>();
         _archeryGameManager = gameManager.GetComponent<ArcheryGameManager>();
 
-        if (_archeryGameManager == null || _archeryAudioManager == null)
-        {
-            Debug.LogError("ArcheryGameManager or ArcheryAudioManager component not found on GameManager GameObject.");
-        }
+        Utils.RequireAssigned(_archeryAudioManager, nameof(_archeryAudioManager), this);
+        Utils.RequireAssigned(_archeryGameManager, nameof(_archeryGameManager), this);
     }
 
     /// <summary>

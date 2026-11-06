@@ -9,7 +9,11 @@ using UnityEngine.Events;
 /// </summary>
 public class Tutorial : InteractableDialogue
 {
-    /// <summary>Fired when the tutorial ends — wired to <see cref="MiniGameManager.TutorialCompleted"/>.</summary>
+    /// <summary>
+    /// Fired when the tutorial ends (or in <see cref="Start"/> when it was already completed) — wired to
+    /// <see cref="MiniGameManager.TutorialCompleted"/> and <see cref="MiniGameCheatCodes.TutorialCompleted"/>;
+    /// <see cref="Start"/> also adds <see cref="ConnectToWebApp.PlayerFinishedTutorial"/> at runtime.
+    /// </summary>
     [SerializeField]
     private UnityEvent _tutorialCompleted;
 
@@ -63,7 +67,7 @@ public class Tutorial : InteractableDialogue
     /// <summary>Index (in the original JSON list) of the next rule slide; used to build its narration key.</summary>
     private int _ruleIndex = 0;
 
-       /// <summary>Keeps the advance button hidden during the practice phase.</summary>
+    /// <summary>Keeps the advance button hidden during the practice phase.</summary>
     protected override bool ShouldShowNextButton() => !_isPracticing;
 
     /// <summary>
@@ -153,7 +157,8 @@ public class Tutorial : InteractableDialogue
 
         GameManager gameManager = GameManager.GetInstance();
 
-        // If in the development the developer starts testing on a mini game scene without going through the fair intro, to make sure when return to te fair does not have the intro dialogue this flag is set to true.
+        // Reaching a mini-game implies the intro is done. Setting it here also covers starting a test directly in a
+        // mini-game scene: without it, returning to the fair would replay the intro dialogue.
         gameManager.IntroCompleted = true;
 
         if (_isFromFrisbeGame && gameManager.FrisbeeTutorialCompleted)
@@ -266,8 +271,17 @@ public class Tutorial : InteractableDialogue
  
 
     /// <summary>Hides the rule dialogue button and reveals the practice score areas, prop, and instructional video.</summary>
-    private void StartPractice()
+    /// <remarks>
+    /// Called by <see cref="ShowGameRule"/> once every rule slide is consumed, and invoked via Inspector by
+    /// <c>MiniGameCheatCodes._goToPractise</c> (the <c>practise</c> cheat) in the ArcheryGame and FrisbeeGame scenes,
+    /// which skips any rule slides still pending. The cheat only fires before practice starts, so this runs once.
+    /// </remarks>
+    public void StartPractice()
     {
+        // Skipped rules must be dropped: ShouldShowContinuePrompt() treats pending rules as "rules still showing" and
+        // would otherwise show the continue prompt next to the End line, which already asks for the button.
+        _tutorialData.Rules.Clear();
+
         SetPracticing(true);
         SetNextButtonVisible(false);
         _practiceElements.SetActive(true);

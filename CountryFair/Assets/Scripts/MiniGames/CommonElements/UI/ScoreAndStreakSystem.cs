@@ -40,7 +40,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
 
     /// <summary>
     /// TextMeshProUGUI component displaying the current streak value.
-    /// Shows text in format: "Sequencia: {value}".
+    /// Shows text in format: "Sequência: {value}".
     /// Color changes dynamically based on streak thresholds.
     /// </summary>
     [SerializeField]
@@ -371,12 +371,12 @@ public class ScoreAndStreakSystem : MonoBehaviour
     /// Updates the streak text UI to display the current streak value.
     /// </summary>
     /// <remarks>
-    /// Formats the text as "Sequencia: {value}" in Portuguese.
+    /// Formats the text as "Sequência: {value}" in Portuguese.
     /// Called automatically by <see cref="PlayerScored"/>, <see cref="PlayerMissed"/>, and during initialization.
     /// </remarks>
     private void UpdateStreakText()
     {   
-        _streakText.text = $"Sequencia: {_streakValue}";
+        _streakText.text = $"Sequência: {_streakValue}";
     }
     
     /// <summary>
@@ -447,7 +447,7 @@ public class ScoreAndStreakSystem : MonoBehaviour
             _sessionGoal = newGoal;
         }
 
-        _sessionGoalText.text = $"Objetivo da Sessao: {_sessionGoal}";
+        _sessionGoalText.text = $"Objetivo da Sessão: {_sessionGoal}";
 
         ConnectToWebApp.Instance.UpdatePlayerProgressOnMiniGame(_scoreValue, _sessionGoal, _streakValue);
     }

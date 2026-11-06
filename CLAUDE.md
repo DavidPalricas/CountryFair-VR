@@ -424,7 +424,7 @@ via `room.send("cheatCode", code)`.
 **Shared cheat (all scenes — `CheatCodes.RegisterBaseCheats`):** `skip` advances the current dialogue by one line
 (`_skipDialogue`). It is never gated.
 
-**Gating:** in mini-games every cheat except `return`, `skip` and `tutorial` is ignored until the tutorial is completed —
+**Gating:** in mini-games every cheat except `return`, `skip`, `tutorial` and `practise` is ignored until the tutorial is completed —
 except `miss` and `score`, which also work during the tutorial's **practice phase**. `Tutorial._practiceStateChanged`
 (`UnityEvent<bool>`, Inspector-wired to `MiniGameCheatCodes.IsPracticing`) fires `true` in `StartPractice()` and `false`
 when practice ends (or the tutorial is skipped mid-practice). While practicing, `score` targets the practice objects:
@@ -438,7 +438,8 @@ In the plaza, every `CountryFairCheatCodes` cheat except `intro` and `skip` requ
 | Code | Effect |
 |------|--------|
 | `return` | Return to CountryFair scene |
-| `tutorial` | Skip tutorial |
+| `tutorial` | Skip tutorial (`_skipTutorial` → `Tutorial.ReadyToPlay`) |
+| `practise` | Skip the remaining rule slides and jump to the practice phase (`_goToPractise` → `Tutorial.StartPractice`, which clears the pending rules). Ignored once practice has started or the tutorial is completed |
 | `goal<N>` + Enter | Set the session goal to `N` (`RegisterNumericCheat`; `goal` alone → `_defaultUpdateGoalValue`, 10). From the web app it is committed immediately, no Enter needed |
 | `reset` | Reset difficulty to 0 |
 | `miss` | Trigger miss event |
