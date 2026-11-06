@@ -1,8 +1,10 @@
-# 🎡 Personalized CountryFair VR
+# <img src="GameImages/GameIcon.jpg" alt="CountryFair VR icon" height="48" align="absmiddle"> Personalized CountryFair VR
 
 A VR serious game for stroke rehabilitation, featuring adaptive mini-games in an immersive country fair environment built for Meta Quest 3 with hand-tracking support. It aims to enhance post-stroke rehabilitation through gamified exercises targeting upper-limb motor recovery, with a difficulty that continuously adapts to the player's performance.
 
 This repository contains the source code developed as part of a Master's Thesis titled *"Exploring the Effect of a Personalized Virtual Reality Serious Game for Stroke Rehabilitation"*, focused on stroke survivor rehabilitation using Virtual Reality Serious Games. The system was developed using a Human-Centered Design methodology in collaboration with the **Rovisco Pais Rehabilitation Center**. A usability study was run with **38 healthy adults**; clinical validation with stroke survivors has not been carried out yet (see [🧪 User Testing](#-user-testing)).
+
+![CountryFair VR gameplay](GameImages/GameScreen.jpg)
 
 ---
 
@@ -16,6 +18,8 @@ This repository contains the source code developed as part of a Master's Thesis 
 
 Traditional post-stroke rehabilitation often suffers from low patient adherence due to the monotony of repetitive exercises and a lack of personalization in the therapeutic process.
 
+Immersive VR games can also leave survivors feeling **isolated and lost**: alone in an empty virtual space, with no social presence and little guidance on where to look or what to do next.
+
 ---
 
 # 💡 Our Approach
@@ -23,13 +27,15 @@ Traditional post-stroke rehabilitation often suffers from low patient adherence 
 We propose a solution set in a VR Country Fair environment, designed to enhance stroke survivor motivation and engagement. The system offers:
 
 - **Immersive virtual reality mini-games** that make repetitive exercises more fun and motivating.
-- **Automatic difficulty adjustment** (CarnyWise): the games get easier or harder in real time depending on how the player is doing, keeping the challenge at the right level.
+- **Hybrid personalization**: automatic adaptation combined with direct clinician control.
+  - **Automatic adjustment (CarnyWise):** the games get easier or harder in real time depending on how the player is doing, keeping the challenge at the right level.
+  - **Healthcare professional override:** healthcare professionals can step in at any time to change the difficulty and manage the session manually.
+- **NPCs**: characters that keep the player from feeling alone or isolated.
+  - **Companions:** a dog that plays with the player in the Frisbee game, and characters (such as Zeca Bigodes and Carny Wise) that narrate events and guide the player through narrated dialogues and tutorials.
+  - **Background NPCs:** wandering people, animals and crowds that make the fair feel alive.
 - **Natural hand-tracking interaction** on Meta Quest 3, so players can play with their own hands, without controllers.
-- **Immersive 3D sound** that reinforces the fair atmosphere and helps guide the player.
+- **Immersive spatial 3D sound** that reinforces the fair atmosphere and helps guide the player, so they do not feel lost in the environment.
 - **A personalized fair** where healthcare professionals can rearrange the mini-game tents before each session to choose the order of the activities.
-- **Hybrid personalization**: besides the automatic adjustment, healthcare professionals can also change the difficulty and manage the session manually, combining automatic adaptation with direct clinician control.
-- **Emotion recognition (complementary work)**: a proof of concept that shows the player's recognized emotional state inside the games, as an emoji, a facial expression or a mood bar. See [🧠 Emotion Recognition Module](#-emotion-recognition-module-complementary-work) below.
-- **Guided onboarding** with narrated dialogues and tutorials, plus score and streak feedback to keep players motivated.
 
 ## Implemented Mini-games
 
