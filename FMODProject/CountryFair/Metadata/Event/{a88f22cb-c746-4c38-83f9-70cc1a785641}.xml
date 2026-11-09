@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{a88f22cb-c746-4c38-83f9-70cc1a785641}">
 		<property name="name">
 			<value>ScaleToNormal</value>

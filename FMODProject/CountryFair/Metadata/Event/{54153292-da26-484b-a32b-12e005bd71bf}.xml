@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{54153292-da26-484b-a32b-12e005bd71bf}">
 		<property name="name">
 			<value>FrisbeeThrow</value>
