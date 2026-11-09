@@ -132,8 +132,8 @@ public class BalloonArcheryGame : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         Collider = GetComponent<Collider>();
 
-        _moveId = "move_" + GetInstanceID();
-        _fadeId = "fade_" + GetInstanceID();
+        _moveId = "move_" + GetEntityId();
+        _fadeId = "fade_" + GetEntityId();
 
         _colorName = _color.ToString().ToLower();
 

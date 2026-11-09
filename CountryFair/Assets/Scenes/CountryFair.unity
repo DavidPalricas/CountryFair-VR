@@ -2082,6 +2082,7 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 30001
   m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!23 &159176255
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2129,6 +2130,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &159176256
 MeshFilter:
@@ -3339,7 +3341,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 1763845414}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &274071657
 Transform:
   m_ObjectHideFlags: 0
@@ -5093,14 +5096,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 13
   m_Type: 1
   m_Color: {r: 1, g: 0.9254902, b: 0.8156863, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 2
     m_Resolution: -1
@@ -5145,7 +5148,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 0
+  m_ShapeRadius: 0
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1
@@ -6765,6 +6768,7 @@ SkinnedMeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 1
@@ -7045,6 +7049,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &492220147
 SpriteRenderer:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7090,6 +7095,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 30002
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: aa3a2b3718100f84fb5d8ff9adb8ccb7, type: 3}
   m_Color: {r: 0.19215688, g: 0.64705884, b: 0.9843138, a: 1}
   m_FlipX: 0
@@ -7099,8 +7105,8 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!1 &502928096
 GameObject:
   m_ObjectHideFlags: 0
@@ -7953,7 +7959,6 @@ MonoBehaviour:
   _gripCollider: {fileID: 885427957}
   _pinchPoint: {fileID: 1221087732}
   _pinchCollider: {fileID: 136191469}
-  _velocityCalculator: {fileID: 0}
 --- !u!114 &555702915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12471,6 +12476,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &910641842
 SpriteRenderer:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -12516,6 +12522,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 30002
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: aa3a2b3718100f84fb5d8ff9adb8ccb7, type: 3}
   m_Color: {r: 0.19215688, g: 0.64705884, b: 0.9843138, a: 1}
   m_FlipX: 0
@@ -12525,8 +12532,8 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!1001 &921040297
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12733,7 +12740,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _handGrabState: {fileID: 555702914}
-  _syntheticHand: {fileID: 0}
+  _syntheticHand: {fileID: 1871689551}
 --- !u!1 &933816602
 GameObject:
   m_ObjectHideFlags: 0
@@ -15856,7 +15863,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 555702915}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &1174573920
 Transform:
   m_ObjectHideFlags: 0
@@ -17366,8 +17374,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9127245463817792877, guid: b24b341f147cfe840ba050049c68f6f1, type: 3}
       propertyPath: m_text
-      value: "Antes de come\xE7ar, deixe-me apresento-te \\nCarny Wise, ele vai ajudar
-        voc\xEA a aprender os jogos!\n"
+      value: "Antes de come\xE7ar, deixe-me apresento-te \\nCarny Wise, ele vai ajudar voc\xEA a aprender os jogos!\n"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17894,7 +17901,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _handGrabState: {fileID: 1763845413}
-  _syntheticHand: {fileID: 0}
+  _syntheticHand: {fileID: 1871689551}
 --- !u!1 &1336857391
 GameObject:
   m_ObjectHideFlags: 0
@@ -23665,7 +23672,6 @@ MonoBehaviour:
   _gripCollider: {fileID: 1978882889}
   _pinchPoint: {fileID: 1506420259}
   _pinchCollider: {fileID: 486418594}
-  _velocityCalculator: {fileID: 0}
 --- !u!114 &1763845414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25424,6 +25430,7 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 30001
   m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!23 &1857672708
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -25471,6 +25478,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1857672709
 MeshFilter:
@@ -25682,6 +25690,10 @@ PrefabInstance:
     - target: {fileID: 2483171112402263010, guid: f54012181eacade4ea242c65f804720f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.6404
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483171112407822886, guid: f54012181eacade4ea242c65f804720f, type: 3}
+      propertyPath: requestScenePermissionOnStartup
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2483171112681471076, guid: f54012181eacade4ea242c65f804720f, type: 3}
       propertyPath: _interactors.Array.size
@@ -26351,6 +26363,7 @@ SkinnedMeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 1
