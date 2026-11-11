@@ -27,7 +27,6 @@ public class WristMenu : MonoBehaviour
         }
 
         _menu.SetActive(_menuActive);
-        gameObject.SetActive(false);
     }
 
     /// <summary>Toggles the menu panel open or closed.</summary>

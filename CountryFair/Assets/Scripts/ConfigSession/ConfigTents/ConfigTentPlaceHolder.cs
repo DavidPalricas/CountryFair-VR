@@ -2,15 +2,12 @@ using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
-/// Marks a slot where a <see cref="MiniGameTent"/> can be placed and plays a looping
+/// Marks a slot where a <see cref="ConfigTent"/> can be placed and plays a looping
 /// squash-and-stretch bounce animation to make the empty slot visible to the player.
 /// Trigger collider callbacks inform the active tent which placeholder it is hovering over.
 /// </summary>
-public class MiniGameTentPlaceHolder : TentPlaceHolder
+public class ConfigTentPlaceHolder : TentPlaceHolder
 {
-    /// <summary>Transform used to position the tent's play button when a tent snaps to this slot.</summary>
-    public Transform MiniGameButtonPlaceHolderTransform;
-
     [Header("Squash & Stretch")]
     /// <summary>Child transform that carries the visual model being animated.</summary>
     [SerializeField]
@@ -56,8 +53,7 @@ public class MiniGameTentPlaceHolder : TentPlaceHolder
     /// <summary>Caches the model's original scale and local position as the animation baseline.</summary>
     private void Awake()
     {
-        if (!Utils.RequireAssigned(MiniGameButtonPlaceHolderTransform, nameof(MiniGameButtonPlaceHolderTransform), this) ||
-            !Utils.RequireAssigned(_modelTransform, nameof(_modelTransform), this))
+        if (!Utils.RequireAssigned(_modelTransform, nameof(_modelTransform), this))
         {
             return;
         }
