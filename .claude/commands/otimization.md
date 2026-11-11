@@ -4,7 +4,7 @@ This repository holds **two distinct codebases** that must be analyzed and repor
 
 | Codebase | Root | Stack |
 |----------|------|-------|
-| **Game** | `CountryFair/` | Unity 6000.2.5f1, C#, Meta XR SDK, FMOD, Netcode for GameObjects |
+| **Game** | `CountryFair/` | Unity 6000.6.8f1, C#, Meta XR SDK, FMOD, Netcode for GameObjects |
 | **Web App** | `CountryFairWebApp/` | React 19 + React Three Fiber + Vite (`ClientSide/`), Colyseus + Express (`ServerSide/`), TypeScript |
 
 Generate **two** reports:

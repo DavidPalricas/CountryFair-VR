@@ -101,8 +101,8 @@ public class ScoreAreaProperties : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         _collider = GetComponent<Collider>();
 
-        _blinkId = "blink_" + GetInstanceID();
-        _moveId = "move_" + GetInstanceID();
+        _blinkId = "blink_" + GetEntityId();
+        _moveId = "move_" + GetEntityId();
 
 
         if (_areaType == AreaType.Dog)

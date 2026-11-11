@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="Workspace" id="{bc1a8e07-3464-494c-b0db-0cbc59d1b0bd}">
 		<property name="builtBanksOutputDirectory">
 			<value>../../CountryFair/FMOD</value>

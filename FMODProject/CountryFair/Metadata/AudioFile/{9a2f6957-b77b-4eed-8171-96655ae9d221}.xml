@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="AudioFile" id="{9a2f6957-b77b-4eed-8171-96655ae9d221}">
 		<property name="assetPath">
 			<value>frisbeeThrow.mp3</value>

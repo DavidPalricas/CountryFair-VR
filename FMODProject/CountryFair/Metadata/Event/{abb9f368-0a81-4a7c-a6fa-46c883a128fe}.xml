@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{abb9f368-0a81-4a7c-a6fa-46c883a128fe}">
 		<property name="name">
 			<value>DialogueLine</value>

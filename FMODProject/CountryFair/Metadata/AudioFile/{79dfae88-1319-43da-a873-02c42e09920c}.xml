@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="AudioFile" id="{79dfae88-1319-43da-a873-02c42e09920c}">
 		<property name="assetPath">
 			<value>dogBark.wav</value>

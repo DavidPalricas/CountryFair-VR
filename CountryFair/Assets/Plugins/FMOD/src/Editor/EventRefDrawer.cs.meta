@@ -1,14 +1,8 @@
 fileFormatVersion: 2
 guid: 29a86a77bf7568e499243d9b47b7e88e
-AssetOrigin:
-  serializedVersion: 1
-  productId: 161631
-  packageName: FMOD for Unity (2.02)
-  packageVersion: 2.02.32
-  assetPath: Assets/Plugins/FMOD/src/Editor/EventRefDrawer.cs
-  uploadId: 821718
+timeCreated: 1432696197
+licenseType: Store
 MonoImporter:
-  externalObjects: {}
   serializedVersion: 2
   defaultReferences: []
   executionOrder: 0
@@ -16,3 +10,10 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 311497
+  packageName: FMOD for Unity (2.03)
+  packageVersion: 2.03.15
+  assetPath: Assets/Plugins/FMOD/src/Editor/EventRefDrawer.cs
+  uploadId: 1007396
