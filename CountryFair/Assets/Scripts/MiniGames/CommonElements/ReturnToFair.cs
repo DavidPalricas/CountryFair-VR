@@ -12,6 +12,5 @@ public class ReturnToFair : MonoBehaviour
     public void Return()
     {
         SceneManager.LoadScene(GameManager.PlazaScene);
-        ConnectToWebApp.Instance.UpdateScene(GameManager.PlazaScene.ToLower());
     }
 }

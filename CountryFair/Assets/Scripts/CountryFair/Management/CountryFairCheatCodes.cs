@@ -18,17 +18,10 @@ public class CountryFairCheatCodes : CheatCodes
     private UnityEvent _completeIntro;
     
     /// <summary>
-    /// Fired by the "giant" cheat. Wired in the Inspector (CountryFair.unity) to
-    /// <see cref="PlayerScale.ToggleScale"/>.
-    /// </summary>
-    [SerializeField]
-    private UnityEvent _togglePlayerScale;
-
-    /// <summary>
     /// Cheat codes that remain usable before the intro dialogue is completed
     /// (the two ways of progressing/finishing that dialogue itself).
     /// </summary>
-    private readonly string[] _cheatCodesOnIntro = new string[] {"intro", "skip"};
+    private readonly string[] _cheatCodesOnIntro = new string[]{"intro", "skip"};
 
     /// <summary>Registers the plaza cheats; this class has no other setup.</summary>
     private void Awake()
@@ -45,12 +38,13 @@ public class CountryFairCheatCodes : CheatCodes
         base.RegisterBaseCheats();
         
         RegisterCheat("intro", () => _completeIntro.Invoke());
+
+        GameManager gameManager = GameManager.GetInstance();
    
-        RegisterCheat("frisbee", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.Frisbee));
-        RegisterCheat("archery", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.Archery));
-        RegisterCheat("duck", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.DuckGame));
-        RegisterCheat("fishing", () => GameManager.GetInstance().GoToMiniGame(GameManager.MiniGames.Fishing));
-        RegisterCheat("giant", () => _togglePlayerScale.Invoke());
+        RegisterCheat("frisbee", () => gameManager.GoToMiniGame(GameManager.MiniGames.Frisbee));
+        RegisterCheat("archery", () => gameManager.GoToMiniGame(GameManager.MiniGames.Archery));
+        RegisterCheat("duck", () => gameManager.GoToMiniGame(GameManager.MiniGames.DuckGame));
+        RegisterCheat("fishing", () => gameManager.GoToMiniGame(GameManager.MiniGames.Fishing));
     }
 
     /// <summary>

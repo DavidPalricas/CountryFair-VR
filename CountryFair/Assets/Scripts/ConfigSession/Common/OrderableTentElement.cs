@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using System.Collections;
 
 /// <summary>
-/// Base class for a tent-related element (a physical <see cref="MiniGameTent"/> in the world or a
+/// Base class for a tent-related element (a physical <see cref="ConfigTent"/> in the configuration scene or a
 /// <see cref="TentPanel"/> in the wrist menu) that can be grabbed and reordered between
 /// <see cref="TentPlaceHolder"/> slots. Handles the shared placeholder-tracking and snap logic;
 /// grab handling and slot-specific visuals are supplied by derived classes.
@@ -22,7 +22,7 @@ public abstract class OrderableTentElement : MonoBehaviour
     [SerializeField]
     protected TentPlaceHolder _currentPlaceHolder;
 
-    /// <summary>Cached collider used to identify this element as the ray/hover target (e.g. in <see cref="MiniGameTent"/>).</summary>
+    /// <summary>Cached collider of this element (also guarantees the trigger collider required by <see cref="TentPlaceHolder"/>).</summary>
     protected Collider _collider  = null;
 
     /// <summary>Last valid placeholder occupied before the current drag, used to revert when the element exits every trigger zone.</summary>
@@ -94,7 +94,7 @@ public abstract class OrderableTentElement : MonoBehaviour
 
      /// <summary>
     /// Teleports this element to the current placeholder's position and rotation.
-    /// Derived classes (<see cref="MiniGameTent"/>, <see cref="TentPanel"/>) override this to additionally
+    /// Derived classes (<see cref="ConfigTent"/>, <see cref="TentPanel"/>) override this to additionally
     /// refresh their number badge and other slot-specific visuals.
     /// </summary>
     public virtual void SnapToCurrentPlaceHolder()

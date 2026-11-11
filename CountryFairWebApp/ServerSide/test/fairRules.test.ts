@@ -1,6 +1,6 @@
 import assert from "assert";
 import { FairState } from "../src/schemas/FairSchema.js";
-import { applyDialogueFinished, applyProgress, applySceneChange, applyTentOrder, applyTutorialFinished, isHubScene } from "../src/rooms/fairRules.js";
+import { applyDialogueFinished, applyProgress, applySceneChange, applyTentOrder, applyTutorialFinished, isConfigScene, isHubScene } from "../src/rooms/fairRules.js";
 
 function stateWithProgress(): FairState {
     const state = new FairState();
@@ -36,6 +36,18 @@ describe("fairRules", () => {
 
         applySceneChange(state, "countryfair");
 
+        assert.deepStrictEqual([state.score, state.streak, state.sessionGoal], [7, 3, 10]);
+    });
+
+    it("applySceneChange never assumes a dialogue in the config scene and keeps progress", () => {
+        const state = stateWithProgress();
+
+        assert.strictEqual(isConfigScene(" ConfigSession "), true);
+        assert.strictEqual(isConfigScene("countryfair"), false);
+
+        applySceneChange(state, "ConfigSession", true);
+
+        assert.deepStrictEqual([state.sceneName, state.dialogueActive], ["configsession", false]);
         assert.deepStrictEqual([state.score, state.streak, state.sessionGoal], [7, 3, 10]);
     });
 

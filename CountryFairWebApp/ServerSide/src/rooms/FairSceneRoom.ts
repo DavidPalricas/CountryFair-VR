@@ -89,7 +89,7 @@ export class FairSceneRoom extends CountryFairRoom {
             this.broadcast("playerFinishedTutorial", {}, { except: client })
       });
 
-      // Sent by `ConnectToWebApp.UpdateScene()` on every scene load (plaza or mini-game). This
+      // Sent by `ConnectToWebApp.OnSceneLoaded()` on every scene load (config, plaza or mini-game). This
       // is what tells the web client which screen to show — and, for a mini-game scene, which
       // one to name (see `classifyScene`/`MINI_GAME_LABELS` on the web client). Score/streak/
       // goal are reset whenever the new scene isn't the plaza, so a mini-game's tutorial never

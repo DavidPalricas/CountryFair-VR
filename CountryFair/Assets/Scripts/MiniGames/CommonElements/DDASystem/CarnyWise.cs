@@ -357,8 +357,6 @@ public class CarnyWise : MonoBehaviour
         }
 
         SceneManager.LoadScene(GameManager.PlazaScene);
-
-        ConnectToWebApp.Instance.UpdateScene(GameManager.PlazaScene.ToLower());
     }
      
 

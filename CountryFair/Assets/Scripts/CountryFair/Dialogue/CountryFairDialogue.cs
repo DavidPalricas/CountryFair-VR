@@ -113,7 +113,7 @@ public class CountryFairDialogue : InteractableDialogue
     {
         if (_nothingToShow)
         {
-            // No web notification here: ConnectToWebApp.UpdateScene already told the room no
+            // No web notification here: ConnectToWebApp.OnSceneLoaded already told the room no
             // dialogue would play, so the web app is not waiting for one to finish.
             _finishedDialogue.Invoke();
 

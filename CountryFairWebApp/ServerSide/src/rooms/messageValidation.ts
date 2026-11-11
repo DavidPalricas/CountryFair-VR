@@ -48,7 +48,7 @@ function isNonNegativeInteger(value: unknown): value is number {
 
 /**
  * `{ sceneName, dialogueActive? }` with a non-empty scene name and, if present, a boolean
- * `dialogueActive`, as sent by `ConnectToWebApp.UpdateScene()`.
+ * `dialogueActive`, as sent by `ConnectToWebApp.OnSceneLoaded()`.
  */
 export function isSceneUpdate(data: unknown): data is SceneUpdate {
     return isObject(data)

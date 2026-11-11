@@ -10,6 +10,11 @@ import { classifyScene, MINI_GAME_LABELS } from "./miniGameScene";
  */
 const DIALOGUE_STATUS_TEXT = "O sobrevivente está a interagir com um diálogo do jogo";
 
+/** Status line shown in the plaza once its dialogue is over: the survivor now walks to a tent
+ * and picks a mini-game. The tents are reordered in the configuration scene, not here, so the
+ * 3D fair is not shown in the plaza. */
+const CHOOSE_GAME_STATUS_TEXT = "Aguarde que o sobrevivente escolha um jogo";
+
 /** Status line shown while `tutorialActive` is assumed true — the mini-game name itself lives
  * in the overlay's title ("Mini Jogo: X"), so this stays generic. */
 const TUTORIAL_STATUS_TEXT = "O sobrevivente está a fazer o tutorial";
@@ -30,8 +35,13 @@ const CONNECTION_STATUS_TEXT: Record<Exclude<ConnectionStatus, "connected">, str
 /** Signboard title for the mini-game overlays, naming which game is loaded. */
 const miniGameTitle = (miniGame: string) => `Mini Jogo: ${miniGame}`;
 
-/** Which top-level screen the fair state is in. Drives which overlay (if any) covers `GameScreen`. */
-export type Phase = "waiting" | "hub" | "miniGame";
+/**
+ * Which top-level screen the fair state is in. Drives which overlay (if any) covers `GameScreen`.
+ * - `"config"`: the session configuration scene (`ConfigSession`), the only one where the 3D
+ *   tents are shown and can be reordered.
+ * - `"hub"`: the plaza (`CountryFair`), always covered: a dialogue, or waiting for a game pick.
+ */
+export type Phase = "waiting" | "config" | "hub" | "miniGame";
 
 export type FairPhaseState = {
   phase: Phase;
@@ -86,8 +96,12 @@ export const initialFairPhase: FairPhaseState = {
  * ends. If the headset drops (`CountryFairRoom.onLeave` broadcasts `"gameDisconnected"`), the
  * phase goes back to "waiting" until it rejoins.
  *
- * `"updateScene"` (`ConnectToWebApp.UpdateScene`, sent on every scene load) is what actually
- * drives `phase`: `classifyScene` tells the plaza apart from the four mini-games. Entering a
+ * `"updateScene"` (`ConnectToWebApp.OnSceneLoaded`, sent on every scene load) is what actually
+ * drives `phase`: `classifyScene` tells the configuration scene and the plaza apart from the
+ * four mini-games. The configuration scene has no dialogue, so its tents are shown right away.
+ * The plaza is always covered: by the dialogue overlay while one plays, and afterwards by a
+ * "waiting for the survivor to pick a game" overlay (the tents are reordered in the
+ * configuration scene, not in the plaza). Entering a
  * mini-game starts on the tutorial assumption (`tutorialActive`, mirroring `dialogueActive` in
  * the plaza — the tutorial is a UIDialog too, just relayed through its own
  * `"playerFinishedTutorial"` message) and switches to the live progress panel once that
@@ -104,6 +118,10 @@ export function fairReducer(state: FairPhaseState, action: FairAction): FairPhas
     case "gameJoined": {
       const { snapshot } = action;
       const scene = snapshot?.sceneName ? classifyScene(snapshot.sceneName) : "hub";
+
+      if (scene === "config") {
+        return { ...state, phase: "config", miniGame: null };
+      }
 
       // No scene reported yet (the game just connected): assume the intro, as before.
       if (!snapshot || !snapshot.sceneName || scene === "hub") {
@@ -129,6 +147,11 @@ export function fairReducer(state: FairPhaseState, action: FairAction): FairPhas
 
       if (scene === "hub") {
         return { ...state, phase: "hub", miniGame: null, dialogueActive: action.dialogueActive ?? true };
+      }
+
+      // No dialogue in the configuration scene: its tents show up as soon as it loads.
+      if (scene === "config") {
+        return { ...state, phase: "config", miniGame: null };
       }
 
       return {
@@ -166,8 +189,10 @@ export function overlayFor(state: FairPhaseState, connectionStatus: ConnectionSt
   switch (state.phase) {
     case "waiting":
       return { kind: "hub" };
+    case "config":
+      return null;
     case "hub":
-      return state.dialogueActive ? { kind: "hub", statusText: DIALOGUE_STATUS_TEXT } : null;
+      return { kind: "hub", statusText: state.dialogueActive ? DIALOGUE_STATUS_TEXT : CHOOSE_GAME_STATUS_TEXT };
     case "miniGame": {
       const title = state.miniGame ? miniGameTitle(state.miniGame) : undefined;
 

@@ -89,6 +89,7 @@ public class ConnectToWebApp : MonoBehaviour
         {
             _instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
 
             return;
         }
@@ -270,31 +271,43 @@ public class ConnectToWebApp : MonoBehaviour
 
 
     /// <summary>
-    /// Notifies the room which Unity scene is now active, so the web app can mirror the player's location in the fair/mini-games.
-    /// Also reports whether a plaza dialogue is about to play, so returning to the plaza without one shows the fair right away
-    /// instead of a "dialogue" screen until <see cref="PlayerFinishedDialogue"/> arrives.
+    /// Notifies the room which Unity scene was just loaded (<c>configsession</c>, <c>countryfair</c>, <c>archerygame</c>,
+    /// <c>frisbeegame</c>), so the web app can mirror where the player is. Hooked to <see cref="SceneManager.sceneLoaded"/>
+    /// in <see cref="Awake"/> rather than called by whoever loads a scene, so every scene change is reported — including
+    /// loads of the <see cref="GameManager.ConfigScene"/>, which has no dedicated loader.
+    /// Also reports whether a plaza dialogue is about to play (see <see cref="IsDialogueActive"/>), so returning to the
+    /// plaza without one shows the "waiting for the survivor to pick a game" screen right away instead of a "dialogue"
+    /// screen until <see cref="PlayerFinishedDialogue"/> arrives.
     /// </summary>
-    /// <param name="sceneName">Lower-case scene name (e.g. <c>"archerygame"</c>, <c>"frisbeegame"</c>).</param>
-    public async void UpdateScene(string sceneName)
+    /// <remarks>
+    /// Runs after the new scene's <c>Awake</c>s but before its <c>Start</c>s, so the <see cref="GameManager"/> session
+    /// flags still describe the dialogue that is about to play (<c>CountryFairDialogue.NextStep</c> clears them only
+    /// once it is dismissed). Also fires for the first scene, while <see cref="_room"/> is still null: that one is
+    /// reported by <see cref="SyncGameState"/> once the join succeeds.
+    /// </remarks>
+    private async void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (_room != null)
+        if (mode != LoadSceneMode.Single || _room == null)
         {
-            bool dialogueActive = IsPlazaDialogueActive();
+            return;
+        }
 
-            try
-            {
-                await _room.Send("updateScene", new { sceneName, dialogueActive });
-            }
-            catch (Exception exception)
-            {
-                Debug.LogWarning($"ConnectToWebApp: failed to send updateScene ({exception.Message}).");
-            }
+        string sceneName = scene.name.ToLower();
+        bool dialogueActive = IsDialogueActive(scene.name);
+
+        try
+        {
+            await _room.Send("updateScene", new { sceneName, dialogueActive });
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning($"ConnectToWebApp: failed to send updateScene ({exception.Message}).");
         }
     }
 
 
     /// <summary>
-    /// Reports where the player currently is, right after every (re)join. <see cref="UpdateScene"/> only fires on a
+    /// Reports where the player currently is, right after every (re)join. <see cref="OnSceneLoaded"/> only fires on a
     /// scene change, so without this the room never learns the scene the game started in, and keeps a stale one
     /// after a reconnect or restart. A web device that joins mid-session then lands on the right screen.
     /// </summary>
@@ -304,9 +317,10 @@ public class ConnectToWebApp : MonoBehaviour
         {
             GameManager gameManager = GameManager.GetInstance();
 
-            string sceneName = SceneManager.GetActiveScene().name.ToLower();
-            
-            bool plazaDialogueActive = IsPlazaDialogueActive();
+            string activeScene = SceneManager.GetActiveScene().name;
+            string sceneName = activeScene.ToLower();
+
+            bool plazaDialogueActive = IsDialogueActive(activeScene);
             bool tutorialActive = GameManager.GetCurrentMiniGame() switch
             {
                 GameManager.MiniGames.Archery => !gameManager.ArcheryTutorialCompleted,
@@ -326,12 +340,20 @@ public class ConnectToWebApp : MonoBehaviour
     }
 
     /// <summary>
-    /// Whether a plaza dialogue is (or is about to be) up, read from the <see cref="GameManager"/> session flags: the intro
-    /// is not completed yet, or a session-completed message is still waiting to be dismissed
-    /// (<see cref="CountryFairDialogue.NextStep"/> clears those flags only then).
+    /// Whether a plaza dialogue is (or is about to be) up in <paramref name="sceneName"/>. Only the plaza
+    /// (<see cref="GameManager.PlazaScene"/>) has one: the intro is not completed yet, or a session-completed message is
+    /// still waiting to be dismissed (<see cref="CountryFairDialogue.NextStep"/> clears those flags only then). Every other
+    /// scene — the <see cref="GameManager.ConfigScene"/> in particular, whose tents the web app shows as soon as it
+    /// loads — reports false.
     /// </summary>
-    private static bool IsPlazaDialogueActive()
+    /// <param name="sceneName">Unity scene name, as in <see cref="Scene.name"/> (case-sensitive).</param>
+    private static bool IsDialogueActive(string sceneName)
     {
+        if (sceneName != GameManager.PlazaScene)
+        {
+            return false;
+        }
+
         GameManager gameManager = GameManager.GetInstance();
 
         return !gameManager.IntroCompleted
@@ -367,6 +389,11 @@ public class ConnectToWebApp : MonoBehaviour
     /// </remarks>
     private async void OnDestroy()
     {
+        if (_instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
         _cancellation?.Cancel();
         _cancellation?.Dispose();
         _cancellation = null;

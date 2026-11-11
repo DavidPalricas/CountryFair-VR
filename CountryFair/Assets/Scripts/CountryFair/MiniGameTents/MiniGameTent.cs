@@ -13,7 +13,10 @@ using UnityEngine;
 /// </summary>
 
 public class MiniGameTent : OrderableTentElement
-{
+{   
+    [SerializeField]
+    private bool _isForConfiguration = false;
+
     [Header("Text elements")]
     /// <summary>Displays the tent's descriptive text label.</summary>
     [SerializeField]
@@ -107,7 +110,7 @@ public class MiniGameTent : OrderableTentElement
 
         SnapToCurrentPlaceHolder();
 
-         AddMiniGameObject();
+        AddMiniGameObject();
     }
 
     /// <summary>
@@ -116,7 +119,7 @@ public class MiniGameTent : OrderableTentElement
     /// </summary>
     private void LateUpdate()
     {
-        if (!_isSelected)
+        if (!_isForConfiguration)
         {
             CheckIfPlayerWantsToGoToMiniGame();
         }

@@ -29,6 +29,8 @@ public class GameManager
 
     /// <summary>Name of the plaza scene, loaded when a mini-game session ends.</summary>
     public const string PlazaScene = "CountryFair";
+    /// <summary>Name of the session configuration scene, where the mini-game tents are reordered (wrist menu / world tents).</summary>
+    public const string ConfigScene = "ConfigSession";
     /// <summary>Name of the Archery mini-game scene.</summary>
     public const string ArcheryScene = "ArcheryGame";
     /// <summary>Name of the Frisbee mini-game scene.</summary>
@@ -89,9 +91,33 @@ public class GameManager
         };
     }
 
+    /// <summary>Returns the Portuguese display name of <paramref name="miniGame"/> (e.g. "Arco e Flecha").</summary>
+    /// <returns>The display name, or an empty string (with a warning) for a mini-game without one.</returns>
+    public static string GetMiniGameName(MiniGames miniGame)
+    {
+        switch (miniGame)
+        {
+            case MiniGames.Archery:
+                return "Arco e Flecha";
+
+            case MiniGames.DuckGame:
+                return "Pato";
+
+            case MiniGames.Fishing:
+                return "Pesca";
+
+            case MiniGames.Frisbee:
+                return "Frisbee";
+
+            default:
+                Debug.LogWarning($"MiniGame '{miniGame}' has no display name assigned.");
+                return string.Empty;
+        }
+    }
+
     /// <summary>
-    /// Loads the scene for <paramref name="miniGame"/> and notifies <see cref="ConnectToWebApp"/> of the scene
-    /// change. Only <see cref="MiniGames.Archery"/> and
+    /// Loads the scene for <paramref name="miniGame"/> (<see cref="ConnectToWebApp"/> reports the scene change to the
+    /// web app once it loads). Only <see cref="MiniGames.Archery"/> and
     /// <see cref="MiniGames.Frisbee"/> have a scene implemented; other values log a warning
     /// and are ignored.
     /// </summary>
@@ -116,7 +142,7 @@ public class GameManager
                 return;
         }
 
+        // ConnectToWebApp reports the new scene to the web app on its own (SceneManager.sceneLoaded).
         SceneManager.LoadScene(sceneName);
-        ConnectToWebApp.Instance.UpdateScene(sceneName.ToLower());
     }
 }

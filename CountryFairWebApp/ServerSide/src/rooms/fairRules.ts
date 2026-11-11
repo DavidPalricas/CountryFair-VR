@@ -8,12 +8,24 @@ import type { GameSnapshot, ProgressUpdate } from "./messageValidation.js";
  * closures means they can be unit-tested on a bare `new FairState()`, without booting a server.
  */
 
-/** Unity scene name of the plaza (`ConnectToWebApp.UpdateScene()` sends it lower-cased). */
+/** Unity scene name of the plaza (`ConnectToWebApp.OnSceneLoaded()` sends it lower-cased). */
 export const HUB_SCENE = "countryfair";
+
+/**
+ * Unity scene name of the session configuration scene, where the survivor reorders the
+ * mini-game tents (`GameManager.ConfigScene`, sent lower-cased). It has no dialogue: the web
+ * client shows its 3D tents as soon as it loads.
+ */
+export const CONFIG_SCENE = "configsession";
 
 /** Whether `sceneName` is the plaza rather than a mini-game. Case- and whitespace-insensitive. */
 export function isHubScene(sceneName: string): boolean {
     return sceneName.trim().toLowerCase() === HUB_SCENE;
+}
+
+/** Whether `sceneName` is the session configuration scene. Case- and whitespace-insensitive. */
+export function isConfigScene(sceneName: string): boolean {
+    return sceneName.trim().toLowerCase() === CONFIG_SCENE;
 }
 
 /**
@@ -30,6 +42,13 @@ export function applySceneChange(state: FairState, sceneName: string, dialogueAc
 
     if (isHubScene(sceneName)) {
         state.dialogueActive = dialogueActive;
+        return;
+    }
+
+    // No dialogue in the configuration scene, whatever the message says, and nothing to reset:
+    // the survivor is not playing a mini-game there.
+    if (isConfigScene(sceneName)) {
+        state.dialogueActive = false;
         return;
     }
 
