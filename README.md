@@ -248,10 +248,11 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 
 | Requirement | Version |
 |---|---|
-| **Unity** | 6000.2.5f1 (Unity 6) |
+| **Unity** | 6000.6.8f1 (Unity 6) |
 | **Meta Quest 3** | Required for deployment |
 | **Blender** *(optional)* | 4.3 or above for editing 3D models |
-| **FMOD Studio** *(optional)* | 2.02.32 for editing audio events |
+| **Meta XR Simulator** *(optional)* | 207.1 for testing in the Editor without a headset |
+| **FMOD Studio** *(optional)* | 2.03.15 for editing audio events |
 
 ## Setup
 
@@ -259,9 +260,9 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
    ```bash
    git clone https://github.com/DavidPalricas/CountryFair-VR.git
    ```
-2. **Open in Unity Hub:** Add the cloned `CountryFair/` folder and ensure Unity **6000.2.5f1** is installed. Unity Hub will prompt to install it if missing.
-3. **Resolve packages:** On first open, Unity imports packages from `Packages/manifest.json` (Meta XR SDK v78.0.0, XR Hands v1.5.1, XR OpenXR v1.15.1, Unity Netcode, DOTween). Allow the import to complete before interacting with the Editor.
-4. **FMOD setup:** If FMOD banks are not pre-built, open FMOD Studio 2.02.32, load the project's FMOD project file, and build banks to `Assets/StreamingAssets/`.
+2. **Open in Unity Hub:** Add the cloned `CountryFair/` folder and ensure Unity **6000.6.8f1** is installed. Unity Hub will prompt to install it if missing.
+3. **Resolve packages:** On first open, Unity imports packages from `Packages/manifest.json` (Meta XR SDK v207.0.1, XR Hands v1.9.0, XR OpenXR v1.18.0, Unity Netcode, DOTween). Allow the import to complete before interacting with the Editor.
+4. **FMOD setup:** If FMOD banks are not pre-built, open FMOD Studio 2.03.15, load the project's FMOD project file, and build banks to `Assets/StreamingAssets/`.
 5. **Run in Editor:** Open `Assets/Scenes/CountryFair.unity` as the start scene and press **Play**. For on-device testing, configure the Meta Quest 3 build profile under **File → Build Settings** (Android, OpenXR).
 
 ---

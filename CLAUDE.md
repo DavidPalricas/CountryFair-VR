@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 VR Country Fair - A Master's Thesis project for stroke rehabilitation using personalized VR serious games. Targets Meta Quest 3.
 
-**Unity Version:** 6000.2.5f1 (required)
+**Unity Version:** 6000.6.8f1 (required)
 
 ## Build & Development
 
@@ -18,9 +18,9 @@ unity-hub --open path/to/CountryFair
 ```
 
 ### Key Dependencies (Packages/manifest.json)
-- Meta XR SDK All (v78.0.0) - VR hand tracking, interaction
-- Unity XR Hands (v1.5.1) - Hand tracking
-- Unity XR OpenXR (v1.15.1) - VR runtime
+- Meta XR SDK All (v207.0.1) - VR hand tracking, interaction
+- Unity XR Hands (v1.9.0) - Hand tracking
+- Unity XR OpenXR (v1.18.0) - VR runtime
 - FMOD Unity integration - Audio (custom plugin in Assets/Plugins/FMOD)
 - DOTween - Animation tweening (Assets/Plugins/Demigiant/DOTween)
 - Newtonsoft.Json - JSON serialization for save data
@@ -685,7 +685,8 @@ Python scripts in `UserTests/Results/`:
 
 ## External Tools
 - **Blender 4.3+** - 3D models/animations
-- **FMOD Studio 2.02.32** - Audio event design
+- **FMOD Studio 2.03.15** - Audio event design
+- **Meta XR Simulator 207.1** - Editor testing without a headset (standalone install, not in manifest.json)
 
 ---
 
