@@ -48,8 +48,27 @@ public class SessionClampedParameter
         Value = Mathf.Clamp(value, min, max);
 
         valueText.text = Value.ToString();
-        decreaseButton.interactable = Value > min;
-        increaseButton.interactable = Value < max;
+        SetButtonEnabled(decreaseButton, Value > min);
+        SetButtonEnabled(increaseButton, Value < max);
+    }
+
+    /// <summary>Opacity of a button (background and text) while it is disabled.</summary>
+    private const float DisabledButtonAlpha = 0.35f;
+
+    /// <summary>
+    /// Enables or disables a button and fades it out while disabled. The button's own color tint only affects its
+    /// background, so a <see cref="CanvasGroup"/> is used to also fade the <c>-</c> / <c>+</c> text.
+    /// </summary>
+    private static void SetButtonEnabled(Button button, bool isEnabled)
+    {
+        button.interactable = isEnabled;
+
+        if (!button.TryGetComponent(out CanvasGroup canvasGroup))
+        {
+            canvasGroup = button.gameObject.AddComponent<CanvasGroup>();
+        }
+
+        canvasGroup.alpha = isEnabled ? 1f : DisabledButtonAlpha;
     }
 
     /// <summary>Increases the value by one step.</summary>

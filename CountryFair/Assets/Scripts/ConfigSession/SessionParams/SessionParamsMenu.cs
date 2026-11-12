@@ -45,10 +45,7 @@ public class SessionParamsMenu : MonoBehaviour
     /// <summary>Currently selected affected arm.</summary>
     public AFFECTED_ARM AffectedArm { get; private set; } = AFFECTED_ARM.LEFT;
 
-    /// <summary>True once every reference was validated and the listeners were registered.</summary>
-    private bool _isInitialized;
-
-    /// <summary>Validates the references, sets the default values and registers the button and dropdown listeners.</summary>
+    /// <summary>Validates the references, sets the default values and fills the dropdown. Clicks are NOT listened to in code: the ray interaction events (OnSelect) are wired in the Inspector to the public methods below.</summary>
     private void Awake()
     {
         if (!AreParameterReferencesAssigned(_repetitions, nameof(_repetitions)) ||
@@ -64,24 +61,6 @@ public class SessionParamsMenu : MonoBehaviour
         _affectedArmDropdown.ClearOptions();
         _affectedArmDropdown.AddOptions(AffectedArmOptions);
         _affectedArmDropdown.SetValueWithoutNotify((int)AffectedArm);
-        _affectedArmDropdown.onValueChanged.AddListener(OnAffectedArmChanged);
-
-        _isInitialized = true;
-    }
-
-    /// <summary>Removes the listeners registered in <see cref="Awake"/>.</summary>
-    private void OnDestroy()
-    {
-        if (!_isInitialized)
-        {
-            return;
-        }
-
-        _repetitions.decreaseButton.onClick.RemoveListener(_repetitions.Decrease);
-        _repetitions.increaseButton.onClick.RemoveListener(_repetitions.Increase);
-        _sessionTime.decreaseButton.onClick.RemoveListener(_sessionTime.Decrease);
-        _sessionTime.increaseButton.onClick.RemoveListener(_sessionTime.Increase);
-        _affectedArmDropdown.onValueChanged.RemoveListener(OnAffectedArmChanged);
     }
 
     /// <summary>Keeps the parameter ranges consistent while they are edited in the Inspector.</summary>
@@ -91,13 +70,10 @@ public class SessionParamsMenu : MonoBehaviour
         _sessionTime?.Validate();
     }
 
-    /// <summary>Sets the parameter to its default value and wires its <c>-</c> / <c>+</c> buttons.</summary>
+    /// <summary>Sets the parameter to its default value.</summary>
     private static void InitializeParameter(SessionClampedParameter parameter)
     {
         parameter.Set(parameter.defaultValue);
-
-        parameter.decreaseButton.onClick.AddListener(parameter.Decrease);
-        parameter.increaseButton.onClick.AddListener(parameter.Increase);
     }
 
     /// <summary>Checks that the buttons and the value text of a parameter are assigned.</summary>
@@ -108,9 +84,37 @@ public class SessionParamsMenu : MonoBehaviour
                Utils.RequireAssigned(parameter.valueText, $"{parameterName}.{nameof(parameter.valueText)}", this);
     }
 
-    /// <summary>Stores the arm selected in the dropdown.</summary>
+    /// <summary>
+    /// Inspector entry point of the <c>-</c> / <c>+</c> buttons of the repetitions parameter.
+    /// </summary>
+    /// <param name="increase">True to increase the value by one step, false to decrease it.</param>
+    public void ChangeRepetitions(bool increase) => ChangeParameter(_repetitions, increase);
+
+    /// <summary>
+    /// Inspector entry point of the <c>-</c> / <c>+</c> buttons of the session time parameter.
+    /// </summary>
+    /// <param name="increase">True to increase the value by one step, false to decrease it.</param>
+    public void ChangeSessionTime(bool increase) => ChangeParameter(_sessionTime, increase);
+
+    /// <summary>Increases or decreases a stepped parameter.</summary>
+    private static void ChangeParameter(SessionClampedParameter parameter, bool increase)
+    {
+        if (increase)
+        {
+            parameter.Increase();
+
+            return;
+        }
+       
+        parameter.Decrease();
+    }
+
+    /// <summary>
+    /// Inspector entry point of the affected arm dropdown (wire it to its <c>On Value Changed (Int32)</c> event,
+    /// using the dynamic-int variant).
+    /// </summary>
     /// <param name="optionIndex">Index of the selected dropdown option.</param>
-    private void OnAffectedArmChanged(int optionIndex)
+    public void OnAffectedArmChanged(int optionIndex)
     {
         int lastArm = Enum.GetValues(typeof(AFFECTED_ARM)).Length - 1;
 
