@@ -75,13 +75,7 @@ public class PlayerScale : MonoBehaviour
    /// Invoked when the player transitions into giant mode, carrying the sound effect to play.
    /// </summary>
    [SerializeField]
-   private UnityEvent<AudioManager.GameSoundEffects> _onScaleToGiant;
-
-    /// <summary>
-    /// Invoked when the player transitions back to normal scale, carrying the sound effect to play.
-    /// </summary>
-    [SerializeField]
-    private UnityEvent<AudioManager.GameSoundEffects> _onScaleToNormal;
+   private UnityEvent<AudioManager.GameSoundEffects> _scaleChanged;
 
    /// <summary>
    /// Whether the player is currently scaled up to giant mode. Toggled by <see cref="ToggleScale"/> to pick the next animation target.
@@ -157,13 +151,13 @@ public class PlayerScale : MonoBehaviour
        {   
            _scaleButtonImage.sprite = _toNormalIcon;
            AnimateScale(_originalScale * _giantScaleFactor, _scaleUpDuration);
-           _onScaleToGiant.Invoke(_scaleToGiantSoundEffect);
+           _scaleChanged.Invoke(_scaleToGiantSoundEffect);
            return;
        }
 
        _scaleButtonImage.sprite = _toGiantIcon;
        AnimateScale(_originalScale, _scaleDownDuration);
-       _onScaleToNormal.Invoke(_scaleToNormalSoundEffect);
+       _scaleChanged.Invoke(_scaleToNormalSoundEffect);
    }
 
    /// <summary>

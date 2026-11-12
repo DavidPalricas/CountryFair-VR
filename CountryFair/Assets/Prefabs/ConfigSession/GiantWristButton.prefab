@@ -340,9 +340,9 @@ MonoBehaviour:
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TentPersonalizationMenu, Assembly-CSharp
-        m_MethodName: ButtonClicked
+      - m_Target: {fileID: -5049873225188616826}
+        m_TargetAssemblyTypeName: PlayerScale, Assembly-CSharp
+        m_MethodName: ToggleScale
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
