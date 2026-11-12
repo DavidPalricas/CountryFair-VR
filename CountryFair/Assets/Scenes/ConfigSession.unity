@@ -572,7 +572,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 70025430}
   _rayOrigin: {fileID: 1900045220}
-  _maxRayLength: 20
+  _maxRayLength: 50
   _equalDistanceThreshold: 0.001
 --- !u!114 &31848070
 MonoBehaviour:
@@ -3462,7 +3462,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 866719722}
   _rayOrigin: {fileID: 100169579}
-  _maxRayLength: 5
+  _maxRayLength: 50
   _equalDistanceThreshold: 0.001
 --- !u!114 &289213505
 MonoBehaviour:
@@ -3852,6 +3852,10 @@ PrefabInstance:
     - target: {fileID: 6388039575186003176, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839398699251963092, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7408017604691194722, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
@@ -26978,6 +26982,10 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 6839398699251963092, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -10
+      objectReference: {fileID: 0}
     - target: {fileID: 7408017604691194722, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
@@ -28063,6 +28071,10 @@ PrefabInstance:
     - target: {fileID: 6388039575186003176, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839398699251963092, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 490
       objectReference: {fileID: 0}
     - target: {fileID: 7408017604691194722, guid: be4bcd45d705d8745afcb401194f649c, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag

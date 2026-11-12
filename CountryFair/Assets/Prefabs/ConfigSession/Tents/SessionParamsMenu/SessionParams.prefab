@@ -260,19 +260,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8507017712283752740}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7300000000000000052}
-        m_TargetAssemblyTypeName: TMPro.TMP_Dropdown, Unity.TextMeshPro
-        m_MethodName: Show
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!223 &4656456939577836596
 Canvas:
   m_ObjectHideFlags: 0
@@ -1646,7 +1634,19 @@ MonoBehaviour:
       m_Calls: []
   _whenSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7300000000000000052}
+        m_TargetAssemblyTypeName: TMPro.TMP_Dropdown, Unity.TextMeshPro
+        m_MethodName: Show
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -3316,6 +3316,10 @@ PrefabInstance:
       value: SessionParamsMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
       propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
@@ -3436,6 +3440,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: IncreaseButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7300000000000000093}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeSessionTime
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SessionParamsMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336069048743047540, guid: 7039740dbaed8544f9ca35f304a34a75, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3548,6 +3576,26 @@ PrefabInstance:
     - target: {fileID: 4990475361796729317, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5750270383527695535, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5750270383527695535, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7300000000000000093}
+    - target: {fileID: 5750270383527695535, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeSessionTime
+      objectReference: {fileID: 0}
+    - target: {fileID: 5750270383527695535, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SessionParamsMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5750270383527695535, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
+      propertyPath: _whenSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7775258590400120972, guid: 460da2ee9ff496b408434592eccef6c6, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
