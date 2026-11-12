@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// A tent in the session configuration scene. The healthcare professional / patient Distance Grabs it and
@@ -22,9 +23,10 @@ public class ConfigTent : OrderableTentElement
     [SerializeField]
     private GameObject _ribbon;
 
-    /// <summary>Dropdown entry representing this tent, hidden while it is grabbed.</summary>
+    /// <summary>Session parameters panel (<see cref="SessionParamsMenu"/>) of this tent, hidden while it is grabbed.</summary>
     [SerializeField]
-    private GameObject _dropdownItem;
+    [FormerlySerializedAs("_dropdownItem")]
+    private GameObject _sessionParams;
 
     /// <summary>Text and prop of this tent.</summary>
     private TentDisplay _tentDisplay;
@@ -49,7 +51,7 @@ public class ConfigTent : OrderableTentElement
             return;
         }
 
-        if (!Utils.RequireAssigned(_dropdownItem, nameof(_dropdownItem), this))
+        if (!Utils.RequireAssigned(_sessionParams, nameof(_sessionParams), this))
         {
             return;
         }
@@ -109,14 +111,14 @@ public class ConfigTent : OrderableTentElement
         StartCoroutine(SnapToPlaceHolderNextFixedUpdate());
     }
 
-    /// <summary>Shows or hides the text, ribbon, number badge and dropdown entry together.</summary>
+    /// <summary>Shows or hides the text, ribbon, number badge and session parameters panel together.</summary>
     private void SetTentUIVisible(bool isVisible)
     {
         _tentDisplay.SetTextVisible(isVisible);
 
         _ribbon.SetActive(isVisible);
         _tentNumber.gameObject.SetActive(isVisible);
-        _dropdownItem.SetActive(isVisible);
+        _sessionParams.SetActive(isVisible);
     }
 
     /// <summary>Updates the ribbon badge text to the given slot number.</summary>

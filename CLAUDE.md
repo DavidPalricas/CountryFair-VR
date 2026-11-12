@@ -52,6 +52,9 @@ CountryFair/
 │   │   │   │                         #   MiniGameTents/, WristMenu/ (WristMenu, TentPanel), FairState
 │   │   │   └── Other/                # Ambient elements (SheepAnim, CountryFairBalloonSpawner)
 │   │   │                             #   + PlayerScale (giant mode, section 12)
+│   │   ├── ConfigSession/            # Session configuration scene (ConfigSession.unity)
+│   │   │   ├── ConfigTents/          # ConfigTent, ConfigTentPlaceHolder
+│   │   │   └── SessionParams/        # SessionParamsMenu (per-tent session parameters panel)
 │   │   ├── MiniGames/                # Mini-game modules
 │   │   │   ├── CommonElements/       # Shared between all mini-games
 │   │   │   │   ├── MiniGamesManagment/  # MiniGameManager, MiniGameCheatCodes
@@ -535,6 +538,30 @@ Player drags a TentPanel in the wrist menu
 
 **Mini-game availability:** `GameManager.MINI_GAMES` already declares `DUCKGAME` and `FISHING`, but `GameManager.GoToMiniGame()`
 only loads scenes for `ARCHERY` and `FRISBEE`; the others log a "not implemented yet" warning.
+
+---
+
+### 11b. Session Parameters Panel (ConfigSession)
+
+**Location:** `ConfigSession/SessionParams/SessionParamsMenu.cs`, prefab `Assets/Prefabs/ConfigSession/Tents/SessionParams.prefab`
+(nested inside every `ConfigTent.prefab`, so each mini-game has its own parameters).
+
+| Parameter | Control | Range | Public getter |
+|-----------|---------|-------|---------------|
+| Número de repetições | `-` / `+` buttons | 1 – 5 (step 1) | `Repetitions` |
+| Braço afetado | `TMP_Dropdown` (Esquerdo / Direito) | `AFFECTED_ARM { LEFT, RIGHT }` | `AffectedArm` |
+| Tempo de sessão (minutos) | `-` / `+` buttons | 10 – 40 (step 10) | `SessionTimeMinutes` |
+
+The two numeric parameters share a serializable `SessionClampedParameter` (min/max/step/default + buttons + value text):
+values are clamped with `Mathf.Clamp` and the button that would leave the range is made non-interactable. Listeners
+are registered in code (`Awake`), not in the Inspector; dropdown options are filled from code so they match the enum.
+Values are in memory only (no persistence yet).
+
+The panel is used through **ray interaction**: the `ConfigTent` canvas has an `ISDK_RayCanvasInteraction` child
+(`PointableCanvas` + `RayInteractable`, the Meta ISDK "Add Ray Interaction to Canvas" template) routed by the scene's
+`PointableCanvasModule`. `ConfigTent._sessionParams` (formerly `_dropdownItem`) hides the panel while the tent is grabbed.
+`Assets/Editor/SessionParamsPrefabBuilder.cs` (**Tools → Config Session → Build Session Params Panel**) rebuilds the
+prefab and adds the ray interaction if missing.
 
 ---
 
