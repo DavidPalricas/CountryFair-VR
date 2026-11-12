@@ -9,19 +9,26 @@ using UnityEngine.UI;
 ///
 /// Holds three parameters: the number of repetitions and the session time (each changed with a <c>-</c> / <c>+</c>
 /// button pair and clamped to its range) and the affected arm (chosen in a dropdown). The current values are exposed
-/// through <see cref="Repetitions"/>, <see cref="SessionTimeMinutes"/> and <see cref="AffectedArm"/>.
+/// through <see cref="Repetitions"/>, <see cref="SessionTimeMinutes"/> and <see cref="IsLeftArmAffected"/>.
 /// </summary>
 public class SessionParamsMenu : MonoBehaviour
 {
-    /// <summary>Arm affected by the stroke. The order matches the dropdown options.</summary>
-    public enum AFFECTED_ARM
+    /// <summary>How the therapist wants the game difficulty to change in the session. The order matches the dropdown options.</summary>
+    public enum DIFFICULTY_CHANGE
     {
-        LEFT,
-        RIGHT
+        DECREASE,
+        KEEP,
+        INCREASE
     }
 
-    /// <summary>Portuguese labels of the dropdown options, indexed by <see cref="AFFECTED_ARM"/>.</summary>
+    /// <summary>Index of the "left arm" option in the affected arm dropdown (the other option is the right arm).</summary>
+    private const int LeftArmOptionIndex = 0;
+
+    /// <summary>Portuguese labels of the affected arm dropdown options; the left arm is at <see cref="LeftArmOptionIndex"/>.</summary>
     private static readonly List<string> AffectedArmOptions = new() { "Esquerdo", "Direito" };
+
+    /// <summary>Portuguese labels of the dropdown options, indexed by <see cref="DIFFICULTY_CHANGE"/>.</summary>
+    private static readonly List<string> DifficultyChangeOptions = new() { "Diminuir", "Manter", "Aumentar" };
 
     [Header("Parameters")]
     /// <summary>Number of repetitions (1 to 5).</summary>
@@ -36,21 +43,29 @@ public class SessionParamsMenu : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown _affectedArmDropdown;
 
+    /// <summary>Dropdown where the game difficulty change is chosen; its options are filled in <see cref="Awake"/>.</summary>
+    [SerializeField]
+    private TMP_Dropdown _difficultyDropdown;
+
     /// <summary>Current number of repetitions.</summary>
     public int Repetitions => _repetitions.Value;
 
     /// <summary>Current session time, in minutes.</summary>
     public int SessionTimeMinutes => _sessionTime.Value;
 
-    /// <summary>Currently selected affected arm.</summary>
-    public AFFECTED_ARM AffectedArm { get; private set; } = AFFECTED_ARM.LEFT;
+    /// <summary>True if the affected arm is the left one, false if it is the right one.</summary>
+    public bool IsLeftArmAffected { get; private set; } = true;
+
+    /// <summary>Currently selected difficulty change (keeps the difficulty by default).</summary>
+    public DIFFICULTY_CHANGE DifficultyChange { get; private set; } = DIFFICULTY_CHANGE.KEEP;
 
     /// <summary>Validates the references, sets the default values and fills the dropdown. Clicks are NOT listened to in code: the ray interaction events (OnSelect) are wired in the Inspector to the public methods below.</summary>
     private void Awake()
     {
         if (!AreParameterReferencesAssigned(_repetitions, nameof(_repetitions)) ||
             !AreParameterReferencesAssigned(_sessionTime, nameof(_sessionTime)) ||
-            !Utils.RequireAssigned(_affectedArmDropdown, nameof(_affectedArmDropdown), this))
+            !Utils.RequireAssigned(_affectedArmDropdown, nameof(_affectedArmDropdown), this) ||
+            !Utils.RequireAssigned(_difficultyDropdown, nameof(_difficultyDropdown), this))
         {
             return;
         }
@@ -60,7 +75,11 @@ public class SessionParamsMenu : MonoBehaviour
 
         _affectedArmDropdown.ClearOptions();
         _affectedArmDropdown.AddOptions(AffectedArmOptions);
-        _affectedArmDropdown.SetValueWithoutNotify((int)AffectedArm);
+        _affectedArmDropdown.SetValueWithoutNotify(IsLeftArmAffected ? LeftArmOptionIndex : 1 - LeftArmOptionIndex);
+
+        _difficultyDropdown.ClearOptions();
+        _difficultyDropdown.AddOptions(DifficultyChangeOptions);
+        _difficultyDropdown.SetValueWithoutNotify((int)DifficultyChange);
     }
 
     /// <summary>Keeps the parameter ranges consistent while they are edited in the Inspector.</summary>
@@ -110,14 +129,24 @@ public class SessionParamsMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Inspector entry point of the affected arm dropdown (wire it to its <c>On Value Changed (Int32)</c> event,
+    /// Inspector entry point of the affected arm dropdown (wire it to the <c>Is First Option Selected (Boolean)</c> event
+    /// of the <see cref="SessionParamDropdown"/>, using the dynamic-bool variant). The first option is the left arm.
+    /// </summary>
+    /// <param name="isLeft">True if the left arm was selected, false if the right arm was.</param>
+    public void OnAffectedArmChanged(bool isLeft)
+    {
+        IsLeftArmAffected = isLeft;
+    }
+
+    /// <summary>
+    /// Inspector entry point of the difficulty dropdown (wire it to its <c>On Value Changed (Int32)</c> event,
     /// using the dynamic-int variant).
     /// </summary>
     /// <param name="optionIndex">Index of the selected dropdown option.</param>
-    public void OnAffectedArmChanged(int optionIndex)
+    public void OnDifficultyChanged(int optionIndex)
     {
-        int lastArm = Enum.GetValues(typeof(AFFECTED_ARM)).Length - 1;
+        int lastOption = Enum.GetValues(typeof(DIFFICULTY_CHANGE)).Length - 1;
 
-        AffectedArm = (AFFECTED_ARM)Mathf.Clamp(optionIndex, 0, lastArm);
+        DifficultyChange = (DIFFICULTY_CHANGE)Mathf.Clamp(optionIndex, 0, lastOption);
     }
 }

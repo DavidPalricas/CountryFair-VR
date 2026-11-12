@@ -543,25 +543,37 @@ only loads scenes for `ARCHERY` and `FRISBEE`; the others log a "not implemented
 
 ### 11b. Session Parameters Panel (ConfigSession)
 
-**Location:** `ConfigSession/SessionParams/SessionParamsMenu.cs`, prefab `Assets/Prefabs/ConfigSession/Tents/SessionParams.prefab`
-(nested inside every `ConfigTent.prefab`, so each mini-game has its own parameters).
+**Location:** `ConfigSession/SessionParams/` (`SessionParamsMenu`, `SessionClampedParameter`, `SessionParamDropdown`), prefab
+`Assets/Prefabs/ConfigSession/Tents/SessionParamsMenu/SessionParams.prefab` (nested inside every `ConfigTent.prefab`,
+so each mini-game has its own parameters).
 
 | Parameter | Control | Range | Public getter |
 |-----------|---------|-------|---------------|
 | Número de repetições | `-` / `+` buttons | 1 – 5 (step 1) | `Repetitions` |
-| Braço afetado | `TMP_Dropdown` (Esquerdo / Direito) | `AFFECTED_ARM { LEFT, RIGHT }` | `AffectedArm` |
+| Braço afetado | `SessionParamDropdown` (Esquerdo / Direito) | `bool`, `true` = left (default) | `IsLeftArmAffected` |
 | Tempo de sessão (minutos) | `-` / `+` buttons | 10 – 40 (step 10) | `SessionTimeMinutes` |
+| Dificuldade do jogo | `SessionParamDropdown` (Diminuir / Manter / Aumentar) | `DIFFICULTY_CHANGE { DECREASE, KEEP, INCREASE }`, default `KEEP` | `DifficultyChange` |
 
 The two numeric parameters share a serializable `SessionClampedParameter` (min/max/step/default + buttons + value text):
-values are clamped with `Mathf.Clamp` and the button that would leave the range is made non-interactable. Listeners
-are registered in code (`Awake`), not in the Inspector; dropdown options are filled from code so they match the enum.
+values are clamped with `Mathf.Clamp` and the button that would leave the range is made non-interactable. **Clicks are not
+listened to in code:** each control's ray interaction event is wired in the prefab (buttons call
+`ChangeRepetitions(bool)` / `ChangeSessionTime(bool)`, the dropdowns' `On Value Changed (Int32)` call
+`OnAffectedArmChanged` / `OnDifficultyChanged`). Dropdown options are filled from code in `Awake` so they match the enums.
 Values are in memory only (no persistence yet).
 
-The panel is used through **ray interaction**: the `ConfigTent` canvas has an `ISDK_RayCanvasInteraction` child
-(`PointableCanvas` + `RayInteractable`, the Meta ISDK "Add Ray Interaction to Canvas" template) routed by the scene's
-`PointableCanvasModule`. `ConfigTent._sessionParams` (formerly `_dropdownItem`) hides the panel while the tent is grabbed.
-`Assets/Editor/SessionParamsPrefabBuilder.cs` (**Tools → Config Session → Build Session Params Panel**) rebuilds the
-prefab and adds the ray interaction if missing.
+**Ray interaction is per control, not per canvas.** Every button, the dropdown arrow and every dropdown list item has its
+own `ISDK_RayCanvasInteraction` (`RayInteractable` + event wrapper) whose select event calls the action directly. This
+deliberately bypasses the UI click path: `PointableCanvasModule` only accepts a UI hit whose `rootCanvas` is the canvas of
+the `PointableCanvas` that received the ray, so nested canvases (buttons, dropdown list) never get clicks through it.
+Controls that overlap use `_tiebreakerScore` (items 2, buttons/arrow 0). There is **no** canvas-wide ray interaction on the
+`ConfigTent` canvas (it overlapped the panel and swallowed the ray). `ConfigTent._sessionParams` hides the panel while
+the tent is grabbed.
+
+**`SessionParamDropdown : TMP_Dropdown`** exists because `TMP_Dropdown.Show()` flips the list above the button whenever it
+does not fit in the root canvas (here the tent's 1920×1080 canvas, which the panel sticks out of) and offers no option to
+disable it. It restores the template's anchoring so the list always opens **below**, and hides the already-selected
+option. Its template items carry the select wiring: the item's ray event sets `Toggle.isOn = true`, which makes the dropdown
+pick the option and close.
 
 ---
 

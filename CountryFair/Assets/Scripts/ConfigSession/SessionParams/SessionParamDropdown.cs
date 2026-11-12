@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// <see cref="TMP_Dropdown"/> that always opens below its button and lists only the options that are not selected.
@@ -8,11 +9,43 @@ using UnityEngine;
 /// In the session configuration scene the root canvas is the tent's canvas, which the panel sticks out of, so the
 /// list would always open upwards. Neither behaviour is configurable, so both are corrected in
 /// <see cref="CreateBlocker"/>, the last hook <c>Show</c> calls after building and positioning the list.
+///
+/// For two-option dropdowns it also emits <see cref="_isFirstOptionSelected"/>, a <see cref="bool"/> event, in addition
+/// to the usual <see cref="TMP_Dropdown.onValueChanged"/> (an <see cref="int"/> index).
 /// </summary>
 public class SessionParamDropdown : TMP_Dropdown
 {
+    /// <summary>
+    /// Raised when the user picks an option: <c>true</c> if it is the first one, <c>false</c> otherwise. Wire it in the
+    /// Inspector with the dynamic-bool variant of the target method.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent<bool> _isFirstOptionSelected;
+
     /// <summary>The list created by the last <see cref="TMP_Dropdown.Show"/>.</summary>
     private GameObject _list;
+
+    /// <summary>Starts forwarding the selected option to <see cref="_isFirstOptionSelected"/>.</summary>
+    protected override void Awake()
+    {
+        base.Awake();
+
+        onValueChanged.AddListener(NotifyFirstOptionSelected);
+    }
+
+    /// <summary>Stops forwarding the selected option.</summary>
+    protected override void OnDestroy()
+    {
+        onValueChanged.RemoveListener(NotifyFirstOptionSelected);
+
+        base.OnDestroy();
+    }
+
+    /// <summary>Emits whether the selected option is the first one.</summary>
+    private void NotifyFirstOptionSelected(int optionIndex)
+    {
+        _isFirstOptionSelected?.Invoke(optionIndex == 0);
+    }
 
     /// <summary>
     /// Keeps a reference to the list being shown.
