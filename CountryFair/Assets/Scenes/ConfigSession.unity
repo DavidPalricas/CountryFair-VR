@@ -9848,6 +9848,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dog
       objectReference: {fileID: 0}
+    - target: {fileID: 2711528098945381808, guid: 321f782b4b3240a49a7543f5a8452889, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 647e0b00cd62e114db081549e96e96da, type: 2}
     - target: {fileID: 5866666021909216657, guid: 321f782b4b3240a49a7543f5a8452889, type: 3}
       propertyPath: m_Controller
       value: 
