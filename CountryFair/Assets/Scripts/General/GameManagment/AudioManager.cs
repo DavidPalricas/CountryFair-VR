@@ -24,9 +24,12 @@ public abstract class AudioManager: MonoBehaviour
     /// <summary>
     /// FMOD event reference for the button pressed sound effect.
     /// </summary>
-    [Header("Button Pressed Sound Effect")]
+    [Header("General Sound Effects")]
     [SerializeField]
     protected EventReference _buttonPressedSound;
+
+    [SerializeField]
+   protected EventReference _crowdNoise;
 
     /// <summary>
     /// Tracks whether the ambient music has been started to prevent multiple instances.
@@ -41,7 +44,10 @@ public abstract class AudioManager: MonoBehaviour
 
     /// <summary>FMOD event of every sound effect this scene supports, filled by <see cref="RegisterSoundEffect"/>.</summary>
     private readonly Dictionary<GameSoundEffects, EventReference> _soundEffects = new();
-
+     
+     
+    /// <summary>Running instance of the crowd loop, kept so it can be stopped and released in <see cref="OnDestroy"/>.</summary>
+    protected EventInstance  _crowdNoiseInstance;
     /// <summary>
     /// Enumeration of all available game sound effects across different mini-games.
     /// </summary>
@@ -82,7 +88,12 @@ public abstract class AudioManager: MonoBehaviour
     /// <summary>Validates the ambience music and registers the button pressed sound shared by every scene.</summary>
     protected virtual void Awake()
     {
-        Utils.RequireAssigned(_ambienceMusic, nameof(_ambienceMusic), this);
+        if (!Utils.RequireAssigned(_ambienceMusic, nameof(_ambienceMusic), this)  
+            ||!Utils.RequireAssigned(_buttonPressedSound, nameof(_buttonPressedSound), this)
+            ||!Utils.RequireAssigned(_crowdNoise, nameof(_crowdNoise), this))
+        {
+            return;
+        }
 
         RegisterSoundEffect(GameSoundEffects.ButtonPressed, _buttonPressedSound);
     }
@@ -189,8 +200,16 @@ public abstract class AudioManager: MonoBehaviour
     private void OnDestroy()
     {
         IsToPauseMusic(true);
-    }
 
+        _crowdNoiseInstance.getPlaybackState(out PLAYBACK_STATE playbackState);
+
+        if (playbackState == PLAYBACK_STATE.PLAYING)
+        {
+            _crowdNoiseInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            _crowdNoiseInstance.release();
+        }
+    }
+       
     /// <summary>
     /// Pauses or resumes the ambient music.
     /// </summary>
@@ -198,5 +217,14 @@ public abstract class AudioManager: MonoBehaviour
     private void IsToPauseMusic(bool pauseMusic)
     {
         _ambienceMusicInstance.setPaused(pauseMusic);
+    }
+
+    
+   /// <summary>Creates the crowd loop instance, attaches it to this GameObject so it is spatialized, and starts it.</summary>
+   protected void PlayCrowdSound()
+    {   
+        _crowdNoiseInstance = RuntimeManager.CreateInstance(_crowdNoise);
+        RuntimeManager.AttachInstanceToGameObject(_crowdNoiseInstance, transform);
+        _crowdNoiseInstance.start();
     }
 }

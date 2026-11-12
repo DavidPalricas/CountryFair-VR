@@ -1,6 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 /// <summary>
 /// Toggles the XR camera rig between its normal scale and a giant scale (<see cref="_giantScaleFactor"/>) with a
@@ -8,7 +9,8 @@ using UnityEngine.Events;
 /// Raises <see cref="_onScaleToGiant"/> / <see cref="_onScaleToNormal"/> with the matching sound effect.
 /// </summary>
 public class PlayerScale : MonoBehaviour
-{
+{   
+   [Header("Virtual Reality References")]
    /// <summary>
    /// Root transform of the XR rig. Scaled up/down to grow/shrink the player.
    /// </summary>
@@ -22,14 +24,23 @@ public class PlayerScale : MonoBehaviour
    [Tooltip("Player's head (Center Eye Anchor). Used as the pivot of the scale animation, so the player does not drift sideways while growing")]
    private Transform _headTransform;
 
+   [Header("Icons")]
+   [SerializeField]
+   private Sprite _toNormalIcon = null;
+
+  [SerializeField]
+   private Sprite _toGiantIcon = null;
+
+   [SerializeField]
+   private Image _scaleButtonImage = null;
+
+   [Header("Scale Animation")]
    /// <summary>
    /// Multiplier applied to the rig's normal scale when in giant mode.
    /// </summary>
    [SerializeField]
    private float _giantScaleFactor = 7f;
 
-
-   [Header("Scale Animation")]
    /// <summary>
    /// Duration, in seconds, of the growing animation.
    /// </summary>
@@ -110,10 +121,16 @@ public class PlayerScale : MonoBehaviour
   /// </summary>
   private void Awake()
    {
-       if (!Utils.RequireAssigned(_cameraRigTransform, nameof(_cameraRigTransform), this))
+       if (!Utils.RequireAssigned(_cameraRigTransform, nameof(_cameraRigTransform), this) 
+           || !Utils.RequireAssigned(_headTransform, nameof(_headTransform), this)
+           || !Utils.RequireAssigned(_toNormalIcon, nameof(_toNormalIcon), this)
+           || !Utils.RequireAssigned(_toGiantIcon, nameof(_toGiantIcon), this)
+           )
        {
            return;
        }
+     
+       _scaleButtonImage.sprite = _toGiantIcon;
 
        _originalScale = _cameraRigTransform.localScale.x;
 
@@ -137,12 +154,14 @@ public class PlayerScale : MonoBehaviour
        _isGiantMode = !_isGiantMode;
 
        if (_isGiantMode)
-       {
+       {   
+           _scaleButtonImage.sprite = _toNormalIcon;
            AnimateScale(_originalScale * _giantScaleFactor, _scaleUpDuration);
            _onScaleToGiant.Invoke(_scaleToGiantSoundEffect);
            return;
        }
 
+       _scaleButtonImage.sprite = _toGiantIcon;
        AnimateScale(_originalScale, _scaleDownDuration);
        _onScaleToNormal.Invoke(_scaleToNormalSoundEffect);
    }

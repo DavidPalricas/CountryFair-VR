@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 609547259719142669}
   - component: {fileID: 7295901922328504591}
   m_Layer: 0
-  m_Name: WristMenu
+  m_Name: TentsWristMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

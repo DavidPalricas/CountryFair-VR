@@ -490,7 +490,7 @@ MonoBehaviour:
   - Master
   Banks:
   - ArcheryGame
-  - CountryFair
+  - ConfigSession
   - FrisbbeeGame
   - MiniGames
   - Narration

@@ -16638,35 +16638,21 @@ MonoBehaviour:
       Data2: 1181187447
       Data3: -176062317
       Data4: -315743057
-    Path: event:/AmbienceMusic
+    Path: event:/General/AmbienceMusic
   _buttonPressedSound:
     Guid:
       Data1: 1489044289
       Data2: 1104193514
       Data3: -385448515
       Data4: 192746226
-    Path: event:/ButtonPressed
+    Path: event:/General/ButtonPressed
   _crowdNoise:
     Guid:
       Data1: 377214808
       Data2: 1163688712
       Data3: -2130074490
       Data4: -1533081903
-    Path: event:/CountryFair/CrowdNoise
-  _scaleToGiantSound:
-    Guid:
-      Data1: 1912123297
-      Data2: 1208730113
-      Data3: -1825054302
-      Data4: 2143859148
-    Path: event:/CountryFair/ScaleToGiant
-  _scaleToNormalSound:
-    Guid:
-      Data1: -1467014453
-      Data2: 1278789446
-      Data3: -865011325
-      Data4: 1096185882
-    Path: event:/CountryFair/ScaleToNormal
+    Path: event:/General/CrowdNoise
 --- !u!114 &1412586096
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -234,7 +234,7 @@ public class TentPlaceHolderManager : MonoBehaviour
     /// <see cref="Start"/> (reorders made from the web app).
     /// </remarks>
     public void OnOtherManagerUpdate(Dictionary<string, string> fairState)
-    {
+    {  /*
         foreach (var miniGame in fairState.Keys)
         {
             OrderableTentElement element = _elementsMap.Keys.FirstOrDefault(e => e.MiniGame.ToString().ToLower() == miniGame.ToLower());
@@ -256,5 +256,7 @@ public class TentPlaceHolderManager : MonoBehaviour
 
             element.SnapToCurrentPlaceHolder();
         }
+
+        */
     }
 }
