@@ -71,7 +71,7 @@ public class TentPlaceHolderManager : MonoBehaviour
 
         Dictionary<string, string> fairState = GetFairState();
 
-        _updateOtherManagers.Invoke(fairState);
+        _updateOtherManagers.Invoke(fairState); 
     }
 
     /// <summary>
