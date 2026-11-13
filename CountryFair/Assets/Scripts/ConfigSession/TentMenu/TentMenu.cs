@@ -5,7 +5,7 @@ using UnityEngine.Events;
 /// Wrist-menu root that hosts the <see cref="TentPanel"/> reordering UI. Stays disabled until the
 /// intro dialogue finishes, and toggles the menu panel open/closed on button press.
 /// </summary>
-public class WristMenu : MonoBehaviour
+public class TentMenu : MonoBehaviour
 {
     /// <summary>The menu panel GameObject shown or hidden when the wrist button is pressed.</summary>
     [SerializeField]
