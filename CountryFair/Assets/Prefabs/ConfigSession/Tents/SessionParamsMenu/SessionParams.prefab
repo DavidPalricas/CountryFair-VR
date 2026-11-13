@@ -1036,10 +1036,10 @@ MonoBehaviour:
     increaseButton: {fileID: 7300000000000000033}
     valueText: {fileID: 7300000000000000013}
   _sessionTime:
-    min: 10
-    max: 40
-    step: 10
-    defaultValue: 10
+    min: 1
+    max: 15
+    step: 1
+    defaultValue: 1
     decreaseButton: {fileID: 2517201301679105306}
     increaseButton: {fileID: 771832333113401836}
     valueText: {fileID: 7300000000000000066}
@@ -4765,7 +4765,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Tempo de sess\xE3o (minutos)"
+  m_text: "Tempo m\xE1ximo (min)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}
   m_sharedMaterial: {fileID: 6722005148866074646, guid: d4ebb924bcb24a2e8d8961fda92ccd6a, type: 2}

@@ -13316,7 +13316,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConFigSessionManager
   _tentMenu: {fileID: 426961930}
   _giantButton: {fileID: 1731123223}
-  tents: {fileID: 1387632062}
 --- !u!1 &894501652
 GameObject:
   m_ObjectHideFlags: 0
@@ -31429,6 +31428,30 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -3767010726169239170, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3767010726169239170, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
+      propertyPath: m_MotionVectors
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3767010726169239170, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3767010726169239170, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3767010726169239170, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bd9b6de5748af4d4cb34ee18697e4d45, type: 2}
+    - target: {fileID: -3767010726169239170, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: -8181347847069661154, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
     - target: {fileID: 919132149155446097, guid: 2b78a1d000e8837419f29e70d4b08d50, type: 3}
       propertyPath: m_Name
       value: Model

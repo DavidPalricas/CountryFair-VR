@@ -35,9 +35,9 @@ public class SessionParamsMenu : MonoBehaviour
     [SerializeField]
     private SessionClampedParameter _repetitions = new(1, 5, 1, 1);
 
-    /// <summary>Session time in minutes (10 to 40, in steps of 10).</summary>
+    /// <summary>Maximum session time per tent in minutes (1 to 15, in steps of 1).</summary>
     [SerializeField]
-    private SessionClampedParameter _sessionTime = new(10, 40, 10, 10);
+    private SessionClampedParameter _sessionTime = new(1, 15, 1, 1);
 
     /// <summary>Dropdown where the affected arm is chosen; its options are filled in <see cref="Awake"/>.</summary>
     [SerializeField]
