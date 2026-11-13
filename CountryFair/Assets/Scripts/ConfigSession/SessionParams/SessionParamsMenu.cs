@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
@@ -47,6 +48,11 @@ public class SessionParamsMenu : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown _difficultyDropdown;
 
+    [Header("Events")]
+    /// <summary>Raised every time one of the parameters is changed by the player (wired to <see cref="ConfigTent.NotifyConfigChanged"/>).</summary>
+    [SerializeField]
+    private UnityEvent _onParamsChanged;
+
     /// <summary>Current number of repetitions.</summary>
     public int Repetitions => _repetitions.Value;
 
@@ -80,6 +86,9 @@ public class SessionParamsMenu : MonoBehaviour
         _difficultyDropdown.ClearOptions();
         _difficultyDropdown.AddOptions(DifficultyChangeOptions);
         _difficultyDropdown.SetValueWithoutNotify((int)DifficultyChange);
+
+        // The parameters only hold their default values from here on: if the tent read them before this Awake, resend them.
+        _onParamsChanged.Invoke();
     }
 
     /// <summary>Keeps the parameter ranges consistent while they are edited in the Inspector.</summary>
@@ -107,13 +116,23 @@ public class SessionParamsMenu : MonoBehaviour
     /// Inspector entry point of the <c>-</c> / <c>+</c> buttons of the repetitions parameter.
     /// </summary>
     /// <param name="increase">True to increase the value by one step, false to decrease it.</param>
-    public void ChangeRepetitions(bool increase) => ChangeParameter(_repetitions, increase);
+    public void ChangeRepetitions(bool increase)
+    {
+        ChangeParameter(_repetitions, increase);
+
+        _onParamsChanged.Invoke();
+    }
 
     /// <summary>
     /// Inspector entry point of the <c>-</c> / <c>+</c> buttons of the session time parameter.
     /// </summary>
     /// <param name="increase">True to increase the value by one step, false to decrease it.</param>
-    public void ChangeSessionTime(bool increase) => ChangeParameter(_sessionTime, increase);
+    public void ChangeSessionTime(bool increase)
+    {
+        ChangeParameter(_sessionTime, increase);
+
+        _onParamsChanged.Invoke();
+    }
 
     /// <summary>Increases or decreases a stepped parameter.</summary>
     private static void ChangeParameter(SessionClampedParameter parameter, bool increase)
@@ -136,6 +155,8 @@ public class SessionParamsMenu : MonoBehaviour
     public void OnAffectedArmChanged(bool isLeft)
     {
         IsLeftArmAffected = isLeft;
+
+        _onParamsChanged.Invoke();
     }
 
     /// <summary>
@@ -148,5 +169,7 @@ public class SessionParamsMenu : MonoBehaviour
         int lastOption = Enum.GetValues(typeof(DIFFICULTY_CHANGE)).Length - 1;
 
         DifficultyChange = (DIFFICULTY_CHANGE)Mathf.Clamp(optionIndex, 0, lastOption);
+
+        _onParamsChanged.Invoke();
     }
 }

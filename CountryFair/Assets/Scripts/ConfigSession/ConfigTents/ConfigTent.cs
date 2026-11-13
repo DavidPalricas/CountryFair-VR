@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 /// <summary>
@@ -28,8 +29,19 @@ public class ConfigTent : OrderableTentElement
     [FormerlySerializedAs("_dropdownItem")]
     private GameObject _sessionParams;
 
+    [Header("Events")]
+    /// <summary>
+    /// Raised with the current configuration of this tent whenever its order or session parameters change.
+    /// Wired in each scene instance to <see cref="ConFigSessionManager.OnTentConfigChanged"/>.
+    /// </summary>
+    [SerializeField]
+    private UnityEvent<TentConfigData> _onConfigChanged;
+
     /// <summary>Text and prop of this tent.</summary>
     private TentDisplay _tentDisplay;
+
+    /// <summary>Session parameters menu inside <see cref="_sessionParams"/>.</summary>
+    private SessionParamsMenu _sessionParamsMenu;
 
     /// <summary>
     /// Initialises the tent display, validates required references and snaps the tent to its starting placeholder.
@@ -52,6 +64,13 @@ public class ConfigTent : OrderableTentElement
         }
 
         if (!Utils.RequireAssigned(_sessionParams, nameof(_sessionParams), this))
+        {
+            return;
+        }
+
+        _sessionParamsMenu = _sessionParams.GetComponentInChildren<SessionParamsMenu>(true);
+
+        if (!Utils.RequireAssigned(_sessionParamsMenu, nameof(_sessionParamsMenu), this))
         {
             return;
         }
@@ -90,6 +109,34 @@ public class ConfigTent : OrderableTentElement
         SetTentNumber(_currentPlaceHolder.Number);
 
         _previousPlaceHolder = _currentPlaceHolder;
+
+        NotifyConfigChanged();
+    }
+
+    /// <summary>Returns the current configuration of this tent: mini-game, order and session parameters.</summary>
+    public TentConfigData GetConfig()
+    {
+        return new TentConfigData
+        {
+            MiniGame = MiniGame,
+            Order = _currentPlaceHolder.Number,
+            Repetitions = _sessionParamsMenu.Repetitions,
+            SessionTimeMinutes = _sessionParamsMenu.SessionTimeMinutes,
+            DifficultyChange = _sessionParamsMenu.DifficultyChange,
+            IsLeftArmAffected = _sessionParamsMenu.IsLeftArmAffected
+        };
+    }
+
+    /// <summary>Sends the current configuration of this tent through <see cref="_onConfigChanged"/>.</summary>
+    /// <remarks>Called after every snap (order change) and, via Inspector, by the <c>_onParamsChanged</c> event of the <see cref="SessionParamsMenu"/>.</remarks>
+    public void NotifyConfigChanged()
+    {
+        if (_sessionParamsMenu == null)
+        {
+            return;
+        }
+
+        _onConfigChanged.Invoke(GetConfig());
     }
 
     /// <summary>Hides the tent's UI and notifies <see cref="TentPlaceHolderManager"/> that this tent was picked up.</summary>

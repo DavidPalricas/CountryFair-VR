@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6131c3ea1bfef3a4fa3faa466097ef88, type: 3}
+  m_Name: TiagoBastos
+  m_EditorClassIdentifier: Assembly-CSharp::StrokeSurvivorProfile
+  survivorName: Tiago Bastos
+  age: 47
+  isLeftArmAffected: 0
+  fileMaterial: {fileID: 2100000, guid: 5f426c6f9f2f43cb8f5c61539a1433a1, type: 2}
+  tents:
+  - MiniGame: 0
+    Order: 1
+    Repetitions: 5
+    SessionTimeMinutes: 15
+    DifficultyChange: 2
+    IsLeftArmAffected: 0
+  - MiniGame: 3
+    Order: 2
+    Repetitions: 4
+    SessionTimeMinutes: 10
+    DifficultyChange: 2
+    IsLeftArmAffected: 0
+  - MiniGame: 2
+    Order: 3
+    Repetitions: 4
+    SessionTimeMinutes: 15
+    DifficultyChange: 2
+    IsLeftArmAffected: 0
+  - MiniGame: 1
+    Order: 4
+    Repetitions: 1
+    SessionTimeMinutes: 5
+    DifficultyChange: 0
+    IsLeftArmAffected: 0

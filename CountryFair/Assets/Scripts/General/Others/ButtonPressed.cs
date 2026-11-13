@@ -17,7 +17,7 @@ public class ButtonPressed : MonoBehaviour
     /// Invokes the button-pressed sound effect event, using this GameObject as the spatial audio source.
     /// </summary>
     /// <remarks>Invoked via Inspector by the button's XR Interactable (OnSelectEntered).</remarks>
-    public void Pressed()
+    public virtual void Pressed()
     {
         buttonPressed.Invoke(_buttonPressSoundEffect, gameObject);
     }

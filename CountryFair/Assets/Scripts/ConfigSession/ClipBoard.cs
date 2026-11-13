@@ -7,6 +7,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class ClipBoard : MonoBehaviour
 {
+   /// <summary>Renderer that displays the stroke survivor's file in its first material slot (see <see cref="SetFileMaterial"/>).</summary>
+   [SerializeField]
+   private Renderer _fileRenderer;
+
    /// <summary>World position at startup, restored after a throw.</summary>
    private Vector3 _originalPosition;
 
@@ -21,11 +25,26 @@ public class ClipBoard : MonoBehaviour
 
    /// <summary>Caches the rigidbody and records the starting pose.</summary>
    private void Awake()
-   {
+   {   
+      if (!Utils.RequireAssigned(_fileRenderer, nameof(_fileRenderer), this))
+      {
+         return;
+      }
+
       _rigidbody = GetComponent<Rigidbody>();
 
       _originalPosition = transform.position;
       _originalRotation = transform.rotation;
+   }
+
+   /// <summary>Shows a stroke survivor's file on the clipboard.</summary>
+   /// <param name="fileMaterial">Material with the survivor's file (<see cref="StrokeSurvivorProfile.fileMaterial"/>).</param>
+   public void SetFileMaterial(Material fileMaterial)
+   {
+      // Only the first slot holds the file; the renderer has other materials that must be kept.
+      Material[] materials = _fileRenderer.sharedMaterials;
+      materials[0] = fileMaterial;
+      _fileRenderer.sharedMaterials = materials;
    }
 
    /// <summary>Tracks the grab state so only a collision after a release resets the clipboard.</summary>

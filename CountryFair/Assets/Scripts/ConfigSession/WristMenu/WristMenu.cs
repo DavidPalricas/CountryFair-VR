@@ -11,6 +11,10 @@ public class WristMenu : MonoBehaviour
     [SerializeField]
     private GameObject _menu = null;
 
+    /// <summary>The canvas that contains the menu panel.</summary>
+    [SerializeField]
+    private GameObject _canvas = null;
+
     /// <summary>Whether the menu panel is currently shown.</summary>
     private bool _menuActive = false;
 
@@ -21,7 +25,7 @@ public class WristMenu : MonoBehaviour
     /// <summary>Validates the menu reference and hides both the panel and this whole wrist menu until the intro completes.</summary>
     private void Awake()
     {
-        if (!Utils.RequireAssigned(_menu, nameof(_menu), this))
+        if (!Utils.RequireAssigned(_menu, nameof(_menu), this) || !Utils.RequireAssigned(_canvas, nameof(_canvas), this))
         {
             return;
         }
@@ -45,5 +49,15 @@ public class WristMenu : MonoBehaviour
     public void IntroCompleted()
     {
         gameObject.SetActive(true);
+    }
+
+    private void OnEnable()
+    {
+        _canvas.SetActive(true);
+    }   
+
+    private void OnDisable()
+    {
+        _canvas.SetActive(false);
     }
 }

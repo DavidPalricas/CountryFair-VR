@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 2981331358192615152}
   m_Layer: 0
   m_Name: Interactions
-  m_TagString: ConfigTentInteraction
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -901,6 +901,9 @@ MonoBehaviour:
   _tentNumber: {fileID: 7352726266872265547}
   _ribbon: {fileID: 6632847624679459000}
   _sessionParams: {fileID: 1000200}
+  _onConfigChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &7476629076389458384
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1916,6 +1919,34 @@ PrefabInstance:
     - target: {fileID: 7300000000000000083, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 257871417217928786}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: NotifyConfigChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ConfigTent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000093, guid: c6252cd88ba804b40b6d397b65e4820a, type: 3}
+      propertyPath: _onParamsChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
