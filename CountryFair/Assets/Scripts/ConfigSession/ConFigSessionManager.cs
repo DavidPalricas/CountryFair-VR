@@ -140,8 +140,12 @@ public class ConfigSessionManager : MonoBehaviour
         
         if (_currentSequence.Count == 0)
         {
-            Application.Quit();
-
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Application.Quit();
+            #endif
+            
             return;
         }
 
@@ -243,8 +247,6 @@ public class ConfigSessionManager : MonoBehaviour
     /// <summary>Called once the tents match the current survivor's file.</summary>
     private void OnSessionConfigured()
     {
-        Debug.Log($"[ConfigSession] {_currentSurvivor.survivorName} configured successfully");
-
         _activateConfigButton.Invoke(true);
     }
 }

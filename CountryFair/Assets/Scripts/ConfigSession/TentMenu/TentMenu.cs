@@ -32,16 +32,6 @@ public class WristMenu : MonoBehaviour
     {
         _menuActive = !_menuActive;
 
-        _toggleDistanceGrab.Invoke(!_menuActive);
-
         _menu.SetActive(_menuActive);
     }
-
-    /// <summary>Enables this wrist menu once the intro dialogue has finished.</summary>
-    /// <remarks>Invoked via the Inspector in the <c>playerFinishedIntro</c> UnityEvent on <see cref="CountryFairDialogue"/>.</remarks>
-    public void IntroCompleted()
-    {
-        gameObject.SetActive(true);
-    }  
-
 }
