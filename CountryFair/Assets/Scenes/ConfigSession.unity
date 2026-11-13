@@ -6474,7 +6474,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1103408568793569215, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6120861548731670019, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
       propertyPath: m_LocalScale.x
@@ -6641,17 +6641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 665744dfab678ef4f8c76601304e8b24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlaceHolderManager
---- !u!114 &426961932 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 609547259719142669, guid: bd204423fd5be2a41977d2c3db68d751, type: 3}
-  m_PrefabInstance: {fileID: 426961928}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 351628c25339d5c4284b6f5a75b38970, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TentPersonalizationMenu
 --- !u!1001 &430200089
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13387,9 +13376,9 @@ MonoBehaviour:
   _activateTentMenu:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 426961932}
-        m_TargetAssemblyTypeName: WristMenu, Assembly-CSharp
-        m_MethodName: set_enabled
+      - m_Target: {fileID: 96846898}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
