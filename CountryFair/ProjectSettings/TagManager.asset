@@ -45,6 +45,7 @@ TagManager:
   - LocoText
   - QDSUILineDrawing
   - QDSUIToggleThumbnail
+  - ConfigTentInteraction
   layers:
   - Default
   - TransparentFX
