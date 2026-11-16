@@ -550,30 +550,37 @@ so each mini-game has its own parameters).
 | Parameter | Control | Range | Public getter |
 |-----------|---------|-------|---------------|
 | Número de repetições | `-` / `+` buttons | 1 – 5 (step 1) | `Repetitions` |
-| Braço afetado | `SessionParamDropdown` (Esquerdo / Direito) | `bool`, `true` = left (default) | `IsLeftArmAffected` |
+| Braço afetado | `SessionParamDropdown` (Esquerdo / Direito) | `bool`, `true` = left (default), shared by all tents | `IsLeftArmAffected` |
 | Tempo de sessão (minutos) | `-` / `+` buttons | 10 – 40 (step 10) | `SessionTimeMinutes` |
-| Dificuldade do jogo | `SessionParamDropdown` (Diminuir / Manter / Aumentar) | `DIFFICULTY_CHANGE { DECREASE, KEEP, INCREASE }`, default `KEEP` | `DifficultyChange` |
+| Dificuldade do jogo | `SessionParamDropdown` (Baixar / Manter / Subir) | `DIFFICULTY_CHANGE { DECREASE, KEEP, INCREASE }`, default `KEEP` | `DifficultyChange` |
 
 The two numeric parameters share a serializable `SessionClampedParameter` (min/max/step/default + buttons + value text):
 values are clamped with `Mathf.Clamp` and the button that would leave the range is made non-interactable. **Clicks are not
-listened to in code:** each control's ray interaction event is wired in the prefab (buttons call
-`ChangeRepetitions(bool)` / `ChangeSessionTime(bool)`, the dropdowns' `On Value Changed (Int32)` call
-`OnAffectedArmChanged` / `OnDifficultyChanged`). Dropdown options are filled from code in `Awake` so they match the enums.
-Values are in memory only (no persistence yet).
+listened to in code:** the buttons' `On Click` call `ChangeRepetitions(bool)` / `ChangeSessionTime(bool)` and the dropdowns'
+value events call `OnAffectedArmChanged` / `OnDifficultyChanged` (all wired in the prefab). Dropdown options are filled
+from code in `Awake` so they match the enums; the difficulty labels (`Baixar` / `Manter` / `Subir`) use the words of the
+survivors' files in `ConfigSessionStrokeSurvivorsFiles/`, without the symbols. Values are in memory only (no persistence yet).
 
-**Ray interaction is per control, not per canvas.** Every button, the dropdown arrow and every dropdown list item has its
-own `ISDK_RayCanvasInteraction` (`RayInteractable` + event wrapper) whose select event calls the action directly. This
-deliberately bypasses the UI click path: `PointableCanvasModule` only accepts a UI hit whose `rootCanvas` is the canvas of
-the `PointableCanvas` that received the ray, so nested canvases (buttons, dropdown list) never get clicks through it.
-Controls that overlap use `_tiebreakerScore` (items 2, buttons/arrow 0). There is **no** canvas-wide ray interaction on the
-`ConfigTent` canvas (it overlapped the panel and swallowed the ray). `ConfigTent._sessionParams` hides the panel while
-the tent is grabbed.
+**The affected arm is shared by all tents** (it belongs to the survivor, not to a mini-game): it is a static value in
+`SessionParamsMenu`, so changing it in one panel raises a static event that updates every panel's dropdown and makes each
+tent report its configuration again.
+
+**The panel is its own world-space Canvas, with one ray interaction.** `SessionParams` carries `Canvas` (World Space) +
+`CanvasScaler` + `GraphicRaycaster`, and in `ConfigTent.prefab` it is a direct child of the tent root, **not** of the tent's
+`Canvas`. This matters: `PointableCanvasModule` projects the ray point onto the plane of the `PointableCanvas`'s canvas,
+starting 1 m behind the pointer, so the canvas must be (nearly) coplanar with what is clicked. The panel sits 428 canvas units
+(~4.3 m at 0.01 scale) in front of the tent canvas, so pointing the ray at the tent canvas made every click miss.
+A single `ISDK_RayCanvasInteraction` (child of `SessionParams`, `LayoutElement.ignoreLayout`, hidden with the panel while the
+tent is grabbed) points its `PointableCanvas` at the panel's canvas; its surface covers the panel plus 160 units below it for
+the open difficulty list. Clicks go through the normal UI path, which accepts any hit whose `rootCanvas` is the panel canvas
+(the dropdown list's nested canvas included). The controls therefore must **not** carry their own `Canvas`/`GraphicRaycaster`/
+ray interaction, and the dropdown `Arrow` has no `Button` (a click on it bubbles up to the dropdown).
 
 **`SessionParamDropdown : TMP_Dropdown`** exists because `TMP_Dropdown.Show()` flips the list above the button whenever it
-does not fit in the root canvas (here the tent's 1920×1080 canvas, which the panel sticks out of) and offers no option to
+does not fit in the root canvas and offers no option to
 disable it. It restores the template's anchoring so the list always opens **below**, and hides the already-selected
-option. Its template items carry the select wiring: the item's ray event sets `Toggle.isOn = true`, which makes the dropdown
-pick the option and close.
+option. It also makes the button a toggle (`OnPointerClick` calls `Hide()` when expanded): `TMP_Dropdown` never closes the
+list from its own button.
 
 ---
 

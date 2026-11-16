@@ -28,8 +28,28 @@ public class SessionParamsMenu : MonoBehaviour
     /// <summary>Portuguese labels of the affected arm dropdown options; the left arm is at <see cref="LeftArmOptionIndex"/>.</summary>
     private static readonly List<string> AffectedArmOptions = new() { "Esquerdo", "Direito" };
 
-    /// <summary>Portuguese labels of the dropdown options, indexed by <see cref="DIFFICULTY_CHANGE"/>.</summary>
-    private static readonly List<string> DifficultyChangeOptions = new() { "Diminuir", "Manter", "Aumentar" };
+    /// <summary>
+    /// Portuguese labels of the dropdown options, indexed by <see cref="DIFFICULTY_CHANGE"/>. They match the words of the
+    /// survivors' files (<c>ConfigSessionStrokeSurvivorsFiles/*.md</c>), without the symbols.
+    /// </summary>
+    private static readonly List<string> DifficultyChangeOptions = new() { "Baixar", "Manter", "Subir" };
+
+    /// <summary>
+    /// Affected arm shared by every tent: it belongs to the survivor, not to a mini-game, so changing it in one panel
+    /// changes it in all of them.
+    /// </summary>
+    private static bool s_isLeftArmAffected = true;
+
+    /// <summary>Raised when <see cref="s_isLeftArmAffected"/> changes, so every panel refreshes its dropdown.</summary>
+    private static event Action AffectedArmChanged;
+
+    /// <summary>Resets the shared affected arm when entering Play Mode with domain reload disabled.</summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        s_isLeftArmAffected = true;
+        AffectedArmChanged = null;
+    }
 
     [Header("Parameters")]
     /// <summary>Number of repetitions (1 to 5).</summary>
@@ -59,13 +79,13 @@ public class SessionParamsMenu : MonoBehaviour
     /// <summary>Current session time, in minutes.</summary>
     public int SessionTimeMinutes => _sessionTime.Value;
 
-    /// <summary>True if the affected arm is the left one, false if it is the right one.</summary>
-    public bool IsLeftArmAffected { get; private set; } = true;
+    /// <summary>True if the affected arm is the left one, false if it is the right one (same value in every tent).</summary>
+    public bool IsLeftArmAffected => s_isLeftArmAffected;
 
     /// <summary>Currently selected difficulty change (keeps the difficulty by default).</summary>
     public DIFFICULTY_CHANGE DifficultyChange { get; private set; } = DIFFICULTY_CHANGE.KEEP;
 
-    /// <summary>Validates the references, sets the default values and fills the dropdown. Clicks are NOT listened to in code: the ray interaction events (OnSelect) are wired in the Inspector to the public methods below.</summary>
+    /// <summary>Validates the references, sets the default values and fills the dropdown. Clicks are NOT listened to in code: the buttons' <c>On Click</c> and the dropdowns' value events are wired in the Inspector to the public methods below (the ray reaches them through the single ray interaction of the tent canvas).</summary>
     private void Awake()
     {
         if (!AreParameterReferencesAssigned(_repetitions, nameof(_repetitions)) ||
@@ -87,7 +107,24 @@ public class SessionParamsMenu : MonoBehaviour
         _difficultyDropdown.AddOptions(DifficultyChangeOptions);
         _difficultyDropdown.SetValueWithoutNotify((int)DifficultyChange);
 
+        // Subscribed for the whole lifetime (not OnEnable) so a panel hidden while its tent is grabbed still follows changes.
+        AffectedArmChanged += RefreshAffectedArm;
+
         // The parameters only hold their default values from here on: if the tent read them before this Awake, resend them.
+        _onParamsChanged.Invoke();
+    }
+
+    /// <summary>Stops following the shared affected arm.</summary>
+    private void OnDestroy()
+    {
+        AffectedArmChanged -= RefreshAffectedArm;
+    }
+
+    /// <summary>Shows the shared affected arm in this panel's dropdown and reports the tent's new configuration.</summary>
+    private void RefreshAffectedArm()
+    {
+        _affectedArmDropdown.SetValueWithoutNotify(IsLeftArmAffected ? LeftArmOptionIndex : 1 - LeftArmOptionIndex);
+
         _onParamsChanged.Invoke();
     }
 
@@ -150,13 +187,14 @@ public class SessionParamsMenu : MonoBehaviour
     /// <summary>
     /// Inspector entry point of the affected arm dropdown (wire it to the <c>Is First Option Selected (Boolean)</c> event
     /// of the <see cref="SessionParamDropdown"/>, using the dynamic-bool variant). The first option is the left arm.
+    /// The value is shared, so every tent's panel is updated (see <see cref="RefreshAffectedArm"/>).
     /// </summary>
     /// <param name="isLeft">True if the left arm was selected, false if the right arm was.</param>
     public void OnAffectedArmChanged(bool isLeft)
     {
-        IsLeftArmAffected = isLeft;
+        s_isLeftArmAffected = isLeft;
 
-        _onParamsChanged.Invoke();
+        AffectedArmChanged?.Invoke();
     }
 
     /// <summary>

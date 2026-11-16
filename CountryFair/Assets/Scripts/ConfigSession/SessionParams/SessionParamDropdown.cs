@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// <see cref="TMP_Dropdown"/> that always opens below its button and lists only the options that are not selected.
@@ -41,20 +42,30 @@ public class SessionParamDropdown : TMP_Dropdown
         base.OnDestroy();
     }
 
+    /// <summary>
+    /// Makes the dropdown button a toggle: clicking it while the list is open closes the list. <see cref="TMP_Dropdown"/>
+    /// only ever opens it here (<see cref="TMP_Dropdown.Show"/> returns early when already expanded), and its blocker,
+    /// which normally closes the list on an outside click, only covers the tent canvas that the panel sticks out of.
+    /// </summary>
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        if (IsExpanded)
+        {
+            Hide();
+
+            return;
+        }
+
+        base.OnPointerClick(eventData);
+    }
+
     /// <summary>Emits whether the selected option is the first one.</summary>
     private void NotifyFirstOptionSelected(int optionIndex)
     {
         _isFirstOptionSelected?.Invoke(optionIndex == 0);
     }
 
-    /// <summary>
-    /// Keeps a reference to the list being shown.
-    ///
-    /// Each item of the template carries its own ray interaction whose select event sets the item's
-    /// <see cref="UnityEngine.UI.Toggle"/> on, which makes <see cref="TMP_Dropdown"/> pick the option and close the
-    /// list. That path does not depend on <c>PointableCanvasModule</c>, which would ignore clicks on this list because
-    /// its canvas is nested (the module only accepts hits whose root canvas is the one that received the ray).
-    /// </summary>
+    /// <summary>Keeps a reference to the list being shown.</summary>
     protected override GameObject CreateDropdownList(GameObject template)
     {
         _list = base.CreateDropdownList(template);
