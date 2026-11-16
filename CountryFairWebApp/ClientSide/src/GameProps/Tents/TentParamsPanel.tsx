@@ -44,13 +44,6 @@ export const TentParamsPanel = memo(function TentParamsPanel({ position, params,
             zIndexRange={[5, 0]}
         >
             <div className="tent-params">
-                <ClampedParam
-                    label="Número de repetições"
-                    value={params.repetitions}
-                    range={REPETITIONS_RANGE}
-                    onChange={(repetitions) => onParamsChange({ ...params, repetitions })}
-                />
-
                 <label className="tent-params__row">
                     <span className="tent-params__label">Braço afetado</span>
                     <select
@@ -62,6 +55,13 @@ export const TentParamsPanel = memo(function TentParamsPanel({ position, params,
                         <option value="right">{ARM_LABELS.right}</option>
                     </select>
                 </label>
+
+                <ClampedParam
+                    label="Número de repetições"
+                    value={params.repetitions}
+                    range={REPETITIONS_RANGE}
+                    onChange={(repetitions) => onParamsChange({ ...params, repetitions })}
+                />
 
                 <ClampedParam
                     label="Tempo de sessão (minutos)"

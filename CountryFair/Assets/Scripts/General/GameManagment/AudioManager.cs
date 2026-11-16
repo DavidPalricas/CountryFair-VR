@@ -55,14 +55,6 @@ public abstract class AudioManager: MonoBehaviour
         /* General Sound Effects */
         ButtonPressed,
 
-        /* Country Fair Sound Effects */
-
-        /// <summary>Played when giant mode grows the player (<c>PlayerScale</c>).</summary>
-        ScaleToGiant,
-
-        /// <summary>Played when giant mode shrinks the player back (<c>PlayerScale</c>).</summary>
-        ScaleToNormal,
-
         /* Frisbee Game Sound Effects*/
         /// <summary>Dog barking sound effect.</summary>
         DogBark,
@@ -82,6 +74,17 @@ public abstract class AudioManager: MonoBehaviour
 
         ///<summary>Arrow shooting sound effect.</summary>
         ArrowShot,
+
+        /* Config Session Sound Effects */
+                /// <summary>Played when giant mode grows the player (<c>PlayerScale</c>).</summary>
+        ScaleToGiant,
+
+        /// <summary>Played when giant mode shrinks the player back (<c>PlayerScale</c>).</summary>
+        ScaleToNormal,
+
+        ConfigButtonApeared,
+
+        UIClick
     }
 
 

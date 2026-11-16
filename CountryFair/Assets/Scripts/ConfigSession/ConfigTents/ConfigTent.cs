@@ -37,11 +37,17 @@ public class ConfigTent : OrderableTentElement
     [SerializeField]
     private UnityEvent<TentConfigData> _onConfigChanged;
 
+    [SerializeField]
+    private UnityEvent <AudioManager.GameSoundEffects> _playClickSound;
+
     /// <summary>Text and prop of this tent.</summary>
     private TentDisplay _tentDisplay;
 
     /// <summary>Session parameters menu inside <see cref="_sessionParams"/>.</summary>
     private SessionParamsMenu _sessionParamsMenu;
+
+
+    private readonly AudioManager.GameSoundEffects _click = AudioManager.GameSoundEffects.UIClick;
 
     /// <summary>
     /// Initialises the tent display, validates required references and snaps the tent to its starting placeholder.
@@ -137,6 +143,7 @@ public class ConfigTent : OrderableTentElement
         }
 
         _onConfigChanged.Invoke(GetConfig());
+
     }
 
     /// <summary>Hides the tent's UI and notifies <see cref="TentPlaceHolderManager"/> that this tent was picked up.</summary>
@@ -172,5 +179,11 @@ public class ConfigTent : OrderableTentElement
     private void SetTentNumber(int number)
     {
         _tentNumber.text = number.ToString();
+    }
+
+
+    public void UiClicked()
+    {
+        _playClickSound.Invoke(_click);
     }
 }
