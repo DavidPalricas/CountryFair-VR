@@ -97,6 +97,12 @@ public class PlayerScale : MonoBehaviour
    /// </summary>
    private float _animatedLogScale;
 
+   /// <summary>
+   /// World position of the rig right before entering giant mode, captured in <see cref="ToggleScale"/>.
+   /// Shrinking back moves the rig to it, so the player returns to where they were before becoming a giant.
+   /// </summary>
+   private Vector3 _positionBeforeGiant;
+
 
    /// <summary>
    /// Sound effect passed to <see cref="_onScaleToGiant"/> when the player grows.
@@ -150,13 +156,14 @@ public class PlayerScale : MonoBehaviour
        if (_isGiantMode)
        {   
            _scaleButtonImage.sprite = _toNormalIcon;
+           _positionBeforeGiant = _cameraRigTransform.position;
            AnimateScale(_originalScale * _giantScaleFactor, _scaleUpDuration);
            _scaleChanged.Invoke(_scaleToGiantSoundEffect);
            return;
        }
 
        _scaleButtonImage.sprite = _toGiantIcon;
-       AnimateScale(_originalScale, _scaleDownDuration);
+       AnimateScale(_originalScale, _scaleDownDuration, _positionBeforeGiant);
        _scaleChanged.Invoke(_scaleToNormalSoundEffect);
    }
 
@@ -172,7 +179,11 @@ public class PlayerScale : MonoBehaviour
    /// </summary>
    /// <param name="targetScale">Final uniform scale of the rig.</param>
    /// <param name="duration">Duration, in seconds, of the main grow/shrink tween (excludes the anticipation squash).</param>
-   private void AnimateScale(float targetScale, float duration)
+   /// <param name="returnPosition">
+   /// If set, the rig glides to this world position together with the scale (used when leaving giant mode, so the player
+   /// ends where they were before growing) instead of staying anchored on the head.
+   /// </param>
+   private void AnimateScale(float targetScale, float duration, Vector3? returnPosition = null)
    {
        _scaleSequence?.Kill();
 
@@ -199,7 +210,26 @@ public class PlayerScale : MonoBehaviour
 
        _scaleSequence.Append(CreateScaleTween(targetScale, duration, Ease.InOutSine));
 
-       _scaleSequence.OnUpdate(() => KeepPivotAnchored(pivotWorldPosition, pivotLocalPosition));
+       if (returnPosition.HasValue)
+       {
+           Vector3 startPosition = _cameraRigTransform.position;
+           float startLogScale = _animatedLogScale;
+           float targetLogScale = Mathf.Log(targetScale);
+
+           // The position follows the scale progress (in log space), so moving and shrinking happen as one motion.
+           _scaleSequence.OnUpdate(() =>
+           {
+               float progress = Mathf.InverseLerp(startLogScale, targetLogScale, _animatedLogScale);
+
+               _cameraRigTransform.position = Vector3.Lerp(startPosition, returnPosition.Value, progress);
+           });
+
+           _scaleSequence.OnComplete(() => _cameraRigTransform.position = returnPosition.Value);
+       }
+       else
+       {
+           _scaleSequence.OnUpdate(() => KeepPivotAnchored(pivotWorldPosition, pivotLocalPosition));
+       }
 
        _scaleSequence.SetLink(gameObject).SetUpdate(UpdateType.Normal, true);
    }

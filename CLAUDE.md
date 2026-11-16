@@ -599,6 +599,8 @@ grow/shrink animation. Comfort is the driving constraint — the implementation 
 | `OVRVignette` tunnel (170° → 60°, reopens 2x slower) | Narrowed FOV strongly reduces cybersickness |
 | Anticipation squash before growing only | Skipped when shrinking, where it reads as an unexpected extra drop |
 
+When shrinking back, the rig glides to the position it had right before growing (`_positionBeforeGiant`), in sync
+with the scale progress, instead of staying anchored on the head — the player ends where they were before becoming a giant.
 `ToggleScale()` ignores input while a sequence is still playing. Fires `onScaleToGiant` / `onScaleToNormal`
 (`UnityEvent<AudioManager.GameSoundEffects>`) plus `onScaleAnimationStarted` / `onScaleAnimationCompleted`.
 
