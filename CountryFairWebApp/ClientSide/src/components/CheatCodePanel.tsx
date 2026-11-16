@@ -4,8 +4,9 @@ import "./CheatCodePanel.css";
 
 type CheatCodePanelProps = {
     /**
-     * True while there is no game client connected to the room yet (the initial waiting
-     * screen), so a cheat code would have nowhere to go. The panel stays mounted (keeping its
+     * True while a cheat code has nowhere to go or must not be used: while there is no game
+     * client connected to the room yet (the initial waiting screen), and in the session
+     * configuration scene, which has no cheat codes. The panel stays mounted (keeping its
      * `code` state) but is hidden and non-interactive instead of being unmounted.
      */
     disabled?: boolean;

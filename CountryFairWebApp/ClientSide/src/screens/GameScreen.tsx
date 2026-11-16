@@ -8,6 +8,7 @@ import { MiniGameTent } from "../GameProps/Tents/MiniGameTent";
 import { TentPlaceHolder } from "../GameProps/Tents/TentPlaceHolder";
 import { TENT_ROW_Z, TENT_SLOTS, TENT_Y, VIEWER_POSITION, type MiniGameType } from "../GameProps/Tents/tentSlots";
 import { orderFromFairState, slotIndexAtX, swapIntoSlot, type TentOrder } from "../GameProps/Tents/tentOrder";
+import { initialTentParams, parseTentParams, withTentParams, type TentParams, type TentParamsMessage } from "../GameProps/Tents/sessionParams";
 import { sendToRoom, subscribeRoom } from "../network/client";
 import { BigTop, BigTopInstances } from "../GameProps/BigTop";
 import { TentInstances } from "../GameProps/Tents/Tent";
@@ -15,8 +16,8 @@ import { TentRibbonInstances } from "../GameProps/Tents/TentRibbon";
 import { DuckInstances } from "../GameProps/MiniGamesProps/DuckProps";
 import {FerrisWheel} from "../GameProps/FerrisWheel";
 import{Camera} from "../GameProps/Camera";
-import { Text3D } from "../GameProps/Text3D";
 import { DebugOverlay, DebugProbe } from "../components/DebugOverlay";
+import { ConfigCard } from "../components/ConfigCard";
 import { WarmUpFrame } from "../GameProps/Performance/WarmUpFrame";
 import "./GameScreen.css";
 
@@ -93,6 +94,18 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
     const [order, setOrder] = useState<TentOrder>(INITIAL_ORDER);
     const [dragging, setDragging] = useState<MiniGameType | null>(null);
 
+    // Session parameters of each tent and the shared affected arm: the web side of Unity's
+    // `SessionParamsMenu`, synced exactly like `order` (see the effect below).
+    const [tentParams, setTentParams] = useState(initialTentParams);
+    const [isLeftArmAffected, setIsLeftArmAffected] = useState(true);
+
+    // Which survivor's file the tents are configured against and whether they already match it:
+    // reported by the game's `ConfigSessionManager`, kept in `state.survivorFile` /
+    // `state.configCompleted`. The web only shows them (see `ConfigCard`).
+    const [survivorFile, setSurvivorFile] = useState("");
+    const [configCompleted, setConfigCompleted] = useState(false);
+    const [isLastConfig, setIsLastConfig] = useState(false);
+
     // Shared between the grabbed tent and the placeholder rings; written on every
     // pointermove, so it lives in a ref rather than in state.
     const dragPoint = useRef(new Vector3());
@@ -137,10 +150,52 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
             }),
         ];
 
+        // Session parameters, same two sources as the order: the stored `state.tentParams` /
+        // `state.isLeftArmAffected` (on join and on every change) and the relayed messages.
+        // Nothing is sent on mount either, so opening the page never overwrites the headset's values.
+        const applyParams = (miniGame: unknown, data: unknown) => {
+            const parsed = parseTentParams(miniGame, data);
+
+            if (parsed === null) {
+                console.warn("Ignoring invalid tent params:", miniGame, data);
+                return;
+            }
+
+            setTentParams((current) => withTentParams(current, parsed.miniGame, parsed.params));
+        };
+
+        // `onAdd` fires for every entry already stored when this client joins. The entry's own
+        // fields change in place, so each one is also listened to with `onChange`.
+        const applyStoredEntry = (entry: TentParams, miniGame: string) => {
+            applyParams(miniGame, entry);
+            unsubscribers.push($(entry).onChange(() => applyParams(miniGame, entry)));
+        };
+
+        unsubscribers.push(
+            $(room.state).tentParams.onAdd(applyStoredEntry),
+            $(room.state).listen("isLeftArmAffected", (value: boolean) => setIsLeftArmAffected(value)),
+            $(room.state).listen("survivorFile", (value: string) => setSurvivorFile(value)),
+            $(room.state).listen("configCompleted", (value: boolean) => setConfigCompleted(value)),
+            $(room.state).listen("isLastConfig", (value: boolean) => setIsLastConfig(value)),
+            room.onMessage("updateTentParams", (message: TentParamsMessage) => applyParams(message?.miniGame, message)),
+            room.onMessage("updateAffectedArm", (message: { isLeftArmAffected?: unknown }) => {
+                if (typeof message?.isLeftArmAffected === "boolean") {
+                    setIsLeftArmAffected(message.isLeftArmAffected);
+                }
+            }),
+        );
+
         return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
     }), []);
 
     const handleDragEnd = useCallback((type: MiniGameType, x: number) => {
+        // The configuration was completed during the drag: the tents are hidden now, so the drop
+        // must not reorder them (nor send an order) behind the "advance" button.
+        if (configCompleted) {
+            setDragging(null);
+            return;
+        }
+
         const targetSlot = slotIndexAtX(x);
 
         // null = dropped in the dead zone between slots; the tent's useFrame walks it back to
@@ -158,7 +213,30 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
         }
 
         setDragging(null);
-    }, [order, sendFairState]);
+    }, [order, sendFairState, configCompleted]);
+
+    // Equivalent of `ConnectToWebApp.UpdateTentParams()`: applied locally, then sent. The room
+    // relays it to everyone else (`except` the sender), so it never echoes back here.
+    const handleParamsChange = useCallback((type: MiniGameType, params: TentParams) => {
+        setTentParams((current) => withTentParams(current, type, params));
+
+        const message: TentParamsMessage = { miniGame: type, ...params };
+        sendToRoom("updateTentParams", message);
+    }, []);
+
+    // Same as pressing the headset's configuration button: the room forwards it to the game, which
+    // moves to the next survivor and reports it. `configCompleted` is cleared here too, so the card
+    // does not keep offering the button while the request is on its way.
+    const handleNextConfiguration = useCallback(() => {
+        setConfigCompleted(false);
+        sendToRoom("nextConfiguration");
+    }, []);
+
+    // Shared by every tent, like Unity's static `SessionParamsMenu.s_isLeftArmAffected`.
+    const handleArmChange = useCallback((isLeft: boolean) => {
+        setIsLeftArmAffected(isLeft);
+        sendToRoom("updateAffectedArm", { isLeftArmAffected: isLeft });
+    }, []);
 
     return (
         <div className="game-screen">
@@ -185,10 +263,17 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
                                     type={type}
                                     slot={slot}
                                     isDragging={dragging === type}
-                                    hidden={dragging !== null && dragging !== type}
+                                    /* Once the configuration is completed the tents (and their panels) give
+                                       way to the "advance" button in the middle of the screen. */
+                                    hidden={configCompleted || (dragging !== null && dragging !== type)}
                                     dragPoint={dragPoint}
                                     onDragStart={setDragging}
                                     onDragEnd={handleDragEnd}
+                                    showParams={active}
+                                    params={tentParams[type]}
+                                    isLeftArmAffected={isLeftArmAffected}
+                                    onParamsChange={handleParamsChange}
+                                    onArmChange={handleArmChange}
                                 />
                             ))}
                         </DuckInstances>
@@ -205,6 +290,10 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
                 ))}
 
             </Canvas>
+
+            {active && (
+                <ConfigCard survivor={survivorFile} completed={configCompleted} isLast={isLastConfig} onNext={handleNextConfiguration} />
+            )}
 
             <DebugOverlay />
             <small className="game-screen__copyright">{COPYRIGHT}</small>
@@ -226,9 +315,8 @@ const FairScenery = memo(function FairScenery() {
                 camera backs away so the four tents keep fitting side by side. */}
             <Camera position={VIEWER_POSITION} lookAt={[0, 1.4, TENT_ROW_Z]} minAspect={1.6} />
 
-            <Text3D position={[0, 4.8, TENT_ROW_Z]} fontSize={0.55} maxWidth={10}>
-                Clique e arraste nas tendas para trocar a ordem delas
-            </Text3D>
+            {/* No instruction text above the row any more: that space is for the session parameter
+                panels (TentParamsPanel), which are as large as the screen allows. */}
             {/* Hemisphere (blue sky / green grass) instead of flat ambient light: the colour
                 bounce makes the green and red of the tents far livelier than a white
                 ambientLight managed. */}

@@ -238,7 +238,7 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 
 ### Web App Connection
 
-`ConnectToWebApp.cs` connects the game to a companion web app (`CountryFairWebApp/ServerSide`, a Colyseus server) that lets a healthcare professional view/reorder the fair state live. The connection is plain `ws://`, no TLS — a deliberate choice, since the server is meant to run on the same PC whose Mobile Hotspot the headset joins, not on an untrusted network. See **`CLAUDE.md` → "Web App Connection & Cleartext Networking"** for the full setup (required Android/Player Settings, common device-build pitfalls) and the deployment caveat.
+`ConnectToWebApp.cs` connects the game to a companion web app (`CountryFairWebApp/ServerSide`, a Colyseus server) that lets a healthcare professional view/reorder the fair state live. The connection is plain `ws://`, no TLS — a deliberate choice, since the server is meant to run on the same PC whose Mobile Hotspot the headset joins, not on an untrusted network. The Colyseus server listens on port **2570** (not Colyseus' default 2567, which is commonly already in use); it is set by `SERVER_PORT` in `CountryFairWebApp/.env` (gitignored — create it with `SERVER_PORT=2570` on a fresh clone) and must match `_serverPort` on the `ConnectToWebApp` prefab. See **`CLAUDE.md` → "Web App Connection & Cleartext Networking"** for the full setup (required Android/Player Settings, common device-build pitfalls) and the deployment caveat.
 
 ---
 
@@ -287,7 +287,6 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 | `archery` | Loads the Archery mini-game | Fair Scene | Intro completed |
 | `frisbee` | Loads the Frisbee mini-game | Fair Scene | Intro completed |
 | `duck` / `fishing` | Reserved for the Duck / Fishing mini-games (not implemented yet — only logs a warning) | Fair Scene | Intro completed |
-| `giant` | Toggles giant mode (player scaled up/down with a comfort vignette) | Fair Scene | Intro completed |
 | `return` | Returns to the Fair Scene | Both mini-games | None |
 | `tutorial` | Skips the mini-game tutorial sequence | Both mini-games | Tutorial not completed |
 | `goal<N>` + Enter | Sets the session goal to `N` (e.g. `goal15`); `goal` alone uses the default value (10) | Both mini-games | None |

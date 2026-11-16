@@ -1,5 +1,5 @@
-import type { FairState } from "../schemas/FairSchema.js";
-import type { GameSnapshot, ProgressUpdate } from "./messageValidation.js";
+import { TentParams, type FairState } from "../schemas/FairSchema.js";
+import type { ConfigStateUpdate, GameSnapshot, ProgressUpdate, TentParamsUpdate } from "./messageValidation.js";
 
 /**
  * Business rules of {@link FairSceneRoom}, as pure state reducers: each one takes the room's
@@ -96,4 +96,49 @@ export function applyTentOrder(state: FairState, order: Record<string, string>):
     for (const [tent, slot] of Object.entries(order)) {
         state.tentOrders.set(tent.toLowerCase(), slot);
     }
+}
+
+/**
+ * Records a tent's session parameters in the synced state, creating its entry the first time
+ * the tent is reported. `params` is already validated (see `sanitizeTentParams`).
+ */
+export function applyTentParams(state: FairState, params: TentParamsUpdate): void {
+    let entry = state.tentParams.get(params.miniGame);
+
+    if (entry === undefined) {
+        entry = new TentParams();
+        state.tentParams.set(params.miniGame, entry);
+    }
+
+    entry.repetitions = params.repetitions;
+    entry.sessionTimeMinutes = params.sessionTimeMinutes;
+    entry.difficultyChange = params.difficultyChange;
+}
+
+/** Records which survivor's file is being configured and whether the tents already match it. */
+export function applyConfigState(state: FairState, config: ConfigStateUpdate): void {
+    state.survivorFile = config.survivor;
+    state.configCompleted = config.configured;
+    state.isLastConfig = config.isLast;
+}
+
+/**
+ * The therapist asked to move on to the next configuration. Only valid once the current one is
+ * completed: returns `false` (and changes nothing) otherwise, so a stale or repeated click can
+ * never skip a configuration. Clears the flag right away, which also drops a double click; the
+ * game then reports the next survivor with `"updateConfigState"`.
+ */
+export function applyNextConfiguration(state: FairState): boolean {
+    if (!state.configCompleted) {
+        return false;
+    }
+
+    state.configCompleted = false;
+
+    return true;
+}
+
+/** Records the survivor's affected arm, shared by every tent. */
+export function applyAffectedArm(state: FairState, isLeftArmAffected: boolean): void {
+    state.isLeftArmAffected = isLeftArmAffected;
 }

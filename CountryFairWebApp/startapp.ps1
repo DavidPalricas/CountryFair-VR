@@ -32,7 +32,7 @@ $serverPath = Join-Path $root 'ServerSide'
 $clientPath = Join-Path $root 'ClientSide'
 $envPath    = Join-Path $root '.env'
 
-$defaultServerPort = 2567
+$defaultServerPort = 2570
 
 
 

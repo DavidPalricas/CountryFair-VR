@@ -22,7 +22,7 @@ function App() {
   return (
     <div className="app-root">
       <GameScreen active={overlay === null} />
-      <CheatCodePanel disabled={fair.connectionStatus !== "connected" || fair.phase === "waiting"} />
+      <CheatCodePanel disabled={fair.connectionStatus !== "connected" || fair.phase === "waiting" || fair.phase === "config"} />
       {overlay && (
         <WaitingScreen
           key={overlay.kind}

@@ -19,6 +19,46 @@ export const MINI_GAMES: readonly string[] = ["fishing", "archery", "frisbee", "
  */
 export const MAX_CHEAT_CODE_LENGTH = 32;
 
+/** Inclusive range of the repetitions parameter (Unity's `SessionParamsMenu._repetitions`). */
+export const REPETITIONS_RANGE = { min: 1, max: 5 } as const;
+
+/** Inclusive range of the session time parameter, in minutes (`SessionParamsMenu._sessionTime`). */
+export const SESSION_TIME_RANGE = { min: 1, max: 15 } as const;
+
+/** Unity's `SessionParamsMenu.DIFFICULTY_CHANGE` values, lower-cased. */
+export const DIFFICULTY_CHANGES: readonly string[] = ["decrease", "keep", "increase"];
+
+/** Session parameters of one tent, as relayed by `"updateTentParams"`. */
+export interface TentParamsUpdate {
+    /** Tent id, lower-cased (one of {@link MINI_GAMES}). */
+    miniGame: string;
+    repetitions: number;
+    sessionTimeMinutes: number;
+    /** One of {@link DIFFICULTY_CHANGES}. */
+    difficultyChange: string;
+}
+
+export interface AffectedArmUpdate {
+    isLeftArmAffected: boolean;
+}
+
+/**
+ * Survivor ids, lower-cased and without spaces (Unity's `StrokeSurvivorProfile.survivorName`,
+ * e.g. "Rute Pereira"). A whitelist, not a pattern: the web client builds an image URL from it.
+ * Mirrors the files in the web client's `public/survivors/`.
+ */
+export const SURVIVOR_FILES: readonly string[] = ["rutepereira", "joanasantos", "tiagobastos"];
+
+/** Payload of `"updateConfigState"`. */
+export interface ConfigStateUpdate {
+    /** One of {@link SURVIVOR_FILES}. */
+    survivor: string;
+    /** Whether the tents match the survivor's file. */
+    configured: boolean;
+    /** Whether this is the last survivor of the test. */
+    isLast: boolean;
+}
+
 export interface SceneUpdate {
     sceneName: string;
     // Whether a plaza dialogue (session-completed message) is about to play. Optional so an
@@ -133,4 +173,58 @@ export function sanitizeTentOrder(data: unknown): Record<string, string> | null 
     }
 
     return order;
+}
+
+function isIntegerInRange(value: unknown, range: { min: number; max: number }): value is number {
+    return typeof value === "number" && Number.isInteger(value) && value >= range.min && value <= range.max;
+}
+
+/**
+ * Validated copy of a tent's session parameters, or `null` when invalid. `miniGame` and
+ * `difficultyChange` are lower-cased (Unity sends its enum names, e.g. `"DuckGame"` / `"KEEP"`);
+ * the numbers must be integers inside their ranges. Unknown extra fields are dropped.
+ */
+export function sanitizeTentParams(data: unknown): TentParamsUpdate | null {
+    if (!isObject(data) || typeof data.miniGame !== "string" || typeof data.difficultyChange !== "string") {
+        return null;
+    }
+
+    const miniGame = data.miniGame.trim().toLowerCase();
+    const difficultyChange = data.difficultyChange.trim().toLowerCase();
+
+    if (!MINI_GAMES.includes(miniGame) || !DIFFICULTY_CHANGES.includes(difficultyChange)) {
+        return null;
+    }
+
+    if (!isIntegerInRange(data.repetitions, REPETITIONS_RANGE) || !isIntegerInRange(data.sessionTimeMinutes, SESSION_TIME_RANGE)) {
+        return null;
+    }
+
+    return { miniGame, repetitions: data.repetitions, sessionTimeMinutes: data.sessionTimeMinutes, difficultyChange };
+}
+
+/**
+ * `{ survivor, configured, isLast? }` as sent by `ConnectToWebApp.UpdateConfigState()`: a known
+ * survivor (case- and whitespace-insensitive, so "Rute Pereira" is accepted) and two booleans.
+ * `isLast` may be left out (an older build), which counts as `false`.
+ */
+export function sanitizeConfigState(data: unknown): ConfigStateUpdate | null {
+    if (!isObject(data) || typeof data.survivor !== "string" || typeof data.configured !== "boolean") {
+        return null;
+    }
+
+    if (data.isLast !== undefined && typeof data.isLast !== "boolean") {
+        return null;
+    }
+
+    const survivor = data.survivor.replace(/\s+/g, "").toLowerCase();
+
+    return SURVIVOR_FILES.includes(survivor)
+        ? { survivor, configured: data.configured, isLast: data.isLast === true }
+        : null;
+}
+
+/** `{ isLeftArmAffected }` with a boolean value, as sent by both clients on `"updateAffectedArm"`. */
+export function isAffectedArmUpdate(data: unknown): data is AffectedArmUpdate {
+    return isObject(data) && typeof data.isLeftArmAffected === "boolean";
 }

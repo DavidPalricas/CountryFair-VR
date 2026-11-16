@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConnectToWebApp
   _serverHost: 192.168.137.1
   _useLocalhostInEditor: 1
-  _serverPort: 2567
+  _serverPort: 2570
   _retryDelaySeconds: 3
   updateTentsOrder:
     m_PersistentCalls:

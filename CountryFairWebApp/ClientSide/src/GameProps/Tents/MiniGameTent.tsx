@@ -10,6 +10,11 @@ import { Text3D } from "../Text3D";
 import {TentRibbon} from "./TentRibbon";
 import { DRAG_LIFT, TENT_NAMES, TENT_SLOTS, TENT_Y, type MiniGameType } from "./tentSlots";
 import { useTentDrag } from "./useTentDrag";
+import { TentParamsPanel } from "./TentParamsPanel";
+import type { TentParams } from "./sessionParams";
+
+/** Where the session parameters panel floats: above the signboard (y = 2); it grows upwards into the sky. */
+const PARAMS_PANEL_POSITION: [number, number, number] = [0, 4.6, 0];
 
 /** Multiplier on the base scale while the pointer is over the tent. */
 const HOVER_SCALE = 1.2;
@@ -38,6 +43,12 @@ type MiniGameTentProps = {
     onDragStart: (type: MiniGameType) => void;
     /** Reports the drop position in X; the screen turns it into a slot. */
     onDragEnd: (type: MiniGameType, x: number) => void;
+    /** False while the scene is hidden behind an overlay: the DOM panel would otherwise stay on screen. */
+    showParams: boolean;
+    params: TentParams;
+    isLeftArmAffected: boolean;
+    onParamsChange: (type: MiniGameType, params: TentParams) => void;
+    onArmChange: (isLeftArmAffected: boolean) => void;
 };
 
 
@@ -48,7 +59,10 @@ type MiniGameTentProps = {
  * Its transform is animated every frame rather than driven by props, so both a slot change
  * and the hover scale read as a motion instead of a jump.
  */
-export function MiniGameTent({ type, slot, isDragging, hidden, dragPoint, onDragStart, onDragEnd }: MiniGameTentProps) {
+export function MiniGameTent({
+    type, slot, isDragging, hidden, dragPoint, onDragStart, onDragEnd,
+    showParams, params, isLeftArmAffected, onParamsChange, onArmChange,
+}: MiniGameTentProps) {
     const miniGamePropsPos: [number, number, number] = [0.6, 0, 2];
     const groupRef = useRef<Group>(null);
     const [hovered, setHovered] = useState(false);
@@ -135,14 +149,15 @@ export function MiniGameTent({ type, slot, isDragging, hidden, dragPoint, onDrag
         <group
             ref={groupRef}
             name="MiniGameTent"
-            /* three ignores invisible objects in the raycast, so this reproduces Unity's
-               SetActive(false), including no longer receiving events. */
             visible={!hidden}
-            onPointerDown={onPointerDown}
+            /* `visible={false}` only stops drawing: the tent's meshes still answer the raycast, so a
+               hidden tent could still be grabbed. Unity's SetActive(false) also stops events, so the
+               handlers are dropped explicitly while hidden. */
+            onPointerDown={hidden ? undefined : onPointerDown}
             /* R3F delivers the event to every intersection along the ray, so without the
                stopPropagation the tents behind this one would go into hover too. */
-            onPointerOver={(event) => { event.stopPropagation(); setHovered(true); }}
-            onPointerOut={() => setHovered(false)}
+            onPointerOver={hidden ? undefined : (event) => { event.stopPropagation(); setHovered(true); }}
+            onPointerOut={hidden ? undefined : () => setHovered(false)}
         >
             {/* Signboard and ribbon hide during the drag, the same way Unity hides
                 tentText/tentNumber/ribbon while the tent is grabbed. */}
@@ -160,6 +175,19 @@ export function MiniGameTent({ type, slot, isDragging, hidden, dragPoint, onDrag
                     tent adopts the number of its new one. */}
                 <TentRibbon position={[-1.2, 1.7, 0]} number={slotTransform.number}/>
             </group>
+
+            {/* Unmounted rather than hidden through `visible`: <Html> is DOM and ignores the
+                group's visibility. Hidden while any tent is dragged, like Unity's
+                ConfigTent.SetTentUIVisible(false) hides the _sessionParams panel. */}
+            {showParams && !isDragging && !hidden && (
+                <TentParamsPanel
+                    position={PARAMS_PANEL_POSITION}
+                    params={params}
+                    isLeftArmAffected={isLeftArmAffected}
+                    onParamsChange={(next) => onParamsChange(type, next)}
+                    onArmChange={onArmChange}
+                />
+            )}
 
             <Tent position={[0, 0, 0]}/>
             {type === "fishing" && <FishingProps position={miniGamePropsPos} />}

@@ -34,7 +34,7 @@ public class ConnectToWebApp : MonoBehaviour
 
     /// <summary>Port the Colyseus server listens on; must match <c>CountryFairWebApp/ServerSide</c>'s configuration.</summary>
     [SerializeField]
-    private int _serverPort = 2567;
+    private int _serverPort = 2570;
 
     [Header("Reconnection")]
     /// <summary>Delay between failed join attempts in <see cref="ConnectLoop"/>.</summary>
@@ -78,6 +78,34 @@ public class ConnectToWebApp : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public UnityEvent<string> ReceiveCheatCode;
+
+    /// <summary>
+    /// Raised whenever the room relays an <c>"updateTentParams"</c> message, i.e. a tent's session parameters were
+    /// changed on the web app. Public and <c>[HideInInspector]</c> for the same reason as <see cref="updateTentsOrder"/>:
+    /// each <see cref="SessionParamsMenu"/> lives in the configuration scene and calls <c>AddListener</c> at runtime.
+    /// </summary>
+    [HideInInspector]
+    public UnityEvent<TentParamsMessage> updateTentParams;
+
+    /// <summary>Raised with the new value whenever the room relays an <c>"updateAffectedArm"</c> message from the web app.</summary>
+    [HideInInspector]
+    public UnityEvent<bool> updateAffectedArm;
+
+    /// <summary>
+    /// Raised every time the room is (re)joined. Anything sent before that is dropped (<see cref="_room"/> is null), and
+    /// the first scene's <c>Start</c>s run before the first join completes, so listeners that report their state on
+    /// <c>Start</c> (e.g. <see cref="SessionParamsMenu"/>) report it again here. Runtime <c>AddListener</c> only, like the events above.
+    /// </summary>
+    [HideInInspector]
+    public UnityEvent joinedRoom;
+
+    /// <summary>
+    /// Raised when the room relays <c>"nextConfiguration"</c>: the therapist pressed "advance to the next configuration"
+    /// on the web app (the web equivalent of the headset's config button). The room only sends it while the current
+    /// configuration is completed. Runtime <c>AddListener</c> only, like the events above (see <c>ConfigSessionManager.Start()</c>).
+    /// </summary>
+    [HideInInspector]
+    public UnityEvent nextConfiguration;
 
     /// <summary>Global accessor for the singleton established in <see cref="Awake"/>; null until the first <see cref="ConnectToWebApp"/> instance in the scene has run its Awake.</summary>
     public static ConnectToWebApp Instance => _instance;
@@ -175,7 +203,25 @@ public class ConnectToWebApp : MonoBehaviour
                     ReceiveCheatCode.Invoke(code);
                 });
 
+                _room.OnMessage<TentParamsMessage>("updateTentParams", (message) =>
+                {
+                    updateTentParams.Invoke(message);
+                });
+
+                _room.OnMessage<AffectedArmMessage>("updateAffectedArm", (message) =>
+                {
+                    updateAffectedArm.Invoke(message.isLeftArmAffected);
+                });
+
+                // The room sends an empty object; a string map is the type already known to deserialize it.
+                _room.OnMessage<Dictionary<string, string>>("nextConfiguration", (_) =>
+                {
+                    nextConfiguration.Invoke();
+                });
+
                 SyncGameState();
+
+                joinedRoom.Invoke();
 
                 // TrySetResult (not SetResult) because a Leave() triggered from OnDestroy while this
                 // is being awaited would otherwise race the callback and throw on a second completion.
@@ -233,6 +279,62 @@ public class ConnectToWebApp : MonoBehaviour
             catch (Exception exception)
             {
                 Debug.LogWarning($"ConnectToWebApp: failed to send tents order ({exception.Message}).");
+            }
+        }
+    }
+
+    /// <summary>Sends a tent's session parameters to the room, so the web app's panel above that tent mirrors them.</summary>
+    /// <param name="message">Parameters of one tent, as built by <see cref="SessionParamsMenu"/>.</param>
+    public async void UpdateTentParams(TentParamsMessage message)
+    {
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("updateTentParams", message);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send updateTentParams ({exception.Message}).");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tells the room which survivor's file the tents are being configured against and whether they already match it,
+    /// so the web app shows that file, or the "advance" button once it is completed.
+    /// </summary>
+    /// <param name="survivor">Name of the survivor (<see cref="StrokeSurvivorProfile.survivorName"/>); the server normalizes it.</param>
+    /// <param name="configured">True once the tents match the survivor's file.</param>
+    /// <param name="isLast">True if this is the last survivor of the test, so the web app's button reads "finish" instead of "advance".</param>
+    public async void UpdateConfigState(string survivor, bool configured, bool isLast)
+    {
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("updateConfigState", new ConfigStateMessage { survivor = survivor, configured = configured, isLast = isLast });
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send updateConfigState ({exception.Message}).");
+            }
+        }
+    }
+
+    /// <summary>Sends the survivor's affected arm (shared by every tent) to the room.</summary>
+    /// <param name="isLeftArmAffected">True if the affected arm is the left one.</param>
+    public async void UpdateAffectedArm(bool isLeftArmAffected)
+    {
+        if (_room != null)
+        {
+            try
+            {
+                await _room.Send("updateAffectedArm", new AffectedArmMessage { isLeftArmAffected = isLeftArmAffected });
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"ConnectToWebApp: failed to send updateAffectedArm ({exception.Message}).");
             }
         }
     }

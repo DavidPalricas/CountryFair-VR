@@ -252,13 +252,94 @@ describe("FairSceneRoom", () => {
             );
         });
 
+        it("stores and relays a tent's session parameters to the other client only", async () => {
+            const { web, game } = await pair();
+            const received = web.waitForMessage("updateTentParams");
+            const echoed = receives(game, "updateTentParams");
+
+            game.send("updateTentParams", { miniGame: "Archery", repetitions: 4, sessionTimeMinutes: 12, difficultyChange: "DECREASE" });
+
+            const expected = { miniGame: "archery", repetitions: 4, sessionTimeMinutes: 12, difficultyChange: "decrease" };
+
+            assert.deepStrictEqual(await received, expected);
+            assert.strictEqual(await echoed, false);
+            assert.deepStrictEqual(room.state.tentParams.get("archery")?.toJSON(), {
+                repetitions: 4, sessionTimeMinutes: 12, difficultyChange: "decrease",
+            });
+        });
+
+        it("stores and relays the shared affected arm", async () => {
+            const { web, game } = await pair();
+            const received = game.waitForMessage("updateAffectedArm");
+
+            web.send("updateAffectedArm", { isLeftArmAffected: false, extra: 1 });
+
+            assert.deepStrictEqual(await received, { isLeftArmAffected: false });
+            assert.strictEqual(room.state.isLeftArmAffected, false);
+        });
+
+        it("ignores invalid session parameters", async () => {
+            const { web, game } = await pair();
+
+            web.send("updateTentParams", { miniGame: "archery", repetitions: 9, sessionTimeMinutes: 1, difficultyChange: "keep" });
+            web.send("updateAffectedArm", { isLeftArmAffected: "right" });
+
+            assert.strictEqual(await receives(game, "updateTentParams"), false);
+            assert.strictEqual(await receives(game, "updateAffectedArm", 50), false);
+            assert.strictEqual(room.state.tentParams.size, 0);
+            assert.strictEqual(room.state.isLeftArmAffected, true);
+        });
+
+        it("stores the game's configuration state", async () => {
+            const { game } = await pair();
+
+            await sendAndHandle(game, "updateConfigState", { survivor: "Joana Santos", configured: true, isLast: true });
+
+            assert.deepStrictEqual(
+                [room.state.survivorFile, room.state.configCompleted, room.state.isLastConfig],
+                ["joanasantos", true, true]
+            );
+        });
+
+        it("sends \"nextConfiguration\" to the game only once the configuration is completed", async () => {
+            const { web, game } = await pair();
+
+            // Not completed yet: dropped, nothing reaches the game.
+            web.send("nextConfiguration");
+            assert.strictEqual(await receives(game, "nextConfiguration", 100), false);
+
+            await sendAndHandle(game, "updateConfigState", { survivor: "Rute Pereira", configured: true });
+
+            const received = game.waitForMessage("nextConfiguration");
+            web.send("nextConfiguration");
+            await received;
+
+            // Cleared right away, so a repeated click is dropped too.
+            assert.strictEqual(room.state.configCompleted, false);
+            web.send("nextConfiguration");
+            assert.strictEqual(await receives(game, "nextConfiguration", 100), false);
+        });
+
+        it("only accepts \"nextConfiguration\" from the web and \"updateConfigState\" from the game", async () => {
+            const { web, game } = await pair();
+
+            web.send("updateConfigState", { survivor: "Rute Pereira", configured: true });
+            await wait(50);
+            assert.strictEqual(room.state.configCompleted, false);
+
+            await sendAndHandle(game, "updateConfigState", { survivor: "Rute Pereira", configured: true });
+            game.send("nextConfiguration");
+            await wait(50);
+            assert.strictEqual(room.state.configCompleted, true);
+        });
+
         it("relays the web's cheat code, trimmed, to the game", async () => {
             const { web, game } = await pair();
             const received = game.waitForMessage("cheatCode");
 
-            web.send("cheatCode", "  giant ");
+            web.send("cheatCode", "  frisbee ");
 
-            assert.strictEqual(await received, "giant");
+            assert.strictEqual(await received, "frisbee");
         });
 
         it("relays the game's dialogue/tutorial/scene messages to the web", async () => {
@@ -308,7 +389,7 @@ describe("FairSceneRoom", () => {
             web.send("updatePlayerProgressOnMiniGame", { score: 9, goal: 10, streak: 9 });
             web.send("updateScene", { sceneName: "archerygame" });
             web.send("playerFinishedDialogue");
-            game.send("cheatCode", "giant");
+            game.send("cheatCode", "frisbee");
 
             assert.strictEqual(await receives(game, "updateScene"), false);
             assert.strictEqual(await receives(game, "playerFinishedDialogue", 50), false);

@@ -51,7 +51,6 @@ CountryFair/
 │   │   │   │                         #   Common/ (OrderableTentElement, TentPlaceHolder, TentPlaceHolderManager),
 │   │   │   │                         #   MiniGameTents/, WristMenu/ (WristMenu, TentPanel), FairState
 │   │   │   └── Other/                # Ambient elements (SheepAnim, CountryFairBalloonSpawner)
-│   │   │                             #   + PlayerScale (giant mode, section 12)
 │   │   ├── ConfigSession/            # Session configuration scene (ConfigSession.unity)
 │   │   │   ├── ConfigTents/          # ConfigTent, ConfigTentPlaceHolder
 │   │   │   └── SessionParams/        # SessionParamsMenu (per-tent session parameters panel)
@@ -421,7 +420,7 @@ using the exact same character filter/lowercasing as `OnTextInput()` and then ca
 web-sent code runs through the identical per-subclass verification/gating logic (tutorial/intro checks, etc.)
 as a keyboard-typed one, with no duplicated logic. `OnDisable()` unsubscribes (`RemoveListener`) alongside the
 existing keyboard cleanup. On the web side, `CountryFairWebApp/ClientSide/src/components/CheatCodePanel.tsx`
-is a small floating panel (mounted unconditionally in `App.tsx`) where the therapist types a code and sends it
+is a small floating panel (always mounted in `App.tsx`, but hidden and disabled on the waiting screen and in the session configuration scene, which has no cheat codes) where the therapist types a code and sends it
 via `room.send("cheatCode", code)`.
 
 **Shared cheat (all scenes — `CheatCodes.RegisterBaseCheats`):** `skip` advances the current dialogue by one line
@@ -474,7 +473,6 @@ are ignored until the archery tutorial is completed.
 | `intro` | Complete the intro dialogue |
 | `frisbee` / `archery` | Jump straight into the mini-game scene |
 | `duck` / `fishing` | Registered, but `GameManager.GoToMiniGame()` only logs "not implemented yet" |
-| `giant` | Toggle giant mode (`PlayerScale.ToggleScale()`) |
 
 ---
 
@@ -586,7 +584,7 @@ list from its own button.
 
 ### 12. Player Scale / Giant Mode
 
-**Location:** `CountryFair/Other/PlayerScale.cs`
+**Location:** `ConfigSession/Other/PlayerScale.cs` (config scene only: there is **no** `giant` cheat code; the mode is entered with the giant wrist button)
 
 Toggles the camera rig between normal and giant scale (`giantScaleFactor`, default 4x) with a Mario-style
 grow/shrink animation. Comfort is the driving constraint — the implementation notes are worth preserving:
@@ -647,9 +645,40 @@ a time without making progress:
 
 **Web clients on the hotspot:** the React client (`ClientSide/src/network/client.ts`) never hard-codes the server
 host — it uses the page's own `location.hostname` (override: `VITE_SERVER_URL`), so a therapist tablet that opens
-`http://192.168.137.1:5173` automatically talks to Colyseus on `192.168.137.1:2567`, the same IP the Unity build uses.
+`http://192.168.137.1:5173` automatically talks to Colyseus on `192.168.137.1:2570`, the same IP the Unity build uses.
 `vite.config.ts` sets `server.host` / `preview.host: true` so Vite listens beyond `localhost`, and the Windows
-firewall must allow ports **5173** and **2567** on the hotspot network (usually classified as *Public*).
+firewall must allow ports **5173** and **2570** on the hotspot network (usually classified as *Public*).
+
+**Server port (2570, not Colyseus' default 2567):** 2567 is the port most Colyseus projects use, so it is often
+already taken (`EADDRINUSE` / `listen EADDRINUSE: address already in use :::2567` — e.g. by another Colyseus
+server or a `tsx watch` left running). The project therefore uses **2570**. The port lives in **one shared
+place and four copies that must agree**:
+
+| Where | Role |
+|-------|------|
+| `CountryFairWebApp/.env` → `SERVER_PORT` | Source of truth for the server (`ServerSide/src/index.ts` loads it), the Vite client (`envPrefix: ['VITE_', 'SERVER_']`, read as `import.meta.env.SERVER_PORT` in `client.ts`) and `startapp.ps1`. **Gitignored** (`**.env`), so a fresh clone must create it with `SERVER_PORT=2570`; without it every fallback below applies |
+| Fallbacks `?? "2570"` / `\|\| 2570` / `$defaultServerPort` | `client.ts`, `index.ts` and `startapp.ps1` — only used when the `.env` is missing or has no `SERVER_PORT` |
+| `ConnectToWebApp._serverPort` | Unity side, **not** read from the `.env`. The value serialized in `Assets/Prefabs/General/Other/ConnectToWebApp.prefab` (`_serverPort`) overrides the script default, so change **both** when the port changes |
+
+To use another port: change `SERVER_PORT` in the `.env`, `_serverPort` in the prefab (and the script default),
+the fallbacks above, and the firewall rule. `client.ts` used to read `VITE_SERVER_PORT`, which the `.env` never
+defines, so the page silently ignored the `.env` port; it now reads `SERVER_PORT`.
+
+**Configuration scene on the web (`ConfigSession`):** the web client mirrors the session parameters and the test
+flow of the headset, all through the same room (`FairState` is the room's memory, so a web client that joins
+mid-session shows the right thing at once):
+
+| Message | From → to | Purpose |
+|---------|-----------|---------|
+| `updateTentParams` | both ↔ both | One tent's `{ miniGame, repetitions, sessionTimeMinutes, difficultyChange }`; stored in `state.tentParams` (`MapSchema<TentParams>`). Unity: `SessionParamsMenu` sends on every local change and on `Start`/every re-join (`ConnectToWebApp.joinedRoom`), applies remote ones with `ApplyRemoteParams` (never echoes back) |
+| `updateAffectedArm` | both ↔ both | The affected arm, shared by every tent (`state.isLeftArmAffected`, Unity's static `s_isLeftArmAffected`) |
+| `updateConfigState` | game → state | `{ survivor, configured, isLast }`: which survivor's file is up (`state.survivorFile`, id = name lower-cased without spaces, whitelisted by `SURVIVOR_FILES`), whether the tents match it (`state.configCompleted`) and whether it is the last survivor of the sequence (`state.isLastConfig`, `_currentSequence.Count <= 1`), which makes the web button read "Terminar configuração de pacientes" instead of "Avançar para a próxima configuração" (pressing it on the last one quits the app, as the headset button does). Sent by `ConfigSessionManager.ReportConfigState()` |
+| `nextConfiguration` | web → game only | The web's "Avançar para a próxima configuração" button = the headset's config button (`SetNextSelectionMode`). The server drops it unless `configCompleted`, and clears the flag at once, so a stale or double click cannot skip a configuration |
+
+Web UI: `TentParamsPanel` (a one-column `<Html>` panel above each tent, as large as fits — keep it narrower than the 3.4-unit tent
+spacing, or neighbours overlap; the row has no title text so the panels can use the sky above the tents) and `ConfigCard` (middle of the grass: the survivor's file image from `ClientSide/public/survivors/<id>.png`
+— copies of `ConfigSessionStrokeSurvivorsFiles/imgs/FileImgs/`, lower-cased; **landscape** pages **27vh high** under the tents, width = the image's own aspect ratio, never cropped (so a wider page is a wider card; keep blank margins out of the image); click to enlarge (whole page) — replaced by the advance button
+once `configCompleted`, which also hides the four tents and their panels (`hidden` in `GameScreen`) and centres the button in the middle of the screen). A new survivor needs its image there, its id in `SURVIVOR_FILES` (server) and `SURVIVOR_NAMES` (`ConfigCard.tsx`).
 
 Quick verification of what actually shipped in a built APK:
 ```bash
@@ -665,7 +694,6 @@ aapt2 dump xmltree CountryFair.apk --file AndroidManifest.xml | grep -iE "cleart
 CountryFair (Plaza)
 ├── CountryFairDialogue (intro) ──playerFinishedIntro──> WristMenu + post-intro elements
 ├── Animal AI (wandering NPCs)
-├── PlayerScale (giant mode toggle)
 ├── Tent personalization (world TentPlaceHolderManager <──> wrist-menu TentPlaceHolderManager)
 └── MiniGameTent.GoToMiniGame() → Load "ArcheryGame" / "FrisbeeGame"
 

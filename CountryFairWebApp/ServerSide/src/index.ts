@@ -16,4 +16,4 @@ import app from "./app.config.js";
 // client, so both sides agree on SERVER_PORT. It is two levels above this module.
 process.loadEnvFile(new URL("../../.env", import.meta.url));
 
-listen(app, Number(process.env.SERVER_PORT) || 2567);
+listen(app, Number(process.env.SERVER_PORT) || 2570);

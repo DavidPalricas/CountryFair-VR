@@ -36,9 +36,13 @@ public class ConfigSessionManager : MonoBehaviour
 
     [SerializeField]
     private UnityEvent<bool> _activateConfigButton;
+    
+    [SerializeField]
+    private UnityEvent<bool> _activateTents;
 
     [SerializeField]
     private UnityEvent<Material> _changedSurvivorFile;
+
 
     /// <summary>
     /// Current configuration of each tent, filled by <see cref="OnTentConfigChanged"/>. Initialized here (not in
@@ -77,13 +81,15 @@ public class ConfigSessionManager : MonoBehaviour
         SelectionMode[][] _availableSequences = new SelectionMode[][]
         {
            new SelectionMode[] { SelectionMode.RayGrab, SelectionMode.TentMenu, SelectionMode.GiantButton },
-            new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.TentMenu, SelectionMode.RayGrab },
-            new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.RayGrab, SelectionMode.TentMenu},
+           new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.TentMenu, SelectionMode.RayGrab },
+           new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.RayGrab, SelectionMode.TentMenu},
         };
 
         _currentSequence = _availableSequences[Utils.RandomValueInRange(0, _availableSequences.Length)].ToList();
 
         _currentSelectionMode = _currentSequence[0];
+
+        _activateTents.Invoke(true);
 
         Debug.Log($"Current sequence: {string.Join(", ", _currentSequence)}");
 
@@ -92,8 +98,73 @@ public class ConfigSessionManager : MonoBehaviour
         ApplyCurrentSurvivor();
     }
 
+    /// <summary>
+    /// Registers with <see cref="ConnectToWebApp"/> at runtime (it is <c>DontDestroyOnLoad</c>, this manager is not, so
+    /// an Inspector reference would go stale on a scene reload): the web app's "advance" button and every (re)join of
+    /// the room, after which the state is reported again because anything sent before the join was dropped.
+    /// </summary>
+    private void Start()
+    {
+        ConnectToWebApp webApp = ConnectToWebApp.Instance;
+
+        if (webApp == null)
+        {
+            return;
+        }
+
+        webApp.nextConfiguration.AddListener(OnWebNextConfiguration);
+        webApp.joinedRoom.AddListener(ReportConfigState);
+
+        ReportConfigState();
+    }
+
+    /// <summary>Stops listening to <see cref="ConnectToWebApp"/>.</summary>
+    private void OnDestroy()
+    {
+        ConnectToWebApp webApp = ConnectToWebApp.Instance;
+
+        if (webApp == null)
+        {
+            return;
+        }
+
+        webApp.nextConfiguration.RemoveListener(OnWebNextConfiguration);
+        webApp.joinedRoom.RemoveListener(ReportConfigState);
+    }
+
+    /// <summary>
+    /// Tells the web app which survivor's file is up and whether the tents already match it, so it shows the file or,
+    /// once completed, the "advance" button.
+    /// </summary>
+    private void ReportConfigState()
+    {
+        if (ConnectToWebApp.Instance == null || _currentSurvivor == null)
+        {
+            return;
+        }
+
+        // SetNextSelectionMode removes the current mode from the sequence, so the last survivor is the only one left in it.
+        bool isLast = _currentSequence != null && _currentSequence.Count <= 1;
+
+        ConnectToWebApp.Instance.UpdateConfigState(_currentSurvivor.survivorName, _isConfigured, isLast);
+    }
+
+    /// <summary>
+    /// The therapist pressed "advance to the next configuration" on the web app: does what the headset's config button does.
+    /// Ignored unless the configuration is completed (the server already filters this, but the states can race).
+    /// </summary>
+    private void OnWebNextConfiguration()
+    {
+        if (!_isConfigured)
+        {
+            return;
+        }
+
+        SetNextSelectionMode();
+    }
+
     private void UpdateSelectionMode()
-    {   
+    {
         _activateConfigButton.Invoke(false);
 
         bool tentMenuActive = false;
@@ -129,7 +200,6 @@ public class ConfigSessionManager : MonoBehaviour
     {
         _activateTentMenu.Invoke(tentMenuActive);
         _activateGiantButton.Invoke(giantButtonActive);
-
         _activateTentsHandGrab.Invoke(handGrabActive);
         _activateTentsRayInteractable.Invoke(rayInteractableActive);
     }
@@ -137,7 +207,7 @@ public class ConfigSessionManager : MonoBehaviour
     public void SetNextSelectionMode()
     {  
         _currentSequence.Remove(_currentSelectionMode);
-        
+        _activateTents.Invoke(true);        
         if (_currentSequence.Count == 0)
         {
             #if UNITY_EDITOR
@@ -192,6 +262,9 @@ public class ConfigSessionManager : MonoBehaviour
 
         _isConfigured = false;
 
+        // A new survivor starts not configured; ValidateConfiguration reports again if the tents already match it.
+        ReportConfigState();
+
         ValidateConfiguration();
     }
 
@@ -227,7 +300,14 @@ public class ConfigSessionManager : MonoBehaviour
 
         if (!survivor.Matches(_currentTentsConfig, out string mismatch))
         {
+            bool wasConfigured = _isConfigured;
+
             _isConfigured = false;
+
+            if (wasConfigured)
+            {
+                ReportConfigState();
+            }
 
             Debug.Log($"[ConfigSession] {survivor.survivorName} mismatch: {mismatch}");
 
@@ -248,5 +328,9 @@ public class ConfigSessionManager : MonoBehaviour
     private void OnSessionConfigured()
     {
         _activateConfigButton.Invoke(true);
+
+        _activateTents.Invoke(false);
+
+        ReportConfigState();
     }
 }

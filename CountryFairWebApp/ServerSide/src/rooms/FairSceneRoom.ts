@@ -1,8 +1,8 @@
 import {Client } from "colyseus";
 import {CountryFairRoom} from "./CountryFairRoom.js";
 import {FairState } from "../schemas/FairSchema.js";
-import {isGameSnapshot, isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeTentOrder} from "./messageValidation.js";
-import {applyDialogueFinished, applyGameSnapshot, applyProgress, applySceneChange, applyTentOrder, applyTutorialFinished} from "./fairRules.js";
+import {isAffectedArmUpdate, isGameSnapshot, isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeConfigState, sanitizeTentOrder, sanitizeTentParams} from "./messageValidation.js";
+import {applyAffectedArm, applyConfigState, applyDialogueFinished, applyGameSnapshot, applyNextConfiguration, applyProgress, applySceneChange, applyTentOrder, applyTentParams, applyTutorialFinished} from "./fairRules.js";
 
 
 /**
@@ -43,6 +43,72 @@ export class FairSceneRoom extends CountryFairRoom {
             // leaves every client holding a different order than `state.tentOrders`. The sender
             // is skipped: its own keys were just applied, so the merge never contradicts it.
             this.broadcast("updateTentsOrder", this.state.tentOrders.toJSON(), { except: client });
+      });
+
+      // Session parameters of one tent (repetitions, session time, difficulty change), changed
+      // in the headset's `SessionParamsMenu` or in the web client's panel above the tent. Same
+      // pattern as "updateTentsOrder": validate, store in `state.tentParams`, relay the
+      // validated copy to everyone but the sender.
+      this.onMessage("updateTentParams", (client, data) => {
+            if (!this.isSenderAllowed(client, "updateTentParams", ["web", "game"])) return;
+
+            const params = sanitizeTentParams(data);
+
+            if (params === null) {
+                  console.warn(`Ignoring invalid "updateTentParams" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            applyTentParams(this.state, params);
+
+            this.broadcast("updateTentParams", params, { except: client });
+      });
+
+      // The survivor's affected arm, shared by every tent: a separate message because Unity
+      // keeps it in a static shared by all `SessionParamsMenu` panels, not per tent.
+      this.onMessage("updateAffectedArm", (client, data) => {
+            if (!this.isSenderAllowed(client, "updateAffectedArm", ["web", "game"])) return;
+
+            if (!isAffectedArmUpdate(data)) {
+                  console.warn(`Ignoring invalid "updateAffectedArm" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            applyAffectedArm(this.state, data.isLeftArmAffected);
+
+            this.broadcast("updateAffectedArm", { isLeftArmAffected: data.isLeftArmAffected }, { except: client });
+      });
+
+      // The game's progress through the configuration test: which survivor's file is up and whether
+      // the tents match it yet. Only stored (like "updatePlayerProgressOnMiniGame"): the web client
+      // reads it from `state`, which also covers a web client joining mid-session.
+      this.onMessage("updateConfigState", (client, data) => {
+            if (!this.isSenderAllowed(client, "updateConfigState", ["game"])) return;
+
+            const config = sanitizeConfigState(data);
+
+            if (config === null) {
+                  console.warn(`Ignoring invalid "updateConfigState" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            applyConfigState(this.state, config);
+      });
+
+      // The therapist pressed "advance to the next configuration" on the web. Sent on to the game
+      // only (not to the other web clients), and only while the current configuration is
+      // completed: see `applyNextConfiguration`.
+      this.onMessage("nextConfiguration", (client) => {
+            if (!this.isSenderAllowed(client, "nextConfiguration", ["web"])) return;
+
+            if (!applyNextConfiguration(this.state)) {
+                  console.warn(`Ignoring "nextConfiguration" from client ${client.sessionId}: the configuration is not completed.`);
+                  return;
+            }
+
+            this.clients
+                  .filter((other) => this.platformOf(other) === "game")
+                  .forEach((game) => game.send("nextConfiguration", {}));
       });
 
       // Sent by the web client when the therapist types a cheat code there. Relayed to the

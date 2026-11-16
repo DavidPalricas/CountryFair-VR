@@ -2,6 +2,19 @@
  import { Schema, type, MapSchema } from "@colyseus/schema";
 
  /**
+  * Session parameters of one tent, mirroring Unity's `SessionParamsMenu` (and the matching
+  * fields of `TentConfigData`). Stored per tent in {@link FairState.tentParams}.
+  */
+ export class TentParams extends Schema {
+   /** Number of repetitions, 1 to 5 (`SessionParamsMenu._repetitions`). */
+   @type("number") repetitions: number = 1;
+   /** Maximum session time in minutes, 1 to 15 (`SessionParamsMenu._sessionTime`). */
+   @type("number") sessionTimeMinutes: number = 1;
+   /** `SessionParamsMenu.DIFFICULTY_CHANGE` lower-cased: `"decrease"`, `"keep"` or `"increase"`. */
+   @type("string") difficultyChange: string = "keep";
+ }
+
+ /**
   * Synced state of the plaza scene ({@link FairSceneRoom}) — the network contract between
   * the Unity headset (`platform: "game"`) and the React client (`platform: "web"`).
   */
@@ -46,4 +59,37 @@
    @type("string") sceneName: string = "";
    @type("boolean") dialogueActive: boolean = true;
    @type("boolean") tutorialActive: boolean = true;
+
+   /**
+    * Session parameters of each tent in the configuration scene (tent id, lower-cased ->
+    * {@link TentParams}), written by `"updateTentParams"` (see `applyTentParams`). Like
+    * `tentOrders`, this is the room's memory of the last values either side reported, so a web
+    * client that (re)joins shows them right away. A tent is absent until someone reports it.
+    */
+   @type({ map: TentParams }) tentParams: MapSchema<TentParams> = new MapSchema<TentParams>();
+
+   /**
+    * Affected arm of the survivor, shared by every tent (Unity keeps it in the static
+    * `SessionParamsMenu.s_isLeftArmAffected`). Written by `"updateAffectedArm"`.
+    */
+   @type("boolean") isLeftArmAffected: boolean = true;
+
+   /**
+    * Progress of the session configuration test, reported by the game on `"updateConfigState"`
+    * (Unity's `ConfigSessionManager`): which survivor's file the tents are being configured
+    * against, and whether the tents already match it.
+    *
+    * - `survivorFile`: lower-cased id of the survivor (`"rutepereira"`...), `""` until reported.
+    *   It is also the file name of the image the web client shows (`public/survivors/<id>.png`).
+    * - `configCompleted`: the tents match the survivor's file, so the web client swaps the file
+    *   for the "advance" button. Cleared by `"nextConfiguration"` and by the game on any mismatch.
+    */
+   @type("string") survivorFile: string = "";
+   @type("boolean") configCompleted: boolean = false;
+
+   /**
+    * The survivor in `survivorFile` is the last one of the test: the web client's button then ends
+    * the configuration instead of advancing to the next one. Reported with `"updateConfigState"`.
+    */
+   @type("boolean") isLastConfig: boolean = false;
   }

@@ -1,0 +1,73 @@
+/*
+  Session parameters panel above each tent (TentParamsPanel). Same wood-brown palette as the
+  cheat-code panel. Sizes are in px on purpose: drei's <Html distanceFactor> scales the whole
+  element with the camera distance, so rem/vw units would be scaled twice.
+
+  One narrow column, like Unity's panel: the four tents are only 3.4 world units apart, so a
+  wider (horizontal) panel overlaps its neighbours. Keep the width below the tent spacing.
+*/
+.tent-params {
+  width: 178px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(58, 36, 19, 0.92);
+  color: #fff6e6;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  line-height: 1.15;
+  user-select: none;
+}
+
+.tent-params__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tent-params__label {
+  font-weight: 600;
+}
+
+.tent-params__stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tent-params__button {
+  width: 34px;
+  height: 26px;
+  border: none;
+  border-radius: 5px;
+  background: #e8b04a;
+  color: #3a2413;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Faded like Unity's DisabledButtonAlpha (0.35) on the button that would leave the range. */
+.tent-params__button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.tent-params__value {
+  min-width: 24px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tent-params__select {
+  padding: 3px 4px;
+  border: none;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}

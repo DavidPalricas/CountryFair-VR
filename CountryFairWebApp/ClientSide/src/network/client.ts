@@ -2,8 +2,12 @@ import { useSyncExternalStore } from "react";
 import { Client, CloseCode } from "@colyseus/sdk";
 import type { Room } from "@colyseus/sdk/Room";
 
-/** Must match SERVER_PORT in CountryFairWebApp/.env, which the Colyseus server listens on. */
-const SERVER_PORT = import.meta.env.VITE_SERVER_PORT ?? "2567";
+/**
+ * Colyseus server port: `SERVER_PORT` from the shared CountryFairWebApp/.env (exposed to the client
+ * by `envPrefix` in vite.config.ts), which is the same value the server listens on. The fallback
+ * only matters if the .env is missing and must match the one in `ServerSide/src/index.ts`.
+ */
+const SERVER_PORT = import.meta.env.SERVER_PORT ?? "2570";
 
 /**
  * The Colyseus server runs on the same PC that serves this page (the Mobile Hotspot host),

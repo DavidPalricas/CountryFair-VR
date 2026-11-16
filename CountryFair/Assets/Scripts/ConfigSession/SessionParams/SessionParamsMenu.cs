@@ -85,6 +85,9 @@ public class SessionParamsMenu : MonoBehaviour
     /// <summary>Currently selected difficulty change (keeps the difficulty by default).</summary>
     public DIFFICULTY_CHANGE DifficultyChange { get; private set; } = DIFFICULTY_CHANGE.KEEP;
 
+    /// <summary>Mini-game of the <see cref="ConfigTent"/> this panel belongs to: the key of its parameters on the web app.</summary>
+    private GameManager.MiniGames _miniGame;
+
     /// <summary>Validates the references, sets the default values and fills the dropdown. Clicks are NOT listened to in code: the buttons' <c>On Click</c> and the dropdowns' value events are wired in the Inspector to the public methods below (the ray reaches them through the single ray interaction of the tent canvas).</summary>
     private void Awake()
     {
@@ -95,6 +98,15 @@ public class SessionParamsMenu : MonoBehaviour
         {
             return;
         }
+
+        ConfigTent tent = GetComponentInParent<ConfigTent>(true);
+
+        if (!Utils.RequireAssigned(tent, nameof(ConfigTent), this))
+        {
+            return;
+        }
+
+        _miniGame = tent.MiniGame;
 
         InitializeParameter(_repetitions);
         InitializeParameter(_sessionTime);
@@ -114,10 +126,114 @@ public class SessionParamsMenu : MonoBehaviour
         _onParamsChanged.Invoke();
     }
 
-    /// <summary>Stops following the shared affected arm.</summary>
+    /// <summary>
+    /// Registers with <see cref="ConnectToWebApp"/> at runtime (not in the Inspector: it is <c>DontDestroyOnLoad</c>,
+    /// this panel is not, same reason as <c>TentPlaceHolderManager.Start()</c>) and reports the starting values, so
+    /// the web app's panels begin in sync with the headset.
+    /// </summary>
+    private void Start()
+    {
+        ConnectToWebApp webApp = ConnectToWebApp.Instance;
+
+        if (webApp == null)
+        {
+            return;
+        }
+
+        webApp.updateTentParams.AddListener(ApplyRemoteParams);
+        webApp.updateAffectedArm.AddListener(ApplyRemoteAffectedArm);
+        webApp.joinedRoom.AddListener(SendStateToWebApp);
+
+        SendStateToWebApp();
+    }
+
+    /// <summary>
+    /// Reports this tent's parameters and the shared affected arm. Called on <see cref="Start"/> and on every
+    /// (re)join of the room, so the web app always starts from the headset's values.
+    /// </summary>
+    private void SendStateToWebApp()
+    {
+        SendParamsToWebApp();
+
+        if (ConnectToWebApp.Instance != null)
+        {
+            ConnectToWebApp.Instance.UpdateAffectedArm(IsLeftArmAffected);
+        }
+    }
+
+    /// <summary>Stops following the shared affected arm and the web app.</summary>
     private void OnDestroy()
     {
         AffectedArmChanged -= RefreshAffectedArm;
+
+        ConnectToWebApp webApp = ConnectToWebApp.Instance;
+
+        if (webApp == null)
+        {
+            return;
+        }
+
+        webApp.updateTentParams.RemoveListener(ApplyRemoteParams);
+        webApp.updateAffectedArm.RemoveListener(ApplyRemoteAffectedArm);
+        webApp.joinedRoom.RemoveListener(SendStateToWebApp);
+    }
+
+    /// <summary>Sends this tent's parameters to the web app (see <see cref="ConnectToWebApp.UpdateTentParams"/>).</summary>
+    private void SendParamsToWebApp()
+    {
+        if (ConnectToWebApp.Instance == null)
+        {
+            return;
+        }
+
+        ConnectToWebApp.Instance.UpdateTentParams(new TentParamsMessage
+        {
+            miniGame = _miniGame.ToString(),
+            repetitions = Repetitions,
+            sessionTimeMinutes = SessionTimeMinutes,
+            difficultyChange = DifficultyChange.ToString()
+        });
+    }
+
+    /// <summary>
+    /// Shows parameters changed on the web app. Messages for other tents are ignored (every panel listens to the
+    /// same event). Nothing is sent back: this path never goes through <see cref="SendParamsToWebApp"/>, and the room
+    /// does not relay a message to its sender, so there is no echo.
+    /// </summary>
+    /// <param name="message">Parameters relayed by the room, already validated by the server.</param>
+    private void ApplyRemoteParams(TentParamsMessage message)
+    {
+        if (message == null || !string.Equals(message.miniGame, _miniGame.ToString(), StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _repetitions.Set(message.repetitions);
+        _sessionTime.Set(message.sessionTimeMinutes);
+
+        if (Enum.TryParse(message.difficultyChange, true, out DIFFICULTY_CHANGE difficultyChange))
+        {
+            DifficultyChange = difficultyChange;
+            _difficultyDropdown.SetValueWithoutNotify((int)difficultyChange);
+        }
+
+        _onParamsChanged.Invoke();
+    }
+
+    /// <summary>
+    /// Shows the affected arm changed on the web app. Every panel receives it, but the shared value is only changed
+    /// (and <see cref="AffectedArmChanged"/> raised) by the first one; nothing is sent back.
+    /// </summary>
+    private static void ApplyRemoteAffectedArm(bool isLeft)
+    {
+        if (s_isLeftArmAffected == isLeft)
+        {
+            return;
+        }
+
+        s_isLeftArmAffected = isLeft;
+
+        AffectedArmChanged?.Invoke();
     }
 
     /// <summary>Shows the shared affected arm in this panel's dropdown and reports the tent's new configuration.</summary>
@@ -158,6 +274,7 @@ public class SessionParamsMenu : MonoBehaviour
         ChangeParameter(_repetitions, increase);
 
         _onParamsChanged.Invoke();
+        SendParamsToWebApp();
     }
 
     /// <summary>
@@ -169,6 +286,7 @@ public class SessionParamsMenu : MonoBehaviour
         ChangeParameter(_sessionTime, increase);
 
         _onParamsChanged.Invoke();
+        SendParamsToWebApp();
     }
 
     /// <summary>Increases or decreases a stepped parameter.</summary>
@@ -195,6 +313,11 @@ public class SessionParamsMenu : MonoBehaviour
         s_isLeftArmAffected = isLeft;
 
         AffectedArmChanged?.Invoke();
+
+        if (ConnectToWebApp.Instance != null)
+        {
+            ConnectToWebApp.Instance.UpdateAffectedArm(isLeft);
+        }
     }
 
     /// <summary>
@@ -209,5 +332,6 @@ public class SessionParamsMenu : MonoBehaviour
         DifficultyChange = (DIFFICULTY_CHANGE)Mathf.Clamp(optionIndex, 0, lastOption);
 
         _onParamsChanged.Invoke();
+        SendParamsToWebApp();
     }
 }
