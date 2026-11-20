@@ -29,6 +29,8 @@ public class TentPlaceHolder: MonoBehaviour
                 return;
             }
 
+            Debug.Log($"TentPlaceHolder {Number} entered by {element.name}");
+
             element.UpdateTentPlaceHolder(this);
         }
     }
@@ -48,7 +50,13 @@ public class TentPlaceHolder: MonoBehaviour
                 return;
             }
 
-            element.UpdateTentPlaceHolder(null);
+            Debug.Log($"TentPlaceHolder {Number} exited by {element.name}");
+
+            // Because the tent may have moved to another placeholder before exiting this one, only clear the reference if it is still pointing to this placeholder.
+            if (element.GetCurrentPlaceHolder() == this)
+            {
+                 element.UpdateTentPlaceHolder(null);
+            }
         }
     }
 }
