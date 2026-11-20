@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
@@ -31,6 +32,12 @@ public abstract class OrderableTentElement : MonoBehaviour
     /// <summary>Which mini-game this element represents; drives the tent's scene target and the wrist-menu panel's label/sprite.</summary>
     public GameManager.MiniGames MiniGame = GameManager.MiniGames.Archery;
 
+    /// <summary>
+    /// Raised by every element after <see cref="_onElementSelectionChanged"/>, with <c>true</c> on grab and <c>false</c>
+    /// once the release was snapped and the tents swapped. Used by <see cref="ConfigTestLogger"/> to time the user test.
+    /// </summary>
+    public static event Action<OrderableTentElement, bool> SelectionChanged;
+
     /// <summary>Validates the starting placeholder reference, caches this element's collider, and records the starting placeholder as the initial fallback for reverts.</summary>
     protected virtual void Awake()
     {
@@ -57,7 +64,19 @@ public abstract class OrderableTentElement : MonoBehaviour
 
         SnapToCurrentPlaceHolder();
 
-        _onElementSelectionChanged.Invoke(false, this);
+        NotifySelectionChanged(false);
+    }
+
+    /// <summary>
+    /// Raises <see cref="_onElementSelectionChanged"/> (Inspector listeners first, so the placeholder managers have
+    /// already swapped the tents) and then <see cref="SelectionChanged"/>.
+    /// </summary>
+    /// <param name="isSelected">True when the element was grabbed; false when it was released and snapped.</param>
+    protected void NotifySelectionChanged(bool isSelected)
+    {
+        _onElementSelectionChanged.Invoke(isSelected, this);
+
+        SelectionChanged?.Invoke(this, isSelected);
     }
 
     

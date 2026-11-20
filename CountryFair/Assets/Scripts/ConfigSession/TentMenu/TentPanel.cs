@@ -104,6 +104,6 @@ public class TentPanel : OrderableTentElement
             return;
         }
 
-       _onElementSelectionChanged.Invoke(true, this);
+       NotifySelectionChanged(true);
   }
 }

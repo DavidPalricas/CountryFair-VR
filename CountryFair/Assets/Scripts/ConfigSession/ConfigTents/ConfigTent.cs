@@ -151,7 +151,7 @@ public class ConfigTent : OrderableTentElement
     {
         SetTentUIVisible(false);
 
-        _onElementSelectionChanged.Invoke(true, this);
+        NotifySelectionChanged(true);
     }
 
     /// <summary>

@@ -62,6 +62,9 @@ public class ConfigSessionManager : MonoBehaviour
 
     private Tuple<HandGrabInteractable, RayInteractable>[] _tentsInteractables;
 
+    /// <summary>Records the user test (config time per mode, grab times per tent) in <c>userTestData.json</c>.</summary>
+    private readonly ConfigTestLogger _testLogger = new();
+
     private enum SelectionMode
     {
         RayGrab,
@@ -93,6 +96,10 @@ public class ConfigSessionManager : MonoBehaviour
 
         Debug.Log($"Current sequence: {string.Join(", ", _currentSequence)}");
 
+        _testLogger.StartSession(_currentSequence.Select(mode => mode.ToString()));
+
+        OrderableTentElement.SelectionChanged += OnTentSelectionChanged;
+
         UpdateSelectionMode();
 
         ApplyCurrentSurvivor();
@@ -121,6 +128,8 @@ public class ConfigSessionManager : MonoBehaviour
     /// <summary>Stops listening to <see cref="ConnectToWebApp"/>.</summary>
     private void OnDestroy()
     {
+        OrderableTentElement.SelectionChanged -= OnTentSelectionChanged;
+
         ConnectToWebApp webApp = ConnectToWebApp.Instance;
 
         if (webApp == null)
@@ -258,6 +267,8 @@ public class ConfigSessionManager : MonoBehaviour
 
         Debug.Log($"Current survivor: {_currentSurvivor.survivorName} ({_currentSelectionMode})");
 
+        _testLogger.BeginMode(_currentSelectionMode.ToString(), _currentSurvivor);
+
         _changedSurvivorFile.Invoke(_currentSurvivor.fileMaterial);
 
         _isConfigured = false;
@@ -277,7 +288,15 @@ public class ConfigSessionManager : MonoBehaviour
     {
         _currentTentsConfig[tentConfig.MiniGame] = tentConfig;
 
+        _testLogger.OnTentConfigChanged(tentConfig);
+
         ValidateConfiguration();
+    }
+
+    /// <summary>A tent or wrist-menu panel was grabbed or released (<see cref="OrderableTentElement.SelectionChanged"/>).</summary>
+    private void OnTentSelectionChanged(OrderableTentElement element, bool isSelected)
+    {
+        _testLogger.OnTentSelectionChanged(element.MiniGame, isSelected);
     }
 
     /// <summary>
@@ -327,6 +346,8 @@ public class ConfigSessionManager : MonoBehaviour
     /// <summary>Called once the tents match the current survivor's file.</summary>
     private void OnSessionConfigured()
     {
+        _testLogger.CompleteMode();
+
         _activateConfigButton.Invoke(true);
 
         _activateTents.Invoke(false);

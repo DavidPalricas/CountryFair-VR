@@ -240,6 +240,34 @@ All three inherit `EmotionDisplay : NetworkBehaviour` and sync state via server-
 
 `ConnectToWebApp.cs` connects the game to a companion web app (`CountryFairWebApp/ServerSide`, a Colyseus server) that lets a healthcare professional view/reorder the fair state live. The connection is plain `ws://`, no TLS — a deliberate choice, since the server is meant to run on the same PC whose Mobile Hotspot the headset joins, not on an untrusted network. The Colyseus server listens on port **2570** (not Colyseus' default 2567, which is commonly already in use); it is set by `SERVER_PORT` in `CountryFairWebApp/.env` (gitignored — create it with `SERVER_PORT=2570` on a fresh clone) and must match `_serverPort` on the `ConnectToWebApp` prefab. See **`CLAUDE.md` → "Web App Connection & Cleartext Networking"** for the full setup (required Android/Player Settings, common device-build pitfalls) and the deployment caveat.
 
+### Configuration Session (user test)
+
+`ConfigSession.unity` is a separate scene used to test how a healthcare professional reorders the tents and sets their session parameters. `ConfigSessionManager` runs three selection modes (**RayGrab**, **TentMenu**, **GiantButton**) in a random sequence, each with a stroke survivor's file (`StrokeSurvivorProfile`) stating the expected order and parameters of every tent. `ConfigTestLogger` records the run in `userTestData.json` (project root in the Editor, `Application.persistentDataPath` on the Quest; every run is appended to the array):
+
+```json
+[
+  {
+    "id": "2026-11-20_15-30-00",
+    "sequence": ["GiantButton", "TentMenu", "RayGrab"],
+    "totalConfigTime": 41.7,
+    "GiantButton": {
+      "survivor": "Maria",
+      "configTime": 14.8,
+      "tents": {
+        "Frisbee": {
+          "expectedOrder": 2,
+          "totalTime": 5.3,
+          "correctedBySwap": false,
+          "attempts": [{ "grabDuration": 3.2, "placedOrder": 3, "correct": false }]
+        }
+      }
+    }
+  }
+]
+```
+
+`configTime` is the time until the whole configuration matches the file; `totalConfigTime` is the sum over the modes. Only a tent that was grabbed gets a `totalTime`; one that reached its slot because another was dropped on it is flagged `correctedBySwap`.
+
 ---
 
 # 🚀 Getting Started
