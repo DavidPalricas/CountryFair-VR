@@ -86,9 +86,9 @@ public class ConfigSessionManager : MonoBehaviour
 
         SelectionMode[][] _availableSequences = new SelectionMode[][]
         {
-           new SelectionMode[] { SelectionMode.RayGrab, SelectionMode.TentMenu, SelectionMode.GiantButton },
-           new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.TentMenu, SelectionMode.RayGrab },
-           new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.RayGrab, SelectionMode.TentMenu},
+           new SelectionMode[] { SelectionMode.RayGrab} //, SelectionMode.TentMenu, SelectionMode.GiantButton },
+        //   new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.TentMenu, SelectionMode.RayGrab },
+         //  new SelectionMode[] {SelectionMode.GiantButton, SelectionMode.RayGrab, SelectionMode.TentMenu},
         };
 
         _currentSequence = _availableSequences[Utils.RandomValueInRange(0, _availableSequences.Length)].ToList();

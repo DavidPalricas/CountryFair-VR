@@ -135,6 +135,10 @@ export function applyNextConfiguration(state: FairState): boolean {
 
     state.configCompleted = false;
 
+    if (state.isLastConfig) {
+        state.configFinished = true;
+    }
+
     return true;
 }
 

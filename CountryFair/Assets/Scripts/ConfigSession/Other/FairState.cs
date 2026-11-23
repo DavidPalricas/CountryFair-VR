@@ -50,5 +50,8 @@ public FairState() { }
 
 	[Type(11, "boolean")]
 	public bool isLastConfig = default(bool);
+
+	[Type(12, "boolean")]
+	public bool configFinished = default(bool);
 }
 

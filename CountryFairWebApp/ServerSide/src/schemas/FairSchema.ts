@@ -92,4 +92,11 @@
     * the configuration instead of advancing to the next one. Reported with `"updateConfigState"`.
     */
    @type("boolean") isLastConfig: boolean = false;
+
+   /**
+    * The therapist ended the configuration (pressed the button on the last survivor). The game quits
+    * right after, so the web clients keep the waiting screen but say the configuration is over.
+    * Set by `applyNextConfiguration`, cleared when the game joins the room again.
+    */
+   @type("boolean") configFinished: boolean = false;
   }

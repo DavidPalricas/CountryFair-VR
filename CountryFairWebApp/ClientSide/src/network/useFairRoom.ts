@@ -33,6 +33,10 @@ export function useFairRoom(): FairPhaseState & { connectionStatus: ConnectionSt
         dispatch({ type: "progressChanged", progress: { sessionGoal } });
       }),
 
+      $(room.state).listen("configFinished", (finished: boolean) => {
+        dispatch({ type: "configFinished", finished });
+      }),
+
       room.onMessage("gamejoined", () => {
         console.log("Received gamejoined message");
         // Read from the synced state rather than the message payload: it is what the room

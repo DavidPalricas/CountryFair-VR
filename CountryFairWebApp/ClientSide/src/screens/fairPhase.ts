@@ -24,6 +24,9 @@ const TUTORIAL_STATUS_TEXT = "O sobrevivente está a fazer o tutorial";
  * numbers below it are. */
 const PROGRESS_STATUS_TEXT = "Progresso da sessão";
 
+/** Status line shown on the waiting screen once the therapist ended the survivors' configuration. */
+const CONFIG_FINISHED_STATUS_TEXT = "Terminou a configuração dos sobreviventes";
+
 /** Status line shown while the server connection itself is down (W-C2). `connecting` keeps the
  * waiting screen's default text, so the very first load looks exactly as before. */
 const CONNECTION_STATUS_TEXT: Record<Exclude<ConnectionStatus, "connected">, string | undefined> = {
@@ -55,6 +58,8 @@ export type FairPhaseState = {
   // Label of the mini-game currently loaded (e.g. "Arco e Flecha"), or null in the plaza. Drives
   // the mini-game overlay's status text.
   miniGame: string | null;
+  // The therapist ended the configuration (`state.configFinished`): the waiting screen says so.
+  configFinished: boolean;
   // Score/streak/session goal for the mini-game currently being played. Kept up to date via
   // the room's synced state (not a message) so a page reload mid-session shows the current
   // numbers immediately instead of the empty defaults until the next change.
@@ -69,7 +74,8 @@ export type FairAction =
   | { type: "dialogueFinished" }
   | { type: "tutorialFinished" }
   | { type: "sceneChanged"; sceneName: string; dialogueActive?: boolean }
-  | { type: "progressChanged"; progress: Partial<MiniGameProgress> };
+  | { type: "progressChanged"; progress: Partial<MiniGameProgress> }
+  | { type: "configFinished"; finished: boolean };
 
 /** The room's `sceneName` / `dialogueActive` / `tutorialActive` (see `FairState`) at the moment of joining. */
 export type SceneSnapshot = {
@@ -83,6 +89,7 @@ export const initialFairPhase: FairPhaseState = {
   dialogueActive: true,
   tutorialActive: true,
   miniGame: null,
+  configFinished: false,
   progress: { score: 0, streak: 0, sessionGoal: 0 },
 };
 
@@ -163,6 +170,9 @@ export function fairReducer(state: FairPhaseState, action: FairAction): FairPhas
     }
     case "progressChanged":
       return { ...state, progress: { ...state.progress, ...action.progress } };
+    case "configFinished":
+      // Everyone goes back to the waiting screen: the game is about to quit.
+      return action.finished ? { ...state, configFinished: true, phase: "waiting" } : { ...state, configFinished: false };
   }
 }
 
@@ -188,7 +198,7 @@ export function overlayFor(state: FairPhaseState, connectionStatus: ConnectionSt
 
   switch (state.phase) {
     case "waiting":
-      return { kind: "hub" };
+      return { kind: "hub", statusText: state.configFinished ? CONFIG_FINISHED_STATUS_TEXT : undefined };
     case "config":
       return null;
     case "hub":

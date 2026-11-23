@@ -266,6 +266,7 @@ export class FairSceneRoom extends CountryFairRoom {
 
     if (clientPlatform === "game") {
       this.gameClientId = client.sessionId;
+      this.state.configFinished = false;
     }
 
     // `state` is created once in `onCreate` and never replaced here, so a client that
