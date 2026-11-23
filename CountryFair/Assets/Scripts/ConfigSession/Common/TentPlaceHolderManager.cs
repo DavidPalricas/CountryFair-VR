@@ -62,25 +62,39 @@ public class TentPlaceHolderManager : MonoBehaviour
     /// Registers this manager with its twin surface and with <see cref="ConnectToWebApp"/> — both
     /// re-subscribed here on every scene load, since (unlike <c>ConnectToWebApp</c>) this object is
     /// not <c>DontDestroyOnLoad</c> and gets a fresh instance each time — then broadcasts the starting
-    /// element order so all three sides begin in sync.
+    /// element order so all three sides begin in sync. The order is sent again on every (re)join of the
+    /// room (<see cref="ConnectToWebApp.joinedRoom"/>): when the app starts, <c>Start</c> runs before the
+    /// connection exists and its message is dropped, so without this the web app kept the order of the
+    /// previous configuration instead of the default one the headset shows.
     /// </summary>
     private void Start()
     {
         _updateOtherManagers.AddListener(ConnectToWebApp.Instance.UpdateTentsOrder);
         ConnectToWebApp.Instance.updateTentsOrder.AddListener(OnOtherManagerUpdate);
+        ConnectToWebApp.Instance.joinedRoom.AddListener(SendOrderToWebApp);
 
         Dictionary<string, string> fairState = GetFairState();
 
-        _updateOtherManagers.Invoke(fairState); 
+        _updateOtherManagers.Invoke(fairState);
     }
 
     /// <summary>
-    /// Removes the listener added in <see cref="Start"/> from <see cref="ConnectToWebApp.updateTentsOrder"/>, so the
-    /// <c>DontDestroyOnLoad</c> event does not keep calling this destroyed instance after the scene unloads.
+    /// Reports the current element order to the web app only (not to the twin manager, which already has it).
+    /// Called on every (re)join of the room, so the web app always starts from the headset's order.
+    /// </summary>
+    private void SendOrderToWebApp()
+    {
+        ConnectToWebApp.Instance.UpdateTentsOrder(GetFairState());
+    }
+
+    /// <summary>
+    /// Removes the listeners added in <see cref="Start"/> from <see cref="ConnectToWebApp"/>, so the
+    /// <c>DontDestroyOnLoad</c> events do not keep calling this destroyed instance after the scene unloads.
     /// </summary>
     private void OnDestroy()
     {
         ConnectToWebApp.Instance.updateTentsOrder.RemoveListener(OnOtherManagerUpdate);
+        ConnectToWebApp.Instance.joinedRoom.RemoveListener(SendOrderToWebApp);
     }
 
 
