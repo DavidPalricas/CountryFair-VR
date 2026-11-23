@@ -1,7 +1,8 @@
 /*
   Session parameters panel above each tent (TentParamsPanel). Same wood-brown palette as the
-  cheat-code panel. Sizes are in px on purpose: drei's <Html distanceFactor> scales the whole
-  element with the camera distance, so rem/vw units would be scaled twice.
+  cheat-code panel. Sizes are in px on purpose: TentParamsPanel sets CSS `zoom` on the whole
+  element so it keeps the same world size on any screen, so rem/vw units would be scaled twice.
+  The 178px width is mirrored by PANEL_CSS_WIDTH in TentParamsPanel.tsx.
 
   One narrow column, like Unity's panel: the four tents are only 3.4 world units apart, so a
   wider (horizontal) panel overlaps its neighbours. Keep the width below the tent spacing.
@@ -19,6 +20,31 @@
   font-size: 14px;
   line-height: 1.15;
   user-select: none;
+  /* Mobile browsers enlarge ("boost") text in narrow blocks, which breaks the zoomed layout. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* The anchor point is the panel's bottom centre: it grows up, away from the tent's name. */
+  transform: translate(-50%, -100%);
+}
+
+/*
+  Phone held upright: same font sizes in a narrower box (PANEL_CSS_WIDTH_PORTRAIT), so the
+  text comes out larger once zoomed to the panel's world width. Labels wrap onto more lines.
+*/
+.tent-params--portrait {
+  width: 112px;
+  padding: 6px 6px;
+  gap: 5px;
+}
+
+.tent-params--portrait .tent-params__stepper {
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.tent-params--portrait .tent-params__button {
+  width: 32px;
+  height: 30px;
 }
 
 .tent-params__row {

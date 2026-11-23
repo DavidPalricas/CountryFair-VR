@@ -1,5 +1,7 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { Html } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { PerspectiveCamera, Vector3, type Group } from "three";
 import {
     ARM_LABELS,
     DIFFICULTY_CHANGES,
@@ -22,6 +24,24 @@ type TentParamsPanelProps = {
 };
 
 /**
+ * Width the panel takes in the world, below the 3.4-unit tent spacing so neighbours never
+ * overlap. Wider in portrait, where the tents are tiny and every bit of width counts.
+ */
+const PANEL_WORLD_WIDTH = 2.3;
+const PANEL_WORLD_WIDTH_PORTRAIT = 3.1;
+/**
+ * `.tent-params` width in CSS px (TentParamsPanel.css), the size the panel is laid out at
+ * before zoom. Portrait uses the narrower `.tent-params--portrait` layout: with the same font
+ * sizes in fewer px, the text ends up larger once the panel is zoomed to its world width. The
+ * labels wrap onto more lines instead, which is fine: a phone held upright has plenty of sky.
+ */
+const PANEL_CSS_WIDTH = 178;
+const PANEL_CSS_WIDTH_PORTRAIT = 112;
+
+const panelWorldPos = new Vector3();
+const cameraWorldPos = new Vector3();
+
+/**
  * Web version of Unity's `SessionParamsMenu`: the session parameters panel floating above a
  * tent. Purely controlled — the values live in `GameScreen`, which also sends them to the room,
  * just as the tent order does.
@@ -32,58 +52,92 @@ type TentParamsPanelProps = {
  * starts dragging the tent under it.
  */
 export const TentParamsPanel = memo(function TentParamsPanel({ position, params, isLeftArmAffected, onParamsChange, onArmChange }: TentParamsPanelProps) {
+    const anchorRef = useRef<Group>(null!);
+    const panelRef = useRef<HTMLDivElement>(null);
+    const lastZoom = useRef(0);
+
+    /*
+      Sized by hand instead of drei's `distanceFactor`, for two reasons:
+      - drei's scale only depends on the camera distance, not on the viewport height. On a phone
+        held upright the camera backs away so the four tents still fit, the tents shrink a lot,
+        but the panels barely do: they ended up huge and on top of each other.
+      - drei applies it as `transform: scale()`, which blurs the text. CSS `zoom` lays the panel
+        out again at the new size, so text stays crisp.
+      Pixels per world unit at the panel's distance = viewport height / visible world height.
+    */
+    useFrame(({ camera, size }) => {
+        const panel = panelRef.current;
+        if (!panel || !(camera instanceof PerspectiveCamera)) return;
+
+        anchorRef.current.getWorldPosition(panelWorldPos);
+        camera.getWorldPosition(cameraWorldPos);
+        const visibleHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * panelWorldPos.distanceTo(cameraWorldPos);
+        const pixelsPerUnit = size.height / visibleHeight;
+
+        const isPortrait = size.width < size.height;
+        panel.classList.toggle("tent-params--portrait", isPortrait);
+        const zoom = isPortrait
+            ? (PANEL_WORLD_WIDTH_PORTRAIT * pixelsPerUnit) / PANEL_CSS_WIDTH_PORTRAIT
+            : (PANEL_WORLD_WIDTH * pixelsPerUnit) / PANEL_CSS_WIDTH;
+
+        // Only touch the DOM when it changes visibly: a zoom write re-lays out the panel.
+        if (Math.abs(zoom - lastZoom.current) > 0.005) {
+            lastZoom.current = zoom;
+            panel.style.zoom = String(zoom);
+        }
+    });
+
     return (
-        <Html
-            position={position}
-            center
-            /* Scales with the distance to the camera, so the panel keeps the tent's width on
-               any screen size instead of a fixed pixel size. */
-            distanceFactor={12}
-            /* drei's default z-index is in the millions, which would put the panels above the
-               overlays and the cheat-code panel (z-index 10 / 20). */
-            zIndexRange={[5, 0]}
-        >
-            <div className="tent-params">
-                <label className="tent-params__row">
-                    <span className="tent-params__label">Braço afetado</span>
-                    <select
-                        className="tent-params__select"
-                        value={isLeftArmAffected ? "left" : "right"}
-                        onChange={(event) => onArmChange(event.target.value === "left")}
-                    >
-                        <option value="left">{ARM_LABELS.left}</option>
-                        <option value="right">{ARM_LABELS.right}</option>
-                    </select>
-                </label>
+        <group ref={anchorRef} position={position}>
+            {/* Not `center`: `position` is the panel's bottom edge (see .tent-params), so a taller
+                panel grows up into the sky instead of down over the tent's name. */}
+            <Html
+                /* drei's default z-index is in the millions, which would put the panels above the
+                   overlays and the cheat-code panel (z-index 10 / 20). */
+                zIndexRange={[5, 0]}
+            >
+                <div className="tent-params" ref={panelRef}>
+                    <label className="tent-params__row">
+                        <span className="tent-params__label">Braço afetado</span>
+                        <select
+                            className="tent-params__select"
+                            value={isLeftArmAffected ? "left" : "right"}
+                            onChange={(event) => onArmChange(event.target.value === "left")}
+                        >
+                            <option value="left">{ARM_LABELS.left}</option>
+                            <option value="right">{ARM_LABELS.right}</option>
+                        </select>
+                    </label>
 
-                <ClampedParam
-                    label="Número de repetições"
-                    value={params.repetitions}
-                    range={REPETITIONS_RANGE}
-                    onChange={(repetitions) => onParamsChange({ ...params, repetitions })}
-                />
+                    <ClampedParam
+                        label="Número de repetições"
+                        value={params.repetitions}
+                        range={REPETITIONS_RANGE}
+                        onChange={(repetitions) => onParamsChange({ ...params, repetitions })}
+                    />
 
-                <ClampedParam
-                    label="Tempo de sessão (minutos)"
-                    value={params.sessionTimeMinutes}
-                    range={SESSION_TIME_RANGE}
-                    onChange={(sessionTimeMinutes) => onParamsChange({ ...params, sessionTimeMinutes })}
-                />
+                    <ClampedParam
+                        label="Tempo de sessão (minutos)"
+                        value={params.sessionTimeMinutes}
+                        range={SESSION_TIME_RANGE}
+                        onChange={(sessionTimeMinutes) => onParamsChange({ ...params, sessionTimeMinutes })}
+                    />
 
-                <label className="tent-params__row">
-                    <span className="tent-params__label">Dificuldade do jogo</span>
-                    <select
-                        className="tent-params__select"
-                        value={params.difficultyChange}
-                        onChange={(event) => onParamsChange({ ...params, difficultyChange: event.target.value as DifficultyChange })}
-                    >
-                        {DIFFICULTY_CHANGES.map((change) => (
-                            <option key={change} value={change}>{DIFFICULTY_LABELS[change]}</option>
-                        ))}
-                    </select>
-                </label>
-            </div>
-        </Html>
+                    <label className="tent-params__row">
+                        <span className="tent-params__label">Dificuldade do jogo</span>
+                        <select
+                            className="tent-params__select"
+                            value={params.difficultyChange}
+                            onChange={(event) => onParamsChange({ ...params, difficultyChange: event.target.value as DifficultyChange })}
+                        >
+                            {DIFFICULTY_CHANGES.map((change) => (
+                                <option key={change} value={change}>{DIFFICULTY_LABELS[change]}</option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+            </Html>
+        </group>
     );
 });
 

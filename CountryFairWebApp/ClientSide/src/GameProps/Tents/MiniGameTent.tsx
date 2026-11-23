@@ -13,8 +13,8 @@ import { useTentDrag } from "./useTentDrag";
 import { TentParamsPanel } from "./TentParamsPanel";
 import type { TentParams } from "./sessionParams";
 
-/** Where the session parameters panel floats: above the signboard (y = 2); it grows upwards into the sky. */
-const PARAMS_PANEL_POSITION: [number, number, number] = [0, 4.6, 0];
+/** Bottom centre of the session parameters panel: just above the signboard (y = 2); it grows upwards into the sky. */
+const PARAMS_PANEL_POSITION: [number, number, number] = [0, 3.4, 0];
 
 /** Multiplier on the base scale while the pointer is over the tent. */
 const HOVER_SCALE = 1.2;
