@@ -10,6 +10,7 @@ import { TENT_ROW_Z, TENT_SLOTS, TENT_Y, VIEWER_POSITION, type MiniGameType } fr
 import { orderFromFairState, slotIndexAtX, swapIntoSlot, type TentOrder } from "../GameProps/Tents/tentOrder";
 import { initialTentParams, parseTentParams, withTentParams, type TentParams, type TentParamsMessage } from "../GameProps/Tents/sessionParams";
 import { sendToRoom, subscribeRoom } from "../network/client";
+import { TEST_DEVICE } from "../network/testDevice";
 import { BigTop, BigTopInstances } from "../GameProps/BigTop";
 import { TentInstances } from "../GameProps/Tents/Tent";
 import { TentRibbonInstances } from "../GameProps/Tents/TentRibbon";
@@ -110,6 +111,9 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
     // pointermove, so it lives in a ref rather than in state.
     const dragPoint = useRef(new Vector3());
 
+    // When the current drag started (`performance.now()`), for the grab duration of the user test log.
+    const dragStartTime = useRef(0);
+
     // Equivalent of Unity's `PlaceHolderManager.GetFairState()`: tent id -> 1-based slot
     // number, matching `TentSlot.number` and the shape the game sends via `ConnectToWebApp`.
     const sendFairState = useCallback((currentOrder: TentOrder) => {
@@ -188,6 +192,15 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
         return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
     }), []);
 
+    // The tent was picked up: besides hiding the others, tells the game for the configuration user test
+    // log (`webAppTestData.json`, under this device), like a grab in the headset.
+    const handleDragStart = useCallback((type: MiniGameType) => {
+        dragStartTime.current = performance.now();
+        setDragging(type);
+
+        sendToRoom("webTentGrab", { miniGame: type, isSelected: true, device: TEST_DEVICE });
+    }, []);
+
     const handleDragEnd = useCallback((type: MiniGameType, x: number) => {
         // The configuration was completed during the drag: the tents are hidden now, so the drop
         // must not reorder them (nor send an order) behind the "advance" button.
@@ -211,6 +224,15 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
                 sendFairState(next);
             }
         }
+
+        // After the order, on the same socket, so the game logs the drop with the tents already moved.
+        // Sent even when nothing moved: a drop on its own slot is an attempt too, as in the headset.
+        sendToRoom("webTentGrab", {
+            miniGame: type,
+            isSelected: false,
+            device: TEST_DEVICE,
+            grabDurationMs: Math.round(performance.now() - dragStartTime.current),
+        });
 
         setDragging(null);
     }, [order, sendFairState, configCompleted]);
@@ -267,7 +289,7 @@ export const GameScreen = memo(function GameScreen({ active }: { active: boolean
                                        way to the "advance" button in the middle of the screen. */
                                     hidden={configCompleted || (dragging !== null && dragging !== type)}
                                     dragPoint={dragPoint}
-                                    onDragStart={setDragging}
+                                    onDragStart={handleDragStart}
                                     onDragEnd={handleDragEnd}
                                     showParams={active}
                                     params={tentParams[type]}

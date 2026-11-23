@@ -107,6 +107,13 @@ public class ConnectToWebApp : MonoBehaviour
     [HideInInspector]
     public UnityEvent nextConfiguration;
 
+    /// <summary>
+    /// Raised when the room relays <c>"webTentGrab"</c>: a tent was grabbed or dropped on the web app, logged by
+    /// <c>ConfigSessionManager</c> for the configuration user test. Runtime <c>AddListener</c> only, like the events above.
+    /// </summary>
+    [HideInInspector]
+    public UnityEvent<WebTentGrabMessage> webTentGrab;
+
     /// <summary>Global accessor for the singleton established in <see cref="Awake"/>; null until the first <see cref="ConnectToWebApp"/> instance in the scene has run its Awake.</summary>
     public static ConnectToWebApp Instance => _instance;
 
@@ -217,6 +224,11 @@ public class ConnectToWebApp : MonoBehaviour
                 _room.OnMessage<Dictionary<string, string>>("nextConfiguration", (_) =>
                 {
                     nextConfiguration.Invoke();
+                });
+
+                _room.OnMessage<WebTentGrabMessage>("webTentGrab", (message) =>
+                {
+                    webTentGrab.Invoke(message);
                 });
 
                 SyncGameState();

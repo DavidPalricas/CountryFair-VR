@@ -62,8 +62,11 @@ public class ConfigSessionManager : MonoBehaviour
 
     private Tuple<HandGrabInteractable, RayInteractable>[] _tentsInteractables;
 
-    /// <summary>Records the user test (config time per mode, grab times per tent) in <c>userTestData.json</c>.</summary>
-    private readonly ConfigTestLogger _testLogger = new();
+    /// <summary>Records the user test done in the headset (config time per mode, grab times per tent) in <c>userTestData.json</c>.</summary>
+    private readonly ConfigTestLogger _testLogger = new("userTestData.json");
+
+    /// <summary>Records what is configured on the web app in <c>webAppTestData.json</c>, one key per device.</summary>
+    private readonly ConfigTestLogger _webTestLogger = new("webAppTestData.json");
 
     private enum SelectionMode
     {
@@ -98,6 +101,9 @@ public class ConfigSessionManager : MonoBehaviour
 
         _testLogger.StartSession(_currentSequence.Select(mode => mode.ToString()));
 
+        // No planned sequence: the devices are stored in the order they were used.
+        _webTestLogger.StartSession();
+
         OrderableTentElement.SelectionChanged += OnTentSelectionChanged;
 
         UpdateSelectionMode();
@@ -121,6 +127,7 @@ public class ConfigSessionManager : MonoBehaviour
 
         webApp.nextConfiguration.AddListener(OnWebNextConfiguration);
         webApp.joinedRoom.AddListener(ReportConfigState);
+        webApp.webTentGrab.AddListener(OnWebTentGrab);
 
         ReportConfigState();
     }
@@ -139,6 +146,7 @@ public class ConfigSessionManager : MonoBehaviour
 
         webApp.nextConfiguration.RemoveListener(OnWebNextConfiguration);
         webApp.joinedRoom.RemoveListener(ReportConfigState);
+        webApp.webTentGrab.RemoveListener(OnWebTentGrab);
     }
 
     /// <summary>
@@ -268,6 +276,7 @@ public class ConfigSessionManager : MonoBehaviour
         Debug.Log($"Current survivor: {_currentSurvivor.survivorName} ({_currentSelectionMode})");
 
         _testLogger.BeginMode(_currentSelectionMode.ToString(), _currentSurvivor);
+        _webTestLogger.BeginMode(_currentSelectionMode.ToString(), _currentSurvivor);
 
         _changedSurvivorFile.Invoke(_currentSurvivor.fileMaterial);
 
@@ -289,6 +298,7 @@ public class ConfigSessionManager : MonoBehaviour
         _currentTentsConfig[tentConfig.MiniGame] = tentConfig;
 
         _testLogger.OnTentConfigChanged(tentConfig);
+        _webTestLogger.OnTentConfigChanged(tentConfig);
 
         ValidateConfiguration();
     }
@@ -297,6 +307,26 @@ public class ConfigSessionManager : MonoBehaviour
     private void OnTentSelectionChanged(OrderableTentElement element, bool isSelected)
     {
         _testLogger.OnTentSelectionChanged(element.MiniGame, isSelected);
+    }
+
+    /// <summary>
+    /// A tent was grabbed or dropped on the web app (<see cref="ConnectToWebApp.webTentGrab"/>). The drop arrives after
+    /// the new order, so the tents have already moved when it is logged, like a release in the headset.
+    /// </summary>
+    private void OnWebTentGrab(WebTentGrabMessage message)
+    {
+        if (!Enum.TryParse(message.miniGame, true, out GameManager.MiniGames game) || string.IsNullOrEmpty(message.device))
+        {
+            Debug.LogWarning($"[ConfigSession] Ignoring invalid web tent grab: {message.miniGame} / {message.device}");
+            return;
+        }
+
+        // "tablet" -> "Tablet", the key of the device in webAppTestData.json.
+        string device = char.ToUpperInvariant(message.device[0]) + message.device.Substring(1).ToLowerInvariant();
+
+        double? grabDuration = message.isSelected ? (double?)null : message.grabDurationMs / 1000.0;
+
+        _webTestLogger.OnTentSelectionChanged(game, message.isSelected, device, grabDuration);
     }
 
     /// <summary>
@@ -347,6 +377,7 @@ public class ConfigSessionManager : MonoBehaviour
     private void OnSessionConfigured()
     {
         _testLogger.CompleteMode();
+        _webTestLogger.CompleteMode();
 
         _activateConfigButton.Invoke(true);
 

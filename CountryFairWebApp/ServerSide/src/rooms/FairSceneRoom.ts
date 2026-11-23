@@ -1,7 +1,7 @@
 import {Client } from "colyseus";
 import {CountryFairRoom} from "./CountryFairRoom.js";
 import {FairState } from "../schemas/FairSchema.js";
-import {isAffectedArmUpdate, isGameSnapshot, isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeConfigState, sanitizeTentOrder, sanitizeTentParams} from "./messageValidation.js";
+import {isAffectedArmUpdate, isGameSnapshot, isProgressUpdate, isSceneUpdate, sanitizeCheatCode, sanitizeConfigState, sanitizeTentOrder, sanitizeTentParams, sanitizeWebTentGrab} from "./messageValidation.js";
 import {applyAffectedArm, applyConfigState, applyDialogueFinished, applyGameSnapshot, applyNextConfiguration, applyProgress, applySceneChange, applyTentOrder, applyTentParams, applyTutorialFinished} from "./fairRules.js";
 
 
@@ -109,6 +109,25 @@ export class FairSceneRoom extends CountryFairRoom {
             this.clients
                   .filter((other) => this.platformOf(other) === "game")
                   .forEach((game) => game.send("nextConfiguration", {}));
+      });
+
+      // A tent was grabbed or dropped on a web device, for the configuration user test: the game
+      // logs it in `webAppTestData.json` (Unity's `ConfigSessionManager.OnWebTentGrab`). Sent on
+      // to the game only, like "nextConfiguration". The drop follows the "updateTentsOrder" of
+      // the same drag on the same socket, so the game always gets the new order first.
+      this.onMessage("webTentGrab", (client, data) => {
+            if (!this.isSenderAllowed(client, "webTentGrab", ["web"])) return;
+
+            const grab = sanitizeWebTentGrab(data);
+
+            if (grab === null) {
+                  console.warn(`Ignoring invalid "webTentGrab" from client ${client.sessionId}:`, data);
+                  return;
+            }
+
+            this.clients
+                  .filter((other) => this.platformOf(other) === "game")
+                  .forEach((game) => game.send("webTentGrab", grab));
       });
 
       // Sent by the web client when the therapist types a cheat code there. Relayed to the

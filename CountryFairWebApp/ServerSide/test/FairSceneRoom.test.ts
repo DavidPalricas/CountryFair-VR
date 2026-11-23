@@ -333,6 +333,27 @@ describe("FairSceneRoom", () => {
             assert.strictEqual(room.state.configCompleted, true);
         });
 
+        it("relays a web tent grab to the game after the order of the same drag", async () => {
+            const { web, game } = await pair();
+            const order = game.waitForMessage("updateTentsOrder");
+            const grab = game.waitForMessage("webTentGrab");
+
+            web.send("updateTentsOrder", { frisbee: "1", fishing: "3" });
+            web.send("webTentGrab", { miniGame: "Frisbee", isSelected: false, device: "Tablet", grabDurationMs: 1930 });
+
+            await order;
+            assert.deepStrictEqual(await grab, { miniGame: "frisbee", isSelected: false, device: "tablet", grabDurationMs: 1930 });
+        });
+
+        it("drops invalid web tent grabs and grabs sent by the game", async () => {
+            const { web, game } = await pair();
+
+            web.send("webTentGrab", { miniGame: "frisbee", isSelected: false, device: "fridge", grabDurationMs: 10 });
+            game.send("webTentGrab", { miniGame: "frisbee", isSelected: true, device: "phone" });
+
+            assert.strictEqual(await receives(game, "webTentGrab", 100), false);
+        });
+
         it("relays the web's cheat code, trimmed, to the game", async () => {
             const { web, game } = await pair();
             const received = game.waitForMessage("cheatCode");

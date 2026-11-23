@@ -8,6 +8,7 @@ import {
     sanitizeConfigState,
     sanitizeTentOrder,
     sanitizeTentParams,
+    sanitizeWebTentGrab,
 } from "../src/rooms/messageValidation.js";
 
 describe("messageValidation", () => {
@@ -91,6 +92,32 @@ describe("messageValidation", () => {
             assert.strictEqual(sanitizeTentOrder(["1"]), null);
             assert.strictEqual(sanitizeTentOrder("archery"), null);
             assert.strictEqual(sanitizeTentOrder(null), null);
+        });
+    });
+
+    describe("sanitizeWebTentGrab", () => {
+        it("lower-cases the tent and device and keeps a drop's duration", () => {
+            assert.deepStrictEqual(
+                sanitizeWebTentGrab({ miniGame: "DuckGame", isSelected: false, device: " Phone ", grabDurationMs: 850, extra: 1 }),
+                { miniGame: "duckgame", isSelected: false, device: "phone", grabDurationMs: 850 }
+            );
+        });
+
+        it("ignores the duration of a grab start", () => {
+            assert.deepStrictEqual(
+                sanitizeWebTentGrab({ miniGame: "archery", isSelected: true, device: "computer" }),
+                { miniGame: "archery", isSelected: true, device: "computer", grabDurationMs: 0 }
+            );
+        });
+
+        it("rejects unknown tents or devices and bad durations", () => {
+            assert.strictEqual(sanitizeWebTentGrab({ miniGame: "chess", isSelected: true, device: "tablet" }), null);
+            assert.strictEqual(sanitizeWebTentGrab({ miniGame: "archery", isSelected: true, device: "tv" }), null);
+            assert.strictEqual(sanitizeWebTentGrab({ miniGame: "archery", isSelected: false, device: "tablet" }), null);
+            assert.strictEqual(sanitizeWebTentGrab({ miniGame: "archery", isSelected: false, device: "tablet", grabDurationMs: 1.5 }), null);
+            assert.strictEqual(sanitizeWebTentGrab({ miniGame: "archery", isSelected: false, device: "tablet", grabDurationMs: -1 }), null);
+            assert.strictEqual(sanitizeWebTentGrab({ miniGame: "archery", isSelected: "no", device: "tablet" }), null);
+            assert.strictEqual(sanitizeWebTentGrab(null), null);
         });
     });
 

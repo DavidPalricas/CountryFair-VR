@@ -224,6 +224,49 @@ export function sanitizeConfigState(data: unknown): ConfigStateUpdate | null {
         : null;
 }
 
+/** Devices of the configuration user test on the web: the web client's `?device=` (or its auto-detected guess). */
+export const TEST_DEVICES: readonly string[] = ["computer", "tablet", "phone"];
+
+/** Longest grab accepted, in milliseconds: anything longer is a forgotten drag, not a measurement. */
+export const MAX_GRAB_DURATION_MS = 10 * 60 * 1000;
+
+/** Payload of `"webTentGrab"`, relayed to the game for the configuration user test log. */
+export interface WebTentGrab {
+    /** One of {@link MINI_GAMES}. */
+    miniGame: string;
+    /** True when the drag started, false when the tent was dropped. */
+    isSelected: boolean;
+    /** One of {@link TEST_DEVICES}. */
+    device: string;
+    /** Milliseconds the tent was held (0 when the drag started), an integer. */
+    grabDurationMs: number;
+}
+
+/**
+ * Validated copy of a `"webTentGrab"`, or `null` when invalid: a known tent and device (lower-cased),
+ * a boolean `isSelected` and, on a drop, a whole number of milliseconds up to {@link MAX_GRAB_DURATION_MS}.
+ */
+export function sanitizeWebTentGrab(data: unknown): WebTentGrab | null {
+    if (!isObject(data) || typeof data.miniGame !== "string" || typeof data.device !== "string" || typeof data.isSelected !== "boolean") {
+        return null;
+    }
+
+    const miniGame = data.miniGame.trim().toLowerCase();
+    const device = data.device.trim().toLowerCase();
+
+    if (!MINI_GAMES.includes(miniGame) || !TEST_DEVICES.includes(device)) {
+        return null;
+    }
+
+    const grabDurationMs = data.isSelected ? 0 : data.grabDurationMs;
+
+    if (!isNonNegativeInteger(grabDurationMs) || grabDurationMs > MAX_GRAB_DURATION_MS) {
+        return null;
+    }
+
+    return { miniGame, isSelected: data.isSelected, device, grabDurationMs };
+}
+
 /** `{ isLeftArmAffected }` with a boolean value, as sent by both clients on `"updateAffectedArm"`. */
 export function isAffectedArmUpdate(data: unknown): data is AffectedArmUpdate {
     return isObject(data) && typeof data.isLeftArmAffected === "boolean";
