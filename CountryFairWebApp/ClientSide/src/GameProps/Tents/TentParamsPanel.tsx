@@ -95,6 +95,14 @@ export const TentParamsPanel = memo(function TentParamsPanel({ position, params,
                 /* drei's default z-index is in the millions, which would put the panels above the
                    overlays and the cheat-code panel (z-index 10 / 20). */
                 zIndexRange={[5, 0]}
+                /* drei's two wrapper divs keep the panel's size at the anchor, *below* it: the
+                   panel's translate(-50%, -100%) moves only what is drawn, not the wrappers' boxes.
+                   Those invisible boxes sat over the signboard and the top of the tent and swallowed
+                   the pointerdown, so only the bottom of the tent could still be dragged. Both
+                   wrappers let clicks through (`pointerEvents` prop only works with `transform`, so
+                   it is set by hand); .tent-params turns them back on for the panel itself. */
+                wrapperClass="tent-params-anchor"
+                style={{ pointerEvents: "none" }}
             >
                 <div className="tent-params" ref={panelRef}>
                     <label className="tent-params__row">

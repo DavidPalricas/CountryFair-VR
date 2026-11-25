@@ -4,7 +4,10 @@
  * It deliberately does not use R3F's `onPointerMove` on a mesh, because during the drag the
  * tent itself covers the ground and the other tents are invisible (hence out of the
  * raycast). Instead it captures the pointer on the canvas and projects the camera ray
- * against a mathematical plane at tent height.
+ * against a mathematical plane: the vertical plane of the row (z = TENT_ROW_Z), which faces
+ * the camera. It used to be the ground plane, but a tent grabbed above its base (the roof, the
+ * signboard) then hit the ground far behind the row, where the same screen movement is many
+ * more world units: the tent ran away from the cursor and was dropped outside every slot.
  *
  * The drag only moves in X: every tent lives on the same line (TENT_ROW_Z) and the only
  * thing the player can change is their order along it. Leaving Z free would just let the
@@ -44,8 +47,9 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
     // Reused across events so nothing is allocated on each pointermove.
     const raycaster = useRef(new Raycaster());
     const pointerNdc = useRef(new Vector2());
-    const groundPlane = useRef(new Plane(new Vector3(0, 1, 0), -TENT_Y));
-    const groundHit = useRef(new Vector3());
+    // z - TENT_ROW_Z = 0: the plane the tents stand in, so X under the cursor is X in the row.
+    const rowPlane = useRef(new Plane(new Vector3(0, 0, 1), -TENT_ROW_Z));
+    const rowHit = useRef(new Vector3());
 
     /**
      * The native listeners are registered once and live as long as the component, so the
@@ -58,8 +62,8 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
         handlers.current = { onDragStart, onDragEnd };
     });
 
-    /** Screen -> NDC -> camera ray -> point on the ground plane. */
-    const projectToGround = useCallback((event: PointerEvent) => {
+    /** Screen -> NDC -> camera ray -> point on the row's vertical plane. */
+    const projectToRow = useCallback((event: PointerEvent) => {
         const bounds = gl.domElement.getBoundingClientRect();
 
         pointerNdc.current.set(
@@ -69,8 +73,9 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
 
         raycaster.current.setFromCamera(pointerNdc.current, camera);
 
-        // Returns null when the ray is parallel to the ground (camera level with the plane).
-        return raycaster.current.ray.intersectPlane(groundPlane.current, groundHit.current);
+        // Returns null only if the ray is parallel to the plane, which the camera in front of
+        // the row looking at it never produces.
+        return raycaster.current.ray.intersectPlane(rowPlane.current, rowHit.current);
     }, [camera, gl]);
 
     // Canvas-level pointer listeners, registered once and torn down with the component. They
@@ -83,15 +88,15 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
                 return;
             }
 
-            const ground = projectToGround(event);
+            const hit = projectToRow(event);
 
-            if (ground === null) {
+            if (hit === null) {
                 return;
             }
 
             // Y stays at the value the tent uses and Z is pinned to the row line: only X
             // follows the pointer.
-            dragPoint.current.set(ground.x + grabOffsetX.current, TENT_Y, TENT_ROW_Z);
+            dragPoint.current.set(hit.x + grabOffsetX.current, TENT_Y, TENT_ROW_Z);
         };
 
         /**
@@ -122,7 +127,7 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
             canvas.removeEventListener("pointerup", handlePointerEnd);
             canvas.removeEventListener("pointercancel", handlePointerEnd);
         };
-    }, [dragPoint, gl, projectToGround]);
+    }, [dragPoint, gl, projectToRow]);
 
     const onPointerDown = useCallback((event: ThreeEvent<PointerEvent>) => {
         const tent = objectRef.current;
@@ -134,9 +139,9 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
         // Without this the tents behind this one in the row started being dragged too.
         event.stopPropagation();
 
-        const ground = projectToGround(event.nativeEvent);
+        const hit = projectToRow(event.nativeEvent);
 
-        if (ground === null) {
+        if (hit === null) {
             return;
         }
 
@@ -145,11 +150,11 @@ export function useTentDrag({ objectRef, dragPoint, onDragStart, onDragEnd }: Us
         // The capture keeps events coming even with the cursor outside the canvas.
         gl.domElement.setPointerCapture(event.nativeEvent.pointerId);
 
-        grabOffsetX.current = tent.position.x - ground.x;
+        grabOffsetX.current = tent.position.x - hit.x;
         dragPoint.current.set(tent.position.x, TENT_Y, TENT_ROW_Z);
 
         handlers.current.onDragStart();
-    }, [dragPoint, gl, objectRef, projectToGround]);
+    }, [dragPoint, gl, objectRef, projectToRow]);
 
     return { onPointerDown };
 }

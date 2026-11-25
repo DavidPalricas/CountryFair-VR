@@ -915,6 +915,7 @@ MonoBehaviour:
     - line: '|     Kepler: DOTWEEN'
     - line: '|     LinuxHeadlessSimulation: DOTWEEN'
     - line: '|     Nintendo Switch: DOTWEEN'
+    - line: '|     Nintendo Switch 2: DOTWEEN'
     - line: '|     PS4: DOTWEEN'
     - line: '|     PS5: DOTWEEN'
     - line: '|     QNX: DOTWEEN'

@@ -7,6 +7,11 @@
   One narrow column, like Unity's panel: the four tents are only 3.4 world units apart, so a
   wider (horizontal) panel overlaps its neighbours. Keep the width below the tent spacing.
 */
+/* drei's outer <Html> div (wrapperClass): its box lies over the tent, so it must not catch clicks. */
+.tent-params-anchor {
+  pointer-events: none;
+}
+
 .tent-params {
   width: 178px;
   display: flex;
@@ -20,6 +25,8 @@
   font-size: 14px;
   line-height: 1.15;
   user-select: none;
+  /* The <Html> wrapper is pointer-events: none (see TentParamsPanel.tsx): the panel takes them back. */
+  pointer-events: auto;
   /* Mobile browsers enlarge ("boost") text in narrow blocks, which breaks the zoomed layout. */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;

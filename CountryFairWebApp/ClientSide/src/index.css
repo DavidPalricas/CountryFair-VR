@@ -18,6 +18,17 @@ body,
   padding: 0;
 }
 
+/*
+  No zoom on phones/tablets, neither double-tap (tapping a panel's -/+ quickly twice zoomed the
+  whole page in) nor pinch: `pan-x pan-y` allows only scrolling. The viewport meta in index.html
+  turns pinch zoom off too; this is the second lock for browsers that ignore it. touch-action
+  narrows every descendant, so it covers all panels and buttons; the canvas sets its own `none`
+  (GameScreen.css) on top of it for the tent drag.
+*/
+html {
+  touch-action: pan-x pan-y;
+}
+
 body {
   font-family: 'Luckiest Guy', system-ui, sans-serif;
   /* avoids the white flash before the tent background paints */
